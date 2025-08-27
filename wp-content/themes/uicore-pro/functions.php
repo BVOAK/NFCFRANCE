@@ -100,7 +100,7 @@ if (!defined('ABSPATH')) {
 function nfc_configurator_init()
 {
     // Chemin des fichiers du configurateur
-    $configurator_path = get_template_directory() . '/configurator/includes/';
+    $configurator_path = get_template_directory() . '/configurator/includes/';   
 
     // Charger tous les fichiers nécessaires
     $files_to_load = [
@@ -109,7 +109,9 @@ function nfc_configurator_init()
         'wc-integration.php',
         'ajax-handlers.php',
         'nfc-file-handler.php',
-        'nfc-customer-integration.php'
+        'nfc-customer-integration.php',
+        'class-nfc-product-button-manager.php',
+        'class-nfc-button-renderer.php'
     ];
 
     foreach ($files_to_load as $file) {
@@ -215,23 +217,6 @@ add_action('rest_api_init', function() {
     } else {
         error_log('❌ Route leads NON trouvée');
         error_log('Routes disponibles: ' . print_r(array_keys($routes), true));
-    }
-});
-
-// Test de la nouvelle classe NFC_Product_Button_Manager
-add_action('init', function() {
-    // Charger la classe
-    require_once get_template_directory() . '/configurator/includes/class-nfc-product-button-manager.php';
-    
-    // Instancier pour test
-    global $nfc_button_manager;
-    $nfc_button_manager = new NFC_Product_Button_Manager();
-    
-    // Test sur une page produit (seulement en mode debug)
-    if (defined('WP_DEBUG') && WP_DEBUG && is_admin()) {
-        // Test sur le produit 571
-        $config = $nfc_button_manager->get_product_button_config(571);
-        error_log('NFC Test Config 571: ' . json_encode($config, JSON_PRETTY_PRINT));
     }
 });
 
