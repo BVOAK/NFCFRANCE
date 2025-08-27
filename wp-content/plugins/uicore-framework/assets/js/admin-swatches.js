@@ -1,0 +1,915 @@
+/*
+ * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./assets/src/admin-swatches/colorPicker.vue":
+/*!***************************************************!*\
+  !*** ./assets/src/admin-swatches/colorPicker.vue ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _colorPicker_vue_vue_type_template_id_f5096a3a__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./colorPicker.vue?vue&type=template&id=f5096a3a */ \"./assets/src/admin-swatches/colorPicker.vue?vue&type=template&id=f5096a3a\");\n/* harmony import */ var _colorPicker_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./colorPicker.vue?vue&type=script&lang=js */ \"./assets/src/admin-swatches/colorPicker.vue?vue&type=script&lang=js\");\n/* harmony import */ var _colorPicker_vue_vue_type_style_index_0_id_f5096a3a_lang_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./colorPicker.vue?vue&type=style&index=0&id=f5096a3a&lang=css */ \"./assets/src/admin-swatches/colorPicker.vue?vue&type=style&index=0&id=f5096a3a&lang=css\");\n/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ \"./node_modules/vue-loader/lib/runtime/componentNormalizer.js\");\n\n\n\n;\n\n\n/* normalize component */\n\nvar component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"])(\n  _colorPicker_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  _colorPicker_vue_vue_type_template_id_f5096a3a__WEBPACK_IMPORTED_MODULE_0__.render,\n  _colorPicker_vue_vue_type_template_id_f5096a3a__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,\n  false,\n  null,\n  null,\n  null\n  \n)\n\n/* hot reload */\nif (false) { var api; }\ncomponent.options.__file = \"assets/src/admin-swatches/colorPicker.vue\"\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin-swatches/colorPicker.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin-swatches/colorPicker.vue?vue&type=script&lang=js":
+/*!***************************************************************************!*\
+  !*** ./assets/src/admin-swatches/colorPicker.vue?vue&type=script&lang=js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_index_js_vue_loader_options_colorPicker_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./colorPicker.vue?vue&type=script&lang=js */ \"./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin-swatches/colorPicker.vue?vue&type=script&lang=js\");\n /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_index_js_vue_loader_options_colorPicker_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]); \n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin-swatches/colorPicker.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin-swatches/colorPicker.vue?vue&type=style&index=0&id=f5096a3a&lang=css":
+/*!***********************************************************************************************!*\
+  !*** ./assets/src/admin-swatches/colorPicker.vue?vue&type=style&index=0&id=f5096a3a&lang=css ***!
+  \***********************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_lib_index_js_vue_loader_options_colorPicker_vue_vue_type_style_index_0_id_f5096a3a_lang_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/mini-css-extract-plugin/dist/loader.js!../../../node_modules/css-loader/dist/cjs.js!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./colorPicker.vue?vue&type=style&index=0&id=f5096a3a&lang=css */ \"./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin-swatches/colorPicker.vue?vue&type=style&index=0&id=f5096a3a&lang=css\");\n\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin-swatches/colorPicker.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin-swatches/colorPicker.vue?vue&type=template&id=f5096a3a":
+/*!*********************************************************************************!*\
+  !*** ./assets/src/admin-swatches/colorPicker.vue?vue&type=template&id=f5096a3a ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_colorPicker_vue_vue_type_template_id_f5096a3a__WEBPACK_IMPORTED_MODULE_0__.render),\n/* harmony export */   staticRenderFns: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_colorPicker_vue_vue_type_template_id_f5096a3a__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)\n/* harmony export */ });\n/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_colorPicker_vue_vue_type_template_id_f5096a3a__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./colorPicker.vue?vue&type=template&id=f5096a3a */ \"./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin-swatches/colorPicker.vue?vue&type=template&id=f5096a3a\");\n\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin-swatches/colorPicker.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin-swatches/main.js":
+/*!*******************************************!*\
+  !*** ./assets/src/admin-swatches/main.js ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue */ \"./node_modules/vue/dist/vue.esm.js\");\n/* harmony import */ var _colorPicker_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./colorPicker.vue */ \"./assets/src/admin-swatches/colorPicker.vue\");\n/* harmony import */ var vue2_perfect_scrollbar__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue2-perfect-scrollbar */ \"./node_modules/vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.umd.js\");\n/* harmony import */ var vue2_perfect_scrollbar__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue2_perfect_scrollbar__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var vue2_perfect_scrollbar_dist_vue2_perfect_scrollbar_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css */ \"./node_modules/vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css\");\n\n// import Picker from './iconPicker.vue';\n\n\n\n// import store from 'admin/utils/store';\n\nvue__WEBPACK_IMPORTED_MODULE_3__[\"default\"].use((vue2_perfect_scrollbar__WEBPACK_IMPORTED_MODULE_1___default()));\njQuery(document).ready(function ($) {\n  $('body').append(\"<div id='uicore-colorPicker'></div>\");\n  new vue__WEBPACK_IMPORTED_MODULE_3__[\"default\"]({\n    el: '#uicore-colorPicker',\n    // store,\n    render: function render(h) {\n      return h(_colorPicker_vue__WEBPACK_IMPORTED_MODULE_0__[\"default\"]);\n    }\n  });\n\n  //toggle fields visibility based on #uicore_swatch_select value\n  // Now fields are printed dinamically based on parent attribute swatch\n  /*\r\n  const toggleFields = function(value){\r\n      if(value == 'bicolor'){\r\n          $('.uicore-field').hide();\r\n          $('.term-uicore-color-wrap, .term-uicore-second-color-wrap').show();\r\n      }else{\r\n          $('.uicore-field').hide();\r\n          $('.term-uicore-'+value+'-wrap').show();\r\n      }\r\n  }\r\n  */\n\n  // var swatch_select = $('#uicore_swatch_select');\n  // var swatch_select_val = swatch_select.val();\n\n  //initial run\n  // toggleFields(swatch_select_val);\n\n  //run on change\n  // swatch_select.on('change', function(){\n  //     toggleFields($(this).val());\n  // });\n});\n\n// Uploading files\nvar file_frame;\nwindow.uicore_set_image = function () {\n  // If the media frame already exists, reopen it.\n  if (file_frame) {\n    // Open frame\n    file_frame.open();\n    return;\n  }\n\n  // Create the media frame.\n  file_frame = wp.media({\n    title: 'Select a image to upload',\n    button: {\n      text: 'Use this image'\n    },\n    multiple: false // Set to true to allow multiple files to be selected\n  });\n\n  // When an image is selected, run a callback.\n  file_frame.on('select', function () {\n    // We set multiple to false so only get one image from the uploader\n    var attachment = file_frame.state().get('selection').first().toJSON();\n\n    // Do something with attachment.id and/or attachment.url here\n    console.log(\"url(\".concat(attachment.url, \") no-repeat center center/cover;\"));\n    jQuery('#uicore_image_preview').css('--ui-swatches-bg', \"url(\".concat(attachment.url, \") no-repeat center center/cover\")).parent('td').addClass('uicore-is-set');\n    jQuery('#uicore_image').val(attachment.url);\n\n    // refresh\n    file_frame = '';\n  });\n  // Finally, open the modal\n  file_frame.open();\n};\nwindow.uicore_remove_image = function () {\n  jQuery('#uicore_image').val('');\n  jQuery('#uicore_image_preview').css('--ui-swatches-bg', 'initial').parent('td').removeClass('uicore-is-set');\n};\nwindow.uicore_remove_color = function () {\n  jQuery('#uicore_second_color').val('');\n  jQuery('#uicore_second_color_preview').css('--ui-swatches-bg', 'transparent');\n};\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin-swatches/main.js?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets sync recursive ^\\.\\/icon\\-.*\\.svg$":
+/*!***********************************************************!*\
+  !*** ./assets/src/admin/assets/ sync ^\.\/icon\-.*\.svg$ ***!
+  \***********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+eval("var map = {\n\t\"./icon-admin-customizer.svg\": \"./assets/src/admin/assets/icon-admin-customizer.svg\",\n\t\"./icon-animations.svg\": \"./assets/src/admin/assets/icon-animations.svg\",\n\t\"./icon-blog.svg\": \"./assets/src/admin/assets/icon-blog.svg\",\n\t\"./icon-branding.svg\": \"./assets/src/admin/assets/icon-branding.svg\",\n\t\"./icon-buttons.svg\": \"./assets/src/admin/assets/icon-buttons.svg\",\n\t\"./icon-close.svg\": \"./assets/src/admin/assets/icon-close.svg\",\n\t\"./icon-custom.svg\": \"./assets/src/admin/assets/icon-custom.svg\",\n\t\"./icon-dark-mode.svg\": \"./assets/src/admin/assets/icon-dark-mode.svg\",\n\t\"./icon-dashboard.svg\": \"./assets/src/admin/assets/icon-dashboard.svg\",\n\t\"./icon-debug.svg\": \"./assets/src/admin/assets/icon-debug.svg\",\n\t\"./icon-demo-loader.svg\": \"./assets/src/admin/assets/icon-demo-loader.svg\",\n\t\"./icon-desktop.svg\": \"./assets/src/admin/assets/icon-desktop.svg\",\n\t\"./icon-documentation.svg\": \"./assets/src/admin/assets/icon-documentation.svg\",\n\t\"./icon-edit.svg\": \"./assets/src/admin/assets/icon-edit.svg\",\n\t\"./icon-feedback.svg\": \"./assets/src/admin/assets/icon-feedback.svg\",\n\t\"./icon-footer.svg\": \"./assets/src/admin/assets/icon-footer.svg\",\n\t\"./icon-general.svg\": \"./assets/src/admin/assets/icon-general.svg\",\n\t\"./icon-global-colors.svg\": \"./assets/src/admin/assets/icon-global-colors.svg\",\n\t\"./icon-global-fonts.svg\": \"./assets/src/admin/assets/icon-global-fonts.svg\",\n\t\"./icon-global.svg\": \"./assets/src/admin/assets/icon-global.svg\",\n\t\"./icon-header.svg\": \"./assets/src/admin/assets/icon-header.svg\",\n\t\"./icon-import-preset.svg\": \"./assets/src/admin/assets/icon-import-preset.svg\",\n\t\"./icon-import.svg\": \"./assets/src/admin/assets/icon-import.svg\",\n\t\"./icon-light-mode.svg\": \"./assets/src/admin/assets/icon-light-mode.svg\",\n\t\"./icon-page-title.svg\": \"./assets/src/admin/assets/icon-page-title.svg\",\n\t\"./icon-performance.svg\": \"./assets/src/admin/assets/icon-performance.svg\",\n\t\"./icon-phone.svg\": \"./assets/src/admin/assets/icon-phone.svg\",\n\t\"./icon-plugins.svg\": \"./assets/src/admin/assets/icon-plugins.svg\",\n\t\"./icon-portfolio.svg\": \"./assets/src/admin/assets/icon-portfolio.svg\",\n\t\"./icon-preset.svg\": \"./assets/src/admin/assets/icon-preset.svg\",\n\t\"./icon-presetm.svg\": \"./assets/src/admin/assets/icon-presetm.svg\",\n\t\"./icon-remove-preset.svg\": \"./assets/src/admin/assets/icon-remove-preset.svg\",\n\t\"./icon-search.svg\": \"./assets/src/admin/assets/icon-search.svg\",\n\t\"./icon-social.svg\": \"./assets/src/admin/assets/icon-social.svg\",\n\t\"./icon-success.svg\": \"./assets/src/admin/assets/icon-success.svg\",\n\t\"./icon-system.svg\": \"./assets/src/admin/assets/icon-system.svg\",\n\t\"./icon-tablet.svg\": \"./assets/src/admin/assets/icon-tablet.svg\",\n\t\"./icon-theme-skin.svg\": \"./assets/src/admin/assets/icon-theme-skin.svg\",\n\t\"./icon-top-banner.svg\": \"./assets/src/admin/assets/icon-top-banner.svg\",\n\t\"./icon-typography.svg\": \"./assets/src/admin/assets/icon-typography.svg\",\n\t\"./icon-updates.svg\": \"./assets/src/admin/assets/icon-updates.svg\",\n\t\"./icon-warning.svg\": \"./assets/src/admin/assets/icon-warning.svg\",\n\t\"./icon-woo.svg\": \"./assets/src/admin/assets/icon-woo.svg\"\n};\n\n\nfunction webpackContext(req) {\n\tvar id = webpackContextResolve(req);\n\treturn __webpack_require__(id);\n}\nfunction webpackContextResolve(req) {\n\tif(!__webpack_require__.o(map, req)) {\n\t\tvar e = new Error(\"Cannot find module '\" + req + \"'\");\n\t\te.code = 'MODULE_NOT_FOUND';\n\t\tthrow e;\n\t}\n\treturn map[req];\n}\nwebpackContext.keys = function webpackContextKeys() {\n\treturn Object.keys(map);\n};\nwebpackContext.resolve = webpackContextResolve;\nmodule.exports = webpackContext;\nwebpackContext.id = \"./assets/src/admin/assets sync recursive ^\\\\.\\\\/icon\\\\-.*\\\\.svg$\";\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/_sync_^\\.\\/icon\\-.*\\.svg$?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-admin-customizer.svg":
+/*!***********************************************************!*\
+  !*** ./assets/src/admin/assets/icon-admin-customizer.svg ***!
+  \***********************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"utf-8\"?> <svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" xml:space=\"preserve\"> <g> <path d=\"M3.5,14c0.4,0,0.7-0.3,0.7-0.7V9.8c0-0.4-0.3-0.7-0.7-0.7S2.8,9.4,2.8,9.8v3.5C2.8,13.7,3.1,14,3.5,14z\"/> <path d=\"M3.5,8.4c0.4,0,0.7-0.3,0.7-0.7V7c0-0.4-0.3-0.7-0.7-0.7S2.8,6.6,2.8,7v0.7C2.8,8.1,3.1,8.4,3.5,8.4z\"/> <path d=\"M11.9,3.5H7.7h0h0H2.1C0.9,3.5,0,4.4,0,5.6v9.8c0,1.2,0.9,2.1,2.1,2.1h9.8c1.2,0,2.1-0.9,2.1-2.1V5.6\r\n\t\tC14,4.4,13.1,3.5,11.9,3.5z M5.6,16.1H1.9c-0.3,0-0.5-0.3-0.5-0.7V5.6c0-0.4,0.2-0.7,0.5-0.7h3.7V16.1z M12.6,15.4\r\n\t\tc0,0.4-0.4,0.7-0.9,0.7H7V4.9h4.7c0.5,0,0.9,0.3,0.9,0.7V15.4z\"/> </g> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-admin-customizer.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-animations.svg":
+/*!*****************************************************!*\
+  !*** ./assets/src/admin/assets/icon-animations.svg ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"utf-8\"?> <svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" style=\"enable-background:new 0 0 14 21\" xml:space=\"preserve\"> <path fill=\"#2E3546\" d=\"M8.8,5.4H0v1.8h4.8C4.2,7.8,3.7,8.8,3.6,9.7H0v1.8h3.6c0.2,1,0.6,1.9,1.3,2.6H0v1.8h8.8c2.9,0,5.2-2.4,5.2-5.2\r\n\tS11.6,5.4,8.8,5.4L8.8,5.4z M8.8,14.1c-1.9,0-3.5-1.6-3.5-3.5s1.6-3.5,3.5-3.5s3.5,1.6,3.5,3.5S10.7,14.1,8.8,14.1z\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-animations.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-blog.svg":
+/*!***********************************************!*\
+  !*** ./assets/src/admin/assets/icon-blog.svg ***!
+  \***********************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-blog</title> <desc>Created with Sketch.</desc> <g id=\"icon-blog\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M12.6,4 L1.4,4 C0.62680135,4 0,4.62680135 0,5.4 L0,16.6 C0,17.3731986 0.62680135,18 1.4,18 L12.6,18 C13.3731986,18 14,17.3731986 14,16.6 L14,5.4 C14,4.62680135 13.3731986,4 12.6,4 Z M12.6,16.6 L1.4,16.6 L1.4,6.8 L12.6,6.8 L12.6,16.6 Z M3.15,12.4 L5.95,12.4 C6.14329966,12.4 6.3,12.2432997 6.3,12.05 L6.3,8.55 C6.3,8.35670034 6.14329966,8.2 5.95,8.2 L3.15,8.2 C2.95670034,8.2 2.8,8.35670034 2.8,8.55 L2.8,12.05 C2.8,12.2432997 2.95670034,12.4 3.15,12.4 Z M8.05,9.6 L10.85,9.6 C11.0432997,9.6 11.2,9.44329966 11.2,9.25 L11.2,8.55 C11.2,8.35670034 11.0432997,8.2 10.85,8.2 L8.05,8.2 C7.85670034,8.2 7.7,8.35670034 7.7,8.55 L7.7,9.25 C7.7,9.44329966 7.85670034,9.6 8.05,9.6 Z M8.05,12.4 L9.45,12.4 C9.64329966,12.4 9.8,12.2432997 9.8,12.05 L9.8,11.35 C9.8,11.1567003 9.64329966,11 9.45,11 L8.05,11 C7.85670034,11 7.7,11.1567003 7.7,11.35 L7.7,12.05 C7.7,12.2432997 7.85670034,12.4 8.05,12.4 Z\" id=\"Icon-color\" fill=\"#2E3546\" fill-rule=\"nonzero\"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-blog.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-branding.svg":
+/*!***************************************************!*\
+  !*** ./assets/src/admin/assets/icon-branding.svg ***!
+  \***************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-branding</title> <desc>Created with Sketch.</desc> <g id=\"icon-branding\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M5.05555556,7.88888889 C4.41122335,7.88888889 3.88888889,8.41122335 3.88888889,9.05555556 C3.88888889,9.69988776 4.41122335,10.2222222 5.05555556,10.2222222 C5.69988776,10.2222222 6.22222222,9.69988776 6.22222222,9.05555556 C6.22222222,8.41122335 5.69988776,7.88888889 5.05555556,7.88888889 Z M12.4444444,4 L1.55555556,4 C0.696445945,4 -3.30402372e-13,4.69644594 -3.30402372e-13,5.55555556 L-3.30402372e-13,16.4444444 C-3.30402372e-13,17.3035541 0.696445945,18 1.55555556,18 L12.4444444,18 C13.3035541,18 14,17.3035541 14,16.4444444 L14,5.55555556 C14,4.69644594 13.3035541,4 12.4444444,4 Z M12.4445223,14.7488889 C12.4465345,14.8533696 12.4064869,14.9542949 12.3333283,15.0289167 C12.2601698,15.1035384 12.1600571,15.1456377 12.0555556,15.1456377 C11.9369586,15.146177 11.824832,15.0915511 11.7522222,14.9977778 L8.64111111,11.1088889 C8.56850138,11.0151155 8.4563747,10.9604897 8.33777778,10.9611111 C8.2189045,10.9592624 8.10625803,11.0141414 8.03444444,11.1088889 L6.28444444,13.3877778 C6.21263086,13.4825252 6.09998439,13.5374043 5.98111111,13.5355556 C5.85899054,13.5343612 5.74422786,13.4769798 5.67,13.38 L4.89222222,12.3222222 C4.81412075,12.2258134 4.69738836,12.1688707 4.57333333,12.1666667 C4.45121276,12.1678611 4.33645009,12.2252424 4.26222222,12.3222222 L2.25555556,14.99 C2.18381702,15.0899456 2.06744406,15.1481321 1.94444444,15.1456377 C1.8406633,15.1476961 1.74049934,15.1074117 1.66709938,15.0340117 C1.59369942,14.9606118 1.55341505,14.8604478 1.55547441,14.7566667 L1.55547441,5.55555556 L12.4445223,5.55555556 L12.4445223,14.7488889 Z M5.05555556,10.2222222 C5.69988776,10.2222222 6.22222222,9.69988776 6.22222222,9.05555556 C6.22222222,8.41122335 5.69988776,7.88888889 5.05555556,7.88888889 C4.41122335,7.88888889 3.88888889,8.41122335 3.88888889,9.05555556 C3.88888889,9.69988776 4.41122335,10.2222222 5.05555556,10.2222222 Z M5.05555556,7.88888889 C4.41122335,7.88888889 3.88888889,8.41122335 3.88888889,9.05555556 C3.88888889,9.69988776 4.41122335,10.2222222 5.05555556,10.2222222 C5.69988776,10.2222222 6.22222222,9.69988776 6.22222222,9.05555556 C6.22222222,8.41122335 5.69988776,7.88888889 5.05555556,7.88888889 Z\" id=\"Icon-color\" fill=\"#2E3546\" fill-rule=\"nonzero\"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-branding.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-buttons.svg":
+/*!**************************************************!*\
+  !*** ./assets/src/admin/assets/icon-buttons.svg ***!
+  \**************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"utf-8\"?> <svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" xml:space=\"preserve\"> <g> <path id=\"a1\" d=\"M12,12.7L6.7,9.6H6.2c0,0.1-0.1,0.2-0.1,0.3V16c0,0.1,0.1,0.2,0.1,0.2c0.1,0,0.2,0,0.2-0.1l1.3-1.4\r\n\t\tL9.6,18c0,0.1,0.1,0.1,0.2,0.1l0.1,0.1h0.3l1.5-0.9c0.1,0,0.1-0.1,0.2-0.2v-0.2v-0.2L10,13.5l1.9-0.4c0.1,0,0.2-0.1,0.2-0.2\r\n\t\tS12.1,12.7,12,12.7z\"/> <path d=\"M12.6,6.1c0.1,0,0.1,0,0.1,0.1v4.5c0,0.1,0,0.1-0.1,0.1H1.4c-0.1,0-0.1,0-0.1-0.1V6.2c0-0.1,0-0.1,0.1-0.1\r\n\t\tH12.6 M12.6,4.8H1.4C0.6,4.8,0,5.4,0,6.2v4.5c0,0.7,0.6,1.4,1.4,1.4h11.3c0.7,0,1.4-0.6,1.4-1.4V6.2C14,5.4,13.4,4.8,12.6,4.8z\"/> </g> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-buttons.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-close.svg":
+/*!************************************************!*\
+  !*** ./assets/src/admin/assets/icon-close.svg ***!
+  \************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"8\" height=\"8\" viewBox=\"0 0 8 8\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <rect width=\"8\" height=\"8\" rx=\"4\" fill=\"white\"/> <path d=\"M4.38086 4.00075L5.60427 5.22416L5.22416 5.60426L4.00075 4.38086L2.77659 5.60502L2.39498 5.2234L3.61914 3.99924L2.39573 2.77584L2.77584 2.39573L3.99925 3.61914L5.22341 2.39498L5.60502 2.77659L4.38086 4.00075Z\" fill=\"#171C29\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-close.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-custom.svg":
+/*!*************************************************!*\
+  !*** ./assets/src/admin/assets/icon-custom.svg ***!
+  \*************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-custom</title> <desc>Created with Sketch.</desc> <g id=\"icon-custom\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <g id=\"code-copy\" transform=\"translate(0.000000, 5.000000)\" fill=\"#2E3546\" fill-rule=\"nonzero\"> <path d=\"M14,5.47443191 L14,5.7398542 C13.9983872,5.87844244 13.9432188,6.01105951 13.846,6.11004844 L10.948,8.99476965 C10.8822817,9.06088517 10.7928231,9.09807421 10.6995,9.09807421 C10.6061769,9.09807421 10.5167183,9.06088517 10.451,8.99476965 L9.954,8.49884905 C9.88815515,8.43447466 9.85104999,8.34636373 9.85104999,8.25438115 C9.85104999,8.16239857 9.88815515,8.07428765 9.954,8.00991326 L12.369,5.60714305 L9.954,3.20437285 C9.88774057,3.13879727 9.85047059,3.04953301 9.85047059,2.95641255 C9.85047059,2.8632921 9.88774057,2.77402784 9.954,2.70845226 L10.451,2.21951646 C10.5167183,2.15340094 10.6061769,2.1162119 10.6995,2.1162119 C10.7928231,2.1162119 10.8822817,2.15340094 10.948,2.21951646 L13.846,5.10423766 C13.9444847,5.20238619 13.9998775,5.33554247 14,5.47443191 L14,5.47443191 Z M1.631,5.60714305 L4.039,3.20437285 C4.10484485,3.13999846 4.14195001,3.05188753 4.14195001,2.95990495 C4.14195001,2.86792237 4.10484485,2.77981145 4.039,2.71543705 L3.542,2.21951646 C3.47628169,2.15340094 3.38682314,2.1162119 3.2935,2.1162119 C3.20017686,2.1162119 3.11071831,2.15340094 3.045,2.21951646 L0.154,5.10423766 C0.0567812159,5.20322659 0.00161280384,5.33584366 0,5.47443191 L0,5.7398542 C0.000122536428,5.87874364 0.0555152588,6.01189992 0.154,6.11004844 L3.052,8.99476965 C3.11771831,9.06088517 3.20717686,9.09807421 3.3005,9.09807421 C3.39382314,9.09807421 3.48328169,9.06088517 3.549,8.99476965 L4.046,8.50583385 C4.11225943,8.44025827 4.14952941,8.35099401 4.14952941,8.25787355 C4.14952941,8.1647531 4.11225943,8.07548884 4.046,8.00991326 L1.631,5.60714305 Z M9.331,0.277742866 L8.652,0.019305373 C8.46861955,-0.0427197973 8.26867128,0.0493635944 8.197,0.228849286 L4.48,10.496501 C4.41436167,10.6778043 4.50835471,10.8778872 4.69,10.943528 L5.348,11.1810111 C5.52949354,11.2424875 5.72725096,11.1499901 5.796,10.9714672 L9.513,0.717785083 C9.57409885,0.538554582 9.48095816,0.343383931 9.303,0.277742866 L9.331,0.277742866 Z\" id=\"Icon-color\"></path> </g> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-custom.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-dark-mode.svg":
+/*!****************************************************!*\
+  !*** ./assets/src/admin/assets/icon-dark-mode.svg ***!
+  \****************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <path d=\"M2.5 8.37735C2.49877 5.69643 3.85508 3.21233 6.07105 1.83691C8.28701 0.461497 11.0362 0.397403 13.3093 1.66816C13.4261 1.73634 13.4988 1.86415 13.5 2.00324V2.10224C13.5006 2.22051 13.4494 2.33264 13.3607 2.40685C11.604 3.85129 10.5796 6.05048 10.5796 8.37735C10.5796 10.7042 11.604 12.9034 13.3607 14.3478C13.4494 14.4221 13.5006 14.5342 13.5 14.6525V14.7515C13.4988 14.8906 13.4261 15.0184 13.3093 15.0865C11.0362 16.3573 8.28701 16.2932 6.07105 14.9178C3.85508 13.5424 2.49877 11.0583 2.5 8.37735Z\" fill=\"#495060\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-dark-mode.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-dashboard.svg":
+/*!****************************************************!*\
+  !*** ./assets/src/admin/assets/icon-dashboard.svg ***!
+  \****************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-dashboard</title> <desc>Created with Sketch.</desc> <g id=\"icon-dashboard\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M6.22222222,4.77777778 L6.22222222,17.2222222 C6.22222222,17.651777 5.87399925,18 5.44444444,18 L0.777777778,18 C0.348222972,18 0,17.651777 0,17.2222222 L0,4.77777778 C0,4.34822297 0.348222972,4 0.777777778,4 L5.44444444,4 C5.87399925,4 6.22222222,4.34822297 6.22222222,4.77777778 Z M8.55555556,8.66666667 L13.2222222,8.66666667 C13.651777,8.66666667 14,8.31844369 14,7.88888889 L14,4.77777778 C14,4.34822297 13.651777,4 13.2222222,4 L8.55555556,4 C8.12600075,4 7.77777778,4.34822297 7.77777778,4.77777778 L7.77777778,7.88888889 C7.77777778,8.31844369 8.12600075,8.66666667 8.55555556,8.66666667 Z M8.55555556,18 L13.2222222,18 C13.651777,18 14,17.651777 14,17.2222222 L14,11 C14,10.5704452 13.651777,10.2222222 13.2222222,10.2222222 L8.55555556,10.2222222 C8.12600075,10.2222222 7.77777778,10.5704452 7.77777778,11 L7.77777778,17.2222222 C7.77777778,17.651777 8.12600075,18 8.55555556,18 Z\" id=\"Icon-color\" fill=\"#2E3546\" fill-rule=\"nonzero\"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-dashboard.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-debug.svg":
+/*!************************************************!*\
+  !*** ./assets/src/admin/assets/icon-debug.svg ***!
+  \************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"utf-8\"?> <svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" style=\"enable-background:new 0 0 14 21\" xml:space=\"preserve\"> <path d=\"M0.6,14.3c-0.2,0-0.4,0.1-0.6,0.3c-0.1,0.2-0.1,0.4,0,0.6s0.3,0.3,0.6,0.3h1.3c0.2,0,0.3-0.1,0.4-0.2l0.6-0.6h0\r\n\tc0.5,1.1,1.3,1.9,2.4,2.3c1.1,0.4,2.3,0.4,3.3,0c1.1-0.4,1.9-1.3,2.4-2.3l0.6,0.6c0.1,0.1,0.3,0.2,0.4,0.2h1.3\r\n\tc0.2,0,0.4-0.1,0.6-0.3c0.1-0.2,0.1-0.4,0-0.6c-0.1-0.2-0.3-0.3-0.6-0.3h-1l-0.9-0.9c0-0.1,0-0.2,0-0.4v-2.3l0.2,0.2l0,0\r\n\tc0.1,0.1,0.3,0.2,0.5,0.2h1.3c0.2,0,0.4-0.1,0.6-0.3c0.1-0.2,0.1-0.4,0-0.6s-0.3-0.3-0.6-0.3h-1L11.4,9c0,0,0,0,0,0\r\n\tc0-0.1,0-0.1,0-0.2c-0.1-1.1-0.7-2.2-1.6-2.9l0.3-0.1h0c0.1-0.1,0.2-0.1,0.3-0.2c0.1-0.1,0.1-0.2,0.1-0.3v-1c0-0.2-0.1-0.4-0.3-0.6\r\n\tc-0.2-0.1-0.4-0.1-0.6,0C9.3,3.7,9.2,3.9,9.2,4.1v0.6L8.5,5c-1-0.4-2.1-0.4-3.1,0L4.8,4.7V4.1c0-0.2-0.1-0.4-0.3-0.6\r\n\tC4.3,3.5,4,3.5,3.8,3.6C3.6,3.7,3.5,3.9,3.5,4.1v1c0,0.1,0,0.2,0.1,0.3c0.1,0.1,0.2,0.2,0.3,0.2l0.3,0.1C3.3,6.5,2.7,7.6,2.6,8.7\r\n\tc0,0.1,0,0.1,0,0.2c0,0,0,0,0,0L1.6,9.9h-1c-0.2,0-0.4,0.1-0.6,0.3s-0.1,0.4,0,0.6c0.1,0.2,0.3,0.3,0.6,0.3h1.3\r\n\tc0.2,0,0.3-0.1,0.4-0.2l0.2-0.2V13c0,0.1,0,0.2,0,0.4l-0.9,0.9L0.6,14.3z M10.2,9.5V13c0,0.7-0.3,1.4-0.7,2c-0.5,0.6-1.1,1-1.8,1.1\r\n\tV9.5H10.2z M7,6c0.7,0,1.3,0.2,1.9,0.6c0.5,0.4,0.9,1,1.2,1.6H4c0.2-0.6,0.6-1.2,1.2-1.6S6.3,6,7,6L7,6z M3.8,9.5h2.5v6.6\r\n\tC5.6,16,5,15.6,4.5,15.1c-0.5-0.6-0.7-1.3-0.7-2V9.5z\" fill=\"#2E3546\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-debug.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-demo-loader.svg":
+/*!******************************************************!*\
+  !*** ./assets/src/admin/assets/icon-demo-loader.svg ***!
+  \******************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg viewBox=\"0 0 402 473\" fill=\"inherit\"> <g transform=\"translate(-13.000000, -14.000000)\" fill=\"inherit\"> <path d=\"M415,14 L415,487 L13,487 L13,14 L415,14 Z M281.5,434 L146.5,434 C142.357864,434 139,437.357864 139,441.5 C139,445.642136 142.357864,449 146.5,449 L146.5,449 L281.5,449 C285.642136,449 289,445.642136 289,441.5 C289,437.357864 285.642136,434 281.5,434 L281.5,434 Z M236.5,404 L191.5,404 C187.357864,404 184,407.357864 184,411.5 C184,415.642136 187.357864,419 191.5,419 L191.5,419 L236.5,419 C240.642136,419 244,415.642136 244,411.5 C244,407.357864 240.642136,404 236.5,404 L236.5,404 Z M129.5,329 L50.5,329 C46.3578644,329 43,332.357864 43,336.5 C43,340.642136 46.3578644,344 50.5,344 L50.5,344 L129.5,344 C133.642136,344 137,340.642136 137,336.5 C137,332.357864 133.642136,329 129.5,329 L129.5,329 Z M253.5,329 L174.5,329 C170.357864,329 167,332.357864 167,336.5 C167,340.642136 170.357864,344 174.5,344 L174.5,344 L253.5,344 C257.642136,344 261,340.642136 261,336.5 C261,332.357864 257.642136,329 253.5,329 L253.5,329 Z M377.5,329 L298.5,329 C294.357864,329 291,332.357864 291,336.5 C291,340.642136 294.357864,344 298.5,344 L298.5,344 L377.5,344 C381.642136,344 385,340.642136 385,336.5 C385,332.357864 381.642136,329 377.5,329 L377.5,329 Z M129.5,254 L50.5,254 C46.3578644,254 43,257.357864 43,261.5 L43,261.5 L43,306.5 C43,310.642136 46.3578644,314 50.5,314 L50.5,314 L129.5,314 C133.642136,314 137,310.642136 137,306.5 L137,306.5 L137,261.5 C137,257.357864 133.642136,254 129.5,254 L129.5,254 Z M253.5,254 L174.5,254 C170.357864,254 167,257.357864 167,261.5 L167,261.5 L167,306.5 C167,310.642136 170.357864,314 174.5,314 L174.5,314 L253.5,314 C257.642136,314 261,310.642136 261,306.5 L261,306.5 L261,261.5 C261,257.357864 257.642136,254 253.5,254 L253.5,254 Z M377.5,254 L298.5,254 C294.357864,254 291,257.357864 291,261.5 L291,261.5 L291,306.5 C291,310.642136 294.357864,314 298.5,314 L298.5,314 L377.5,314 C381.642136,314 385,310.642136 385,306.5 L385,306.5 L385,261.5 C385,257.357864 381.642136,254 377.5,254 L377.5,254 Z M95.5,179 L50.5,179 C46.3578644,179 43,182.357864 43,186.5 C43,190.642136 46.3578644,194 50.5,194 L50.5,194 L95.5,194 C99.6421356,194 103,190.642136 103,186.5 C103,182.357864 99.6421356,179 95.5,179 L95.5,179 Z M185.5,134 L50.5,134 C46.3578644,134 43,137.357864 43,141.5 C43,145.642136 46.3578644,149 50.5,149 L50.5,149 L185.5,149 C189.642136,149 193,145.642136 193,141.5 C193,137.357864 189.642136,134 185.5,134 L185.5,134 Z M185.5,104 L50.5,104 C46.3578644,104 43,107.357864 43,111.5 C43,115.642136 46.3578644,119 50.5,119 L50.5,119 L185.5,119 C189.642136,119 193,115.642136 193,111.5 C193,107.357864 189.642136,104 185.5,104 L185.5,104 Z M95.5,29 L50.5,29 C46.3578644,29 43,32.3578644 43,36.5 C43,40.6421356 46.3578644,44 50.5,44 L50.5,44 L95.5,44 C99.6421356,44 103,40.6421356 103,36.5 C103,32.3578644 99.6421356,29 95.5,29 L95.5,29 Z M377.5,29 L347.5,29 C343.357864,29 340,32.3578644 340,36.5 C340,40.6421356 343.357864,44 347.5,44 L347.5,44 L377.5,44 C381.642136,44 385,40.6421356 385,36.5 C385,32.3578644 381.642136,29 377.5,29 L377.5,29 Z M317.5,29 L287.5,29 C283.357864,29 280,32.3578644 280,36.5 C280,40.6421356 283.357864,44 287.5,44 L287.5,44 L317.5,44 C321.642136,44 325,40.6421356 325,36.5 C325,32.3578644 321.642136,29 317.5,29 L317.5,29 Z M257.5,29 L227.5,29 C223.357864,29 220,32.3578644 220,36.5 C220,40.6421356 223.357864,44 227.5,44 L227.5,44 L257.5,44 C261.642136,44 265,40.6421356 265,36.5 C265,32.3578644 261.642136,29 257.5,29 L257.5,29 Z\" id=\"skeleton-loader\"></path> </g> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-demo-loader.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-desktop.svg":
+/*!**************************************************!*\
+  !*** ./assets/src/admin/assets/icon-desktop.svg ***!
+  \**************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"12\" height=\"10\" viewBox=\"0 0 12 10\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M0.5 0H11.5C11.7761 0 12 0.223858 12 0.5V7.5C12 7.77614 11.7761 8 11.5 8H7.5V9H8.25C8.38807 9 8.5 9.11193 8.5 9.25V9.75C8.5 9.88807 8.38807 10 8.25 10H3.75C3.61193 10 3.5 9.88807 3.5 9.75V9.25C3.5 9.11193 3.61193 9 3.75 9H4.5V8H0.5C0.223858 8 0 7.77614 0 7.5V0.5C0 0.223858 0.223858 0 0.5 0ZM1 7H11V1H1V7Z\" fill=\"#495060\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-desktop.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-documentation.svg":
+/*!********************************************************!*\
+  !*** ./assets/src/admin/assets/icon-documentation.svg ***!
+  \********************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"13\" height=\"16\" viewBox=\"0 0 13 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M12 0H2.4C1.07452 0 0 1.07452 0 2.4V13.6C0 14.9255 1.07452 16 2.4 16H12.4C12.6209 16 12.8 15.8209 12.8 15.6V0.8C12.8 0.358172 12.4418 0 12 0ZM1.6 2.4C1.6 1.95817 1.95817 1.6 2.4 1.6H11.2V11.2H2.4C2.12755 11.1996 1.85701 11.2456 1.6 11.336V2.4ZM2.4 12.8C1.95817 12.8 1.6 13.1582 1.6 13.6C1.6 14.0418 1.95817 14.4 2.4 14.4H11.2V12.8H2.4ZM3.6 4.8H9.2C9.42091 4.8 9.6 4.62091 9.6 4.4V3.6C9.6 3.37909 9.42091 3.2 9.2 3.2H3.6C3.37909 3.2 3.2 3.37909 3.2 3.6V4.4C3.2 4.62091 3.37909 4.8 3.6 4.8ZM6 8H3.6C3.37909 8 3.2 7.82091 3.2 7.6V6.8C3.2 6.57909 3.37909 6.4 3.6 6.4H6C6.22091 6.4 6.4 6.57909 6.4 6.8V7.6C6.4 7.82091 6.22091 8 6 8Z\" fill=\"#495060\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-documentation.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-edit.svg":
+/*!***********************************************!*\
+  !*** ./assets/src/admin/assets/icon-edit.svg ***!
+  \***********************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"utf-8\"?> <svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" width=\"14px\" height=\"14px\" viewBox=\"0 0 14 14\" fill=\"none\"> <g> <path d=\"M10.9,0c-0.2,0-0.3,0.1-0.4,0.2L4.3,6.4C4.2,6.5,4.2,6.6,4.2,6.8v2.5c0,0.3,0.3,0.6,0.6,0.6h2.5c0.2,0,0.3-0.1,0.4-0.2\r\n\t\tl6.2-6.2c0.2-0.2,0.2-0.6,0-0.8l-2.5-2.5C11.2,0.1,11.1,0,10.9,0z\" fill=\"white\"/> <path d=\"M1.8,2.3C0.8,2.3,0,3.1,0,4.1v8.2c0,1,0.8,1.8,1.8,1.8h8.2c1,0,1.8-0.8,1.8-1.8V8.7c0-0.3-0.3-0.6-0.6-0.6\r\n\t\tc-0.3,0-0.6,0.3-0.6,0.6c0,0,0,0,0,0v3.6c0,0.3-0.3,0.6-0.6,0.6H1.8c-0.3,0-0.6-0.3-0.6-0.6V4.1c0-0.3,0.3-0.6,0.6-0.6h3.6\r\n\t\tc0.3,0,0.6-0.3,0.6-0.6c0-0.3-0.3-0.6-0.6-0.6c0,0,0,0,0,0H1.8z\" fill=\"white\"/> </g> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-edit.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-feedback.svg":
+/*!***************************************************!*\
+  !*** ./assets/src/admin/assets/icon-feedback.svg ***!
+  \***************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-feedback</title> <desc>Created with Sketch.</desc> <g id=\"icon-feedback\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M14,6.4 C14,5.62680135 13.3731986,5 12.6,5 L1.4,5 C0.62680135,5 0,5.62680135 0,6.4 L0,14.8 C0,15.5731986 0.62680135,16.2 1.4,16.2 L4.963,16.2 C5.14663791,16.2007732 5.32261755,16.2736791 5.453,16.403 L6.496,17.446 C6.59436215,17.5444847 6.72780825,17.6 6.867,17.6 L7.133,17.6 C7.27219175,17.6 7.40563785,17.5444847 7.504,17.446 L8.547,16.403 C8.67738245,16.2736791 8.85336209,16.2007732 9.037,16.2 L12.6,16.2 C13.3731986,16.2 14,15.5731986 14,14.8 L14,6.4 Z M8.4,11.35 C8.4,11.5432997 8.24329966,11.7 8.05,11.7 L3.15,11.7 C2.95670034,11.7 2.8,11.5432997 2.8,11.35 L2.8,10.65 C2.8,10.4567003 2.95670034,10.3 3.15,10.3 L8.05,10.3 C8.24329966,10.3 8.4,10.4567003 8.4,10.65 L8.4,11.35 Z M11.2,8.55 C11.2,8.74329966 11.0432997,8.9 10.85,8.9 L3.15,8.9 C2.95670034,8.9 2.8,8.74329966 2.8,8.55 L2.8,7.85 C2.8,7.65670034 2.95670034,7.5 3.15,7.5 L10.85,7.5 C11.0432997,7.5 11.2,7.65670034 11.2,7.85 L11.2,8.55 Z\" id=\"Icon-color\" fill=\"#2E3546\" fill-rule=\"nonzero\"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-feedback.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-footer.svg":
+/*!*************************************************!*\
+  !*** ./assets/src/admin/assets/icon-footer.svg ***!
+  \*************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-footer</title> <desc>Created with Sketch.</desc> <g id=\"icon-footer\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M14,16.7272727 L14,5.27272727 C14,4.56981941 13.4301806,4 12.7272727,4 L1.27272727,4 C0.569819409,4 0,4.56981941 0,5.27272727 L0,16.7272727 C0,17.4301806 0.569819409,18 1.27272727,18 L12.7272727,18 C13.4301806,18 14,17.4301806 14,16.7272727 Z M1.27272727,8.54545455 L12.7722357,8.54545455 L12.7722357,16.5454545 L1.27272727,16.5454545 L1.27272727,8.54545455 Z\" id=\"Icon-color\" fill=\"#2E3546\" fill-rule=\"nonzero\" transform=\"translate(7.000000, 11.000000) scale(1, -1) translate(-7.000000, -11.000000) \"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-footer.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-general.svg":
+/*!**************************************************!*\
+  !*** ./assets/src/admin/assets/icon-general.svg ***!
+  \**************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-general</title> <desc>Created with Sketch.</desc> <g id=\"icon-general\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <g id=\"tune-copy\" transform=\"translate(0.000000, 4.000000)\" fill=\"#2E3546\"> <path d=\"M1.55555556,12.4444444 L3.11111111,12.4444444 L3.11111111,13.6111111 C3.11111111,13.8258885 2.93699962,14 2.72222222,14 L1.94444444,14 C1.72966704,14 1.55555556,13.8258885 1.55555556,13.6111111 L1.55555556,12.4444444 Z M6.22222222,13.6111111 C6.22222222,13.8258885 6.39633371,14 6.61111111,14 L7.38888889,14 C7.60366629,14 7.77777778,13.8258885 7.77777778,13.6111111 L7.77777778,4.66666667 L6.22222222,4.66666667 L6.22222222,13.6111111 Z M10.8888889,13.6111111 C10.8888889,13.8258885 11.0630004,14 11.2777778,14 L12.0555556,14 C12.270333,14 12.4444444,13.8258885 12.4444444,13.6111111 L12.4444444,9.33333333 L10.8888889,9.33333333 L10.8888889,13.6111111 Z M4.27777778,9.33333333 L3.11111111,9.33333333 L3.11111111,0.388888889 C3.11111111,0.174111486 2.93699962,0 2.72222222,0 L1.94444444,0 C1.72966704,0 1.55555556,0.174111486 1.55555556,0.388888889 L1.55555556,9.33333333 L0.388888889,9.33333333 C0.174111486,9.33333333 0,9.50744482 0,9.72222222 L0,10.5 C0,10.7147774 0.174111486,10.8888889 0.388888889,10.8888889 L4.27777778,10.8888889 C4.49255518,10.8888889 4.66666667,10.7147774 4.66666667,10.5 L4.66666667,9.72222222 C4.66666667,9.50744482 4.49255518,9.33333333 4.27777778,9.33333333 Z M9.33333333,1.94444444 C9.33333333,1.72966704 9.15922185,1.55555556 8.94444444,1.55555556 L7.77777778,1.55555556 L7.77777778,0.388888889 C7.77777778,0.174111486 7.60366629,0 7.38888889,0 L6.61111111,0 C6.39633371,0 6.22222222,0.174111486 6.22222222,0.388888889 L6.22222222,1.55555556 L5.05555556,1.55555556 C4.84077815,1.55555556 4.66666667,1.72966704 4.66666667,1.94444444 L4.66666667,2.72222222 C4.66666667,2.93699962 4.84077815,3.11111111 5.05555556,3.11111111 L8.94444444,3.11111111 C9.15922185,3.11111111 9.33333333,2.93699962 9.33333333,2.72222222 L9.33333333,1.94444444 Z M13.6111111,6.22222222 L12.4444444,6.22222222 L12.4444444,0.388888889 C12.4444444,0.174111486 12.270333,0 12.0555556,0 L11.2777778,0 C11.0630004,0 10.8888889,0.174111486 10.8888889,0.388888889 L10.8888889,6.22222222 L9.72222222,6.22222222 C9.50744482,6.22222222 9.33333333,6.39633371 9.33333333,6.61111111 L9.33333333,7.38888889 C9.33333333,7.60366629 9.50744482,7.77777778 9.72222222,7.77777778 L13.6111111,7.77777778 C13.8258885,7.77777778 14,7.60366629 14,7.38888889 L14,6.61111111 C14,6.39633371 13.8258885,6.22222222 13.6111111,6.22222222 Z\" id=\"Icon-color\" fill-rule=\"nonzero\"></path> <path d=\"M1.55555556,12.4444444 L3.11111111,12.4444444 L3.11111111,13.6111111 C3.11111111,13.8258885 2.93699962,14 2.72222222,14 L1.94444444,14 C1.72966704,14 1.55555556,13.8258885 1.55555556,13.6111111 L1.55555556,12.4444444 Z\" id=\"Path\"></path> <path d=\"M6.22222222,13.6111111 C6.22222222,13.8258885 6.39633371,14 6.61111111,14 L7.38888889,14 C7.60366629,14 7.77777778,13.8258885 7.77777778,13.6111111 L7.77777778,4.66666667 L6.22222222,4.66666667 L6.22222222,13.6111111 Z\" id=\"Path\"></path> <path d=\"M10.8888889,13.6111111 C10.8888889,13.8258885 11.0630004,14 11.2777778,14 L12.0555556,14 C12.270333,14 12.4444444,13.8258885 12.4444444,13.6111111 L12.4444444,9.33333333 L10.8888889,9.33333333 L10.8888889,13.6111111 Z\" id=\"Path\"></path> </g> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-general.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-global-colors.svg":
+/*!********************************************************!*\
+  !*** ./assets/src/admin/assets/icon-global-colors.svg ***!
+  \********************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"14\" height=\"21\" viewBox=\"0 0 14 21\"> <defs> <path id=\"a\" d=\"M12.2 13.3c.1 0 .2 0 .2.1.6.6 1.6 1.7 1.6 2.4 0 1-.8 1.8-1.8 1.8s-1.8-.8-1.8-1.8c0-.7 1-1.8 1.6-2.4.1-.1.2-.1.2-.1zM6.3 6.1l4.3 4.4H1.9l4.4-4.4zM0 10.9v1.2c0 .3.1.5.3.7l4.3 4.3c.2.2.5.3.7.3h.5c.3 0 .5-.1.7-.3l5.8-5.8c.3-.3.3-.7 0-1L5.7 3.6c0-.1-.1-.1-.2-.1s-.2 0-.2.1l-.6.5c-.1.1-.1.4 0 .5l.6.6-5 5c-.2.1-.3.4-.3.7z\"/> </defs> <use xlink:href=\"#a\" overflow=\"visible\" fill=\"#2e3546\"/> <clipPath id=\"b\"> <use xlink:href=\"#a\" overflow=\"visible\"/> </clipPath> <g clip-path=\"url(#b)\"> <defs> <path id=\"c\" d=\"M-249.2-1022.7h1120V700.7h-1120z\"/> </defs> <use xlink:href=\"#c\" overflow=\"visible\" fill=\"#2e3546\"/> <clipPath id=\"d\"> <use xlink:href=\"#c\" overflow=\"visible\"/> </clipPath> <path clip-path=\"url(#d)\" fill=\"#2e3546\" d=\"M-3.5 0h21v21h-21z\"/> </g> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-global-colors.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-global-fonts.svg":
+/*!*******************************************************!*\
+  !*** ./assets/src/admin/assets/icon-global-fonts.svg ***!
+  \*******************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"14\" height=\"21\" viewBox=\"0 0 14 21\"> <path d=\"M1.8 6.4h2.3v8.1H2.3v1.8h5.4v-1.8H5.9V6.4h2.3v1.4H10V5.5c-.1-.5-.5-.9-1-.9H.9c-.5 0-.9.4-.9.9v2.3h1.8V6.4z\"/> <path d=\"M14 9.6H7.7v1.8H10v5h1.8v-5H14V9.6z\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-global-fonts.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-global.svg":
+/*!*************************************************!*\
+  !*** ./assets/src/admin/assets/icon-global.svg ***!
+  \*************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"utf-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\"> <path fill=\"#2E3546\" d=\"M10.5,4.5C11.6,5.1,12.4,5.9,13,7c0.6,1.1,1,2.3,1,3.5c0,1.3-0.3,2.4-1,3.5c-0.6,1.1-1.4,1.9-2.5,2.5\r\n\tc-1.1,0.6-2.3,1-3.5,1c-1.3,0-2.4-0.3-3.5-1C2.4,15.9,1.6,15.1,1,14c-0.6-1.1-1-2.3-1-3.5C0,9.2,0.3,8.1,1,7\r\n\tc0.6-1.1,1.4-1.9,2.5-2.5c1.1-0.6,2.3-1,3.5-1C8.3,3.5,9.4,3.8,10.5,4.5z M1.3,10.5c0,0.4,0,0.7,0.1,1.1h2.2c0-0.5-0.1-0.9-0.1-1.1\r\n\ts0-0.6,0.1-1.1H1.5C1.4,9.8,1.3,10.1,1.3,10.5z M3.8,8C4,7,4.3,6.1,4.7,5.3C4.1,5.6,3.6,6,3.1,6.4C2.6,6.9,2.2,7.4,1.9,8H3.8z\r\n\t M1.9,13c0.3,0.6,0.7,1.1,1.1,1.6c0.5,0.5,1,0.8,1.6,1.1C4.3,14.9,4,14,3.8,13H1.9z M9,10.5c0-0.4,0-0.8,0-1.1H5l0,0.4\r\n\tc0,0.3,0,0.6,0,0.8c0,0.4,0,0.8,0,1.1h4C9,11.3,9,10.9,9,10.5z M7,4.8C6.8,4.8,6.6,5,6.4,5.2C6.2,5.5,6,5.8,5.7,6.3\r\n\tC5.5,6.8,5.3,7.4,5.2,8h3.6C8.7,7.4,8.5,6.8,8.3,6.3C8,5.8,7.8,5.5,7.6,5.2C7.4,5,7.2,4.8,7,4.8z M7,16.2c0.2,0,0.4-0.1,0.6-0.4\r\n\tc0.2-0.3,0.4-0.6,0.6-1.1c0.2-0.5,0.4-1.1,0.5-1.7H5.2c0.1,0.6,0.3,1.2,0.5,1.7c0.2,0.5,0.4,0.8,0.6,1.1C6.6,16,6.8,16.2,7,16.2z\r\n\t M12.1,8c-0.3-0.6-0.7-1.1-1.1-1.6c-0.5-0.5-1-0.8-1.6-1.1C9.7,6.1,10,7,10.2,8H12.1z M9.3,15.6c0.6-0.3,1.1-0.6,1.6-1.1\r\n\tc0.5-0.5,0.9-1,1.1-1.6h-1.9C10,14,9.7,14.9,9.3,15.6z M12.6,11.6c0.1-0.3,0.1-0.7,0.1-1.1s0-0.8-0.1-1.1h-2.2c0,0.4,0,0.7,0,1.1\r\n\tc0,0.2,0,0.4,0,0.8c0,0.2,0,0.3,0,0.4H12.6z\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-global.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-header.svg":
+/*!*************************************************!*\
+  !*** ./assets/src/admin/assets/icon-header.svg ***!
+  \*************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-header</title> <desc>Created with Sketch.</desc> <g id=\"icon-header\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M14,16.7272727 L14,5.27272727 C14,4.56981941 13.4301806,4 12.7272727,4 L1.27272727,4 C0.569819409,4 0,4.56981941 0,5.27272727 L0,16.7272727 C0,17.4301806 0.569819409,18 1.27272727,18 L12.7272727,18 C13.4301806,18 14,17.4301806 14,16.7272727 Z M1.27272727,8.54545455 L12.7722357,8.54545455 L12.7722357,16.5454545 L1.27272727,16.5454545 L1.27272727,8.54545455 Z\" id=\"Icon-color\" fill=\"#2E3546\" fill-rule=\"nonzero\"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-header.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-import-preset.svg":
+/*!********************************************************!*\
+  !*** ./assets/src/admin/assets/icon-import-preset.svg ***!
+  \********************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"12\" height=\"14\" viewBox=\"0 0 12 14\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M5.76471 10.7071C5.65552 10.7071 5.55119 10.662 5.47647 10.5824L0.708235 5.81412C0.630283 5.7368 0.586436 5.63156 0.586436 5.52176C0.586436 5.41197 0.630283 5.30673 0.708235 5.22941L0.872941 5.06471C0.950415 4.98428 1.05775 4.93956 1.16941 4.94118H3.29412V0.411765C3.29412 0.184353 3.47847 0 3.70588 0H7.82353C8.05094 0 8.23529 0.184353 8.23529 0.411765V4.94118H10.36C10.4717 4.93956 10.579 4.98428 10.6565 5.06471L10.8212 5.22941C10.8991 5.30673 10.943 5.41197 10.943 5.52176C10.943 5.63156 10.8991 5.7368 10.8212 5.81412L6.05294 10.5824C5.97822 10.662 5.87389 10.7071 5.76471 10.7071ZM11.5294 13.5882V12.7647C11.5294 12.5373 11.3451 12.3529 11.1176 12.3529H0.411765C0.184353 12.3529 0 12.5373 0 12.7647V13.5882C0 13.8156 0.184353 14 0.411765 14H11.1176C11.3451 14 11.5294 13.8156 11.5294 13.5882Z\" fill=\"white\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-import-preset.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-import.svg":
+/*!*************************************************!*\
+  !*** ./assets/src/admin/assets/icon-import.svg ***!
+  \*************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-import</title> <desc>Created with Sketch.</desc> <g id=\"icon-import\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M12.4444444,4 C13.3035541,4 14,4.69644594 14,5.55555556 L14,16.4444444 C14,17.3035541 13.3035541,18 12.4444444,18 L1.55555556,18 C0.696445945,18 0,17.3035541 0,16.4444444 L0,5.55555556 C0,4.69644594 0.696445945,4 1.55555556,4 L12.4444444,4 Z M10.0255556,13.1230298 C10.1747203,12.9862928 10.1747203,12.7689854 10.0255556,12.6322484 L9.86222222,12.4870877 C9.789163,12.4245009 9.69147185,12.3897722 9.59,12.3903139 L8.55555556,12.3903139 L8.55555556,9.79124631 C8.55555556,9.60036527 8.38144407,9.44562561 8.16666667,9.44562561 L5.83333333,9.44562561 C5.61855593,9.44562561 5.44444444,9.60036527 5.44444444,9.79124631 L5.44444444,12.3903139 L4.41,12.3903139 C4.30852815,12.3897722 4.210837,12.4245009 4.13777778,12.4870877 L3.97444444,12.6322484 C3.82527966,12.7689854 3.82527966,12.9862928 3.97444444,13.1230298 L6.72777778,15.5631119 C6.79834815,15.6299392 6.89687763,15.6678478 7,15.6678478 C7.10312237,15.6678478 7.20165185,15.6299392 7.27222222,15.5631119 L10.0255556,13.1230298 Z M2.33333333,5.55555556 C1.90377853,5.55555556 1.55555556,5.90377853 1.55555556,6.33333333 C1.55555556,6.76288814 1.90377853,7.11111111 2.33333333,7.11111111 L11.6666667,7.11111111 C12.0962215,7.11111111 12.4444444,6.76288814 12.4444444,6.33333333 C12.4444444,5.90377853 12.0962215,5.55555556 11.6666667,5.55555556 L2.33333333,5.55555556 Z\" id=\"Combined-Shape\" fill=\"#2E3546\" fill-rule=\"nonzero\"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-import.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-light-mode.svg":
+/*!*****************************************************!*\
+  !*** ./assets/src/admin/assets/icon-light-mode.svg ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M7.6 2.4H8.4C8.62091 2.4 8.8 2.22091 8.8 2V0.4C8.8 0.179086 8.62091 0 8.4 0H7.6C7.37909 0 7.2 0.179086 7.2 0.4V2C7.2 2.22091 7.37909 2.4 7.6 2.4ZM12 8C12 10.2091 10.2091 12 8 12C5.79086 12 4 10.2091 4 8C4 5.79086 5.79086 4 8 4C10.2091 4 12 5.79086 12 8ZM7.2 14C7.2 13.7791 7.37909 13.6 7.6 13.6H8.4C8.62091 13.6 8.8 13.7791 8.8 14V15.6C8.8 15.8209 8.62091 16 8.4 16H7.6C7.37909 16 7.2 15.8209 7.2 15.6V14ZM15.6 7.2H14C13.7791 7.2 13.6 7.37909 13.6 7.6V8.4C13.6 8.62091 13.7791 8.8 14 8.8H15.6C15.8209 8.8 16 8.62091 16 8.4V7.6C16 7.37909 15.8209 7.2 15.6 7.2ZM2.4 7.6V8.4C2.4 8.62091 2.22091 8.8 2 8.8H0.4C0.179086 8.8 0 8.62091 0 8.4V7.6C0 7.37909 0.179086 7.2 0.4 7.2H2C2.22091 7.2 2.4 7.37909 2.4 7.6ZM12.24 4.32C12.3151 4.39573 12.4173 4.43832 12.524 4.43832C12.6307 4.43832 12.7329 4.39573 12.808 4.32L13.936 3.2C14.0117 3.12489 14.0543 3.02266 14.0543 2.916C14.0543 2.80935 14.0117 2.70711 13.936 2.632L13.376 2.072C13.3009 1.99627 13.1987 1.95368 13.092 1.95368C12.9853 1.95368 12.8831 1.99627 12.808 2.072L11.68 3.2C11.6043 3.27511 11.5617 3.37734 11.5617 3.484C11.5617 3.59066 11.6043 3.69289 11.68 3.768L12.24 4.32ZM3.476 11.5617C3.58265 11.5617 3.68489 11.6043 3.76 11.68L4.32 12.232C4.39572 12.3071 4.43832 12.4093 4.43832 12.516C4.43832 12.6227 4.39572 12.7249 4.32 12.8L3.192 13.928C3.11689 14.0037 3.01465 14.0463 2.908 14.0463C2.80134 14.0463 2.69911 14.0037 2.624 13.928L2.064 13.368C1.98827 13.2929 1.94568 13.1907 1.94568 13.084C1.94568 12.9773 1.98827 12.8751 2.064 12.8L3.192 11.68C3.26711 11.6043 3.36934 11.5617 3.476 11.5617ZM12.8 11.68C12.7249 11.6043 12.6227 11.5617 12.516 11.5617C12.4093 11.5617 12.3071 11.6043 12.232 11.68L11.672 12.24C11.5963 12.3151 11.5537 12.4173 11.5537 12.524C11.5537 12.6307 11.5963 12.7329 11.672 12.808L12.8 13.936C12.8751 14.0117 12.9773 14.0543 13.084 14.0543C13.1907 14.0543 13.2929 14.0117 13.368 13.936L13.928 13.376C14.0037 13.3009 14.0463 13.1987 14.0463 13.092C14.0463 12.9853 14.0037 12.8831 13.928 12.808L12.8 11.68ZM3.484 4.43832C3.37734 4.43832 3.27511 4.39572 3.2 4.32L2.072 3.192C1.99627 3.11689 1.95368 3.01465 1.95368 2.908C1.95368 2.80134 1.99627 2.69911 2.072 2.624L2.632 2.064C2.70711 1.98827 2.80935 1.94568 2.916 1.94568C3.02266 1.94568 3.12489 1.98827 3.2 2.064L4.32 3.2C4.4747 3.35335 4.47826 3.60229 4.328 3.76L3.768 4.32C3.69289 4.39572 3.59066 4.43832 3.484 4.43832Z\" fill=\"#495060\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-light-mode.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-page-title.svg":
+/*!*****************************************************!*\
+  !*** ./assets/src/admin/assets/icon-page-title.svg ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-page-title</title> <desc>Created with Sketch.</desc> <g id=\"icon-page-title\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M14,16.7272727 L14,5.27272727 C14,4.56981941 13.4301806,4 12.7272727,4 L1.27272727,4 C0.569819409,4 0,4.56981941 0,5.27272727 L0,16.7272727 C0,17.4301806 0.569819409,18 1.27272727,18 L12.7272727,18 C13.4301806,18 14,17.4301806 14,16.7272727 Z M1.27272727,8.54545455 L12.7722357,8.54545455 L12.7722357,16.5454545 L1.27272727,16.5454545 L1.27272727,8.54545455 Z M1.27272727,7.54545455 L1.27272727,5.54545455 L12.7722357,5.54545455 L12.7722357,7.54545455 L1.27272727,7.54545455 Z\" id=\"Icon-color\" fill=\"#2E3546\" fill-rule=\"nonzero\"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-page-title.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-performance.svg":
+/*!******************************************************!*\
+  !*** ./assets/src/admin/assets/icon-performance.svg ***!
+  \******************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"utf-8\"?> <svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" style=\"enable-background:new 0 0 14 21\" xml:space=\"preserve\"> <path d=\"M13.2,8.8L11.8,9c-0.1,0-0.3-0.1-0.3-0.3l0-2.9c0-0.8-1-1-1.4-0.4l-3,5.6c-0.3,0.5,0.2,1.2,0.8,1.1L9.2,12\r\n\t\tc0.1,0,0.3,0.1,0.3,0.3l0,2.9c0,0.8,1,1,1.4,0.4l3-5.6C14.2,9.4,13.8,8.7,13.2,8.8z\" fill=\"#2E3546\"/> <path d=\"M7.9,6.2c0-0.5-0.4-0.9-0.9-0.9H0.9C0.4,5.4,0,5.8,0,6.2c0,0.5,0.4,0.9,0.9,0.9h6.2C7.5,7.1,7.9,6.7,7.9,6.2z\" fill=\"#2E3546\"/> <path d=\"M5.9,10.5c0-0.5-0.4-0.9-0.9-0.9H1.8c-0.5,0-0.9,0.4-0.9,0.9s0.4,0.9,0.9,0.9h3.3C5.5,11.4,5.9,11,5.9,10.5z\" fill=\"#2E3546\"/> <path d=\"M7.2,13.9H2.7c-0.5,0-0.9,0.4-0.9,0.9c0,0.5,0.4,0.9,0.9,0.9h4.4c0.5,0,0.9-0.4,0.9-0.9S7.6,13.9,7.2,13.9z\" fill=\"#2E3546\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-performance.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-phone.svg":
+/*!************************************************!*\
+  !*** ./assets/src/admin/assets/icon-phone.svg ***!
+  \************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"7\" height=\"10\" viewBox=\"0 0 7 10\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M1.36364 0H5C5.75312 0 6.36364 0.610521 6.36364 1.36364V8.63636C6.36364 9.38948 5.75312 10 5 10H1.36364C0.610521 10 0 9.38948 0 8.63636V1.36364C0 0.610521 0.610521 0 1.36364 0ZM1.36364 9.09091H5C5.25104 9.09091 5.45455 8.8874 5.45455 8.63636V1.36364C5.45455 1.1126 5.25104 0.909091 5 0.909091C4.74896 0.909091 4.54545 1.1126 4.54545 1.36364C4.54545 1.61467 4.34195 1.81818 4.09091 1.81818H2.27273C2.02169 1.81818 1.81818 1.61467 1.81818 1.36364C1.81818 1.1126 1.61467 0.909091 1.36364 0.909091C1.1126 0.909091 0.909091 1.1126 0.909091 1.36364V8.63636C0.909091 8.8874 1.1126 9.09091 1.36364 9.09091Z\" fill=\"#495060\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-phone.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-plugins.svg":
+/*!**************************************************!*\
+  !*** ./assets/src/admin/assets/icon-plugins.svg ***!
+  \**************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-plugins</title> <desc>Created with Sketch.</desc> <g id=\"icon-plugins\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M14,13.375 L14,17.0659887 C14,17.5492378 13.6082492,17.9409887 13.125,17.9409887 L0.875,17.9409887 C0.391750844,17.9409887 0,17.5492378 0,17.0659887 L0,13.375 C0,12.8917508 0.391750844,12.5 0.875,12.5 L2.625,12.5 L2.625,11.1875 C2.625,10.9458754 2.82087542,10.75 3.0625,10.75 L4.8125,10.75 C5.05412458,10.75 5.25,10.9458754 5.25,11.1875 L5.25,12.5 L8.75,12.5 L8.75,11.1875 C8.75,10.9458754 8.94587542,10.75 9.1875,10.75 L10.9375,10.75 C11.1791246,10.75 11.375,10.9458754 11.375,11.1875 L11.375,12.5 L13.125,12.5 C13.6082492,12.5 14,12.8917508 14,13.375 Z M13.125,4 L0.875,4 C0.391750844,4 0,4.39175084 0,4.875 L0,8.125 C0,8.60824916 0.391750844,9 0.875,9 L13.125,9 C13.6082492,9 14,8.60824916 14,8.125 L14,4.875 C14,4.39175084 13.6082492,4 13.125,4 Z\" id=\"Icon-color\" fill=\"#2E3546\" fill-rule=\"nonzero\"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-plugins.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-portfolio.svg":
+/*!****************************************************!*\
+  !*** ./assets/src/admin/assets/icon-portfolio.svg ***!
+  \****************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-portfolio</title> <desc>Created with Sketch.</desc> <g id=\"icon-portfolio\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <g id=\"dashboard-copy\" transform=\"translate(0.000000, 4.000000)\" fill=\"#2E3546\"> <path d=\"M6.22222222,0.777777778 L6.22222222,3.88888889 C6.22222222,4.31844369 5.87399925,4.66666667 5.44444444,4.66666667 L0.777777778,4.66666667 C0.348222972,4.66666667 0,4.31844369 0,3.88888889 L0,0.777777778 C0,0.348222972 0.348222972,0 0.777777778,0 L5.44444444,0 C5.87399925,0 6.22222222,0.348222972 6.22222222,0.777777778 Z M5.44444444,6.22222222 L0.777777778,6.22222222 C0.348222972,6.22222222 0,6.57044519 0,7 L0,13.2222222 C0,13.651777 0.348222972,14 0.777777778,14 L5.44444444,14 C5.87399925,14 6.22222222,13.651777 6.22222222,13.2222222 L6.22222222,7 C6.22222222,6.57044519 5.87399925,6.22222222 5.44444444,6.22222222 Z M13.2222222,9.33333333 L8.55555556,9.33333333 C8.12600075,9.33333333 7.77777778,9.68155631 7.77777778,10.1111111 L7.77777778,13.2222222 C7.77777778,13.651777 8.12600075,14 8.55555556,14 L13.2222222,14 C13.651777,14 14,13.651777 14,13.2222222 L14,10.1111111 C14,9.68155631 13.651777,9.33333333 13.2222222,9.33333333 Z M13.2222222,0 L8.55555556,0 C8.12600075,0 7.77777778,0.348222972 7.77777778,0.777777778 L7.77777778,7 C7.77777778,7.42955481 8.12600075,7.77777778 8.55555556,7.77777778 L13.2222222,7.77777778 C13.651777,7.77777778 14,7.42955481 14,7 L14,0.777777778 C14,0.348222972 13.651777,0 13.2222222,0 Z\" id=\"Icon-color\" fill-rule=\"nonzero\"></path> <path d=\"M6.22222222,0.777777778 L6.22222222,3.88888889 C6.22222222,4.31844369 5.87399925,4.66666667 5.44444444,4.66666667 L0.777777778,4.66666667 C0.348222972,4.66666667 0,4.31844369 0,3.88888889 L0,0.777777778 C0,0.348222972 0.348222972,0 0.777777778,0 L5.44444444,0 C5.87399925,0 6.22222222,0.348222972 6.22222222,0.777777778 Z\" id=\"Path\"></path> </g> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-portfolio.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-preset.svg":
+/*!*************************************************!*\
+  !*** ./assets/src/admin/assets/icon-preset.svg ***!
+  \*************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-preset</title> <desc>Created with Sketch.</desc> <g id=\"icon-preset\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M5.19909091,6.27272727 L5.91181818,6.98545455 C6.26949873,7.34358088 6.75475729,7.54500896 7.26090909,7.54545455 L10.1818182,7.54545455 L10.1818182,13.2727273 L1.27272727,13.2727273 L1.27272727,6.27272727 L5.19909091,6.27272727 L5.19909091,6.27272727 Z M5.46636364,5 L1.27272727,5 C0.569819409,5 0,5.56981941 0,6.27272727 L0,13.2727273 C0,13.9756351 0.569819409,14.5454545 1.27272727,14.5454545 L10.1818182,14.5454545 C10.884726,14.5454545 11.4545455,13.9756351 11.4545455,13.2727273 L11.4545455,7.54545455 C11.4545455,6.84254668 10.884726,6.27272727 10.1818182,6.27272727 L7.26090909,6.27272727 C7.09396553,6.27202433 6.93398404,6.20574629 6.81545455,6.08818182 L5.91181818,5.18454545 C5.79328868,5.06698099 5.63330719,5.00070294 5.46636364,5 Z M12.7272727,8.81818182 L12.7272727,14.5454545 C12.7272727,15.2483624 12.1574533,15.8181818 11.4545455,15.8181818 L2.54545455,15.8181818 C2.54545455,16.5210897 3.11527395,17.0909091 3.81818182,17.0909091 L11.4545455,17.0909091 C12.8603612,17.0909091 14,15.9512703 14,14.5454545 L14,10.0909091 C14,9.38800123 13.4301806,8.81818182 12.7272727,8.81818182 Z\" id=\"Icon-color\" fill=\"#2E3546\" fill-rule=\"nonzero\"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-preset.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-presetm.svg":
+/*!**************************************************!*\
+  !*** ./assets/src/admin/assets/icon-presetm.svg ***!
+  \**************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"19\" height=\"16\" viewBox=\"0 0 19 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M7.23368 0H1.68421C0.754047 0 0 0.754047 0 1.68421V10.9474C0 11.8775 0.754047 12.6316 1.68421 12.6316H13.4737C14.4038 12.6316 15.1579 11.8775 15.1579 10.9474V3.36842C15.1579 2.43826 14.4038 1.68421 13.4737 1.68421H9.60842C9.3875 1.68328 9.1758 1.59557 9.01895 1.44L7.82316 0.244211C7.66631 0.0886365 7.4546 0.000930208 7.23368 0ZM6.88 1.68421L7.82316 2.62737C8.29648 3.10128 8.93863 3.36783 9.60842 3.36842H13.4737V10.9474H1.68421V1.68421H6.88ZM16.8421 12.6316V5.05263C17.7723 5.05263 18.5263 5.80668 18.5263 6.73684V12.6316C18.5263 14.4919 17.0182 16 15.1579 16H5.05263C4.12247 16 3.36842 15.246 3.36842 14.3158H15.1579C16.0881 14.3158 16.8421 13.5617 16.8421 12.6316Z\" fill=\"#495060\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-presetm.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-remove-preset.svg":
+/*!********************************************************!*\
+  !*** ./assets/src/admin/assets/icon-remove-preset.svg ***!
+  \********************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"12\" height=\"14\" viewBox=\"0 0 12 14\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M7.7 1.4H10.85C11.0433 1.4 11.2 1.5567 11.2 1.75V2.45C11.2 2.6433 11.0433 2.8 10.85 2.8H0.35C0.1567 2.8 0 2.6433 0 2.45V1.75C0 1.5567 0.1567 1.4 0.35 1.4H3.5V0.7C3.5 0.313401 3.8134 0 4.2 0H7C7.3866 0 7.7 0.313401 7.7 0.7V1.4ZM0.7 4.2L1.309 12.698C1.36055 13.4327 1.97251 14.0018 2.709 14H8.505C9.24149 14.0018 9.85345 13.4327 9.905 12.698L10.5 4.2H0.7ZM7.763 10.402C7.83067 10.4655 7.86906 10.5542 7.86906 10.647C7.86906 10.7398 7.83067 10.8285 7.763 10.892L7.392 11.263C7.32848 11.3307 7.23981 11.3691 7.147 11.3691C7.05419 11.3691 6.96551 11.3307 6.902 11.263L5.6 9.968L4.298 11.263C4.23449 11.3307 4.14581 11.3691 4.053 11.3691C3.96019 11.3691 3.87151 11.3307 3.808 11.263L3.437 10.892C3.36932 10.8285 3.33094 10.7398 3.33094 10.647C3.33094 10.5542 3.36932 10.4655 3.437 10.402L4.732 9.1L3.437 7.798C3.36932 7.73448 3.33094 7.64581 3.33094 7.553C3.33094 7.46019 3.36932 7.37151 3.437 7.308L3.808 6.937C3.87151 6.86932 3.96019 6.83094 4.053 6.83094C4.14581 6.83094 4.23449 6.86932 4.298 6.937L5.6 8.232L6.902 6.937C6.96551 6.86932 7.05419 6.83094 7.147 6.83094C7.23981 6.83094 7.32848 6.86932 7.392 6.937L7.763 7.308C7.83067 7.37151 7.86906 7.46019 7.86906 7.553C7.86906 7.64581 7.83067 7.73448 7.763 7.798L6.468 9.1L7.763 10.402Z\" fill=\"white\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-remove-preset.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-search.svg":
+/*!*************************************************!*\
+  !*** ./assets/src/admin/assets/icon-search.svg ***!
+  \*************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <path id=\"Shape\" fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M11.1074 10.314L15.1074 14.314C15.4711 14.6777 15.4711 15.3058 15.0744 15.7025C14.876 15.9008 14.6116 16 14.3802 16C14.1488 16 13.8843 15.9008 13.686 15.7025L9.58678 11.6033C8.6281 12.1983 7.50413 12.562 6.28099 12.562C2.80992 12.562 0 9.75207 0 6.28099C0 2.80992 2.80992 0 6.28099 0C9.75207 0 12.562 2.80992 12.562 6.28099C12.562 7.80165 12.0331 9.22314 11.1074 10.314ZM2.01653 6.28099C2.01653 8.66116 3.93388 10.5785 6.31405 10.5785C8.66116 10.5785 10.6116 8.66116 10.6116 6.28099C10.6116 3.90083 8.69421 1.98347 6.31405 1.98347C3.93388 1.98347 2.01653 3.90083 2.01653 6.28099Z\" fill=\"#495060\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-search.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-social.svg":
+/*!*************************************************!*\
+  !*** ./assets/src/admin/assets/icon-social.svg ***!
+  \*************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-social</title> <desc>Created with Sketch.</desc> <g id=\"icon-social\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <g id=\"instagram-copy\" transform=\"translate(0.000000, 4.000000)\" fill=\"#2E3546\" fill-rule=\"nonzero\"> <path d=\"M10.1111111,0 L3.88888889,0 C1.74111486,0 0,1.74111486 0,3.88888889 L0,10.1111111 C0,12.2588851 1.74111486,14 3.88888889,14 L10.1111111,14 C12.2588851,14 14,12.2588851 14,10.1111111 L14,3.88888889 C14,1.74111486 12.2588851,0 10.1111111,0 Z M12.6388889,10.1111111 C12.6346185,11.5053915 11.5053915,12.6346185 10.1111111,12.6388889 L3.88888889,12.6388889 C2.49460847,12.6346185 1.36538153,11.5053915 1.36111111,10.1111111 L1.36111111,3.88888889 C1.36538153,2.49460847 2.49460847,1.36538153 3.88888889,1.36111111 L10.1111111,1.36111111 C11.5053915,1.36538153 12.6346185,2.49460847 12.6388889,3.88888889 L12.6388889,10.1111111 Z M11.4722222,3.30555556 C11.4722222,3.73511036 11.1239992,4.08333333 10.6944444,4.08333333 C10.2648896,4.08333333 9.91666667,3.73511036 9.91666667,3.30555556 C9.91666667,2.87600075 10.2648896,2.52777778 10.6944444,2.52777778 C11.1239992,2.52777778 11.4722222,2.87600075 11.4722222,3.30555556 Z M7,3.49999131 C5.06700338,3.49999131 3.5,5.06700338 3.5,6.99999131 C3.5,8.93299662 5.06700338,10.4999913 7,10.4999913 C8.93299662,10.4999913 10.5,8.93299662 10.5,6.99999131 C10.5020711,6.07110891 10.1339873,5.17966635 9.47716047,4.52283953 C8.82033365,3.8660127 7.92889109,3.49792889 7,3.49999131 Z M7,9.13888889 C5.81872429,9.13888889 4.86111111,8.18127571 4.86111111,7 C4.86111111,5.81872429 5.81872429,4.86111111 7,4.86111111 C8.18127571,4.86111111 9.13888889,5.81872429 9.13888889,7 C9.13888889,8.18127571 8.18127571,9.13888889 7,9.13888889 Z\" id=\"Icon-color\"></path> </g> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-social.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-success.svg":
+/*!**************************************************!*\
+  !*** ./assets/src/admin/assets/icon-success.svg ***!
+  \**************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"78px\" height=\"78px\" viewBox=\"0 0 78 78\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-success</title> <g id=\"Dashboard-v.2\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <g id=\"Demo-Import-Wizard-Copy\" transform=\"translate(-1366.000000, -164.000000)\" fill=\"#1EAA69\" fill-rule=\"nonzero\"> <g id=\"icon-success\" transform=\"translate(1366.000000, 164.000000)\"> <path d=\"M39,0 C17.5066667,0 0,17.42 0,39 C0,60.4933333 17.5066667,78 39,78 C60.4933333,78 78,60.4933333 78,39 C78,17.42 60.4933333,0 39,0 Z M58.6733333,28.7733333 L33.9733333,53.4733333 C33.6266667,53.82 33.1933333,53.9933333 32.76,53.9933333 C32.3266667,53.9933333 31.8933333,53.82 31.5466667,53.4733333 L19.4133333,41.34 C18.72,40.6466667 18.72,39.6066667 19.4133333,38.9133333 C20.1066667,38.22 21.1466667,38.22 21.84,38.9133333 L32.76,49.8333333 L56.2466667,26.3466667 C56.94,25.6533333 57.98,25.6533333 58.6733333,26.3466667 C59.3666667,26.9533333 59.3666667,28.08 58.6733333,28.7733333 Z\" id=\"Shape\"></path> </g> </g> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-success.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-system.svg":
+/*!*************************************************!*\
+  !*** ./assets/src/admin/assets/icon-system.svg ***!
+  \*************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-system</title> <desc>Created with Sketch.</desc> <g id=\"icon-system\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M13.7234449,12.5140092 L13.1258054,12.0199726 C12.7634495,11.718576 12.5641185,11.2636384 12.5879298,10.7923666 C12.5879298,10.687571 12.5879298,10.57529 12.5879298,10.4704943 C12.5879298,10.3656987 12.5879298,10.2534177 12.5879298,10.148622 C12.5641185,9.67735031 12.7634495,9.22241271 13.1258054,8.92101607 L13.7234449,8.42697952 C14.0070099,8.19656621 14.0828316,7.79454235 13.9027368,7.47633343 L13.0361594,5.97925298 C12.8524804,5.66668199 12.4715721,5.53104778 12.1322296,5.65738068 L11.3851802,5.92685516 C10.9443153,6.09195007 10.4515854,6.03925035 10.0554322,5.78463252 C9.87981617,5.66306531 9.69498041,5.55544641 9.5026156,5.46276022 C9.08225,5.24675306 8.7886043,4.84426631 8.7107432,4.37737689 L8.5837448,3.62883666 C8.52455728,3.26275723 8.20677827,2.99529017 7.83669537,3 L6.11848167,3 C5.74839877,2.99529017 5.43061975,3.26275723 5.37143223,3.62883666 L5.24443383,4.37737689 C5.17308063,4.8383689 4.89133786,5.23968485 4.48244341,5.46276022 C4.2900786,5.55544641 4.10524284,5.66306531 3.92962682,5.78463252 C3.53347356,6.03925035 3.04074367,6.09195007 2.59987883,5.92685516 L1.8528294,5.65738068 C1.51781492,5.53930568 1.14614696,5.67387387 0.963840571,5.97925298 L0.0972632269,7.47633343 C-0.0828316133,7.79454235 -0.00700990865,8.19656621 0.276555091,8.42697952 L0.874194639,8.92101607 C1.23655053,9.22241271 1.43588145,9.67735031 1.41207023,10.148622 C1.41207023,10.2534177 1.41207023,10.3656987 1.41207023,10.4704943 C1.41207023,10.57529 1.41207023,10.687571 1.41207023,10.7923666 C1.43588145,11.2636384 1.23655053,11.718576 0.874194639,12.0199726 L0.276555091,12.5140092 C-0.00700990865,12.7444225 -0.0828316133,13.1464463 0.0972632269,13.4646553 L0.963840571,14.9617357 C1.14751962,15.2743067 1.52842786,15.4099409 1.86777039,15.283608 L2.61481982,15.0141335 C3.05568466,14.8490386 3.54841455,14.9017383 3.94456781,15.1563562 C4.12018383,15.2779234 4.30501959,15.3855423 4.4973844,15.4782285 C4.91775,15.6942356 5.2113957,16.0967224 5.2892568,16.5636118 L5.4162552,17.312152 C5.47544272,17.6782315 5.79322173,17.9456985 6.16330463,17.9409887 L7.88151833,17.9409887 C8.25160123,17.9456985 8.56938025,17.6782315 8.62856777,17.312152 L8.75556617,16.5636118 C8.83342727,16.0967224 9.12707297,15.6942356 9.54743857,15.4782285 C9.73980338,15.3855423 9.92463914,15.2779234 10.1002552,15.1563562 C10.4964084,14.9017383 10.9891383,14.8490386 11.4300031,15.0141335 L12.1770526,15.283608 C12.5031866,15.3858235 12.8569633,15.2532778 13.0361594,14.9617357 L13.9027368,13.4646553 C14.0828316,13.1464463 14.0070099,12.7444225 13.7234449,12.5140092 Z M7,12.716115 C5.76224797,12.716115 4.7588517,11.7107164 4.7588517,10.4704943 C4.7588517,9.23027229 5.76224797,8.22487366 7,8.22487366 C8.23775203,8.22487366 9.2411483,9.23027229 9.2411483,10.4704943 C9.2411483,11.06607 9.005028,11.6372524 8.58473116,12.058388 C8.16443433,12.4795235 7.59438949,12.716115 7,12.716115 Z\" id=\"Icon-color\" fill=\"#2E3546\" fill-rule=\"nonzero\"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-system.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-tablet.svg":
+/*!*************************************************!*\
+  !*** ./assets/src/admin/assets/icon-tablet.svg ***!
+  \*************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"8\" height=\"10\" viewBox=\"0 0 8 10\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M1 0H7C7.55228 0 8 0.447715 8 1V9C8 9.55229 7.55228 10 7 10H1C0.447715 10 0 9.55229 0 9V1C0 0.447715 0.447715 0 1 0ZM1 8.5H7V1H1V8.5Z\" fill=\"#495060\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-tablet.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-theme-skin.svg":
+/*!*****************************************************!*\
+  !*** ./assets/src/admin/assets/icon-theme-skin.svg ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"utf-8\"?> <svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" xml:space=\"preserve\"> <path d=\"M11.2,6.3c0-1.5-1.3-2.8-2.8-2.8H2.8C1.3,3.5,0,4.8,0,6.3v5.6c0,1.5,1.3,2.8,2.8,2.8c0,1.5,1.3,2.8,2.8,2.8H8\r\n\th3.2c1.5,0,2.8-1.3,2.8-2.8V9.1C14,7.6,12.7,6.3,11.2,6.3z M2.8,13.3c-0.8,0-1.4-0.6-1.4-1.4V6.3c0-0.8,0.6-1.4,1.4-1.4h5.6\r\n\tc0.8,0,1.4,0.6,1.4,1.4v5.6c0,0.8-0.6,1.4-1.4,1.4H2.8z M12.6,14.7c0,0.8-0.6,1.4-1.4,1.4H8H5.6c-0.8,0-1.4-0.6-1.4-1.4h4.2\r\n\tc1.5,0,2.8-1.3,2.8-2.8V7.7c0.8,0,1.4,0.6,1.4,1.4V14.7z\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-theme-skin.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-top-banner.svg":
+/*!*****************************************************!*\
+  !*** ./assets/src/admin/assets/icon-top-banner.svg ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"utf-8\"?> <svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\" width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" style=\"enable-background:new 0 0 14 21\" xml:space=\"preserve\"> <g fill=\"#2E3546\" fill-rule=\"nonzero\"> <path d=\"M14,16V7.5c0-0.7-0.6-1.3-1.3-1.3H1.3C0.6,6.2,0,6.8,0,7.5V16c0,0.7,0.6,1.3,1.3,1.3h11.5\r\n\t\tC13.4,17.2,14,16.7,14,16z M1.3,10.8h11.5v5H1.3V10.8z\"/> </g> <path d=\"M13.3,3.8H0.7C0.3,3.8,0,4.1,0,4.5v0c0,0.4,0.3,0.7,0.7,0.7h12.5c0.4,0,0.7-0.3,0.7-0.7v0\r\n\tC14,4.1,13.7,3.8,13.3,3.8z\" fill=\"#2E3546\" fill-rule=\"nonzero\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-top-banner.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-typography.svg":
+/*!*****************************************************!*\
+  !*** ./assets/src/admin/assets/icon-typography.svg ***!
+  \*****************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-typography</title> <desc>Created with Sketch.</desc> <g id=\"icon-typography\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <g id=\"text_left-copy\" transform=\"translate(0.000000, 4.000000)\" fill=\"#2E3546\"> <path d=\"M14,6.61111111 L14,7.38888889 C14,7.60366629 13.8258885,7.77777778 13.6111111,7.77777778 L0.388888889,7.77777778 C0.174111486,7.77777778 0,7.60366629 0,7.38888889 L0,6.61111111 C0,6.39633371 0.174111486,6.22222222 0.388888889,6.22222222 L13.6111111,6.22222222 C13.8258885,6.22222222 14,6.39633371 14,6.61111111 Z M0.388888889,4.66666667 L7.38888889,4.66666667 C7.60366629,4.66666667 7.77777778,4.49255518 7.77777778,4.27777778 L7.77777778,3.5 C7.77777778,3.2852226 7.60366629,3.11111111 7.38888889,3.11111111 L0.388888889,3.11111111 C0.174111486,3.11111111 0,3.2852226 0,3.5 L0,4.27777778 C0,4.49255518 0.174111486,4.66666667 0.388888889,4.66666667 Z M13.6111111,0 L0.388888889,0 C0.174111486,0 0,0.174111486 0,0.388888889 L0,1.16666667 C0,1.38144407 0.174111486,1.55555556 0.388888889,1.55555556 L13.6111111,1.55555556 C13.8258885,1.55555556 14,1.38144407 14,1.16666667 L14,0.388888889 C14,0.174111486 13.8258885,0 13.6111111,0 Z M13.6111111,12.4444444 L0.388888889,12.4444444 C0.174111486,12.4444444 0,12.6185559 0,12.8333333 L0,13.6111111 C0,13.8258885 0.174111486,14 0.388888889,14 L13.6111111,14 C13.8258885,14 14,13.8258885 14,13.6111111 L14,12.8333333 C14,12.6185559 13.8258885,12.4444444 13.6111111,12.4444444 Z M0.388888889,10.8888889 L7.38888889,10.8888889 C7.60366629,10.8888889 7.77777778,10.7147774 7.77777778,10.5 L7.77777778,9.72222222 C7.77777778,9.50744482 7.60366629,9.33333333 7.38888889,9.33333333 L0.388888889,9.33333333 C0.174111486,9.33333333 0,9.50744482 0,9.72222222 L0,10.5 C0,10.7147774 0.174111486,10.8888889 0.388888889,10.8888889 Z\" id=\"Icon-color\" fill-rule=\"nonzero\"></path> <path d=\"M13.6111111,0 L0.388888889,0 C0.174111486,0 0,0.174111486 0,0.388888889 L0,1.16666667 C0,1.38144407 0.174111486,1.55555556 0.388888889,1.55555556 L13.6111111,1.55555556 C13.8258885,1.55555556 14,1.38144407 14,1.16666667 L14,0.388888889 C14,0.174111486 13.8258885,0 13.6111111,0 Z\" id=\"Path\"></path> </g> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-typography.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-updates.svg":
+/*!**************************************************!*\
+  !*** ./assets/src/admin/assets/icon-updates.svg ***!
+  \**************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-updates</title> <desc>Created with Sketch.</desc> <g id=\"icon-updates\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M7.67536663,4.09413563 L9.9308363,6.34092837 C10.0530288,6.46683384 10.0530288,6.66692738 9.9308363,6.79283286 L7.67536663,9.0396256 C7.61554998,9.09987295 7.53412502,9.13376122 7.44918252,9.13376122 C7.36424002,9.13376122 7.28281506,9.09987295 7.22299841,9.0396256 L7.09557075,8.91232856 C7.03334884,8.85245084 6.99874729,8.76949225 7,8.68319389 L7,7.18108883 C4.88870931,7.18108883 3.17717004,8.8908736 3.17717004,11 C3.17599209,11.6189567 3.32695252,12.2287362 3.61679549,12.7757937 C3.68276172,12.8998894 3.65945587,13.0525156 3.55945304,13.15132 L3.09434206,13.6159542 C3.02388334,13.6856376 2.92496392,13.718577 2.82674396,13.7050621 C2.72820575,13.6901423 2.6416258,13.6317023 2.59100278,13.5459408 C1.68095782,11.9713147 1.68045927,10.0314111 2.58969478,8.45631841 C3.49893029,6.88122572 5.17991294,5.9099823 7,5.90811843 L7,4.45056734 C6.99874729,4.36426897 7.03334884,4.28131039 7.09557075,4.22143267 L7.22299841,4.09413563 C7.28281506,4.03388828 7.36424002,4 7.44918252,4 C7.53412502,4 7.61554998,4.03388828 7.67536663,4.09413563 Z M6.32463337,12.9603744 L4.0691637,15.2071671 C3.94697121,15.3330726 3.94697121,15.5331662 4.0691637,15.6590716 L6.32463337,17.9058644 C6.38445002,17.9661117 6.46587498,18 6.55081748,18 C6.63575998,18 6.71718494,17.9661117 6.77700159,17.9058644 L6.90442925,17.7785673 C6.96665116,17.7186896 7.00125271,17.635731 7,17.5494327 L7,16.0918816 C8.82008706,16.0900177 10.5010697,15.1187743 11.4103052,13.5436816 C12.3195407,11.9685889 12.3190422,10.0286853 11.4089972,8.45405922 C11.3569932,8.37072486 11.2706303,8.31476312 11.173256,8.30130277 C11.0750361,8.28778788 10.9761167,8.32072722 10.9056579,8.3904107 L10.4341756,8.86140974 C10.3360847,8.96117834 10.3129796,9.11248934 10.3768331,9.23693601 C10.6695793,9.77857364 10.8228471,10.3844547 10.82283,11 C10.82283,13.1091264 9.11129069,14.8189112 7,14.8189112 L7,13.3168061 C7.00125271,13.2305077 6.96665116,13.1475492 6.90442925,13.0876714 L6.77700159,12.9603744 C6.71718494,12.9001271 6.63575998,12.8662388 6.55081748,12.8662388 C6.46587498,12.8662388 6.38445002,12.9001271 6.32463337,12.9603744 Z\" id=\"Icon-color\" fill=\"#2E3546\" fill-rule=\"nonzero\" transform=\"translate(7.000000, 11.000000) rotate(-270.000000) translate(-7.000000, -11.000000) \"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-updates.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-warning.svg":
+/*!**************************************************!*\
+  !*** ./assets/src/admin/assets/icon-warning.svg ***!
+  \**************************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<svg width=\"78\" height=\"78\" viewBox=\"0 0 78 78\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <path d=\"M39 0C17.5067 0 0 17.5067 0 39C0 60.4933 17.5067 78 39 78C60.4933 78 78 60.4933 78 39C78 17.5067 60.4933 0 39 0ZM40.7333 55.4667C40.7333 56.42 39.9533 57.2 39 57.2C38.0467 57.2 37.2667 56.42 37.2667 55.4667V53.7333C37.2667 52.78 38.0467 52 39 52C39.9533 52 40.7333 52.78 40.7333 53.7333V55.4667ZM40.4667 45.4667C40.4667 46.42 39.6867 47.2 38.7333 47.2C37.78 47.2 37 46.42 37 45.4667V22.7333C37 21.78 37.78 21 38.7333 21C39.6867 21 40.4667 21.78 40.4667 22.7333V45.4667Z\" fill=\"#FFB900\"/> </svg> `;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-warning.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/assets/icon-woo.svg":
+/*!**********************************************!*\
+  !*** ./assets/src/admin/assets/icon-woo.svg ***!
+  \**********************************************/
+/***/ ((module) => {
+
+eval("// Module\nvar code = `<?xml version=\"1.0\" encoding=\"UTF-8\"?> <svg width=\"14px\" height=\"21px\" viewBox=\"0 0 14 21\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <title>icon-woo</title> <desc>Created with Sketch.</desc> <g id=\"icon-woo\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\"> <path d=\"M13.2222222,7.88888889 L10.8888889,7.88888889 C10.8888889,5.74111486 9.14777403,4 7,4 C4.85222597,4 3.11111111,5.74111486 3.11111111,7.88888889 L0.777777778,7.88888889 C0.348222972,7.88888889 -1.77635684e-14,8.23711186 -1.77635684e-14,8.66666667 L-1.77635684e-14,16.4444444 C-1.77635684e-14,17.3035541 0.696445945,18 1.55555556,18 L12.4444444,18 C13.3035541,18 14,17.3035541 14,16.4444444 L14,8.66666667 C14,8.23711186 13.651777,7.88888889 13.2222222,7.88888889 Z M4.66666667,10.6111111 C4.66666667,10.8258885 4.49255518,11 4.27777778,11 L3.5,11 C3.2852226,11 3.11111111,10.8258885 3.11111111,10.6111111 L3.11111111,9.83333333 C3.11111111,9.61855593 3.2852226,9.44444444 3.5,9.44444444 L4.27777778,9.44444444 C4.49255518,9.44444444 4.66666667,9.61855593 4.66666667,9.83333333 L4.66666667,10.6111111 Z M7,5.55555556 C8.28866442,5.55555556 9.33333333,6.60022447 9.33333333,7.88888889 L4.66666667,7.88888889 C4.66666667,6.60022447 5.71133558,5.55555556 7,5.55555556 L7,5.55555556 Z M10.8888889,10.6111111 C10.8888889,10.8258885 10.7147774,11 10.5,11 L9.72222222,11 C9.50744482,11 9.33333333,10.8258885 9.33333333,10.6111111 L9.33333333,9.83333333 C9.33333333,9.61855593 9.50744482,9.44444444 9.72222222,9.44444444 L10.5,9.44444444 C10.7147774,9.44444444 10.8888889,9.61855593 10.8888889,9.83333333 L10.8888889,10.6111111 Z\" id=\"Icon-color\" fill=\"#2E3546\" fill-rule=\"nonzero\"></path> </g> </svg>`;\n// Exports\nmodule.exports = code;\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/assets/icon-woo.svg?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/utils/SvgIcon.vue":
+/*!********************************************!*\
+  !*** ./assets/src/admin/utils/SvgIcon.vue ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _SvgIcon_vue_vue_type_template_id_bd6236d4__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SvgIcon.vue?vue&type=template&id=bd6236d4 */ \"./assets/src/admin/utils/SvgIcon.vue?vue&type=template&id=bd6236d4\");\n/* harmony import */ var _SvgIcon_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SvgIcon.vue?vue&type=script&lang=js */ \"./assets/src/admin/utils/SvgIcon.vue?vue&type=script&lang=js\");\n/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ \"./node_modules/vue-loader/lib/runtime/componentNormalizer.js\");\n\n\n\n\n\n/* normalize component */\n;\nvar component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"])(\n  _SvgIcon_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  _SvgIcon_vue_vue_type_template_id_bd6236d4__WEBPACK_IMPORTED_MODULE_0__.render,\n  _SvgIcon_vue_vue_type_template_id_bd6236d4__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,\n  false,\n  null,\n  null,\n  null\n  \n)\n\n/* hot reload */\nif (false) { var api; }\ncomponent.options.__file = \"assets/src/admin/utils/SvgIcon.vue\"\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/SvgIcon.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/utils/SvgIcon.vue?vue&type=script&lang=js":
+/*!********************************************************************!*\
+  !*** ./assets/src/admin/utils/SvgIcon.vue?vue&type=script&lang=js ***!
+  \********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_index_js_vue_loader_options_SvgIcon_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./SvgIcon.vue?vue&type=script&lang=js */ \"./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/SvgIcon.vue?vue&type=script&lang=js\");\n /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_index_js_vue_loader_options_SvgIcon_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]); \n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/SvgIcon.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/utils/SvgIcon.vue?vue&type=template&id=bd6236d4":
+/*!**************************************************************************!*\
+  !*** ./assets/src/admin/utils/SvgIcon.vue?vue&type=template&id=bd6236d4 ***!
+  \**************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SvgIcon_vue_vue_type_template_id_bd6236d4__WEBPACK_IMPORTED_MODULE_0__.render),\n/* harmony export */   staticRenderFns: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SvgIcon_vue_vue_type_template_id_bd6236d4__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)\n/* harmony export */ });\n/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SvgIcon_vue_vue_type_template_id_bd6236d4__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./SvgIcon.vue?vue&type=template&id=bd6236d4 */ \"./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/SvgIcon.vue?vue&type=template&id=bd6236d4\");\n\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/SvgIcon.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/utils/settings/color.vue":
+/*!***************************************************!*\
+  !*** ./assets/src/admin/utils/settings/color.vue ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _color_vue_vue_type_template_id_570e8ece__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./color.vue?vue&type=template&id=570e8ece */ \"./assets/src/admin/utils/settings/color.vue?vue&type=template&id=570e8ece\");\n/* harmony import */ var _color_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./color.vue?vue&type=script&lang=js */ \"./assets/src/admin/utils/settings/color.vue?vue&type=script&lang=js\");\n/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ \"./node_modules/vue-loader/lib/runtime/componentNormalizer.js\");\n\n\n\n\n\n/* normalize component */\n;\nvar component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__[\"default\"])(\n  _color_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  _color_vue_vue_type_template_id_570e8ece__WEBPACK_IMPORTED_MODULE_0__.render,\n  _color_vue_vue_type_template_id_570e8ece__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,\n  false,\n  null,\n  null,\n  null\n  \n)\n\n/* hot reload */\nif (false) { var api; }\ncomponent.options.__file = \"assets/src/admin/utils/settings/color.vue\"\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/settings/color.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/utils/settings/color.vue?vue&type=script&lang=js":
+/*!***************************************************************************!*\
+  !*** ./assets/src/admin/utils/settings/color.vue?vue&type=script&lang=js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_index_js_vue_loader_options_color_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./color.vue?vue&type=script&lang=js */ \"./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/color.vue?vue&type=script&lang=js\");\n /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_index_js_vue_loader_options_color_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]); \n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/settings/color.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/utils/settings/color.vue?vue&type=template&id=570e8ece":
+/*!*********************************************************************************!*\
+  !*** ./assets/src/admin/utils/settings/color.vue?vue&type=template&id=570e8ece ***!
+  \*********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_color_vue_vue_type_template_id_570e8ece__WEBPACK_IMPORTED_MODULE_0__.render),\n/* harmony export */   staticRenderFns: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_color_vue_vue_type_template_id_570e8ece__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)\n/* harmony export */ });\n/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_color_vue_vue_type_template_id_570e8ece__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./color.vue?vue&type=template&id=570e8ece */ \"./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/color.vue?vue&type=template&id=570e8ece\");\n\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/settings/color.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/utils/settings/uicore-mini-toggle.vue":
+/*!****************************************************************!*\
+  !*** ./assets/src/admin/utils/settings/uicore-mini-toggle.vue ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _uicore_mini_toggle_vue_vue_type_template_id_33203615_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./uicore-mini-toggle.vue?vue&type=template&id=33203615&scoped=true */ \"./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=template&id=33203615&scoped=true\");\n/* harmony import */ var _uicore_mini_toggle_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./uicore-mini-toggle.vue?vue&type=script&lang=js */ \"./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=script&lang=js\");\n/* harmony import */ var _uicore_mini_toggle_vue_vue_type_style_index_0_id_33203615_lang_scss_scoped_true__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./uicore-mini-toggle.vue?vue&type=style&index=0&id=33203615&lang=scss&scoped=true */ \"./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=style&index=0&id=33203615&lang=scss&scoped=true\");\n/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ \"./node_modules/vue-loader/lib/runtime/componentNormalizer.js\");\n\n\n\n;\n\n\n/* normalize component */\n\nvar component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"])(\n  _uicore_mini_toggle_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  _uicore_mini_toggle_vue_vue_type_template_id_33203615_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render,\n  _uicore_mini_toggle_vue_vue_type_template_id_33203615_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,\n  false,\n  null,\n  \"33203615\",\n  null\n  \n)\n\n/* hot reload */\nif (false) { var api; }\ncomponent.options.__file = \"assets/src/admin/utils/settings/uicore-mini-toggle.vue\"\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/settings/uicore-mini-toggle.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=script&lang=js":
+/*!****************************************************************************************!*\
+  !*** ./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=script&lang=js ***!
+  \****************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_index_js_vue_loader_options_uicore_mini_toggle_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./uicore-mini-toggle.vue?vue&type=script&lang=js */ \"./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=script&lang=js\");\n /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_index_js_vue_loader_options_uicore_mini_toggle_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"]); \n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/settings/uicore-mini-toggle.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=style&index=0&id=33203615&lang=scss&scoped=true":
+/*!*************************************************************************************************************************!*\
+  !*** ./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=style&index=0&id=33203615&lang=scss&scoped=true ***!
+  \*************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_3_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_3_use_2_node_modules_sass_loader_dist_cjs_js_clonedRuleSet_3_use_3_node_modules_vue_loader_lib_index_js_vue_loader_options_uicore_mini_toggle_vue_vue_type_style_index_0_id_33203615_lang_scss_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/mini-css-extract-plugin/dist/loader.js!../../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-3.use[1]!../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-3.use[2]!../../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-3.use[3]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./uicore-mini-toggle.vue?vue&type=style&index=0&id=33203615&lang=scss&scoped=true */ \"./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-3.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-3.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-3.use[3]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=style&index=0&id=33203615&lang=scss&scoped=true\");\n\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/settings/uicore-mini-toggle.vue?");
+
+/***/ }),
+
+/***/ "./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=template&id=33203615&scoped=true":
+/*!**********************************************************************************************************!*\
+  !*** ./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=template&id=33203615&scoped=true ***!
+  \**********************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   render: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_uicore_mini_toggle_vue_vue_type_template_id_33203615_scoped_true__WEBPACK_IMPORTED_MODULE_0__.render),\n/* harmony export */   staticRenderFns: () => (/* reexport safe */ _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_uicore_mini_toggle_vue_vue_type_template_id_33203615_scoped_true__WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)\n/* harmony export */ });\n/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_1_use_node_modules_vue_loader_lib_loaders_templateLoader_js_ruleSet_1_rules_2_node_modules_vue_loader_lib_index_js_vue_loader_options_uicore_mini_toggle_vue_vue_type_template_id_33203615_scoped_true__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./uicore-mini-toggle.vue?vue&type=template&id=33203615&scoped=true */ \"./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=template&id=33203615&scoped=true\");\n\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/settings/uicore-mini-toggle.vue?");
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin-swatches/colorPicker.vue?vue&type=script&lang=js":
+/*!****************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin-swatches/colorPicker.vue?vue&type=script&lang=js ***!
+  \****************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var admin_utils_settings_color_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! admin/utils/settings/color.vue */ \"./assets/src/admin/utils/settings/color.vue\");\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  components: {\n    color: admin_utils_settings_color_vue__WEBPACK_IMPORTED_MODULE_0__[\"default\"]\n  },\n  data: function data() {\n    return {\n      el: null,\n      previewEl: null,\n      show: false,\n      value: '#fff'\n    };\n  },\n  mounted: function mounted() {\n    window.uicore_set_color = this.addHandlers;\n  },\n  methods: {\n    close: function close() {\n      this.show = false;\n    },\n    setColor: function setColor() {\n      this.el.val(this.value);\n      this.previewEl.css('--ui-swatches-bg', this.value);\n    },\n    addHandlers: function addHandlers() {\n      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : \"\";\n      this.el = type == 'second' ? jQuery('#uicore_second_color') : jQuery('#uicore_color');\n      this.previewEl = type == 'second' ? jQuery('#uicore_second_color_preview') : jQuery('#uicore_color_preview');\n      var oldVal = this.el.val();\n      this.value = oldVal ? oldVal : '#fff';\n      this.thisvalue = this.value;\n      this.show = true;\n    }\n  },\n  computed: {\n    // ...mapState({\n    //     uicoreSettings: stat\n    // }),\n    thisvalue: {\n      // getter\n      get: function get() {\n        return this.value;\n      },\n      // setter\n      set: function set(val) {\n        this.value = val;\n        this.setColor();\n      }\n    }\n  }\n});\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin-swatches/colorPicker.vue?./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options");
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/SvgIcon.vue?vue&type=script&lang=js":
+/*!*********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/SvgIcon.vue?vue&type=script&lang=js ***!
+  \*********************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  props: ['icon'],\n  data: function data() {\n    return {\n      path: uicore_data.root\n    };\n  }\n});\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/SvgIcon.vue?./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options");
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/color.vue?vue&type=script&lang=js":
+/*!****************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/color.vue?vue&type=script&lang=js ***!
+  \****************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var vue_color__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-color */ \"./node_modules/vue-color/dist/vue-color.min.js\");\n/* harmony import */ var vue_color__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue_color__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-multiselect */ \"./node_modules/vue-multiselect/dist/vue-multiselect.min.js\");\n/* harmony import */ var vue_multiselect__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(vue_multiselect__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vuex */ \"./node_modules/vuex/dist/vuex.esm.js\");\n/* harmony import */ var admin_utils_SvgIcon_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! admin/utils/SvgIcon.vue */ \"./assets/src/admin/utils/SvgIcon.vue\");\n/* harmony import */ var admin_utils_settings_uicore_mini_toggle_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! admin/utils/settings/uicore-mini-toggle.vue */ \"./assets/src/admin/utils/settings/uicore-mini-toggle.vue\");\nfunction ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }\nfunction _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }\nfunction _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }\nfunction _toPropertyKey(t) { var i = _toPrimitive(t, \"string\"); return \"symbol\" == _typeof(i) ? i : i + \"\"; }\nfunction _toPrimitive(t, r) { if (\"object\" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || \"default\"); if (\"object\" != _typeof(i)) return i; throw new TypeError(\"@@toPrimitive must return a primitive value.\"); } return (\"string\" === r ? String : Number)(t); }\nfunction _typeof(o) { \"@babel/helpers - typeof\"; return _typeof = \"function\" == typeof Symbol && \"symbol\" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && \"function\" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? \"symbol\" : typeof o; }, _typeof(o); }\n\n\n\n\n\nvar stat = function stat(state) {\n  return state.uicoreSettings;\n};\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  props: ['background', 'isglobal', 'blur', 'mini', 'inherit'],\n  components: {\n    'chrome-picker': vue_color__WEBPACK_IMPORTED_MODULE_0__.Chrome,\n    multiselect: (vue_multiselect__WEBPACK_IMPORTED_MODULE_1___default()),\n    'svg-icon': admin_utils_SvgIcon_vue__WEBPACK_IMPORTED_MODULE_2__[\"default\"],\n    toggle: admin_utils_settings_uicore_mini_toggle_vue__WEBPACK_IMPORTED_MODULE_3__[\"default\"]\n  },\n  data: function data() {\n    return {\n      colors: {\n        hex: '#000000'\n      },\n      colorValue: '',\n      displayPicker: false,\n      type: 'Solid',\n      global: false,\n      blurValue: 'false',\n      types: [{\n        type: 'Global Colors',\n        items: ['Primary', 'Secondary', 'Accent', 'Headline', 'Body', 'Dark Neutral', 'Light Neutral', 'White']\n      }, {\n        type: 'Custom Color',\n        items: ['Solid']\n      }]\n    };\n  },\n  mounted: function mounted() {\n    if (this.inherit) {\n      this.types[0].items.push('Inherit');\n    }\n    this.filterSupport();\n    if (this.background == null) {\n      this.colorValue = '#878787';\n      this.updateFromInput();\n    } else {\n      this.updateColors(_typeof(this.background) === 'object' ? this.background.color : this.background);\n    }\n    if (this.mini) {\n      this.displayPicker = true;\n    }\n  },\n  methods: {\n    emitFilter: function emitFilter(value) {\n      var val = null;\n      if (this.blur) {\n        val = {\n          blur: this.blurValue,\n          color: value\n        };\n      } else {\n        val = value;\n      }\n      this.$emit('input', val);\n    },\n    filterSupport: function filterSupport() {\n      if (this.blur) {\n        if (this.background.blur == null) {\n          this.emitFilter(this.background);\n        } else {\n          this.blurValue = this.background.blur;\n        }\n        // console.log(this.background);\n        // this.updateColors(this.background.color);\n      }\n    },\n    goToGlobal: function goToGlobal() {\n      this.$router.push('/global-colors')[\"catch\"](function (err) {});\n    },\n    typeChange: function typeChange(e) {\n      if (this.types[0].items.includes(e)) {\n        this.hidePicker();\n      }\n    },\n    setSolid: function setSolid(item) {\n      this.setColor(item);\n      this.colorValue = item;\n    },\n    removeSolid: function removeSolid(index) {\n      this.uicoreSettings.backgrounds.solid.splice(index, 1);\n    },\n    saveToSolid: function saveToSolid() {\n      var solid = '';\n      if (typeof this.colors.rgba == 'undefined') {\n        solid = this.colors.hex;\n      } else {\n        solid = 'rgba(' + this.colors.rgba.r + ', ' + this.colors.rgba.g + ', ' + this.colors.rgba.b + ', ' + this.colors.rgba.a + ')';\n      }\n      this.uicoreSettings.backgrounds.solid.push(solid);\n    },\n    setColor: function setColor(color) {\n      this.updateColors(color);\n    },\n    updateColors: function updateColors(color) {\n      if (this.types[0].items.includes(color)) {\n        this.type = color;\n        this.global = true;\n        color = this.globalCheck(color);\n      } else {\n        this.global = false;\n      }\n      if (color.slice(0, 1) == '#') {\n        this.colors = {\n          hex: color\n        };\n      } else if (color.slice(0, 4) == 'rgba') {\n        var rgba = color.replace(/^rgba?\\(|\\s+|\\)$/g, '').split(','),\n          hex = '#' + ((1 << 24) + (parseInt(rgba[0]) << 16) + (parseInt(rgba[1]) << 8) + parseInt(rgba[2])).toString(16).slice(1);\n        this.colors = {\n          hex: hex,\n          a: rgba[3].substring(0, 4)\n        };\n      }\n    },\n    globalCheck: function globalCheck(color) {\n      if (color == 'Primary') {\n        color = this.uicoreSettings.pColor + '';\n      } else if (color == 'Secondary') {\n        color = this.uicoreSettings.sColor + '';\n      } else if (color == 'Accent') {\n        color = this.uicoreSettings.aColor + '';\n      } else if (color == 'Headline') {\n        color = this.uicoreSettings.hColor + '';\n      } else if (color == 'Body') {\n        color = this.uicoreSettings.bColor + '';\n      } else if (color == 'Dark Neutral') {\n        color = this.uicoreSettings.dColor + '';\n      } else if (color == 'Light Neutral') {\n        color = this.uicoreSettings.lColor + '';\n      } else if (color == 'White') {\n        color = this.uicoreSettings.wColor + '';\n      } else if (color == 'Inherit') {\n        color = this.inherit + '';\n      }\n      return color;\n    },\n    showPicker: function showPicker() {\n      document.addEventListener('click', this.documentClick);\n      this.displayPicker = true;\n      this.$emit('popup', true);\n    },\n    hidePicker: function hidePicker() {\n      if (!this.mini) {\n        document.removeEventListener('click', this.documentClick);\n        this.displayPicker = false;\n      }\n      this.$emit('popup', false);\n    },\n    togglePicker: function togglePicker() {\n      this.displayPicker ? this.hidePicker() : this.showPicker();\n    },\n    updateFromInput: function updateFromInput() {\n      this.updateColors(this.colorValue);\n    },\n    updateFromPicker: function updateFromPicker(color) {\n      if (color) {\n        this.colors = color;\n        if (color.rgba.a == 1) {\n          this.colorValue = color.hex;\n        } else {\n          this.colorValue = 'rgba(' + color.rgba.r + ', ' + color.rgba.g + ', ' + color.rgba.b + ', ' + color.rgba.a + ')';\n        }\n      } else {\n        this.colorValue = this.colors.hex;\n      }\n    },\n    documentClick: function documentClick(e) {\n      var el = this.$refs.colorpicker;\n      if (el !== e.target && !el.contains(e.target)) {\n        this.hidePicker();\n      }\n    }\n  },\n  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_4__.mapState)({\n    uicoreSettings: stat\n  })), {}, {\n    style: function style() {\n      var color = null;\n      if (this.blur) {\n        color = this.background.color;\n      } else {\n        color = this.background;\n      }\n      if (this.types[0].items.includes(color)) {\n        color = this.globalCheck(color);\n      } else {\n        this.updateFromInput();\n      }\n      return 'background: ' + color;\n    }\n  }),\n  watch: {\n    blurValue: function blurValue(val) {\n      if (val) {\n        this.background.blur = val;\n        // this.$emit('popup', val);\n      }\n    },\n    colorValue: function colorValue(val) {\n      if (val) {\n        this.updateColors(val);\n        this.emitFilter(val);\n      }\n    },\n    type: function type(val) {\n      if (val) {\n        this.updateColors(val);\n      }\n      if (val == 'Solid') {\n        this.updateFromPicker();\n      } else {\n        this.colorValue = val;\n      }\n    },\n    displayPicker: function displayPicker(val) {\n      if (val) {\n        this.$emit('popup', val);\n      }\n    }\n  }\n});\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/settings/color.vue?./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options");
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=script&lang=js":
+/*!*****************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=script&lang=js ***!
+  \*****************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\nfunction _typeof(o) { \"@babel/helpers - typeof\"; return _typeof = \"function\" == typeof Symbol && \"symbol\" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && \"function\" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? \"symbol\" : typeof o; }, _typeof(o); }\nvar DEFAULT_COLOR_CHECKED = '#75c791';\nvar DEFAULT_COLOR_UNCHECKED = '#bfcbd9';\nvar DEFAULT_LABEL_CHECKED = 'on';\nvar DEFAULT_LABEL_UNCHECKED = 'off';\nvar DEFAULT_SWITCH_COLOR = '#fff';\nvar contains = function contains(object, title) {\n  return _typeof(object) === 'object' && object.hasOwnProperty(title);\n};\nvar px = function px(v) {\n  return v + 'px';\n};\nvar translate3d = function translate3d(x, y) {\n  var z = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '0px';\n  return \"translate3d(\".concat(x, \", \").concat(y, \", \").concat(z, \")\");\n};\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  name: 'ToggleButton',\n  props: {\n    value: {\n      type: String,\n      \"default\": 'false'\n    },\n    name: {\n      type: String\n    },\n    disabled: {\n      type: Boolean,\n      \"default\": false\n    },\n    sync: {\n      type: Boolean,\n      \"default\": false\n    },\n    speed: {\n      type: Number,\n      \"default\": 300\n    },\n    color: {\n      type: [String, Object],\n      validator: function validator(value) {\n        return _typeof(value) === 'object' ? value.checked || value.unchecked || value.disabled : typeof value === 'string';\n      }\n    },\n    switchColor: {\n      type: [String, Object],\n      validator: function validator(value) {\n        return _typeof(value) === 'object' ? value.checked || value.unchecked : typeof value === 'string';\n      }\n    },\n    cssColors: {\n      type: Boolean,\n      \"default\": false\n    },\n    labels: {\n      type: [Boolean, Object],\n      \"default\": false,\n      validator: function validator(value) {\n        return _typeof(value) === 'object' ? value.checked || value.unchecked : typeof value === 'boolean';\n      }\n    },\n    height: {\n      type: Number,\n      \"default\": 22\n    },\n    width: {\n      type: Number,\n      \"default\": 50\n    },\n    margin: {\n      type: Number,\n      \"default\": 3\n    },\n    fontSize: {\n      type: Number\n    }\n  },\n  computed: {\n    className: function className() {\n      var toggled = this.toggled,\n        disabled = this.disabled;\n      return ['vue-js-switch', {\n        toggled: toggled,\n        disabled: disabled\n      }];\n    },\n    coreStyle: function coreStyle() {\n      return {\n        width: px(this.width),\n        height: px(this.height),\n        backgroundColor: this.cssColors ? null : this.disabled ? this.colorDisabled : this.colorCurrent,\n        borderRadius: px(Math.round(this.height / 2))\n      };\n    },\n    buttonRadius: function buttonRadius() {\n      return this.height - this.margin * 2;\n    },\n    distance: function distance() {\n      return px(this.width - this.height + this.margin);\n    },\n    buttonStyle: function buttonStyle() {\n      var transition = \"transform \".concat(this.speed, \"ms\");\n      var margin = px(this.margin);\n      var transform = this.toggled ? translate3d(this.distance, margin) : translate3d(margin, margin);\n      var background = this.switchColor ? this.switchColorCurrent : null;\n      return {\n        width: px(this.buttonRadius),\n        height: px(this.buttonRadius),\n        transition: transition,\n        transform: transform,\n        background: background\n      };\n    },\n    labelStyle: function labelStyle() {\n      return {\n        lineHeight: px(this.height),\n        fontSize: this.fontSize ? px(this.fontSize) : null\n      };\n    },\n    colorChecked: function colorChecked() {\n      var color = this.color;\n      if (_typeof(color) !== 'object') {\n        return color || DEFAULT_COLOR_CHECKED;\n      }\n      return contains(color, 'checked') ? color.checked : DEFAULT_COLOR_CHECKED;\n    },\n    colorUnchecked: function colorUnchecked() {\n      var color = this.color;\n      return contains(color, 'unchecked') ? color.unchecked : DEFAULT_COLOR_UNCHECKED;\n    },\n    colorDisabled: function colorDisabled() {\n      var color = this.color;\n      return contains(color, 'disabled') ? color.disabled : this.colorCurrent;\n    },\n    colorCurrent: function colorCurrent() {\n      return this.toggled ? this.colorChecked : this.colorUnchecked;\n    },\n    labelChecked: function labelChecked() {\n      var labels = this.labels;\n      return contains(labels, 'checked') ? labels.checked : DEFAULT_LABEL_CHECKED;\n    },\n    labelUnchecked: function labelUnchecked() {\n      var labels = this.labels;\n      return contains(labels, 'unchecked') ? labels.unchecked : DEFAULT_LABEL_UNCHECKED;\n    },\n    switchColorChecked: function switchColorChecked() {\n      var switchColor = this.switchColor;\n      return contains(switchColor, 'checked') ? switchColor.checked : DEFAULT_SWITCH_COLOR;\n    },\n    switchColorUnchecked: function switchColorUnchecked() {\n      var switchColor = this.switchColor;\n      return contains(switchColor, 'unchecked') ? switchColor.unchecked : DEFAULT_SWITCH_COLOR;\n    },\n    switchColorCurrent: function switchColorCurrent() {\n      var switchColor = this.switchColor;\n      if (_typeof(switchColor) !== 'object') {\n        return switchColor || DEFAULT_SWITCH_COLOR;\n      }\n      return this.toggled ? this.switchColorChecked : this.switchColorUnchecked;\n    },\n    toggled: {\n      set: function set(val) {\n        if (val) {\n          this.value === 'true';\n        } else {\n          this.value === 'false';\n        }\n        return val;\n      },\n      get: function get() {\n        if (this.value === 'true') {\n          return true;\n        } else if (this.value === 'false') {\n          return false;\n        }\n      }\n    }\n  },\n  methods: {\n    toggle: function toggle() {\n      this.toggled = !this.toggled;\n      if (!this.toggled) {\n        this.$emit('input', 'true');\n      } else {\n        this.$emit('input', 'false');\n      }\n    },\n    set: function set() {\n      if (this.value === 'true') {\n        this.toggled = true;\n      } else {\n        this.toggled = false;\n      }\n    }\n  }\n});\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/settings/uicore-mini-toggle.vue?./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/index.js??vue-loader-options");
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin-swatches/colorPicker.vue?vue&type=template&id=f5096a3a":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin-swatches/colorPicker.vue?vue&type=template&id=f5096a3a ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   render: () => (/* binding */ render),\n/* harmony export */   staticRenderFns: () => (/* binding */ staticRenderFns)\n/* harmony export */ });\nvar render = function render() {\n  var _vm = this,\n    _c = _vm._self._c;\n  return _c('div', {\n    staticClass: \"uicore_dark_scheme uicore_icons\",\n    staticStyle: {\n      \"--uicore-primary\": \"#532df5\"\n    }\n  }, [_vm.show ? _c('color', {\n    attrs: {\n      \"background\": _vm.value,\n      \"isglobal\": true,\n      \"mini\": true\n    },\n    on: {\n      \"set\": function set($event) {\n        return _vm.close();\n      }\n    },\n    model: {\n      value: _vm.thisvalue,\n      callback: function callback($$v) {\n        _vm.thisvalue = $$v;\n      },\n      expression: \"thisvalue\"\n    }\n  }) : _vm._e()], 1);\n};\nvar staticRenderFns = [];\nrender._withStripped = true;\n\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin-swatches/colorPicker.vue?./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet%5B1%5D.rules%5B2%5D!./node_modules/vue-loader/lib/index.js??vue-loader-options");
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/SvgIcon.vue?vue&type=template&id=bd6236d4":
+/*!********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/SvgIcon.vue?vue&type=template&id=bd6236d4 ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   render: () => (/* binding */ render),\n/* harmony export */   staticRenderFns: () => (/* binding */ staticRenderFns)\n/* harmony export */ });\nvar render = function render() {\n  var _vm = this,\n    _c = _vm._self._c;\n  return _c('div', {\n    domProps: {\n      \"innerHTML\": _vm._s(__webpack_require__(\"./assets/src/admin/assets sync recursive ^\\\\.\\\\/icon\\\\-.*\\\\.svg$\")(\"./icon-\" + this.icon + \".svg\"))\n    },\n    on: {\n      \"click\": function click($event) {\n        return _vm.$emit('action');\n      }\n    }\n  });\n};\nvar staticRenderFns = [];\nrender._withStripped = true;\n\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/SvgIcon.vue?./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet%5B1%5D.rules%5B2%5D!./node_modules/vue-loader/lib/index.js??vue-loader-options");
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/color.vue?vue&type=template&id=570e8ece":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/color.vue?vue&type=template&id=570e8ece ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   render: () => (/* binding */ render),\n/* harmony export */   staticRenderFns: () => (/* binding */ staticRenderFns)\n/* harmony export */ });\nfunction _typeof(o) { \"@babel/helpers - typeof\"; return _typeof = \"function\" == typeof Symbol && \"symbol\" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && \"function\" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? \"symbol\" : typeof o; }, _typeof(o); }\nvar render = function render() {\n  var _vm = this,\n    _c = _vm._self._c;\n  return _c('div', {\n    ref: \"colorpicker\",\n    staticClass: \"uicore-color-picker uicore-popup-holder uicore_m\",\n    style: _vm.displayPicker ? 'z-index: 4;' : null\n  }, [!_vm.mini ? _c('div', {\n    staticClass: \"uicore-type uicore-solid uicore-base_input\",\n    on: {\n      \"click\": function click($event) {\n        return _vm.togglePicker();\n      }\n    }\n  }, [_vm._v(\"\\r\\n            \" + _vm._s(_typeof(_vm.background) === 'object' ? _vm.background.color : _vm.background) + \"\\r\\n            \"), _vm.global ? _c('div', {\n    staticClass: \"uicore-global-item\",\n    attrs: {\n      \"title\": \"Change this Global Color\"\n    },\n    on: {\n      \"click\": _vm.goToGlobal\n    }\n  }, [_c('svg-icon', {\n    staticClass: \"uicore-svg\",\n    attrs: {\n      \"icon\": \"global\"\n    }\n  })], 1) : _vm._e()]) : _vm._e(), !_vm.mini ? _c('span', {\n    staticClass: \"uicore-current-color\",\n    style: _vm.style,\n    on: {\n      \"click\": function click($event) {\n        return _vm.togglePicker();\n      }\n    }\n  }) : _vm._e(), _vm.displayPicker ? _c('div', {\n    staticClass: \"uicore-popup\"\n  }, [_c('div', {\n    staticClass: \"uicore-color-wrapp\"\n  }, [!_vm.isglobal && _vm.type ? _c('multiselect', {\n    attrs: {\n      \"options\": _vm.types,\n      \"allow-empty\": false,\n      \"show-labels\": false,\n      \"searchable\": false,\n      \"group-values\": \"items\",\n      \"group-label\": \"type\",\n      \"group-select\": false,\n      \"close-on-select\": true,\n      \"placeholder\": \"Select One\"\n    },\n    on: {\n      \"select\": _vm.typeChange\n    },\n    model: {\n      value: _vm.type,\n      callback: function callback($$v) {\n        _vm.type = $$v;\n      },\n      expression: \"type\"\n    }\n  }) : _vm._e(), _vm.type === 'Solid' ? _c('chrome-picker', {\n    staticStyle: {\n      \"margin-top\": \"20px\"\n    },\n    attrs: {\n      \"value\": _vm.colors\n    },\n    on: {\n      \"input\": _vm.updateFromPicker\n    }\n  }) : _vm._e(), _vm.blur ? _c('div', {\n    staticClass: \"uicore-blur-set\"\n  }, [_c('span', [_vm._v(\"Enable Blur Filter \")]), _c('toggle', {\n    attrs: {\n      \"value\": _vm.blurValue,\n      \"height\": 20,\n      \"width\": 48,\n      \"switch-color\": {\n        checked: '#ffffff',\n        unchecked: '#2E3546'\n      },\n      \"color\": {\n        checked: 'var(--uicore-primary)',\n        unchecked: 'transparent'\n      }\n    },\n    model: {\n      value: _vm.blurValue,\n      callback: function callback($$v) {\n        _vm.blurValue = $$v;\n      },\n      expression: \"blurValue\"\n    }\n  })], 1) : _vm._e(), _vm.mini ? _c('div', {\n    staticClass: \"uicore-btn\",\n    staticStyle: {\n      \"margin-top\": \"15px\"\n    },\n    on: {\n      \"click\": function click($event) {\n        return _vm.$emit('set');\n      }\n    }\n  }, [_vm._v(\"Set Color\")]) : _vm._e()], 1)]) : _vm._e()]);\n};\nvar staticRenderFns = [];\nrender._withStripped = true;\n\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/settings/color.vue?./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet%5B1%5D.rules%5B2%5D!./node_modules/vue-loader/lib/index.js??vue-loader-options");
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=template&id=33203615&scoped=true":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=template&id=33203615&scoped=true ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   render: () => (/* binding */ render),\n/* harmony export */   staticRenderFns: () => (/* binding */ staticRenderFns)\n/* harmony export */ });\nvar render = function render() {\n  var _vm = this,\n    _c = _vm._self._c;\n  return _c('label', {\n    \"class\": _vm.className\n  }, [_c('input', {\n    staticClass: \"v-switch-input\",\n    attrs: {\n      \"type\": \"checkbox\",\n      \"name\": _vm.name,\n      \"disabled\": _vm.disabled\n    },\n    domProps: {\n      \"checked\": _vm.toggled\n    },\n    on: {\n      \"change\": function change($event) {\n        $event.stopPropagation();\n        return _vm.toggle.apply(null, arguments);\n      }\n    }\n  }), _c('div', {\n    staticClass: \"v-switch-core\",\n    style: _vm.coreStyle\n  }, [_c('div', {\n    staticClass: \"v-switch-button\",\n    style: _vm.buttonStyle\n  })]), _vm.labels ? [_vm.toggled ? _c('span', {\n    staticClass: \"v-switch-label v-left\",\n    style: _vm.labelStyle\n  }, [_vm._t(\"checked\", function () {\n    return [[_vm._v(_vm._s(_vm.labelChecked))]];\n  })], 2) : _c('span', {\n    staticClass: \"v-switch-label v-right\",\n    style: _vm.labelStyle\n  }, [_vm._t(\"unchecked\", function () {\n    return [[_vm._v(_vm._s(_vm.labelUnchecked))]];\n  })], 2)] : _vm._e()], 2);\n};\nvar staticRenderFns = [];\nrender._withStripped = true;\n\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/settings/uicore-mini-toggle.vue?./node_modules/babel-loader/lib/index.js??clonedRuleSet-1.use!./node_modules/vue-loader/lib/loaders/templateLoader.js??ruleSet%5B1%5D.rules%5B2%5D!./node_modules/vue-loader/lib/index.js??vue-loader-options");
+
+/***/ }),
+
+/***/ "./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin-swatches/colorPicker.vue?vue&type=style&index=0&id=f5096a3a&lang=css":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin-swatches/colorPicker.vue?vue&type=style&index=0&id=f5096a3a&lang=css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin-swatches/colorPicker.vue?./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js??vue-loader-options");
+
+/***/ }),
+
+/***/ "./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-3.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-3.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-3.use[3]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=style&index=0&id=33203615&lang=scss&scoped=true":
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-3.use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-3.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-3.use[3]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./assets/src/admin/utils/settings/uicore-mini-toggle.vue?vue&type=style&index=0&id=33203615&lang=scss&scoped=true ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extract-plugin\n\n\n//# sourceURL=webpack://uicore-framework/./assets/src/admin/utils/settings/uicore-mini-toggle.vue?./node_modules/mini-css-extract-plugin/dist/loader.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-3.use%5B1%5D!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-3.use%5B2%5D!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-3.use%5B3%5D!./node_modules/vue-loader/lib/index.js??vue-loader-options");
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = __webpack_modules__;
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/chunk loaded */
+/******/ 	(() => {
+/******/ 		var deferred = [];
+/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
+/******/ 			if(chunkIds) {
+/******/ 				priority = priority || 0;
+/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
+/******/ 				deferred[i] = [chunkIds, fn, priority];
+/******/ 				return;
+/******/ 			}
+/******/ 			var notFulfilled = Infinity;
+/******/ 			for (var i = 0; i < deferred.length; i++) {
+/******/ 				var [chunkIds, fn, priority] = deferred[i];
+/******/ 				var fulfilled = true;
+/******/ 				for (var j = 0; j < chunkIds.length; j++) {
+/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
+/******/ 						chunkIds.splice(j--, 1);
+/******/ 					} else {
+/******/ 						fulfilled = false;
+/******/ 						if(priority < notFulfilled) notFulfilled = priority;
+/******/ 					}
+/******/ 				}
+/******/ 				if(fulfilled) {
+/******/ 					deferred.splice(i--, 1)
+/******/ 					var r = fn();
+/******/ 					if (r !== undefined) result = r;
+/******/ 				}
+/******/ 			}
+/******/ 			return result;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/node module decorator */
+/******/ 	(() => {
+/******/ 		__webpack_require__.nmd = (module) => {
+/******/ 			module.paths = [];
+/******/ 			if (!module.children) module.children = [];
+/******/ 			return module;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/jsonp chunk loading */
+/******/ 	(() => {
+/******/ 		// no baseURI
+/******/ 		
+/******/ 		// object to store loaded and loading chunks
+/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 		var installedChunks = {
+/******/ 			"admin-swatches": 0
+/******/ 		};
+/******/ 		
+/******/ 		// no chunk on demand loading
+/******/ 		
+/******/ 		// no prefetching
+/******/ 		
+/******/ 		// no preloaded
+/******/ 		
+/******/ 		// no HMR
+/******/ 		
+/******/ 		// no HMR manifest
+/******/ 		
+/******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
+/******/ 		
+/******/ 		// install a JSONP callback for chunk loading
+/******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
+/******/ 			var [chunkIds, moreModules, runtime] = data;
+/******/ 			// add "moreModules" to the modules object,
+/******/ 			// then flag all "chunkIds" as loaded and fire callback
+/******/ 			var moduleId, chunkId, i = 0;
+/******/ 			if(chunkIds.some((id) => (installedChunks[id] !== 0))) {
+/******/ 				for(moduleId in moreModules) {
+/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
+/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
+/******/ 					}
+/******/ 				}
+/******/ 				if(runtime) var result = runtime(__webpack_require__);
+/******/ 			}
+/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
+/******/ 			for(;i < chunkIds.length; i++) {
+/******/ 				chunkId = chunkIds[i];
+/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 					installedChunks[chunkId][0]();
+/******/ 				}
+/******/ 				installedChunks[chunkId] = 0;
+/******/ 			}
+/******/ 			return __webpack_require__.O(result);
+/******/ 		}
+/******/ 		
+/******/ 		var chunkLoadingGlobal = self["webpackChunkuicore_framework"] = self["webpackChunkuicore_framework"] || [];
+/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
+/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendor"], () => (__webpack_require__("./assets/src/admin-swatches/main.js")))
+/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
+/******/ 	
+/******/ })()
+;

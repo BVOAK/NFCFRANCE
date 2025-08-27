@@ -1,0 +1,1 @@
+div.product .uicore-grid-gallery{display:grid;grid-gap:var(--uicore-gallery-gap);grid-template-columns:repeat(calc(var(--uicore-gallery-columns)*1),1fr)}div.product .uicore-grid-gallery>div:only-child{grid-column:span 2}

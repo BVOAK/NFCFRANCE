@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard NFC - NFC France</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --nfc-primary: #0040C1;
+            --nfc-secondary: #667eea;
+            --nfc-background: #f8fafc;
+            --nfc-sidebar: #1a202c;
+            --nfc-sidebar-hover: #2d3748;
+            --nfc-text: #1a202c;
+            --nfc-text-light: #64748b;
+            --sidebar-width: 280px;
+        }
+
+        body {
+            background: var(--nfc-background);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* Layout principal */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--nfc-sidebar);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            padding: 0 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            margin: 0.25rem 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--nfc-sidebar-hover);
+            color: white;
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--nfc-secondary);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .nav-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+            text-align: center;
+        }
+
+        /* Zone de contenu */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            min-height: 100vh;
+        }
+
+        /* Breadcrumb WooCommerce */
+        .wc-breadcrumb {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.875rem;
+        }
+
+        .wc-breadcrumb a {
+            color: var(--nfc-primary);
+            text-decoration: none;
+        }
+
+        .wc-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Header principal */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--nfc-text);
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: var(--nfc-background);
+            border-radius: 50px;
+            text-decoration: none;
+            color: var(--nfc-text);
+            transition: all 0.3s ease;
+        }
+
+        .user-menu:hover {
+            background: #e2e8f0;
+            color: var(--nfc-text);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--nfc-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Zone de contenu */
+        .content-area {
+            padding: 2rem;
+        }
+
+        /* Cards */
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background: white !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Pages content - Cachées par défaut */
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block !important;
+            }
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--nfc-text);
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 1rem;
+            }
+            
+            .main-header {
+                padding: 1rem;
+            }
+            
+            .wc-breadcrumb {
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        /* User info sidebar */
+        .sidebar-user {
+            margin-top: auto;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-user-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--nfc-secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .sidebar-user-details h6 {
+            margin: 0;
+            font-weight: 600;
+            color: white;
+        }
+
+        .sidebar-user-details small {
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Boutons actions rapides */
+        .quick-action-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border-color: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <!-- Header sidebar -->
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">
+                    <i class="fas fa-credit-card me-2"></i>
+                    NFC France
+                </a>
+            </div>
+
+            <!-- Navigation -->
+            <div class="sidebar-nav">
+                <!-- Section principale -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Dashboard</div>
+                    <div class="nav-item">
+                        <a href="#" class="nav-link active" data-page="dashboard">
+                            <i class="fas fa-home"></i>
+                            Vue d'ensemble
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Section Ma vCard -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Ma vCard</div>
+                    <div class="nav-item">
+                        <a href="#" class="nav-link" data-page="vcard">
+                            <i class="fas fa-id-card"></i>
+                            Modifier ma vCard
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#" class="nav-link" data-page="qrcodes">
+                            <i class="fas fa-qrcode"></i>
+                            QR Codes
+                            <span class="badge bg-success ms-auto">2</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#" class="nav-link" data-page="preview">
+                            <i class="fas fa-eye"></i>
+                            Aperçu public
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Section Contacts -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Contacts & Stats</div>
+                    <div class="nav-item">
+                        <a href="#" class="nav-link" data-page="contacts">
+                            <i class="fas fa-users"></i>
+                            Mes contacts
+                            <span class="badge bg-primary ms-auto">12</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="#" class="nav-link" data-page="statistics">
+                            <i class="fas fa-chart-line"></i>
+                            Statistiques
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Section WooCommerce -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Mon compte</div>
+                    <div class="nav-item">
+                        <a href="/mon-compte" class="nav-link">
+                            <i class="fas fa-user"></i>
+                            Mon compte WooCommerce
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="/mon-compte/orders" class="nav-link">
+                            <i class="fas fa-shopping-bag"></i>
+                            Mes commandes
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="/boutique" class="nav-link">
+                            <i class="fas fa-store"></i>
+                            Boutique
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Actions rapides -->
+                <div class="nav-section">
+                    <div class="nav-item">
+                        <button class="btn quick-action-btn w-100 btn-sm mb-2">
+                            <i class="fas fa-share-alt me-2"></i>
+                            Partager ma vCard
+                        </button>
+                    </div>
+                    <div class="nav-item">
+                        <button class="btn quick-action-btn w-100 btn-sm">
+                            <i class="fas fa-download me-2"></i>
+                            Télécharger QR Code
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User info -->
+            <div class="sidebar-user">
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-avatar">JD</div>
+                    <div class="sidebar-user-details">
+                        <h6>Jean Dupont</h6>
+                        <small>jean@example.com</small>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Zone de contenu principal -->
+        <main class="main-content">
+            <!-- Breadcrumb WooCommerce -->
+            <div class="wc-breadcrumb">
+                <a href="/mon-compte">Mon compte</a>
+                <span class="mx-2">/</span>
+                <span>Dashboard NFC</span>
+            </div>
+
+            <!-- Header principal -->
+            <header class="main-header">
+                <div class="d-flex align-items-center">
+                    <button class="mobile-menu-btn me-3" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title" id="pageTitle">Vue d'ensemble</h1>
+                </div>
+
+                <div class="header-actions">
+                    <button class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-share-alt me-2"></i>
+                        Partager
+                    </button>
+                    
+                    <a href="/mon-compte" class="user-menu">
+                        <div class="user-avatar">JD</div>
+                        <div class="d-none d-md-block">
+                            <div class="fw-semibold">Jean Dupont</div>
+                            <small class="text-muted">Compte client</small>
+                        </div>
+                        <i class="fas fa-chevron-down ms-2 d-none d-md-inline"></i>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Zone de contenu dynamique -->
+            <div class="content-area" id="contentArea">
+                
+                <!-- PAGE DASHBOARD -->
+                <div class="page-content active" data-page="dashboard">
+                    <!-- Stats rapides -->
+                    <div class="row mb-4">
+                        <div class="col-12 mb-3">
+                            <h2 class="h4 text-dark">Tableau de bord</h2>
+                            <p class="text-muted">Aperçu de votre activité NFC</p>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="dashboard-card p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                                        <i class="fas fa-eye text-primary fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="h5 mb-0">247</h3>
+                                        <p class="text-muted small mb-0">Vues cette semaine</p>
+                                        <small class="text-success">
+                                            <i class="fas fa-arrow-up me-1"></i>+12%
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="dashboard-card p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                                        <i class="fas fa-users text-success fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="h5 mb-0">18</h3>
+                                        <p class="text-muted small mb-0">Nouveaux contacts</p>
+                                        <small class="text-success">
+                                            <i class="fas fa-arrow-up me-1"></i>+3 aujourd'hui
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="dashboard-card p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-warning bg-opacity-10 rounded-circle p-3 me-3">
+                                        <i class="fas fa-qrcode text-warning fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="h5 mb-0">89</h3>
+                                        <p class="text-muted small mb-0">Scans QR Code</p>
+                                        <small class="text-success">
+                                            <i class="fas fa-arrow-up me-1"></i>+5%
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="dashboard-card p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="stat-icon bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                                        <i class="fas fa-share-alt text-info fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="h5 mb-0">34</h3>
+                                        <p class="text-muted small mb-0">Partages sociaux</p>
+                                        <small class="text-warning">
+                                            <i class="fas fa-minus me-1"></i>-2%
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contenu principal dashboard -->
+                    <div class="row">
+                        <div class="col-lg-8 mb-4">
+                            <div class="dashboard-card">
+                                <div class="card-header p-3">
+                                    <h3 class="h6 mb-0">Activité récente</h3>
+                                </div>
+                                <div class="p-4 text-center text-muted">
+                                    <i class="fas fa-chart-line fa-3x mb-3 opacity-50"></i>
+                                    <p>Graphique d'activité à développer</p>
+                                    <small>Chart.js sera intégré ici</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-4">
+                            <div class="dashboard-card">
+                                <div class="card-header p-3">
+                                    <h3 class="h6 mb-0">Ma vCard</h3>
+                                </div>
+                                <div class="p-3 text-center">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face" 
+                                         alt="Jean Dupont" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+                                    <h6>Jean Dupont</h6>
+                                    <small class="text-muted">Développeur Web</small>
+                                    <div class="d-grid gap-2 mt-3">
+                                        <button class="btn btn-primary btn-sm" onclick="switchPage('vcard')">
+                                            <i class="fas fa-edit me-2"></i>Modifier
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="switchPage('preview')">
+                                            <i class="fas fa-eye me-2"></i>Voir ma vCard
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAGE MA VCARD -->
+                <div class="page-content" data-page="vcard">
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <h2 class="h4 text-dark">Modifier ma vCard</h2>
+                            <p class="text-muted">Personnalisez vos informations de contact</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="dashboard-card">
+                                <div class="card-header p-3">
+                                    <h3 class="h6 mb-0">Informations personnelles</h3>
+                                </div>
+                                <div class="p-4">
+                                    <form id="vcardForm">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Prénom *</label>
+                                                <input type="text" class="form-control" value="Jean" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Nom *</label>
+                                                <input type="text" class="form-control" value="Dupont" required>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Fonction</label>
+                                                <input type="text" class="form-control" value="Développeur Web">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Entreprise</label>
+                                                <input type="text" class="form-control" value="NFC France">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Email *</label>
+                                                <input type="email" class="form-control" value="jean@example.com" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label">Téléphone</label>
+                                                <input type="tel" class="form-control" value="06 12 34 56 78">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Site web</label>
+                                            <input type="url" class="form-control" value="https://example.com">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">LinkedIn</label>
+                                            <input type="url" class="form-control" value="https://linkedin.com/in/jeandupont">
+                                        </div>
+                                        
+                                        <div class="mb-4">
+                                            <label class="form-label">Description</label>
+                                            <textarea class="form-control" rows="3" placeholder="Décrivez-vous en quelques mots..."></textarea>
+                                        </div>
+                                        
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-2"></i>Enregistrer
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary">
+                                                <i class="fas fa-undo me-2"></i>Annuler
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4">
+                            <div class="dashboard-card">
+                                <div class="card-header p-3">
+                                    <h3 class="h6 mb-0">Photo de profil</h3>
+                                </div>
+                                <div class="p-4 text-center">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face" 
+                                         alt="Photo profil" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-upload me-2"></i>Changer la photo
+                                        </button>
+                                        <button class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-trash me-2"></i>Supprimer
+                                        </button>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">
+                                        JPG, PNG max 2MB<br>
+                                        Recommandé: 400x400px
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAGE QR CODES -->
+                <div class="page-content" data-page="qrcodes">
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <h2 class="h4 text-dark">QR Codes</h2>
+                            <p class="text-muted">Gérez et téléchargez vos QR codes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-6 mb-4">
+                            <div class="dashboard-card">
+                                <div class="card-header p-3">
+                                    <h3 class="h6 mb-0">Aperçu QR Code</h3>
+                                </div>
+                                <div class="p-4 text-center">
+                                    <div class="bg-light rounded p-4 mb-3 d-inline-block">
+                                        <i class="fas fa-qrcode fa-5x text-dark"></i>
+                                    </div>
+                                    <p class="text-muted small">QR Code vers votre vCard</p>
+                                    <p class="small"><strong>nfcfrance.com/vcard/jean-dupont</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6 mb-4">
+                            <div class="dashboard-card">
+                                <div class="card-header p-3">
+                                    <h3 class="h6 mb-0">Téléchargements</h3>
+                                </div>
+                                <div class="p-4">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-primary">
+                                            <i class="fas fa-download me-2"></i>PNG Haute qualité
+                                        </button>
+                                        <button class="btn btn-outline-primary">
+                                            <i class="fas fa-download me-2"></i>SVG Vectoriel
+                                        </button>
+                                        <button class="btn btn-outline-primary">
+                                            <i class="fas fa-download me-2"></i>PDF Impression
+                                        </button>
+                                    </div>
+                                    <hr class="my-3">
+                                    <h6 class="small text-muted mb-2">Personnalisation</h6>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-secondary btn-sm">
+                                            <i class="fas fa-palette me-2"></i>Personnaliser les couleurs
+                                        </button>
+                                        <button class="btn btn-outline-secondary btn-sm">
+                                            <i class="fas fa-image me-2"></i>Ajouter un logo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="dashboard-card">
+                                <div class="card-header p-3">
+                                    <h3 class="h6 mb-0">Statistiques QR Code</h3>
+                                </div>
+                                <div class="p-4">
+                                    <div class="row text-center">
+                                        <div class="col-md-3">
+                                            <h4 class="text-primary">89</h4>
+                                            <small class="text-muted">Scans total</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h4 class="text-success">12</h4>
+                                            <small class="text-muted">Cette semaine</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h4 class="text-warning">3</h4>
+                                            <small class="text-muted">Aujourd'hui</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h4 class="text-info">67%</h4>
+                                            <small class="text-muted">Taux conversion</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAGE CONTACTS -->
+                <div class="page-content" data-page="contacts">
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h2 class="h4 text-dark mb-0">Mes contacts</h2>
+                                    <p class="text-muted">12 contacts reçus via votre vCard</p>
+                                </div>
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-download me-2"></i>Exporter CSV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <div class="card-header p-3">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h3 class="h6 mb-0">Liste des contacts</h3>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" placeholder="Rechercher un contact...">
+                                        <button class="btn btn-outline-secondary">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Contact</th>
+                                        <th>Entreprise</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                     style="width: 40px; height: 40px;">
+                                                    <span class="text-success fw-bold">ML</span>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0">Marie Legrand</h6>
+                                                    <small class="text-muted">marie@example.com</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span>Directrice Marketing</span>
+                                            <br><small class="text-muted">Tech Corp</small>
+                                        </td>
+                                        <td>
+                                            <span>15/01/2025</span>
+                                            <br><small class="text-muted">Il y a 2h</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary">
+                                                    <i class="fas fa-envelope"></i>
+                                                </button>
+                                                <button class="btn btn-outline-success">
+                                                    <i class="fas fa-phone"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                     style="width: 40px; height: 40px;">
+                                                    <span class="text-primary fw-bold">PD</span>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0">Pierre Dubois</h6>
+                                                    <small class="text-muted">pierre@example.com</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span>Développeur Senior</span>
+                                            <br><small class="text-muted">Startup Inc</small>
+                                        </td>
+                                        <td>
+                                            <span>14/01/2025</span>
+                                            <br><small class="text-muted">Il y a 5h</small>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary">
+                                                    <i class="fas fa-envelope"></i>
+                                                </button>
+                                                <button class="btn btn-outline-success">
+                                                    <i class="fas fa-phone"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="p-3 border-top">
+                            <nav>
+                                <ul class="pagination pagination-sm justify-content-center mb-0">
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Précédent</span>
+                                    </li>
+                                    <li class="page-item active">
+                                        <span class="page-link">1</span>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#">2</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#">Suivant</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAGE STATISTIQUES -->
+                <div class="page-content" data-page="statistics">
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <h2 class="h4 text-dark">Statistiques</h2>
+                            <p class="text-muted">Analytics détaillées de votre vCard</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="dashboard-card p-3 text-center">
+                                <i class="fas fa-eye text-primary fa-2x mb-2"></i>
+                                <h4 class="text-primary">1,247</h4>
+                                <small class="text-muted">Vues totales</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="dashboard-card p-3 text-center">
+                                <i class="fas fa-users text-success fa-2x mb-2"></i>
+                                <h4 class="text-success">89</h4>
+                                <small class="text-muted">Contacts uniques</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="dashboard-card p-3 text-center">
+                                <i class="fas fa-qrcode text-warning fa-2x mb-2"></i>
+                                <h4 class="text-warning">156</h4>
+                                <small class="text-muted">Scans QR</small>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3">
+                            <div class="dashboard-card p-3 text-center">
+                                <i class="fas fa-chart-line text-info fa-2x mb-2"></i>
+                                <h4 class="text-info">7.2%</h4>
+                                <small class="text-muted">Taux conversion</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8 mb-4">
+                            <div class="dashboard-card">
+                                <div class="card-header p-3">
+                                    <h3 class="h6 mb-0">Évolution des vues</h3>
+                                </div>
+                                <div class="p-4 text-center text-muted">
+                                    <i class="fas fa-chart-area fa-3x mb-3 opacity-50"></i>
+                                    <p>Graphique d'évolution à développer</p>
+                                    <small>Chart.js avec données API</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-4">
+                            <div class="dashboard-card">
+                                <div class="card-header p-3">
+                                    <h3 class="h6 mb-0">Top interactions</h3>
+                                </div>
+                                <div class="p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span><i class="fab fa-linkedin text-primary me-2"></i>LinkedIn</span>
+                                        <span class="fw-bold">42</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span><i class="fas fa-envelope text-success me-2"></i>Email</span>
+                                        <span class="fw-bold">28</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span><i class="fas fa-phone text-info me-2"></i>Téléphone</span>
+                                        <span class="fw-bold">16</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-globe text-warning me-2"></i>Site web</span>
+                                        <span class="fw-bold">12</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAGE APERCU PUBLIC -->
+                <div class="page-content" data-page="preview">
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h2 class="h4 text-dark mb-0">Aperçu public</h2>
+                                    <p class="text-muted">Voici comment votre vCard apparaît aux visiteurs</p>
+                                </div>
+                                <a href="#" class="btn btn-primary" target="_blank">
+                                    <i class="fas fa-external-link-alt me-2"></i>Voir en plein écran
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-lg-6">
+                            <div class="dashboard-card">
+                                <div class="p-4 text-center">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face" 
+                                         alt="Jean Dupont" class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                                    <h4>Jean Dupont</h4>
+                                    <p class="text-muted">Développeur Web chez NFC France</p>
+                                    
+                                    <div class="d-grid gap-2 mb-4">
+                                        <button class="btn btn-primary">
+                                            <i class="fas fa-envelope me-2"></i>jean@example.com
+                                        </button>
+                                        <button class="btn btn-outline-primary">
+                                            <i class="fas fa-phone me-2"></i>06 12 34 56 78
+                                        </button>
+                                        <button class="btn btn-outline-primary">
+                                            <i class="fas fa-globe me-2"></i>example.com
+                                        </button>
+                                        <button class="btn btn-outline-primary">
+                                            <i class="fab fa-linkedin me-2"></i>LinkedIn
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="border-top pt-3">
+                                        <h6>Échanger nos informations</h6>
+                                        <p class="small text-muted">Laissez vos coordonnées pour que je puisse vous recontacter</p>
+                                        <button class="btn btn-success">
+                                            <i class="fas fa-user-plus me-2"></i>Échanger nos contacts
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Navigation management
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // Page switching
+        function switchPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show target page
+            const targetPage = document.querySelector(`[data-page="${pageId}"]`);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            const targetNav = document.querySelector(`[data-page="${pageId}"]`);
+            if (targetNav) {
+                targetNav.classList.add('active');
+            }
+            
+            // Update page title
+            const pageTitles = {
+                'dashboard': 'Vue d\'ensemble',
+                'vcard': 'Modifier ma vCard',
+                'qrcodes': 'QR Codes',
+                'contacts': 'Mes contacts',
+                'statistics': 'Statistiques',
+                'preview': 'Aperçu public'
+            };
+            
+            document.getElementById('pageTitle').textContent = pageTitles[pageId] || 'Dashboard';
+            
+            // Close mobile sidebar
+            if (window.innerWidth <= 1024) {
+                document.getElementById('sidebar').classList.remove('show');
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation links
+            document.querySelectorAll('[data-page]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    switchPage(pageId);
+                });
+            });
+
+            // Form submission
+            document.getElementById('vcardForm')?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Fonctionnalité à développer : sauvegarde via API');
+            });
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (window.innerWidth <= 1024 && 
+                !sidebar.contains(e.target) && 
+                !menuBtn.contains(e.target) && 
+                sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

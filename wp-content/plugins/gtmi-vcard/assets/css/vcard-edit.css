@@ -1,0 +1,276 @@
+/**
+ * CSS vcard-edit.php - Version épurée avec animations bouton
+ * 
+ * Fichier: assets/css/vcard-edit.css
+ */
+
+/* === VARIABLES === */
+:root {
+    --nfc-primary: #0d6efd;
+    --nfc-success: #198754;
+    --nfc-error: #dc3545;
+    --nfc-warning: #ffc107;
+}
+
+/* === CONFIGURATION COMPORTEMENT === */
+.redirect-mode-selector {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.redirect-mode-selector .form-check {
+    padding: 0.75rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.redirect-mode-selector .form-check:hover {
+    background: rgba(0, 64, 193, 0.05);
+}
+
+.redirect-mode-selector .form-check-input:checked ~ .form-check-label {
+    color: var(--nfc-primary);
+    font-weight: 600;
+}
+
+/* === CUSTOM URL === */
+#custom-url-section {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+#custom_url_input.is-valid {
+    border-color: var(--nfc-success);
+}
+
+#custom_url_input.is-invalid {
+    border-color: var(--nfc-error);
+}
+
+/* === PREVIEW COMPORTEMENT === */
+#behavior-preview {
+    min-height: 60px;
+    transition: all 0.3s ease;
+}
+
+#behavior-preview .d-flex {
+    animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === CARDS FORMULAIRE === */
+.dashboard-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: none;
+    transition: border-color 0.2s ease;
+}
+
+.dashboard-card:hover {
+    border-color: #d1d5db;
+}
+
+.dashboard-card .card-header {
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 8px 8px 0 0 !important;
+    padding: 1rem;
+}
+
+.dashboard-card .card-header h3 {
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.dashboard-card .card-header small {
+    color: #6b7280;
+    font-size: 0.75rem;
+}
+
+/* === CHAMPS FORMULAIRE === */
+.form-control {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: var(--nfc-primary);
+    box-shadow: 0 0 0 0.2rem rgba(0, 64, 193, 0.15);
+}
+
+.form-control.is-valid:focus {
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.15);
+}
+
+.form-control.is-invalid:focus {
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15);
+}
+
+/* === ANIMATIONS BOUTON SAUVEGARDE (NOUVEAU) === */
+
+/* Animation pulse pour loading */
+@keyframes pulse {
+    0% { 
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 64, 193, 0.7);
+    }
+    50% { 
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(0, 64, 193, 0);
+    }
+    100% { 
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 64, 193, 0);
+    }
+}
+
+/* Animation bounce pour succès */
+@keyframes bounce {
+    0%, 20%, 60%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    80% { transform: translateY(-5px); }
+}
+
+/* Animation shake pour erreur */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* États du bouton */
+#saveVCard {
+    transition: all 0.3s ease;
+    min-width: 120px;
+    background: #0d6efd!important;
+    padding: 10px 30px;
+}
+
+/* État loading */
+#saveVCard.btn-loading {
+    animation: pulse 1.5s infinite;
+    background: var(--nfc-primary) !important;
+    border-color: var(--nfc-primary) !important;
+    color: white !important;
+    cursor: wait;
+}
+
+/* État succès */
+#saveVCard.btn-success {
+    animation: bounce 0.8s ease;
+    background: var(--nfc-success) !important;
+    border-color: var(--nfc-success) !important;
+    color: white !important;
+}
+
+/* État erreur */
+#saveVCard.btn-error {
+    animation: shake 0.6s ease;
+    background: var(--nfc-error) !important;
+    border-color: var(--nfc-error) !important;
+    color: white !important;
+}
+
+/* Animation icône spinner */
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* === IMAGES === */
+.profile-image-container {
+    position: relative;
+    display: inline-block;
+}
+
+#profile-preview img {
+    border: 3px solid #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#profile-preview .bg-primary {
+    border: 3px solid #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* === BOUTONS === */
+.btn {
+    transition: all 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background: var(--nfc-primary);
+    border-color: var(--nfc-primary);
+}
+
+.btn-primary:hover {
+    background: #0036a3;
+    border-color: #0036a3;
+}
+
+.btn-outline-primary {
+    color: var(--nfc-primary);
+    border-color: var(--nfc-primary);
+    padding: 10px 30px;
+}
+
+.btn-outline-primary:hover {
+    background: var(--nfc-primary);
+    border-color: var(--nfc-primary);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    
+    /* Bouton sauvegarde pleine largeur */
+    #saveVCard {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    /* Réduire intensité animations sur mobile */
+    #saveVCard.btn-loading {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+    }
+    
+    /* Cards empilées */
+    .dashboard-card {
+        margin-bottom: 1rem;
+    }
+}

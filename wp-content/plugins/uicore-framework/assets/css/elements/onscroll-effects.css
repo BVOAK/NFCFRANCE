@@ -1,0 +1,1 @@
+.ui-onscroll-simple-sticky{--ui-e-onscroll-offset:50px;--ui-e-onscroll-items-offset:20px}.ui-onscroll-simple-sticky.e-con-boxed>.e-con-inner>.e-con,.ui-onscroll-simple-sticky>.e-con{position:sticky;top:var(--ui-e-onscroll-offset);margin-top:calc(var(--ui-e-onscroll-items-offset)*var(--item-index));max-height:calc(100vh - var(--ui-e-onscroll-offset))}

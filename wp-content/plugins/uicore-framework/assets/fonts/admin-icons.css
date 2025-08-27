@@ -1,0 +1,98 @@
+@font-face {
+    font-family: 'uicore-admin';
+    src: url('uicore-admin.eot?ayasaj');
+    src: url('uicore-admin.eot?ayasaj#iefix') format('embedded-opentype'),
+        url('uicore-admin.ttf?ayasaj') format('truetype'), url('uicore-admin.woff?ayasaj') format('woff'),
+        url('uicore-admin.svg?ayasaj#uicore-admin') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^='icon-'],
+[class*=' icon-'] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'uicore-admin' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-uicore-admin-monitor:before {
+    content: '\e900';
+}
+.icon-uicore-admin-phone:before {
+    content: '\e901';
+}
+.icon-uicore-admin-tablet:before {
+    content: '\e902';
+}
+.icon-uicore-admin-blog:before {
+    content: '\e903';
+}
+.icon-uicore-admin-branding:before {
+    content: '\e904';
+}
+.icon-uicore-admin-colors:before {
+    content: '\e905';
+}
+.icon-uicore-admin-custom:before {
+    content: '\e906';
+}
+.icon-uicore-admin-dashboard:before {
+    content: '\e907';
+}
+.icon-uicore-admin-demo-import:before {
+    content: '\e908';
+}
+.icon-uicore-admin-feedback:before {
+    content: '\e909';
+}
+.icon-uicore-admin-footer:before {
+    content: '\e90a';
+}
+.icon-uicore-admin-general-settings:before {
+    content: '\e90b';
+}
+.icon-uicore-admin-get-help:before {
+    content: '\e90c';
+}
+.icon-uicore-admin-header:before {
+    content: '\e90d';
+}
+.icon-uicore-admin-import-export:before {
+    content: '\e90e';
+}
+.icon-uicore-admin-page-title:before {
+    content: '\e90f';
+}
+.icon-uicore-admin-plugins:before {
+    content: '\e910';
+}
+.icon-uicore-admin-portfolio:before {
+    content: '\e911';
+}
+.icon-uicore-admin-server-status:before {
+    content: '\e912';
+}
+.icon-uicore-admin-social:before {
+    content: '\e913';
+}
+.icon-uicore-admin-tutorials:before {
+    content: '\e914';
+}
+.icon-uicore-admin-typography:before {
+    content: '\e915';
+}
+.icon-uicore-admin-updates:before {
+    content: '\e916';
+}
+.icon-uicore-admin-woo-commerce:before {
+    content: '\e917';
+}

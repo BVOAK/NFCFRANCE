@@ -1,0 +1,241 @@
+# =============================================================================
+# .gitignore - NFC France WordPress Site
+# Optimisé pour développement WordPress + plugins custom + assets build
+# =============================================================================
+
+# =============================================================================
+# WORDPRESS CORE - Ne jamais committer le core WP
+# =============================================================================
+/wp-admin/
+/wp-includes/
+/wp-content/index.php
+/wp-content/languages/
+/wp-content/upgrade/
+/wp-content/uploads/
+wp-*.php
+xmlrpc.php
+index.php
+license.txt
+readme.html
+
+# Configuration WordPress
+wp-config.php
+wp-config-sample.php
+.htaccess
+
+# =============================================================================
+# ENVIRONNEMENT & CONFIGURATION
+# =============================================================================
+# Fichiers de config locaux
+wp-config-local.php
+local-config.php
+.env
+.env.local
+.env.production
+
+# Données sensibles
+/sitemap.xml
+/sitemap.xml.gz
+
+# =============================================================================
+# PLUGINS & THEMES TIERS - Gérés via Composer/WP-CLI
+# =============================================================================
+# Plugins WordPress.org (installés via WP-CLI)
+/wp-content/plugins/akismet/
+/wp-content/plugins/hello-dolly/
+/wp-content/plugins/jetpack/
+/wp-content/plugins/woocommerce/
+/wp-content/plugins/contact-form-7/
+/wp-content/plugins/yoast-seo/
+/wp-content/plugins/wordfence/
+/wp-content/plugins/wp-super-cache/
+
+# Thèmes WordPress.org
+/wp-content/themes/twenty*/
+
+# =============================================================================
+# DÉVELOPPEMENT NFC FRANCE - À CONSERVER
+# =============================================================================
+# NOS plugins custom - À COMMITTER
+# /wp-content/plugins/gtmi-vcard/          # Plugin principal
+# /wp-content/plugins/nfc-configurator/    # Plugin configurateur
+# /wp-content/plugins/nfc-dashboard/       # Extension dashboard
+
+# Notre thème custom - À COMMITTER  
+# /wp-content/themes/nfc-france/           # Thème principal
+
+# =============================================================================
+# UPLOADS & MÉDIAS
+# =============================================================================
+# Tous les uploads utilisateur
+/wp-content/uploads/
+# Exceptions : garder les assets du projet
+!/wp-content/uploads/assets/
+!/wp-content/uploads/logos/
+!/wp-content/uploads/templates/
+
+# Cache uploads
+/wp-content/uploads/cache/
+/wp-content/uploads/backups/
+
+# =============================================================================
+# CACHE & PERFORMANCE
+# =============================================================================
+# Cache plugins
+/wp-content/cache/
+/wp-content/advanced-cache.php
+/wp-content/wp-cache-config.php
+
+# Cache divers
+*.cache
+/cache/
+/.sass-cache/
+
+# =============================================================================
+# BUILD & ASSETS
+# =============================================================================
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Build assets (garder les sources, ignorer les compilés)
+/wp-content/themes/nfc-france/assets/dist/
+/wp-content/plugins/*/assets/dist/
+
+# Fichiers temporaires build
+*.map
+*.min.css
+*.min.js
+
+# =============================================================================
+# DÉVELOPPEMENT TOOLS
+# =============================================================================
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Composer
+/vendor/
+composer.phar
+composer.lock
+
+# =============================================================================
+# LOGS & DEBUG
+# =============================================================================
+# Logs WordPress
+/wp-content/debug.log
+error_log
+access.log
+*.log
+
+# PHP logs
+php_errors.log
+
+# =============================================================================
+# BACKUP & EXPORT
+# =============================================================================
+# Exports base de données
+*.sql
+*.sql.gz
+*.sql.zip
+
+# Backups
+/backups/
+*.backup
+*.bak
+
+# Exports WooCommerce
+/wp-content/woocommerce_uploads/
+
+# =============================================================================
+# SÉCURITÉ
+# =============================================================================
+# Clés et certificats
+*.pem
+*.key
+*.crt
+*.p12
+
+# Fichiers sensibles
+.htpasswd
+.user.ini
+
+# =============================================================================
+# SYSTÈME
+# =============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+
+# =============================================================================
+# SPÉCIFIQUE NFC FRANCE PROJECT
+# =============================================================================
+# Données de test
+/test-data/
+/sample-uploads/
+
+# Documentation générée
+/docs/generated/
+
+# Fichiers temporaires développement
+/temp/
+/tmp/
+*.tmp
+
+# =============================================================================
+# EXCEPTIONS - Fichiers à TOUJOURS committer
+# =============================================================================
+# Configuration exemple (sans données sensibles)
+!wp-config-example.php
+
+# Assets sources du projet
+!/wp-content/themes/nfc-france/assets/src/
+!/wp-content/plugins/*/assets/src/
+
+# Documentation
+!/docs/
+!/README.md
+!/PROJECT-STATUS.md
+
+# =============================================================================
+# DÉPLOIEMENT
+# =============================================================================
+# Scripts de déploiement avec mots de passe
+deploy.sh
+.deploy
+.ftpconfig
+
+# Fichiers de staging
+staging-config.php
+
+# =============================================================================
+# PERFORMANCE & MONITORING  
+# =============================================================================
+# Fichiers de monitoring
+/wp-content/mu-plugins/query-monitor/
+newrelic.ini
+
+# =============================================================================
+# WOOCOMMERCE SPÉCIFIQUE
+# =============================================================================
+# Logs WooCommerce
+/wp-content/uploads/wc-logs/
+
+# Sessions WooCommerce
+/wp-content/woocommerce_uploads/

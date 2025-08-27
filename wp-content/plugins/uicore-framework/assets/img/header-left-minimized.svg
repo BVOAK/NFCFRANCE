@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="140px" height="70px" viewBox="0 0 140 70" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>header-left-minimized</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Dashboard-v.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Header" transform="translate(-750.000000, -453.000000)">
+            <g id="Left-Header-Minimized" transform="translate(750.000000, 453.000000)">
+                <g id="header-left-minimized">
+                    <rect id="Rectangle-Copy-17" stroke="#B0B8CA" stroke-width="2" x="1" y="1" width="138" height="68"></rect>
+                    <rect id="Rectangle-Copy-16" stroke="#B0B8CA" x="0.5" y="0.5" width="9" height="69"></rect>
+                    <rect id="Rectangle-Copy-14" stroke="#B0B8CA" x="4.5" y="58.5" width="2" height="7"></rect>
+                    <rect id="Rectangle-Copy-13" fill="#B0B8CA" x="4" y="4" width="3" height="1"></rect>
+                    <rect id="Rectangle-Copy-26" fill="#B0B8CA" x="4" y="6" width="3" height="1"></rect>
+                    <rect id="Rectangle-Copy-27" fill="#B0B8CA" x="4" y="8" width="3" height="1"></rect>
+                    <g id="Group-2" transform="translate(5.000000, 29.000000)" fill="#B0B8CA">
+                        <rect id="Rectangle-Copy-12" x="0" y="10" width="1" height="3"></rect>
+                        <rect id="Rectangle-Copy-15" x="0" y="5" width="1" height="3"></rect>
+                        <rect id="Rectangle-Copy-25" x="0" y="0" width="1" height="3"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

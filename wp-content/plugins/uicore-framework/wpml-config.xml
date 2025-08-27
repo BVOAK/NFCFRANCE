@@ -1,0 +1,24 @@
+<wpml-config>
+    <admin-texts>
+        <key name="uicore_theme_options">
+            <key name="header_ctatext"/>
+            <key name="header_ctalink"/>
+            <key name="header_topone_content"/>
+            <key name="header_toptwo_content"/>
+            <key name="copyrights_content"/>
+            <key name="social_*"/>
+            <key name="header_sd_text"/>
+            <key name="logo"/>
+            <key name="logo*"/>
+        </key>
+    </admin-texts>
+	<custom-types>
+		<custom-type translate="1" display-as-translated="1">uicore-tb</custom-type>
+		<custom-type translate="1">portfolio</custom-type>
+	</custom-types>
+    <widget name="highlighted-text">
+        <fields-in-item items_of="content">
+            <field type="Accordion: Title" editor_type="LINE">text</field>
+        </fields-in-item>
+    </widget>
+</wpml-config>

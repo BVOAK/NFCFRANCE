@@ -1,0 +1,88 @@
+/**
+ * Fancy Product Designer - CSS avec loader et états
+ */
+
+/* =============================================================================
+   Classe pour le bouton panier après personnalisation
+   ============================================================================= */
+
+.single_add_to_cart_button.fpd-customized {
+    /* Bordure verte pour indiquer que c'est personnalisé */
+    position: relative !important;
+}
+
+/* =============================================================================
+   Loader pour l'état "personnalisation en cours"
+   ============================================================================= */
+
+.fpd-loader {
+    display: inline-block !important;
+    width: 16px !important;
+    height: 16px !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50% !important;
+    border-top-color: #fff !important;
+    animation: fpd-spin 1s ease-in-out infinite !important;
+    margin-right: 8px !important;
+    vertical-align: middle !important;
+}
+
+@keyframes fpd-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Style pour le bouton en état de chargement */
+.fpd-customize-btn.fpd-loading {
+    opacity: 0.8 !important;
+    cursor: not-allowed !important;
+}
+
+.fpd-customize-btn.fpd-loading:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* =============================================================================
+   Effet de highlight pour le designer FPD
+   ============================================================================= */
+
+.fpd-container {
+    transition: all 0.3s ease !important;
+}
+
+/* =============================================================================
+   Animations simples
+   ============================================================================= */
+
+.fpd-customize-btn,
+.single_add_to_cart_button {
+    transition: all 0.3s ease !important;
+}
+
+/* =============================================================================
+   Debug (visible seulement pour les admins)
+   ============================================================================= */
+
+body.wp-admin .fpd-customize-btn::after {
+    content: " [Personnaliser]" !important;
+    font-size: 10px !important;
+    opacity: 0.5 !important;
+    margin-left: 5px !important;
+}
+
+body.wp-admin .fpd-customize-btn.fpd-loading::after {
+    content: " [Loading]" !important;
+}
+
+body.wp-admin .single_add_to_cart_button.fpd-customized::after {
+    content: " [Personnalisé]" !important;
+    font-size: 10px !important;
+    opacity: 0.5 !important;
+    margin-left: 5px !important;
+}
+
+.fpd-module-tabs [data-context="qr-code"] {
+    display: none !important;
+}

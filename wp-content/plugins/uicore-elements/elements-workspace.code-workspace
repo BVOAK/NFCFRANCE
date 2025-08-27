@@ -1,0 +1,21 @@
+{
+	"folders": [
+        {
+            "name": "uicore-elements",
+            "path": "."
+        },
+        {
+            "name": "uicore-framework",
+            "path": "../uicore-framework"
+        },
+        {
+            "name": "uicore-animate",
+            "path": "../uicore-animate"
+        },
+        {
+            "name": "public",
+            "path": "../../.."
+        }
+    ],
+    "settings": {}
+}

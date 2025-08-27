@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		// "baseUrl": "./blocks/",
+		"jsx": "react"
+		// "paths": {
+		// 	"@uicore-tools/*": ["./assets/src/tools/*"],
+		// 	"@uicore-blocks/*": ["./assets/src/blocks/*"],
+		// 	"@uicore-controllers/*": ["./assets/src/controllers/*"]
+		// }
+	}
+}

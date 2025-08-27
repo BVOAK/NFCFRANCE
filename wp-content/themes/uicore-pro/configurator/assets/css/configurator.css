@@ -1,0 +1,690 @@
+/* ==========================================================================
+   Configurateur NFC - Styles adaptés Bootstrap + structure existante
+   Compatible avec la nouvelle structure page-configurateur.php
+   ========================================================================== */
+
+/* Variables CSS */
+:root {
+  /* Couleurs principales NFC France */
+  --nfc-primary: #0040C1;
+  --nfc-secondary: #0040C1;
+  --nfc-success: #10b981;
+  --nfc-danger: #ef4444;
+  --nfc-warning: #f59e0b;
+  
+  /* Couleurs interface selon maquette */
+  --nfc-background: #e8e9f3; /* Fond gris-bleu de la maquette */
+  --nfc-surface: #ffffff;
+  --nfc-border: #e2e8f0;
+  --nfc-border-light: #f1f5f9;
+  --nfc-text: #1a202c;
+  --nfc-text-light: #64748b;
+  --nfc-text-muted: #94a3b8;
+  
+  /* Couleurs cartes */
+  --card-white-bg: #ffffff;
+  --card-white-text: #333333;
+  --card-white-border: #e2e8f0;
+  --card-black-bg: #1a1a1a;
+  --card-black-text: #ffffff;
+  --card-black-border: #374151;
+  
+  /* Dimensions cartes */
+  --card-width: 450px;
+  --card-height: 291px;
+  --card-radius: 16px;
+  --logo-size: 120px;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 40px;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+.ui-btn-anim-wrapp { overflow: visible!important; }
+
+/* ==========================================================================
+   Layout principal Bootstrap adapté
+   ========================================================================== */
+
+.nfc-configurator-wrapper {
+  background-color: var(--nfc-surface);
+}
+
+/* Colonne Preview (gauche) - SELON MAQUETTE */
+.preview-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  min-height: calc(100vh - 150px) !important;
+  background: var(--nfc-background);
+}
+
+.preview-header {
+  margin-bottom: var(--spacing-2xl);
+  text-align: center;
+}
+
+.preview-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--nfc-text);
+  margin: 0;
+}
+
+/* Stack de cartes selon maquette */
+.cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  align-items: center;
+}
+
+/* Colonne Configuration (droite) - SELON MAQUETTE */
+.config-column {
+  background: white;
+  border: none;
+  max-height: fit-content;
+  padding-bottom: 3rem
+}
+
+.config-section {
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+}
+
+.config-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.config-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--nfc-text);
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+/* ==========================================================================
+   Sélection support (couleurs) - Bootstrap adapté
+   ========================================================================== */
+
+.support-options {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: flex-start;
+}
+
+.support-option {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs);
+  border-radius: 50px;
+  transition: all var(--transition-fast);
+}
+
+.support-option:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.support-option input[type="radio"] {
+  display: none;
+}
+
+.support-preview {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.support-option input[type="radio"]:checked + .support-preview {
+  border-color: var(--nfc-primary) !important;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+/* ==========================================================================
+   Zone upload Bootstrap adaptée
+   ========================================================================== */
+
+.upload-area {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.upload-zone {
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 2px dashed #dee2e6 !important;
+  border-radius: 50px !important;
+}
+
+.upload-zone:hover {
+  background: #e9ecef !important;
+  border-color: var(--nfc-primary) !important;
+}
+
+.upload-zone.border-primary {
+  border-color: var(--nfc-primary) !important;
+  background: rgba(102, 126, 234, 0.1) !important;
+}
+
+/* Bouton upload Elementor */
+.upload-button { }
+
+/* ==========================================================================
+   Contrôles d'image - Bootstrap adapté
+   ========================================================================== */
+
+.image-controls {
+  padding: var(--spacing-lg);
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+/* Contrôles range Bootstrap personnalisés */
+.form-range {
+  cursor: pointer;
+  height: 6px;
+  background: #ddd;
+}
+
+.form-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: var(--nfc-primary) !important;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  border: 2px solid white;
+}
+
+.form-range::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: var(--nfc-primary) !important;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.scale-value,
+.position-value {
+  font-weight: 600;
+  color: var(--nfc-primary);
+  min-width: 40px;
+  text-align: right;
+  font-size: 12px;
+}
+
+/* Bouton supprimer Elementor */
+.remove-image-btn {
+  background: var(--nfc-danger) !important;
+  color: white !important;
+  border: none !important;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  margin-top: var(--spacing-md);
+}
+
+.remove-image-btn:hover {
+  background: #dc2626 !important;
+  color: white !important;
+}
+
+/* ==========================================================================
+   Inputs Bootstrap personnalisés
+   ========================================================================== */
+
+.form-control:focus {
+  border-color: var(--nfc-primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+}
+
+.form-control::placeholder {
+  color: #6c757d;
+}
+
+/* ==========================================================================
+   Bouton ajout panier Elementor
+   ========================================================================== */
+
+.add-to-cart-btn { }
+
+.add-to-cart-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  color: white !important;
+}
+
+.add-to-cart-btn:disabled {
+  background: #adb5bd !important;
+  border-color: #adb5bd !important;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Animation bouton Elementor */
+.ui-btn-anim-wrapp {
+  position: relative;
+  overflow: hidden;
+}
+
+.ui-btn-anim-wrapp .elementor-button-text {
+  transition: transform 0.3s ease;
+}
+
+.add-to-cart-btn:hover:not(:disabled) .ui-btn-anim-wrapp .elementor-button-text:first-child {
+  transform: translateY(-100%);
+}
+
+.add-to-cart-btn:hover:not(:disabled) .ui-btn-anim-wrapp .elementor-button-text:last-child {
+  transform: translateY(-100%);
+}
+
+/* ==========================================================================
+   Cartes NFC - Dimensions exactes
+   ========================================================================== */
+
+.card-preview {
+  width: var(--card-width);
+  height: var(--card-height);
+  border-radius: var(--card-radius);
+  position: relative;
+  transition: all var(--transition-normal);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+/* Couleurs cartes */
+.card-preview.blanc {
+  background: var(--card-white-bg) !important;
+  border: 2px solid var(--card-white-border) !important;
+  color: var(--card-white-text) !important;
+}
+
+.card-preview.noir {
+  background: var(--card-black-bg) !important;
+  border: 2px solid var(--card-black-border) !important;
+  color: var(--card-black-text) !important;
+}
+
+.card-content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animation hover cartes */
+.card-preview:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ==========================================================================
+   Carte Recto - Image masquée + symbole NFC
+   ========================================================================== */
+
+.card-preview.recto .card-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Masque d'image couvrant toute la carte */
+.image-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.card-preview.noir .image-mask {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Placeholder quand pas d'image */
+.image-placeholder {
+  text-align: center;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.image-placeholder img {
+  width: 48px;
+  height: 48px;
+  opacity: 0.6;
+  margin-bottom: var(--spacing-sm);
+}
+
+.image-placeholder p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Image utilisateur - DÉMARRAGE À 25% */
+#cardImage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.25);
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: all var(--transition-normal);
+  z-index: 5;
+}
+
+/* Image affichée */
+.image-mask.has-image .image-placeholder {
+  display: none !important;
+}
+
+.image-mask.has-image #cardImage {
+  display: block !important;
+  opacity: 1;
+  z-index: 5;
+}
+
+/* Symbole NFC en bas à droite */
+.nfc-symbol {
+  position: absolute;
+  top: calc(50% - 10px);
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  opacity: 0.8;
+  transition: all var(--transition-normal);
+}
+
+.nfc-symbol img {
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+/* Couleur du symbole NFC selon la carte */
+.card-preview.blanc .nfc-symbol img {
+  filter: brightness(0.2); /* Noir sur carte blanche */
+}
+
+.card-preview.noir .nfc-symbol img {
+  filter: brightness(10); /* Blanc sur carte noire */
+}
+
+/* ==========================================================================
+   Carte Verso - QR CODE SVG DYNAMIQUE
+   ========================================================================== */
+
+.card-preview.verso .card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-2xl);
+}
+
+/* Section utilisateur à gauche */
+.user-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.user-names {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.user-firstname,
+.user-lastname {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* Section QR à droite - SVG DYNAMIQUE */
+.qr-section {
+  flex-shrink: 0;
+  margin-left: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* QR CODE - CONTIENT LE SVG */
+.qr-code {}
+
+/* SVG QR Code - COULEUR DYNAMIQUE */
+.qr-code svg {
+  width: 100px;
+  height: 100px;
+  transition: all var(--transition-fast);
+}
+
+/* Couleur du QR selon la carte */
+.card-preview.blanc .qr-code svg {
+  color: var(--card-white-text); /* Noir sur carte blanche */
+}
+
+.card-preview.noir .qr-code svg {
+  color: var(--card-black-text); /* Blanc sur carte noire */
+}
+
+/* Si le SVG n'a pas currentColor, on force avec fill */
+.card-preview.blanc .qr-code svg path,
+.card-preview.blanc .qr-code svg rect,
+.card-preview.blanc .qr-code svg circle {
+  fill: #333333;
+}
+
+.card-preview.noir .qr-code svg path,
+.card-preview.noir .qr-code svg rect,
+.card-preview.noir .qr-code svg circle {
+  fill: #ffffff;
+}
+
+/* Texte nfcfrance.com sous le QR */
+.qr-website {
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  color: inherit;
+  margin-top: -20px;
+}
+
+/* ==========================================================================
+   Loading overlay Bootstrap
+   ========================================================================== */
+
+.loading-overlay {
+  backdrop-filter: blur(4px);
+}
+
+.loading-content {
+  animation: fadeInScale 0.3s ease;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Spinner Bootstrap personnalisé */
+.spinner-border {
+  color: var(--nfc-primary) !important;
+}
+
+/* ==========================================================================
+   Responsive Design - Bootstrap adapté
+   ========================================================================== */
+
+/* Desktop: 1200px+ */
+@media (min-width: 1200px) {
+  .card-preview {
+    width: var(--card-width);
+    height: var(--card-height);
+  }
+  
+  .qr-code {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .qr-code svg {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* Tablet: 768px-1199px */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .card-preview {
+    width: 420px !important;
+    height: 273px !important;
+  }
+  
+  .qr-code {
+    width: 100px !important;
+    height: 100px !important;
+  }
+  
+  .qr-code svg {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  
+  .user-firstname,
+  .user-lastname {
+    font-size: 20px !important;
+  }
+  
+  .preview-column {
+    height: auto !important;
+    padding: 2rem;
+  }
+}
+
+/* Mobile: <768px */
+@media (max-width: 767px) {
+  .card-preview {
+    width: 300px !important;
+    height: 195px !important;
+  }
+  
+  .qr-code {
+    width: 70px !important;
+    height: 70px !important;
+  }
+  
+  .qr-code svg {
+    width: 50px !important;
+    height: 50px !important;
+  }
+  
+  .user-firstname,
+  .user-lastname {
+    font-size: 16px !important;
+  }
+  
+  .preview-column {
+    height: auto !important;
+    padding: 1rem;
+  }
+  
+  .config-column {
+    padding: 1.5rem !important;
+  }
+  
+  .add-to-cart-btn {
+    padding: 0.75rem 2rem !important;
+    border-radius: 1.5rem !important;
+  }
+  
+  .upload-zone {
+    border-radius: 1rem !important;
+  }
+}
+
+/* ==========================================================================
+   Utilitaires
+   ========================================================================== */
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.h-fit {
+  height: fit-content;
+}
+
+/* Animation fade in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease;
+}
+
+/* Focus states */
+*:focus-visible {
+  outline: 2px solid var(--nfc-primary);
+  outline-offset: 2px;
+}
+
+html {
+  scroll-behavior: smooth;
+}

@@ -1,0 +1,282 @@
+<!-- Wordpress Multilanguage Widget Compatibility -->
+<wpml-config>
+  <elementor-widgets>
+
+    <!-- ACCORDION -->
+    <widget name="uicore-accordion">
+        <conditions>
+            <condition key="widgetType">uicore-accordion</condition>
+        </conditions>
+        <fields-in-item items_of="tabs">
+            <field type="Accordion: title" editor_type="LINE">tab_title</field>
+            <field type="Accordion: content" editor_type="AREA">tab_content</field>
+        </fields-in-item>
+    </widget>
+
+    <!-- COUNTER -->
+    <widget name="uicore-counter">
+        <conditions>
+            <condition key="widgetType">uicore-counter</condition>
+        </conditions>
+        <fields>
+            <field type="Counter: text" editor_type="LINE">content_text</field>
+        </fields>
+    </widget>
+
+    <!-- TABS -->
+    <widget name="uicore-tabs">
+        <conditions>
+            <condition key="widgetType">uicore-tabs</condition>
+        </conditions>
+        <fields-in-item items_of="tabs">
+            <field type="Tab: title" editor_type="LINE">tab_title</field>
+            <field type="Tab: description" editor_type="AREA">tab_description</field>
+        </fields-in-item>
+    </widget>
+
+    <!-- TESTIMONIAL WIDGETS -->
+    <widget name="uicore-testimonial-carousel">
+        <conditions>
+            <condition key="widgetType">uicore-testimonial-carousel</condition>
+        </conditions>
+        <fields-in-item items_of="review_items">
+            <field type="Testimonial: reviewer name" editor_type="LINE">reviewer_name</field>
+            <field type="Testimonial: reviewer job" editor_type="LINE">reviewer_job_title</field>
+            <field type="Testimonial: review" editor_type="AREA">review_text</field>
+        </fields-in-item>
+    </widget>
+    <widget name="uicore-testimonial-grid">
+        <conditions>
+            <condition key="widgetType">uicore-testimonial-grid</condition>
+        </conditions>
+        <fields-in-item items_of="review_items">
+            <field type="Testimonial: reviewer name" editor_type="LINE">reviewer_name</field>
+            <field type="Testimonial: reviewer job" editor_type="LINE">reviewer_job_title</field>
+            <field type="Testimonial: review" editor_type="AREA">review_text</field>
+        </fields-in-item>
+    </widget>
+    <widget name="uicore-testimonial-slider">
+        <conditions>
+            <condition key="widgetType">uicore-testimonial-slider</condition>
+        </conditions>
+        <fields-in-item items_of="review_items">
+            <field type="Testimonial: reviewer name" editor_type="LINE">reviewer_name</field>
+            <field type="Testimonial: reviewer job" editor_type="LINE">reviewer_job_title</field>
+            <field type="Testimonial: review" editor_type="AREA">review_text</field>
+        </fields-in-item>
+    </widget>
+
+    <!-- ICON BOX  -->
+    <widget name="uicore-icon-box">
+        <conditions>
+            <condition key="widgetType">uicore-icon-box</condition>
+        </conditions>
+        <fields>
+            <field type="Icon Box: Title" editor_type="LINE">title_text</field>
+            <field type="Icon Box: Subtitle" editor_type="LINE">sub_title_text</field>
+            <field type="Icon Box: Description" editor_type="AREA">description_text</field>
+            <field type="Icon Box: Readmore text" editor_type="LINE">readmore_text</field>
+            <field type="Icon Box: Badge text" editor_type="LINE">badge_text</field>
+        </fields>
+    </widget>
+
+    <!-- HIGHLIGHTED TEXT -->
+    <widget name="highlighted-text">
+        <conditions>
+            <condition key="widgetType">highlighted-text</condition>
+        </conditions>
+         <fields-in-item items_of="content">
+            <field type="Highlighed text" editor_type="LINE">text</field>
+        </fields-in-item>
+    </widget>
+
+    <!-- ICON LIST -->
+    <widget name="uicore-icon-list">
+        <conditions>
+            <condition key="widgetType">uicore-icon-list</condition>
+        </conditions>
+         <fields-in-item items_of="icon_list">
+            <field type="Icon List: title" editor_type="LINE">text</field>
+            <field type="Icon List: subtitle" editor_type="LINE">text_details</field>
+        </fields-in-item>
+    </widget>
+
+    <!-- CONTACT FORM -->
+    <widget name="uicore-contact-form">
+        <conditions>
+            <condition key="widgetType">uicore-contact-form</condition>
+        </conditions>
+        <!-- form repeater fields -->
+        <fields-in-item items_of="form_fields">
+            <field type="Form Field: label" editor_type="LINE">field_label</field>
+            <field type="Form Field: placeholder" editor_type="LINE">placeholder</field>
+            <field type="Form Field: option" editor_type="AREA">field_options</field>
+            <field type="Form Field: text" editor_type="AREA">acceptance_text</field>
+            <field type="Form Field: text" editor_type="AREA">field_html</field>
+        </fields-in-item>
+        <!-- extra basic fields -->
+        <fields>
+            <field type="Button: text" editor_type="LINE">button_text</field>
+            <field type="Success Message" editor_type="LINE">success_message</field>
+            <field type="Error Message" editor_type="LINE">error_message</field>
+            <field type="Redirect Message" editor_type="LINE">redirect_message</field>
+        </fields>
+    </widget>
+
+    <!-- NEWSLETTER -->
+    <widget name="uicore-newsletter">
+        <conditions>
+            <condition key="widgetType">uicore-newsletter</condition>
+        </conditions>
+        <fields>
+            <field type="Email Field: label" editor_type="LINE">email_label</field>
+            <field type="Email Field: placeholder" editor_type="LINE">email_placeholder</field>
+            <field type="Name Field: label" editor_type="LINE">name_label</field>
+            <field type="Name Field: placeholder" editor_type="LINE">name_placeholder</field>
+            <field type="Button: text" editor_type="LINE">button_text</field>
+            <field type="Success Message" editor_type="LINE">success_message</field>
+            <field type="Error Message" editor_type="LINE">error_message</field>
+            <field type="Redirect Message" editor_type="LINE">redirect_message</field>
+        </fields>
+    </widget>
+
+    <!-- POST META  -->
+    <widget name="uicore-post-meta">
+        <conditions>
+            <condition key="widgetType">uicore-post-meta</condition>
+        </conditions>
+         <fields-in-item items_of="meta_list">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+        </fields-in-item>
+    </widget>
+
+    <!-- APG/APC-->
+    <widget name="uicore-advanced-post-grid">
+        <conditions>
+            <condition key="widgetType">uicore-advanced-post-grid</condition>
+        </conditions>
+        <!-- meta fields -->
+        <fields-in-item items_of="top_meta">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+            <field type="Meta: custom text" editor_type="LINE">html_custom</field>
+        </fields-in-item>
+        <fields-in-item items_of="before_title_meta">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+            <field type="Meta: custom text" editor_type="LINE">html_custom</field>
+        </fields-in-item>
+        <fields-in-item items_of="after_title_meta">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+            <field type="Meta: custom text" editor_type="LINE">html_custom</field>
+        </fields-in-item>
+        <fields-in-item items_of="bottom_meta">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+            <field type="Meta: custom text" editor_type="LINE">html_custom</field>
+        </fields-in-item>
+        <!-- basic fields -->
+        <fields>
+            <field type="Readmore: text" editor_type="LINE">text</field>
+        </fields>
+    </widget>
+    <widget name="uicore-advanced-product-grid">
+        <conditions>
+            <condition key="widgetType">uicore-advanced-product-grid</condition>
+        </conditions>
+        <!-- meta fields -->
+        <fields-in-item items_of="top_meta">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+            <field type="Meta: custom text" editor_type="LINE">html_custom</field>
+        </fields-in-item>
+        <fields-in-item items_of="before_title_meta">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+            <field type="Meta: custom text" editor_type="LINE">html_custom</field>
+        </fields-in-item>
+        <fields-in-item items_of="after_title_meta">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+            <field type="Meta: custom text" editor_type="LINE">html_custom</field>
+        </fields-in-item>
+        <fields-in-item items_of="bottom_meta">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+            <field type="Meta: custom text" editor_type="LINE">html_custom</field>
+        </fields-in-item>
+        <!-- basic fields -->
+        <fields>
+            <field type="Readmore: text" editor_type="LINE">text</field>
+        </fields>
+    </widget>
+    <widget name="uicore-advanced-post-carousel">
+        <conditions>
+            <condition key="widgetType">uicore-advanced-post-carousel</condition>
+        </conditions>
+        <!-- meta fields -->
+        <fields-in-item items_of="top_meta">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+            <field type="Meta: custom text" editor_type="LINE">html_custom</field>
+        </fields-in-item>
+        <fields-in-item items_of="before_title_meta">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+            <field type="Meta: custom text" editor_type="LINE">html_custom</field>
+        </fields-in-item>
+        <fields-in-item items_of="after_title_meta">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+            <field type="Meta: custom text" editor_type="LINE">html_custom</field>
+        </fields-in-item>
+        <fields-in-item items_of="bottom_meta">
+            <field type="Meta: text before" editor_type="LINE">before</field>
+            <field type="Meta: text after" editor_type="LINE">after</field>
+            <field type="Meta: custom text" editor_type="LINE">html_custom</field>
+        </fields-in-item>
+        <!-- basic fields -->
+        <fields>
+            <field type="Readmore: text" editor_type="LINE">text</field>
+        </fields>
+    </widget>
+
+    <!-- Gallery Widgets -->
+    <widget name="uicore-gallery-grid">
+        <conditions>
+            <condition key="widgetType">uicore-gallery-grid</condition>
+        </conditions>
+        <fields-in-item items_of="gallery_items">
+            <field type="Title" editor_type="LINE">item_title</field>
+            <field type="Description" editor_type="LINE">item_description</field>
+            <field type="Badge" editor_type="LINE">item_badge</field>
+            <field type="Tags" editor_type="LINE">item_tags</field>
+        </fields-in-item>
+    </widget>
+    <widget name="uicore-gallery-carousel">
+        <conditions>
+            <condition key="widgetType">uicore-gallery-carousel</condition>
+        </conditions>
+        <fields-in-item items_of="gallery_items">
+            <field type="Title" editor_type="LINE">item_title</field>
+            <field type="Description" editor_type="LINE">item_description</field>
+            <field type="Badge" editor_type="LINE">item_badge</field>
+            <field type="Tags" editor_type="LINE">item_tags</field>
+        </fields-in-item>
+    </widget>
+    <widget name="uicore-gallery-slider">
+        <conditions>
+            <condition key="widgetType">uicore-gallery-slider</condition>
+        </conditions>
+        <fields-in-item items_of="gallery_items">
+            <field type="Title" editor_type="LINE">item_title</field>
+            <field type="Description" editor_type="LINE">item_description</field>
+            <field type="Badge" editor_type="LINE">item_badge</field>
+            <field type="Tags" editor_type="LINE">item_tags</field>
+        </fields-in-item>
+    </widget>
+
+  </elementor-widgets>
+</wpml-config>

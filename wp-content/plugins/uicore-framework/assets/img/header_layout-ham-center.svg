@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="140px" height="70px" viewBox="0 0 140 70" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>header-hamburger-center</title>
+    <g id="Dashboard-v.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Header" transform="translate(-910.000000, -453.000000)">
+            <g id="header-hamburger-center" transform="translate(910.000000, 453.000000)">
+                <rect id="Rectangle-Copy-17" stroke="#B0B8CA" stroke-width="2" x="1" y="1" width="138" height="68"></rect>
+                <rect id="Rectangle" fill="#B0B8CA" x="8" y="7" width="16" height="4"></rect>
+                <rect id="Rectangle-Copy-33" fill="#B0B8CA" x="54" y="19" width="32" height="2"></rect>
+                <rect id="Rectangle-Copy-34" fill="#B0B8CA" x="57" y="23" width="26" height="2"></rect>
+                <rect id="Rectangle-Copy-35" fill="#B0B8CA" x="55" y="27" width="30" height="2"></rect>
+                <rect id="Rectangle-Copy-36" fill="#B0B8CA" x="54" y="31" width="32" height="2"></rect>
+                <rect id="Rectangle-Copy-37" fill="#B0B8CA" x="59" y="35" width="22" height="2"></rect>
+                <rect id="Rectangle-Copy-38" fill="#B0B8CA" x="49" y="45" width="16" height="1"></rect>
+                <rect id="Rectangle-Copy-39" fill="#B0B8CA" x="46" y="48" width="22" height="1"></rect>
+                <rect id="Rectangle-Copy-40" fill="#B0B8CA" x="46" y="51" width="22" height="1"></rect>
+                <rect id="Rectangle-Copy-44" fill="#B0B8CA" x="63" y="55" width="2" height="2"></rect>
+                <rect id="Rectangle-Copy-45" fill="#B0B8CA" x="67" y="55" width="2" height="2"></rect>
+                <rect id="Rectangle-Copy-46" fill="#B0B8CA" x="71" y="55" width="2" height="2"></rect>
+                <rect id="Rectangle-Copy-47" fill="#B0B8CA" x="75" y="55" width="2" height="2"></rect>
+                <rect id="Rectangle-Copy-48" fill="#B0B8CA" x="130" y="7" width="2" height="2"></rect>
+                <rect id="Rectangle-Copy-43" fill="#B0B8CA" x="75" y="45" width="16" height="1"></rect>
+                <rect id="Rectangle-Copy-42" fill="#B0B8CA" x="72" y="48" width="22" height="1"></rect>
+                <rect id="Rectangle-Copy-41" fill="#B0B8CA" x="72" y="51" width="22" height="1"></rect>
+                <rect id="Rectangle-Copy-14" stroke="#B0B8CA" transform="translate(70.000000, 62.000000) rotate(-270.000000) translate(-70.000000, -62.000000) " x="69" y="58.5" width="2" height="7"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

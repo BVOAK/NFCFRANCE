@@ -1,0 +1,148 @@
+@font-face {
+    font-family: 'uicore-icons';
+    src: url('uicore-icons.woff2?bc5uma') format('woff2'), url('uicore-icons.woff?bc5uma') format('woff'), url('uicore-icons.ttf?bc5uma') format('truetype'),
+        /* keep ttf as as second choice */ url('uicore-icons.svg?bc5uma#uicore-icons') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+[class^='uicore-i-'],
+[class*=' uicore-i-'] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'uicore-icons' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.uicore-i-announce:before {
+    content: '\e900';
+}
+.uicore-i-arrow:before {
+    content: '\e901';
+}
+.uicore-i-bolt:before {
+    content: '\e902';
+}
+.uicore-i-box:before {
+    content: '\e903';
+}
+.uicore-i-card:before {
+    content: '\e904';
+}
+.uicore-i-cart:before {
+    content: '\e905';
+}
+.uicore-i-chat:before {
+    content: '\e906';
+}
+.uicore-i-close:before {
+    content: '\e907';
+}
+.uicore-i-cup:before {
+    content: '\e908';
+}
+.uicore-i-download:before {
+    content: '\e909';
+}
+.uicore-i-facebook:before {
+    content: '\e90a';
+}
+.uicore-i-globe:before {
+    content: '\e90b';
+}
+.uicore-i-heart:before {
+    content: '\e90c';
+}
+.uicore-i-info:before {
+    content: '\e90d';
+}
+.uicore-i-instagram:before {
+    content: '\e90e';
+}
+.uicore-i-linkedin:before {
+    content: '\e90f';
+}
+.uicore-i-mail:before {
+    content: '\e910';
+}
+.uicore-i-map-pin:before {
+    content: '\e911';
+}
+.uicore-i-messenger:before {
+    content: '\e912';
+}
+.uicore-i-phone:before {
+    content: '\e913';
+}
+.uicore-i-pinterest:before {
+    content: '\e914';
+}
+.uicore-i-play:before {
+    content: '\e915';
+}
+.uicore-i-reddit:before {
+    content: '\e916';
+}
+.uicore-i-rocket:before {
+    content: '\e917';
+}
+.uicore-i-search:before {
+    content: '\e918';
+}
+.uicore-i-shield:before {
+    content: '\e919';
+}
+.uicore-i-snapchat:before {
+    content: '\e91a';
+}
+.uicore-i-target:before {
+    content: '\e91b';
+}
+.uicore-i-tiktok:before {
+    content: '\e91c';
+}
+.uicore-i-time:before {
+    content: '\e91d';
+}
+.uicore-i-truck:before {
+    content: '\e91e';
+}
+.uicore-i-twitch:before {
+    content: '\e91f';
+}
+.uicore-i-twitter:before {
+    content: '\e920';
+}
+.uicore-i-vimeo:before {
+    content: '\e921';
+}
+.uicore-i-warning:before {
+    content: '\e922';
+}
+.uicore-i-wechat:before {
+    content: '\e923';
+}
+.uicore-i-whatsapp:before {
+    content: '\e924';
+}
+.uicore-i-youtube:before {
+    content: '\e925';
+}
+.uicore-i-telegram:before {
+  content: "\e926";
+}
+.uicore-i-discord:before {
+  content: "\e927";
+}
+.uicore-i-opensea:before {
+  content: "\e928";
+}
