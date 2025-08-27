@@ -1,5 +1,7 @@
 <?php
+
 namespace UiCoreElements;
+
 use Elementor\Plugin;
 
 defined('ABSPATH') || exit();
@@ -11,7 +13,8 @@ defined('ABSPATH') || exit();
  * @since 1.0.7
  */
 
-class CustomSlider extends CustomCarousel {
+class CustomSlider extends CustomCarousel
+{
 
     public function get_name()
     {
@@ -41,7 +44,7 @@ class CustomSlider extends CustomCarousel {
             'animation', // hover animations
             'entrance', // entrance basic style
         ];
-        if(!class_exists('\UiCore\Core') && !class_exists('\UiCoreAnimate\Base')){
+        if (!class_exists('\UiCore\Core') && !class_exists('\UiCoreAnimate\Base')) {
             $styles['e-animations'] = [ // entrance animations
                 'external' => true,
             ];

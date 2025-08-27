@@ -9,9 +9,7 @@ use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
 use Elementor\Group_Control_Typography;
 use Elementor\Group_Control_Text_Shadow;
 use Elementor\Group_Control_Text_Stroke;
-use Elementor\Utils;
-//use UiCoreElements\Extender;
-
+use UiCoreElements\Helper;
 
 defined('ABSPATH') || exit();
 
@@ -291,7 +289,7 @@ class TheTitle extends Widget_Base
             $title = __('This is a dummy title.', 'uicore-elements');
         }
 
-        $title_html = sprintf('<%1$s %2$s>%3$s</%1$s>', Utils::validate_html_tag($settings['header_size']), $this->get_render_attribute_string('title'), \esc_html($title));
+        $title_html = sprintf('<%1$s %2$s>%3$s</%1$s>', Helper::esc_tag($settings['header_size']), $this->get_render_attribute_string('title'), \esc_html($title));
 
         // PHPCS - the variable $title_html holds safe data.
         echo $title_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

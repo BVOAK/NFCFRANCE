@@ -217,3 +217,38 @@ add_action('rest_api_init', function() {
         error_log('Routes disponibles: ' . print_r(array_keys($routes), true));
     }
 });
+
+// Test de la nouvelle classe NFC_Product_Button_Manager
+add_action('init', function() {
+    // Charger la classe
+    require_once get_template_directory() . '/configurator/includes/class-nfc-product-button-manager.php';
+    
+    // Instancier pour test
+    global $nfc_button_manager;
+    $nfc_button_manager = new NFC_Product_Button_Manager();
+    
+    // Test sur une page produit (seulement en mode debug)
+    if (defined('WP_DEBUG') && WP_DEBUG && is_admin()) {
+        // Test sur le produit 571
+        $config = $nfc_button_manager->get_product_button_config(571);
+        error_log('NFC Test Config 571: ' . json_encode($config, JSON_PRETTY_PRINT));
+    }
+});
+
+// URL de test : ?test_nfc_config=571
+add_action('init', function() {
+    if (isset($_GET['test_nfc_config']) && current_user_can('administrator')) {
+        require_once get_template_directory() . '/configurator/includes/class-nfc-product-button-manager.php';
+        $manager = new NFC_Product_Button_Manager();
+        
+        $product_id = intval($_GET['test_nfc_config']);
+        $config = $manager->get_product_button_config($product_id);
+        
+        echo '<pre style="background: #f1f1f1; padding: 20px; margin: 20px;">';
+        echo "<h3>Test NFC Config - Produit {$product_id}</h3>";
+        echo json_encode($config, JSON_PRETTY_PRINT);
+        echo '</pre>';
+        
+        wp_die();
+    }
+});

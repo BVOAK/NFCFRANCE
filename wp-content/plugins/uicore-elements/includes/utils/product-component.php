@@ -171,9 +171,9 @@ trait Product_Trait
     ?>
         <a href="<?php echo esc_url($product->get_permalink()); ?>"
             title="<?php echo esc_attr__('View Product:', 'uicore-elements') . ' ' . esc_html($product->get_name()); ?>">
-            <<?php echo esc_html($tag); ?> class="ui-e-post-title">
+            <<?php echo Helper::esc_tag($tag); ?> class="ui-e-post-title">
                 <span> <?php echo esc_html($product->get_name()); ?> </span>
-            </<?php echo esc_html($tag); ?>>
+            </<?php echo Helper::esc_tag($tag); ?>>
         </a>
     <?php
     }

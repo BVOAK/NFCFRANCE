@@ -1,4 +1,5 @@
 <?php
+
 namespace UiCoreElements\Controls;
 
 use UiCoreElements\Helper;
@@ -36,7 +37,7 @@ class Query extends Control_Select2
         ];
         $settings = wp_parse_args($settings, $defaults);
 
-        $paged = self::get_queried_page( $settings );
+        $paged = self::get_queried_page($settings);
 
         // Build query args
         $query_args = [
@@ -61,18 +62,18 @@ class Query extends Control_Select2
         }
 
         // Offset arg
-        if( isset($settings['offset']) && !empty($settings['offset']['size']) ){
+        if (isset($settings['offset']) && !empty($settings['offset']['size'])) {
             $query_args['offset'] = $settings['offset']['size'];
         }
 
         // Sticky arg
-        if( isset( $settings['sticky'] ) && $settings['sticky'] ){
+        if (isset($settings['sticky']) && $settings['sticky']) {
             $query_args['ignore_sticky_posts'] = false;
         }
 
         //
         $queried_filters = self::get_queried_filters($settings, $post_type, $control_id);
-        if ( !empty($queried_filters['tax_query']) ) {
+        if (!empty($queried_filters['tax_query'])) {
             $query_args['tax_query'] = $queried_filters['tax_query'];
         }
 
@@ -90,19 +91,16 @@ class Query extends Control_Select2
      *
      * @param array $settings The control settings array.
      */
-    public static function get_queried_page( $settings )
+    public static function get_queried_page($settings)
     {
-        if( !isset($settings['__current_page']) ){
+        if (!isset($settings['__current_page'])) {
             if (get_query_var('paged')) {
                 $paged = get_query_var('paged');
-
             } elseif (get_query_var('page')) {
                 $paged = get_query_var('page');
-
             } else {
                 $paged = 1;
             }
-
         } else {
             $paged = $settings['__current_page'];
         }
@@ -131,24 +129,23 @@ class Query extends Control_Select2
             $settings['post_filtering'] &&
             isset($_GET['tax']) && //phpcs:ignore WordPress.Security.NonceVerification.Recommended
             isset($_GET['term']) //phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            ) {
+        ) {
 
             $args['tax_query'][] = [
-                'taxonomy' => sanitize_text_field( wp_unslash($_GET['tax'])), //phpcs:ignore WordPress.Security.NonceVerification.Recommended
+                'taxonomy' => sanitize_text_field(wp_unslash($_GET['tax'])), //phpcs:ignore WordPress.Security.NonceVerification.Recommended
                 'field'    => 'term_id',
                 'terms'    => intval($_GET['term']), //phpcs:ignore WordPress.Security.NonceVerification.Recommended
             ];
-
         } else {
             $taxonomies = get_object_taxonomies($post_type, 'objects');
 
             foreach ($taxonomies as $object) {
                 $setting_key = $control_id . '_' . $object->name . '_ids';
 
-                if ( !empty($settings[$setting_key]) ) {
+                if (!empty($settings[$setting_key])) {
                     $terms_list = $settings[$setting_key];
 
-                    if ( !is_array($terms_list) ) {
+                    if (!is_array($terms_list)) {
                         $terms_list = explode(',', $terms_list);
                     }
 
@@ -162,7 +159,7 @@ class Query extends Control_Select2
         }
 
         // Set `AND` relation if we're working with multiple tax queries
-        if ( count($args['tax_query']) > 1 ) {
+        if (count($args['tax_query']) > 1) {
             $args['tax_query']['relation'] = 'AND';
         };
 
@@ -185,12 +182,12 @@ class Query extends Control_Select2
         $calc_args = array_merge($default_query, $calc_args);
 
         // Makes sure we have a limit set
-        if( isset($default_query['limit']) || isset($default_query['posts_per_page']) ) {
+        if (isset($default_query['limit']) || isset($default_query['posts_per_page'])) {
             $limit = isset($default_query['limit'])
                 ? $default_query['limit']
                 : $default_query['posts_per_page'];
 
-        // Get limit from framework otherwise
+            // Get limit from framework otherwise
         } else {
             $limit = Helper::get_framework_visible_posts('product');
         }
@@ -201,7 +198,6 @@ class Query extends Control_Select2
 
         return $total;
     }
-
 }
 
 \Elementor\Plugin::$instance->controls_manager->register_control('elements_query', new Query());

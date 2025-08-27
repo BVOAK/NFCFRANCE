@@ -1261,9 +1261,9 @@ trait Testimonial_Trait
 
     ?>
         <?php if ($item['reviewer_name']) : ?>
-            <<?php echo esc_html($settings['review_name_tag']); ?> class="ui-e-testimonial-name <?php echo esc_attr($settings['name_animations']); ?>">
+            <<?php echo Helper::esc_tag($settings['review_name_tag']); ?> class="ui-e-testimonial-name <?php echo esc_attr($settings['name_animations']); ?>">
                 <span><?php echo wp_kses_post($item['reviewer_name']); ?></span>
-            </<?php echo esc_html($settings['review_name_tag']); ?>>
+            </<?php echo Helper::esc_tag($settings['review_name_tag']); ?>>
         <?php endif; ?>
     <?php
     }

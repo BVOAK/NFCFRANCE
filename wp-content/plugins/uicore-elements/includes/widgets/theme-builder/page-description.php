@@ -9,7 +9,6 @@ use Elementor\Core\Kits\Documents\Tabs\Global_Typography;
 use Elementor\Group_Control_Typography;
 use Elementor\Group_Control_Text_Shadow;
 use Elementor\Group_Control_Text_Stroke;
-use Elementor\Utils;
 use UiCoreELements\Helper;
 
 defined('ABSPATH') || exit();
@@ -291,7 +290,7 @@ class PageDescription extends Widget_Base
 
         $title_html = sprintf(
             '<%1$s %2$s>%3$s</%1$s>',
-            Utils::validate_html_tag($settings['header_size']),
+            Helper::esc_tag($settings['header_size']),
             $this->get_render_attribute_string('title'),
             Helper::esc_string($title) //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
         );

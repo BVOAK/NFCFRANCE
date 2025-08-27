@@ -2203,11 +2203,11 @@ class IconBox extends UiCoreWidget
             $hasTitleUrl = false;
         }
 
-        $title         = '<' . esc_html($settings['title_size']) . ' class="ui-e-title">';
+        $title         = '<' . Helper::esc_tag($settings['title_size']) . ' class="ui-e-title">';
         $title         .= $hasTitleUrl ? wp_kses_post($titleUrl) : ''; // url
         $title         .= esc_html($settings['title_text']);
         $title         .= $hasTitleUrl ? '</a>' : ''; // url closure
-        $title         .= '</' . esc_html($settings['title_size']) . '>';
+        $title         .= '</' . Helper::esc_tag($settings['title_size']) . '>';
 
         // Build the global Url
         if ($settings['global_link'] && $settings['global_link_url']['url'] && !$this->is_edit_mode()) {

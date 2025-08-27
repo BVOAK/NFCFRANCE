@@ -8,13 +8,13 @@
  * Author URI: https://woocommerce.com/
  * Text Domain: woocommerce-services
  * Domain Path: /i18n/languages/
- * Version: 3.0.7
+ * Version: 3.0.9
  * Requires Plugins: woocommerce
  * Requires PHP: 7.4
- * Requires at least: 6.6
+ * Requires at least: 6.7
  * Tested up to: 6.8
- * WC requires at least: 9.8
- * WC tested up to: 10.0
+ * WC requires at least: 9.9
+ * WC tested up to: 10.1
  *
  * Copyright (c) 2017-2023 Automattic
  *
@@ -991,6 +991,10 @@ if ( ! class_exists( 'WC_Connect_Loader' ) ) {
 		public function init_shipping_labels() {
 			add_filter( 'woocommerce_admin_reports', array( $this, 'reports_tabs' ) );
 
+			// Initialize migration survey
+			require_once __DIR__ . '/classes/class-wc-connect-migration-survey.php';
+			new WC_Connect_Migration_Survey();
+
 			// Changing the postcode, currency, weight or dimension units affect the returned schema from the server.
 			// Make sure to update the service schemas when these options change.
 			// TODO: Add other options that change the schema here, or figure out a way to do it automatically.
@@ -1188,7 +1192,7 @@ if ( ! class_exists( 'WC_Connect_Loader' ) ) {
 				$logger,
 				$this->shipping_label,
 				$this->payment_methods_store,
-				$this->has_only_tax_functionality()
+				self::has_only_tax_functionality()
 			);
 
 			$rest_shipping_label_eligibility_controller->register_routes();
@@ -1937,16 +1941,19 @@ if ( ! class_exists( 'WC_Connect_Loader' ) ) {
 		 *
 		 * @return bool True if the store is configured for tax-only functionality, false otherwise.
 		 */
-		private function has_only_tax_functionality() {
-			return ( WC_Connect_Jetpack::is_connected() && '1' === WC_Connect_Options::get_option( 'only_tax' ) ) ||
-			( ! WC_Connect_Jetpack::is_connected() && ! self::_has_any_labels_db_check() );
+		public static function has_only_tax_functionality() {
+			$result = ( WC_Connect_Jetpack::is_connected() && '1' === WC_Connect_Options::get_option( 'only_tax' ) ) ||
+						( ! WC_Connect_Jetpack::is_connected() && ! self::_has_any_labels_db_check() );
+
+			// Allow tests to override this functionality
+			return apply_filters( 'wc_connect_has_only_tax_functionality', $result );
 		}
 
 		public function maybe_rename_plugin( $plugins ) {
 			$plugin_basename = 'woocommerce-services/woocommerce-services.php';
 
 			if ( isset( $plugins[ $plugin_basename ] ) ) {
-				if ( $this->has_only_tax_functionality() ) {
+				if ( self::has_only_tax_functionality() ) {
 					$plugins[ $plugin_basename ]['Name']        = $this->get_plugin_name_for_new_sites();
 					$plugins[ $plugin_basename ]['Description'] = $this->get_plugin_description_for_new_sites();
 				} else {

@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Google for WooCommerce 3.3.0\n"
+"Project-Id-Version: Google for WooCommerce 3.4.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/google-listings-and-ads\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-05T07:33:20+00:00\n"
+"POT-Creation-Date: 2025-08-26T03:21:05+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: google-listings-and-ads\n"
@@ -17,7 +17,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #: src/Admin/ProductBlocksService.php:148
 #: src/Internal/DependencyManagement/ThirdPartyServiceProvider.php:82
-#: src/Menu/Dashboard.php:37
+#: src/Menu/Dashboard.php:39
 #: src/Menu/GetStarted.php:37
 #: src/MultichannelMarketing/GLAChannel.php:104
 #: views/attributes/variations-form.php:22
@@ -26,7 +26,7 @@ msgstr ""
 #: views/meta-box/coupon_channel_visibility.php:114
 #: views/meta-box/coupon_channel_visibility.php:160
 #: js/build/get-started-page.js:1
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Google for WooCommerce"
 msgstr ""
 
@@ -36,7 +36,7 @@ msgid "Native integration with Google that allows merchants to easily display th
 msgstr ""
 
 #. Author of the plugin
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "WooCommerce"
 msgstr ""
 
@@ -52,7 +52,7 @@ msgstr ""
 #: src/Admin/Admin.php:219
 #: src/Menu/Settings.php:25
 #: js/build/commons.js:60
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Settings"
 msgstr ""
 
@@ -250,21 +250,25 @@ msgid "Product attributes"
 msgstr ""
 
 #. translators: 1: is a numeric account ID
-#: src/Ads/AccountService.php:108
+#: src/Ads/AccountService.php:109
 msgid "Ads account %1$d already connected."
 msgstr ""
 
 #. translators: 1: is a string representing an unknown step name
-#: src/Ads/AccountService.php:185
+#: src/Ads/AccountService.php:186
 msgid "Unknown ads account creation step %1$s"
 msgstr ""
 
-#: src/Ads/AccountService.php:249
+#: src/Ads/AccountService.php:250
 msgid "Account must be accepted before completing setup."
 msgstr ""
 
-#: src/Ads/AccountService.php:328
+#: src/Ads/AccountService.php:329
 msgid "Billing setup must be completed."
+msgstr ""
+
+#: src/Ads/AdsRecommendationsService.php:164
+msgid "Unable to retrieve Google Ads recommendations."
 msgstr ""
 
 #. translators: 1: is an integer representing an unknown Term ID
@@ -327,12 +331,12 @@ msgid "Invalid asset group ID"
 msgstr ""
 
 #. translators: %s Error message
-#: src/API/Google/AdsAssetGroupAsset.php:140
+#: src/API/Google/AdsAssetGroupAsset.php:141
 msgid "Error retrieving asset groups assets: %s"
 msgstr ""
 
 #. translators: %s Error message
-#: src/API/Google/AdsAssetGroupAsset.php:206
+#: src/API/Google/AdsAssetGroupAsset.php:213
 msgid "Error retrieving asset groups assets by final url: %s"
 msgstr ""
 
@@ -369,11 +373,11 @@ msgstr ""
 msgid "This campaign has already been deleted"
 msgstr ""
 
-#: src/API/Google/AdsCampaign.php:623
+#: src/API/Google/AdsCampaign.php:648
 msgid "Invalid campaign ID"
 msgstr ""
 
-#: src/API/Google/AdsCampaign.php:639
+#: src/API/Google/AdsCampaign.php:664
 msgid "Invalid geo target location ID"
 msgstr ""
 
@@ -668,15 +672,15 @@ msgstr ""
 msgid "Asset is a part of an ad which can be shared across multiple ads. It can be an image, headlines, descriptions, etc."
 msgstr ""
 
-#: src/API/Site/Controllers/Ads/AssetGroupController.php:281
+#: src/API/Site/Controllers/Ads/AssetGroupController.php:282
 msgid "Asset ID"
 msgstr ""
 
-#: src/API/Site/Controllers/Ads/AssetGroupController.php:285
+#: src/API/Site/Controllers/Ads/AssetGroupController.php:286
 msgid "Asset content"
 msgstr ""
 
-#: src/API/Site/Controllers/Ads/AssetGroupController.php:289
+#: src/API/Site/Controllers/Ads/AssetGroupController.php:290
 msgid "Asset field type"
 msgstr ""
 
@@ -873,6 +877,46 @@ msgstr ""
 
 #: src/API/Site/Controllers/Ads/IncentiveCreditsController.php:109
 msgid "Incentive credit amount."
+msgstr ""
+
+#: src/API/Site/Controllers/Ads/RecommendationsController.php:73
+msgid "Filter recommendations by type"
+msgstr ""
+
+#: src/API/Site/Controllers/Ads/RecommendationsController.php:80
+msgid "Filter recommendations by unique id"
+msgstr ""
+
+#: src/API/Site/Controllers/Ads/RecommendationsController.php:98
+msgid "No connected Ads account found."
+msgstr ""
+
+#: src/API/Site/Controllers/Ads/RecommendationsController.php:133
+msgid "Recommendation ID."
+msgstr ""
+
+#: src/API/Site/Controllers/Ads/RecommendationsController.php:137
+msgid "Recommendation type."
+msgstr ""
+
+#: src/API/Site/Controllers/Ads/RecommendationsController.php:141
+msgid "Resource name of the recommendation."
+msgstr ""
+
+#: src/API/Site/Controllers/Ads/RecommendationsController.php:145
+msgid "Campaign ID associated with the recommendation."
+msgstr ""
+
+#: src/API/Site/Controllers/Ads/RecommendationsController.php:149
+msgid "Campaign name associated with the recommendation."
+msgstr ""
+
+#: src/API/Site/Controllers/Ads/RecommendationsController.php:153
+msgid "Status of the campaign."
+msgstr ""
+
+#: src/API/Site/Controllers/Ads/RecommendationsController.php:159
+msgid "Last synced date and time."
 msgstr ""
 
 #: src/API/Site/Controllers/Ads/ReportsController.php:102
@@ -1781,13 +1825,13 @@ msgid "The job \"%s\" does not exist."
 msgstr ""
 
 #: src/Menu/AttributeMapping.php:25
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Attribute Mapping"
 msgstr ""
 
 #: src/Menu/ProductFeed.php:25
 #: js/build/commons.js:60
-#: js/build/index.js:25
+#: js/build/index.js:19
 #: js/build/product-feed.js:13
 #: js/build/reports.js:1
 #: js/build/reports.js:4
@@ -1796,7 +1840,7 @@ msgstr ""
 
 #: src/Menu/Reports.php:25
 #: js/build/commons.js:60
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Reports"
 msgstr ""
 
@@ -1810,7 +1854,7 @@ msgstr ""
 
 #: src/Menu/Shipping.php:27
 #: js/build/commons.js:60
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Shipping"
 msgstr ""
 
@@ -1963,6 +2007,8 @@ msgstr ""
 
 #: src/Notes/SetupCampaign.php:81
 #: js/build/commons.js:10
+#: js/build/commons.js:60
+#: js/build/commons.js:63
 #: js/build/commons.js:66
 #: js/build/product-feed.js:1
 #: js/build/settings.js:1
@@ -3111,7 +3157,7 @@ msgstr ""
 
 #: js/build/commons.js:35
 #: js/build/commons.js:57
-#: js/build/commons.js:94
+#: js/build/commons.js:97
 msgid "Connect"
 msgstr ""
 
@@ -3401,18 +3447,6 @@ msgstr ""
 msgid "Connect to existing Merchant Center account"
 msgstr ""
 
-#: js/build/commons.js:57
-msgid "Unable to enable new product sync."
-msgstr ""
-
-#: js/build/commons.js:60
-msgid "Grant access"
-msgstr ""
-
-#: js/build/commons.js:60
-msgid "There was an issue granting access to Google for fetching your products."
-msgstr ""
-
 #: js/build/commons.js:60
 msgid "Help"
 msgstr ""
@@ -3455,12 +3489,12 @@ msgid "Your GTIN Migration is now running in the background. You can check the m
 msgstr ""
 
 #: js/build/commons.js:60
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Dashboard"
 msgstr ""
 
 #: js/build/commons.js:60
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Price Benchmark"
 msgstr ""
 
@@ -3592,6 +3626,26 @@ msgid "You’re ready to set up a Performance Max campaign to drive more sales w
 msgstr ""
 
 #: js/build/commons.js:60
+msgid "What will my ads look like?"
+msgstr ""
+
+#: js/build/commons.js:60
+msgid "Google will generate text ads and responsive display ads in various combinations and formats from the headlines, images, and descriptions you add. Your ads will automatically adjust their size, appearance, and format to fit available ad spaces. <link>See common ad formats</link>"
+msgstr ""
+
+#: js/build/commons.js:60
+msgid "What makes these ads different from product ads?"
+msgstr ""
+
+#: js/build/commons.js:60
+msgid "Text and image assets can elevate your campaign by offering a variety of ad combinations that capture your audience's attention and generate maximum engagement. By leveraging Google's asset-mixing technology, your ads can be optimized to deliver the right message, to the right people, at the right time."
+msgstr ""
+
+#: js/build/commons.js:60
+msgid "Compared to product ads—which showcase individual products and are designed to drive direct sales and revenue— ads with creative assets are typically used to highlight your business, generate interest, and attract new customers. While both types of ads can drive conversions, using them together can generate even greater results."
+msgstr ""
+
+#: js/build/commons.js:60
 msgid "Select final URL"
 msgstr ""
 
@@ -3608,7 +3662,7 @@ msgid "No matching results"
 msgstr ""
 
 #: js/build/commons.js:60
-#: js/build/commons.js:63
+#: js/build/commons.js:66
 msgid "Select"
 msgstr ""
 
@@ -3624,111 +3678,204 @@ msgstr ""
 msgid "Or, select a different Final URL"
 msgstr ""
 
-#. translators: 1: Minimum width, 2: Minimum height.
-#: js/build/commons.js:63
-msgid "Image size needs to be at least %1$d x %2$d"
+#: js/build/commons.js:60
+msgid "Now available"
 msgstr ""
 
-#: js/build/commons.js:63
-msgid "Select or upload image"
+#: js/build/commons.js:60
+msgid "You can use Google AI to help build Performance Max assets with a few clicks."
 msgstr ""
 
-#: js/build/commons.js:63
-msgid "Replace image"
+#: js/build/commons.js:60
+msgid "Starting with your website, Google AI will understand what you’re advertising and can generate or suggest text, image, logo, and video assets for you. <link>Learn more</link>"
 msgstr ""
 
-#: js/build/commons.js:63
-msgid "Remove image"
+#: js/build/commons.js:60
+msgid "Generate assets with GenAI"
 msgstr ""
 
-#: js/build/commons.js:63
-msgid "Add image"
+#: js/build/commons.js:60
+msgid "Drawing of a person who successfully launched a campaign"
 msgstr ""
 
-#: js/build/commons.js:63
+#: js/build/commons.js:60
+msgid "Add additional assets <optional>(Optional)</optional>"
+msgstr ""
+
+#: js/build/commons.js:60
+msgid "Upload text and image assets to effectively reach and engage your target shoppers. Google will mix and match your assets, continually testing combinations to create personalized and optimal shopping experiences."
+msgstr ""
+
+#: js/build/commons.js:60
+msgid "We've used your final URL to auto-populate some assets for you. For the best results, we recommend that you add more assets."
+msgstr ""
+
+#: js/build/commons.js:60
 msgid "Remove text"
 msgstr ""
 
-#: js/build/commons.js:63
+#: js/build/commons.js:60
 msgid "Add text"
 msgstr ""
 
 #. translators: %d: number of issues in an asset field.
-#: js/build/commons.js:66
+#: js/build/commons.js:63
 msgid "%d issue"
 msgid_plural "%d issues"
 msgstr[0] ""
 msgstr[1] ""
 
-#: js/build/commons.js:66
+#: js/build/commons.js:63
 msgctxt "A label behind the heading to indicate a field is optional"
 msgid "(Optional)"
 msgstr ""
 
-#: js/build/commons.js:66
+#: js/build/commons.js:63
 msgid "Toggle asset"
 msgstr ""
 
+#: js/build/commons.js:63
+msgid "Text"
+msgstr ""
+
+#: js/build/commons.js:63
 #: js/build/commons.js:66
+msgid "The minimum requirements:"
+msgstr ""
+
+#: js/build/commons.js:63
+msgid "3x Headlines "
+msgstr ""
+
+#: js/build/commons.js:63
+msgid "1x Long headline"
+msgstr ""
+
+#: js/build/commons.js:63
+msgid "2x Descriptions"
+msgstr ""
+
+#: js/build/commons.js:63
 msgid "Call to action"
 msgstr ""
 
-#: js/build/commons.js:66
+#: js/build/commons.js:63
 msgid "Select a call to action that aligns with your goals, or use automated call to action which allows Google to automatically choose the most relevant call to action for you."
 msgstr ""
 
-#: js/build/commons.js:66
-msgid "Display URL Path"
+#: js/build/commons.js:63
+msgid "Display URL path"
 msgstr ""
 
-#: js/build/commons.js:66
+#: js/build/commons.js:63
 msgid "The display URL gives potential customers a clear idea of what webpage they'll reach once they click your ad, so your path text should describe your ad's landing page."
 msgstr ""
 
-#: js/build/commons.js:66
+#: js/build/commons.js:63
 msgid "To create your display URL, Google Ads will combine the domain (for example, \"www.google.com\" in www.google.com/nonprofits) from your final URL and the path text (for example, \"nonprofits\" in www.google.com/nonprofits)."
 msgstr ""
 
+#. translators: 1: Minimum width, 2: Minimum height.
 #: js/build/commons.js:66
-msgid "Add additional assets <optional>(Optional)</optional>"
+msgid "Image size needs to be at least %1$d x %2$d"
 msgstr ""
 
 #: js/build/commons.js:66
-msgid "Upload text and image assets to effectively reach and engage your target shoppers. Google will mix and match your assets, continually testing combinations to create personalized and optimal shopping experiences."
+msgid "Select or upload image"
 msgstr ""
 
 #: js/build/commons.js:66
-msgid "We auto-populated assets directly from your Final URL. We encourage you to edit or add more in order to best showcase your business."
+msgid "Replace image"
 msgstr ""
 
 #: js/build/commons.js:66
-msgid "What will my ads look like?"
+msgid "View video"
 msgstr ""
 
 #: js/build/commons.js:66
-msgid "Google will generate text ads and responsive display ads in various combinations and formats from the headlines, images, and descriptions you add. Your ads will automatically adjust their size, appearance, and format to fit available ad spaces. <link>See common ad formats</link>"
+msgid "YouTube icon"
 msgstr ""
 
 #: js/build/commons.js:66
-msgid "What makes these ads different from product ads?"
+msgid "Remove media"
 msgstr ""
 
 #: js/build/commons.js:66
-msgid "Text and image assets can elevate your campaign by offering a variety of ad combinations that capture your audience's attention and generate maximum engagement. By leveraging Google's asset-mixing technology, your ads can be optimized to deliver the right message, to the right people, at the right time."
+msgid "Add image"
 msgstr ""
 
 #: js/build/commons.js:66
-msgid "Compared to product ads—which showcase individual products and are designed to drive direct sales and revenue— ads with creative assets are typically used to highlight your business, generate interest, and attract new customers. While both types of ads can drive conversions, using them together can generate even greater results."
+msgid "Images"
 msgstr ""
 
 #: js/build/commons.js:66
-#: js/build/commons.js:94
+msgid "1x marketing image"
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "1x square marketing image"
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "1x logo"
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "Select YouTube video URL"
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "Invalid YouTube URL"
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "Failed to get the video ID from the URL."
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "Add Video"
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "Add YouTube video"
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "Videos"
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "Recommended but optional"
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "For best results, we recommend adding 1 video."
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "You can add up to a maximum of 5 YouTube video assets."
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "Only valid YouTube URLs are accepted, such as:"
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "Clicking a video thumbnail will open a preview in a new browser tab."
+msgstr ""
+
+#: js/build/commons.js:66
+msgid "To remove a video, hover over the thumbnail and click the \"X\" icon."
+msgstr ""
+
+#: js/build/commons.js:66
+#: js/build/commons.js:97
 #: js/build/dashboard.js:7
 msgid "Optimize your campaign"
 msgstr ""
 
 #: js/build/commons.js:66
-msgid "Drive greater performance by adding text and image assets to create personalized and engaging ads"
+msgid "Drive greater performance by adding text, image, and video assets to create more personalized and engaging ads."
 msgstr ""
 
 #: js/build/commons.js:66
@@ -3895,80 +4042,94 @@ msgstr ""
 msgid "Each of your product variants will have its own ad. Previews shown here are examples and don't include all possible formats."
 msgstr ""
 
-#: js/build/commons.js:94
+#. translators: %s: The PMAX campaign name with the highest spending.
+#: js/build/commons.js:97
+msgid "Unlock more sales for your campaign, %s, by focusing on improving your campaign assets. Better assets directly increase your ad strength, allowing for a wider variety of ad combinations to be shown across Google."
+msgstr ""
+
+#: js/build/commons.js:97
+msgid "Improve Assets"
+msgstr ""
+
+#: js/build/commons.js:97
+#: js/build/price-benchmark.js:1
+msgid "Dismiss"
+msgstr ""
+
+#: js/build/commons.js:97
 msgctxt "A highlighting label behind the heading of the new feature"
 msgid "New"
 msgstr ""
 
-#: js/build/commons.js:94
+#: js/build/commons.js:97
 msgid "Add images, headlines, and descriptions to drive better engagement and more sales."
 msgstr ""
 
-#: js/build/commons.js:94
+#: js/build/commons.js:97
 msgid "Edit your campaign to explore this new feature."
 msgstr ""
 
-#: js/build/commons.js:94
+#: js/build/commons.js:97
 msgid "New name, same great solution"
 msgstr ""
 
-#: js/build/commons.js:94
+#: js/build/commons.js:97
 msgid "Google Listings & Ads is now <strong>Google for WooCommerce</strong>."
 msgstr ""
 
-#: js/build/commons.js:94
+#: js/build/commons.js:97
 msgid "Successfully connected through Jetpack"
 msgstr ""
 
-#: js/build/commons.js:94
+#: js/build/commons.js:97
 msgid "Required to connect with Google"
 msgstr ""
 
-#: js/build/commons.js:94
+#: js/build/commons.js:97
 msgid "Unable to connect your WordPress.com account. Please try again later."
 msgstr ""
 
-#: js/build/commons.js:94
+#: js/build/commons.js:97
 msgid "Unable to complete your ads setup. Please try again later."
 msgstr ""
 
-#: js/build/commons.js:94
+#: js/build/commons.js:97
 msgctxt "the separator for concatenating the categories where the Attribute mapping rule is applied."
 msgid ", "
 msgstr ""
 
 #. translators: %d: number of categories.
-#: js/build/commons.js:97
+#: js/build/commons.js:100
 msgid "Category ID %s (deleted)"
 msgstr ""
 
-#: js/build/commons.js:97
+#: js/build/commons.js:100
 msgid "Error creating account: Account creation limit reached. Contact support for help."
 msgstr ""
 
-#: js/build/commons.js:97
+#: js/build/commons.js:100
 msgid "Unable to create Google Ads account. Please try again later."
 msgstr ""
 
-#: js/build/commons.js:97
+#: js/build/commons.js:100
 msgctxt "the separator for concatenating the messages of failed actions"
 msgid ", "
 msgstr ""
 
 #. translators: 1: optional string when there are multiple failed actions, and it's a concatenated text of failed actions except for the last one. 2: the last one or the only failed action.
-#: js/build/commons.js:100
+#: js/build/commons.js:103
 msgid "There is an error in the following action: %1$s%2$s."
 msgid_plural "There are errors in the following actions: %1$s and %2$s."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: text for the failed action(s).
-#: js/build/commons.js:103
+#: js/build/commons.js:106
 msgid "%s Other changes have been saved. Please try again later."
 msgstr ""
 
 #. translators: text for the failed action(s).
-#: js/build/commons.js:106
+#: js/build/commons.js:109
 msgid "%s Please try again later."
 msgstr ""
 
@@ -4492,6 +4653,10 @@ msgid "Landscape images"
 msgstr ""
 
 #: js/build/index.js:1
+msgid "We recommend adding at least 4 landscape images. A single image is required."
+msgstr ""
+
+#: js/build/index.js:1
 msgctxt "Asset field name with its aspect ratio as the subheading within a help tip"
 msgid "Landscape image (1.91:1)"
 msgstr ""
@@ -4504,6 +4669,10 @@ msgstr ""
 #: js/build/index.js:1
 msgctxt "Plural asset field name as the heading"
 msgid "Square images"
+msgstr ""
+
+#: js/build/index.js:1
+msgid "We recommend adding at least 4 square images. A single image is required."
 msgstr ""
 
 #: js/build/index.js:1
@@ -4522,6 +4691,10 @@ msgid "Portrait images"
 msgstr ""
 
 #: js/build/index.js:1
+msgid "Improve campaign performance with at least 2 portrait images."
+msgstr ""
+
+#: js/build/index.js:1
 msgctxt "Asset field name with its aspect ratio as the subheading within a help tip"
 msgid "Portrait image (4:5)"
 msgstr ""
@@ -4534,6 +4707,10 @@ msgstr ""
 #: js/build/index.js:1
 msgctxt "Plural asset field name as the heading"
 msgid "Logo"
+msgstr ""
+
+#: js/build/index.js:1
+msgid "At least 1 version of your logo is required."
 msgstr ""
 
 #: js/build/index.js:1
@@ -4571,6 +4748,10 @@ msgid "Headlines"
 msgstr ""
 
 #: js/build/index.js:1
+msgid "For the best results, add at least 5 headlines. A minimum of 3 are required."
+msgstr ""
+
+#: js/build/index.js:1
 msgid "Learn how to write effective ads"
 msgstr ""
 
@@ -4603,6 +4784,10 @@ msgid "Long headlines"
 msgstr ""
 
 #: js/build/index.js:1
+msgid "We recommend using 5 long headlines. A single long headline is required."
+msgstr ""
+
+#: js/build/index.js:1
 msgid "Add long headline"
 msgstr ""
 
@@ -4632,6 +4817,10 @@ msgstr ""
 #: js/build/index.js:1
 msgctxt "Plural asset field name as the heading"
 msgid "Descriptions"
+msgstr ""
+
+#: js/build/index.js:1
+msgid "We recommend adding at least 5 different descriptions. At least 2 are required."
 msgstr ""
 
 #: js/build/index.js:1
@@ -4671,247 +4860,241 @@ msgstr ""
 msgid "%1$s and %2$s"
 msgstr ""
 
-#. translators: 1: The minimal number of this item.
-#: js/build/index.js:7
-msgid "At least %d required"
-msgstr ""
-
-#. translators: 1: The minimal number of this item. 2: The maximum number of this item.
-#: js/build/index.js:10
-msgid "At least %1$d required. Add up to %2$d."
-msgstr ""
-
 #. translators: 1: Recommended width. 2: Recommended height. 3: Minimal width. 4: Minimal height.
-#: js/build/index.js:13
+#: js/build/index.js:7
 msgid "<listItem>Recommended size: %1$d x %2$d</listItem><listItem>Min. size: %3$d x %4$d</listItem>"
 msgstr ""
 
 #. translators: 1: The maximum number of this image assets. 2: Text for the types of image assets.
-#: js/build/index.js:16
+#: js/build/index.js:10
 msgid "You can add up to a maximum of %1$d image assets, which can be a combination of %2$s images."
 msgstr ""
 
-#: js/build/index.js:16
+#: js/build/index.js:10
 msgid "Add images that meet or can be cropped to the recommended sizes. Note: The maximum file size for any image is 5120 KB."
 msgstr ""
 
 #. translators: The shared maximum number of the grouped types of image assets.
-#: js/build/index.js:19
+#: js/build/index.js:13
 msgid "The maximum number of images that can be uploaded is %d."
 msgstr ""
 
 #. translators: 1: The minimum number of this asset field. 2: Asset field name.
-#: js/build/index.js:22
+#: js/build/index.js:16
 msgid "%1$d %2$s"
 msgstr ""
 
 #. translators: 1: The shared maximum number of the grouped types of image assets. 2: Text for the minimum number and type of each image asset.
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Maximum %1$d images can be uploaded, with a minimum of %2$s image."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading shipping rates."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading shipping times."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading merchant center settings."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading Jetpack account info."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading Google account info."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading Google Merchant Center account info."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error getting your Google Merchant Center accounts."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading Google Ads account info."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Unable to disconnect your Google account."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Unable to disconnect your Google Ads account."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Unable to disconnect all your accounts."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error getting the billing status of your Google Ads account."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error getting your Google Ads accounts."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Unable to update your Google Merchant Center contact information."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading target audience."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error updating the enhanced conversions status."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error creating the assets of the campaign."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error updating the assets of the campaign."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading your merchant center setup status."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Unable to update the channel visibility of products."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error creating the rule."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error updating the rule."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error deleting the rule."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error updating the tour."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error getting the status of your Google Ads account."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading Google account access info."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading Google Merchant Center contact information."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading supported country details."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading ads campaigns."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading the assets of the campaign."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading your merchant center product statistics."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading your merchant center product review request status."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading issues to resolve."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading product feed."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading report."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading the mapping attributes."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading the mapping sources for the selected attribute."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error loading the mapping rules."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error getting the store categories."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error getting the tour."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error getting the budget recommendation."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error getting the budget metrics."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error getting the GTIN Migration Status."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error getting the enhanced conversions status."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error getting the price benchmark summary."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "There was an error getting the price benchmark suggestions."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
+msgid "There was an error getting the Ads recommendations."
+msgstr ""
+
+#: js/build/index.js:19
 msgid "Unknown error occurred."
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgctxt "The spacing between sentences. It's a space in English. Please use an empty string if no spacing is needed in that language."
 msgid " "
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Marketing"
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Setup Merchant Center"
 msgstr ""
 
-#: js/build/index.js:25
+#: js/build/index.js:19
 msgid "Setup Google Ads"
 msgstr ""
 
@@ -5089,10 +5272,6 @@ msgstr ""
 
 #: js/build/price-benchmark.js:1
 msgid "This report includes a competitive pricing analysis, price recommendations, and insights like <strong>Effectiveness</strong> to help you identify opportunities, compare against competitors, and accelerate your sales growth."
-msgstr ""
-
-#: js/build/price-benchmark.js:1
-msgid "Dismiss"
 msgstr ""
 
 #: js/build/price-benchmark.js:1

@@ -1,7 +1,7 @@
 <?php
 /**
- * Intégration WooCommerce pour le configurateur NFC - VERSION ULTRA-MINIMALE
- * Focus uniquement sur : shortcode bouton + panier + commandes
+ * Intégration WooCommerce pour le configurateur NFC - ENHANCED ADMIN
+ * Focus : shortcode bouton + panier + commandes + AFFICHAGE ADMIN AMÉLIORÉ
  */
 
 if (!defined('ABSPATH')) {
@@ -26,8 +26,13 @@ class NFC_WooCommerce_Integration {
         add_filter('woocommerce_cart_item_name', [$this, 'modify_cart_item_name'], 10, 2);
         add_filter('woocommerce_cart_item_thumbnail', [$this, 'modify_cart_item_thumbnail'], 10, 2);
         add_action('woocommerce_order_status_completed', [$this, 'handle_completed_order']);
-        add_action('woocommerce_admin_order_data_after_order_details', [$this, 'display_admin_order_meta']);
+        
+        // ENHANCED ADMIN DISPLAY
+        add_action('woocommerce_admin_order_data_after_order_details', [$this, 'display_enhanced_admin_order_meta']);
         add_action('woocommerce_email_order_details', [$this, 'customize_order_emails'], 5, 4);
+        
+        // STYLES ADMIN
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_styles']);
         
         // API REST (pour configurateur)
         add_action('rest_api_init', [$this, 'register_rest_routes']);
@@ -136,9 +141,16 @@ class NFC_WooCommerce_Integration {
      */
     public function modify_cart_item_thumbnail($thumbnail, $cart_item) {
         if (isset($cart_item['nfc_config'])) {
-            $thumbnail = '<div style="position: relative;">' . $thumbnail;
-            $thumbnail .= '<span style="position: absolute; top: -5px; right: -5px; background: #667eea; color: white; border-radius: 50%; width: 20px; height: 20px; text-align: center; font-size: 12px; line-height: 20px;">🎨</span>';
-            $thumbnail .= '</div>';
+            // Si un screenshot thumbnail existe, l'utiliser
+            if (isset($cart_item['nfc_config']['screenshot']['thumbnail'])) {
+                $screenshot_url = $cart_item['nfc_config']['screenshot']['thumbnail'];
+                $thumbnail = '<img src="' . esc_attr($screenshot_url) . '" alt="Aperçu personnalisé" style="width: 64px; height: auto; border-radius: 4px;">';
+            } else {
+                // Sinon, ajouter juste l'icône personnalisé
+                $thumbnail = '<div style="position: relative;">' . $thumbnail;
+                $thumbnail .= '<span style="position: absolute; top: -5px; right: -5px; background: #667eea; color: white; border-radius: 50%; width: 20px; height: 20px; text-align: center; font-size: 12px; line-height: 20px;">🎨</span>';
+                $thumbnail .= '</div>';
+            }
         }
         return $thumbnail;
     }
@@ -165,35 +177,122 @@ class NFC_WooCommerce_Integration {
     }
     
     /**
-     * Affiche métadonnées dans admin commande
+     * ENHANCED ADMIN ORDER DISPLAY - Version complète avec fichiers
      */
-    public function display_admin_order_meta($order) {
+    public function display_enhanced_admin_order_meta($order) {
         $has_nfc_items = false;
         
-        foreach ($order->get_items() as $item) {
+        foreach ($order->get_items() as $item_id => $item) {
             $config_data = $item->get_meta('_nfc_config_complete');
             if ($config_data) {
                 if (!$has_nfc_items) {
-                    echo '<h3>🎨 Cartes NFC Personnalisées</h3>';
+                    echo '<h3 style="margin-top: 30px;">🎨 Cartes NFC Personnalisées</h3>';
                     $has_nfc_items = true;
                 }
                 
                 $config = json_decode($config_data, true);
-                echo '<div style="background: #f9f9f9; padding: 15px; margin: 10px 0; border-left: 4px solid #667eea;">';
-                echo '<h4>' . esc_html($item->get_name()) . '</h4>';
-                echo '<p><strong>Couleur:</strong> ' . ucfirst($config['color'] ?? 'Non défini') . '</p>';
-                echo '<p><strong>Nom:</strong> ' . esc_html(($config['user']['firstName'] ?? '') . ' ' . ($config['user']['lastName'] ?? '')) . '</p>';
+                $urls = NFC_File_Handler::get_download_urls($order->get_id(), $item_id);
+                
+                echo '<div class="nfc-admin-item" style="background: #f9f9f9; padding: 20px; margin: 15px 0; border-left: 4px solid #667eea; border-radius: 4px;">';
+                
+                // Titre de l'article
+                echo '<h4 style="margin: 0 0 15px 0; color: #333;">' . esc_html($item->get_name()) . '</h4>';
+                
+                // Grille d'informations
+                echo '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">';
+                
+                // Colonne gauche - Infos de base
+                echo '<div>';
+                echo '<h5 style="margin: 0 0 10px 0; color: #667eea;">📋 Configuration</h5>';
+                echo '<table style="width: 100%; border-collapse: collapse;">';
+                echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Couleur:</td><td>' . ucfirst($config['color'] ?? 'Non défini') . '</td></tr>';
+                echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Nom:</td><td>' . esc_html(($config['user']['firstName'] ?? '') . ' ' . ($config['user']['lastName'] ?? '')) . '</td></tr>';
                 
                 if (isset($config['image']['name'])) {
-                    echo '<p><strong>Image:</strong> ' . esc_html($config['image']['name']) . '</p>';
+                    echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Image:</td><td>' . esc_html($config['image']['name']) . '</td></tr>';
+                    
+                    // Paramètres transformation
+                    $scale = $item->get_meta('_nfc_image_scale') ?: 100;
+                    $x = $item->get_meta('_nfc_image_x') ?: 0;
+                    $y = $item->get_meta('_nfc_image_y') ?: 0;
+                    
+                    echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Taille:</td><td>' . $scale . '%</td></tr>';
+                    echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Position X:</td><td>' . ($x > 0 ? '+' : '') . $x . 'px</td></tr>';
+                    echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Position Y:</td><td>' . ($y > 0 ? '+' : '') . $y . 'px</td></tr>';
+                }
+                echo '</table>';
+                echo '</div>';
+                
+                // Colonne droite - Actions et aperçu
+                echo '<div>';
+                echo '<h5 style="margin: 0 0 10px 0; color: #667eea;">🔧 Actions</h5>';
+                
+                // Boutons de téléchargement
+                if (isset($config['image']['name'])) {
+                    echo '<p><a href="' . esc_url($urls['logo_download']) . '" class="button button-secondary" style="margin-right: 10px;">📷 Télécharger logo</a></p>';
                 }
                 
-                echo '<details><summary>Configuration JSON</summary>';
-                echo '<pre style="font-size: 11px; max-height: 200px; overflow: auto;">' . esc_html(json_encode($config, JSON_PRETTY_PRINT)) . '</pre>';
-                echo '</details>';
+                // Screenshot actions
+                $screenshot_info = $item->get_meta('_nfc_screenshot_info');
+                if ($screenshot_info) {
+                    echo '<p>';
+                    echo '<a href="' . esc_url($urls['screenshot_view']) . '" class="button button-secondary" target="_blank" style="margin-right: 5px;">👁️ Voir aperçu</a>';
+                    echo '<a href="' . esc_url($urls['screenshot_download']) . '" class="button button-secondary">💾 Télécharger</a>';
+                    echo '</p>';
+                    
+                    // Miniature screenshot si disponible
+                    echo '<div style="margin-top: 10px;">';
+                    echo '<img src="' . esc_url($urls['screenshot_view']) . '" style="max-width: 200px; height: auto; border: 1px solid #ddd; border-radius: 4px;" alt="Aperçu configuration">';
+                    echo '</div>';
+                }
                 echo '</div>';
+                
+                echo '</div>'; // Fin grille
+                
+                // Section JSON (collapsible)
+                echo '<details style="margin-top: 15px;">';
+                echo '<summary style="cursor: pointer; color: #667eea; font-weight: 600;">📄 Configuration complète (JSON)</summary>';
+                echo '<pre style="background: #f0f0f0; padding: 10px; border-radius: 4px; font-size: 11px; max-height: 200px; overflow: auto; margin-top: 10px;">' . esc_html(json_encode($config, JSON_PRETTY_PRINT)) . '</pre>';
+                echo '</details>';
+                
+                echo '</div>'; // Fin nfc-admin-item
             }
         }
+    }
+    
+    /**
+     * Enqueue admin styles
+     */
+    public function enqueue_admin_styles($hook) {
+        // Seulement sur les pages de commandes
+        if (!in_array($hook, ['post.php', 'post-new.php', 'edit.php'])) {
+            return;
+        }
+        
+        global $post_type;
+        if ($post_type !== 'shop_order') {
+            return;
+        }
+        
+        // Styles inline pour l'admin
+        wp_add_inline_style('wp-admin', '
+            .nfc-admin-item {
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            .nfc-admin-item h4 {
+                border-bottom: 1px solid #ddd;
+                padding-bottom: 10px;
+            }
+            .nfc-admin-item .button {
+                text-decoration: none !important;
+            }
+            .nfc-admin-item details summary {
+                outline: none;
+            }
+            .nfc-admin-item details[open] summary {
+                margin-bottom: 10px;
+            }
+        ');
     }
     
     /**

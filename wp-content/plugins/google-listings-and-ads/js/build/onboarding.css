@@ -37,7 +37,6 @@
 .gla-switch-url-card .gla-content-button-layout{margin:16px 0}
 .gla-mc-warning-modal{max-width:600px}.gla-mc-warning-modal__warning-text{display:flex;font-weight:700;gap:8px}.gla-mc-warning-modal__warning-text svg{flex-shrink:0}
 .gla-mc-terms-modal{max-width:600px}.gla-mc-terms-modal .main{font-weight:700}
-.app-notice{border:0;font-size:12px;margin:0 var(--large-gap) var(--main-gap);padding:16px}
 .gla-google-combo-account-card-wrapper .components-card:not(:last-child){border-bottom-left-radius:0;border-bottom-right-radius:0}.gla-google-combo-account-card-wrapper .components-card:not(:first-child){border-top-left-radius:0;border-top-right-radius:0}.gla-google-combo-account-card--connected .gla-account-card__description{gap:0}.gla-google-combo-account-card--connected .gla-google-combo-account-card__description-actions{display:flex;gap:var(--large-gap)}
 .gla-google-combo-account-card .gla-account-card__actions .app-button{margin-left:calc(var(--main-gap)/-2)}
 .gla-faqs-panel .components-panel__row{align-items:flex-start;flex-direction:column;gap:1.5em}.gla-faqs-panel .components-panel__row p{margin:0}.gla-faqs-panel .components-panel__body-title .components-panel__body-toggle.components-button{padding-bottom:20px;padding-top:20px}

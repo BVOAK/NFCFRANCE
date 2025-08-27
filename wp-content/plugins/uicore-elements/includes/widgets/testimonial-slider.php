@@ -1,4 +1,5 @@
 <?php
+
 namespace UiCoreElements;
 
 defined('ABSPATH') || exit();
@@ -40,7 +41,8 @@ class TestimonialSlider extends TestimonialCarousel
 
         return $styles;
     }
-    protected function register_controls() {
+    protected function register_controls()
+    {
 
         parent::register_controls();
         $this->TRAIT_update_slider_controls();
@@ -72,7 +74,8 @@ class TestimonialSlider extends TestimonialCarousel
             ]
         );
         // Change default border radius to zero
-        $this->update_control( '
+        $this->update_control(
+            '
             item_border_radius',
             [
                 'default' => [
@@ -85,7 +88,6 @@ class TestimonialSlider extends TestimonialCarousel
                 ],
             ]
         );
-
     }
 }
 \Elementor\Plugin::instance()->widgets_manager->register(new TestimonialSlider());

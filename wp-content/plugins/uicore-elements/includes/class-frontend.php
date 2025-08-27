@@ -1,11 +1,13 @@
 <?php
+
 namespace UiCoreElements;
 
 
 /**
  * Frontend Pages Handler
  */
-class Frontend {
+class Frontend
+{
 
 
     /**
@@ -14,8 +16,5 @@ class Frontend {
      * @return void
      */
 
-    public function __construct() {
-        
-    }
-
+    public function __construct() {}
 }

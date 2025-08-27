@@ -8,12 +8,16 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+require_once __DIR__ . '/class-nfc-product-button-manager.php';
+
 class NFC_WooCommerce_Integration {
     
     // Configuration produits configurables
+    private $button_manager;
     private $configurable_products = [571, 572, 573]; // IDs uniquement
     
     public function __construct() {
+        $this->button_manager = new NFC_Product_Button_Manager();
         add_action('init', [$this, 'init']);
     }
     
@@ -46,7 +50,8 @@ class NFC_WooCommerce_Integration {
      * Vérifie si un produit est configurable
      */
     public function is_configurable_product($product_id) {
-        return in_array(intval($product_id), $this->configurable_products);
+        //return in_array(intval($product_id), $this->configurable_products);
+        return $this->button_manager->is_configurable_product($product_id);
     }
     
     /**

@@ -1259,9 +1259,9 @@ class IconList extends UiCoreWidget
                     <?php endif; ?>
 
                     <div class="ui-e-content">
-                        <<?php echo esc_html($tag); ?> <?php $this->print_render_attribute_string('list_title_tags'); ?>>
+                        <<?php echo Helper::esc_tag($tag); ?> <?php $this->print_render_attribute_string('list_title_tags'); ?>>
                             <?php echo wp_kses_post($item['text']); ?>
-                        </<?php echo esc_html($tag); ?>>
+                        </<?php echo Helper::esc_tag($tag); ?>>
                         <p class="ui-e-text"> <?php echo wp_kses_post($item['text_details']); ?> </p>
                     </div>
 

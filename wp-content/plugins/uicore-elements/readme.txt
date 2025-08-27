@@ -4,7 +4,7 @@ Tags: elementor, widgets, page builder, ui elements
 Requires at least: 4.6
 Requires PHP: 7.4
 Tested up to: 6.8.1
-Stable tag: 1.3.3
+Stable tag: 1.3.5
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -130,6 +130,13 @@ No need to worry. UiCore Elements is optimized for performance and ensures a lig
 1. /assets/screenshots/1.png
 
 == Changelog ==
+
+= 1.3.5 =
+* FIX - Improved securty for accordion tags
+* FIX - Fixed issue where Advanced Post widgets using `overlay` layout would get no height on mobile devices.
+
+= 1.3.4 =
+* FIX - Design Cloud caching issues
 
 = 1.3.3 =
 * NEW - Added New Widget: Featured Image

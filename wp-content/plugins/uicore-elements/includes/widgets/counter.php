@@ -1373,9 +1373,9 @@ class Counter extends UiCoreWidget
 
         $stack     = $settings['counter_text_inline'] ? false : true; // If text inline, no stack wrapper between elements is needed
         $title     = !empty($settings['content_text'])  ?
-            '<' . esc_html($txt_tag) . ' class="ui-e-title">' . wp_kses_data($settings['content_text']) . '</' . esc_html($txt_tag) . '>' :
+            '<' . Helper::esc_tag($txt_tag) . ' class="ui-e-title">' . wp_kses_data($settings['content_text']) . '</' . esc_html($txt_tag) . '>' :
             "<!-- no title -->";
-        $html = '<' . esc_html($num_tag) . ' class="ui-e-num">';
+        $html = '<' . Helper::esc_tag($num_tag) . ' class="ui-e-num">';
 
         // Motion animation markup
         if ($settings['counter_animation'] == 'motion') {
@@ -1427,7 +1427,7 @@ class Counter extends UiCoreWidget
                                 echo wp_kses_post($html . $title);
                                 if ($stack) {
                                     ?> </div> <?php
-                                                }
                                             }
                                         }
-                                        \Elementor\Plugin::instance()->widgets_manager->register(new Counter());
+                                    }
+                                    \Elementor\Plugin::instance()->widgets_manager->register(new Counter());

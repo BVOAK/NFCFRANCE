@@ -1080,9 +1080,9 @@ trait Post_Trait
         }
     ?>
         <a href="<?php echo esc_url(get_permalink()); ?>" title="<?php echo esc_attr__('View Post:', 'uicore-elements') . esc_html(the_title_attribute(['echo' => false])); ?>">
-            <<?php echo esc_html($tag); ?> class="ui-e-post-title">
+            <<?php echo Helper::esc_tag($tag); ?> class="ui-e-post-title">
                 <span> <?php echo esc_html(get_the_title()); ?> </span>
-            </<?php echo esc_html($tag); ?>>
+            </<?php echo Helper::esc_tag($tag); ?>>
         </a>
     <?php
     }

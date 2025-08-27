@@ -1,10 +1,13 @@
 <?php
+
 namespace UiCoreElements\Utils;
+
 use Elementor\Controls_Manager;
 
 defined('ABSPATH') || exit();
 
-trait Animation_Trait {
+trait Animation_Trait
+{
 
     private $animation;
 
@@ -31,7 +34,7 @@ trait Animation_Trait {
         // Mandatory params
         $params = [
             /* translators: %s: control title */
-            'label' => esc_html( sprintf('%s', $name), 'uicore-elements'),
+            'label' => esc_html(sprintf('%s', $name), 'uicore-elements'),
             'type' => Controls_Manager::SELECT,
             'default' => '',
             'content_classes' => 'elementor-control-field-select-small',
@@ -39,10 +42,10 @@ trait Animation_Trait {
         ];
 
         // Optional params
-        if( isset($conditions) ){
+        if (isset($conditions)) {
             $params['condition'] = $conditions;
         }
-        if( isset($prefix_class) ) {
+        if (isset($prefix_class)) {
             $params['prefix_class'] = $prefix_class;
             $params['render_type'] = 'template';
         }
@@ -59,23 +62,23 @@ trait Animation_Trait {
                 'type'               => Controls_Manager::SWITCHER,
                 'default'            => '',
                 'return_value'       => 'ui-e-grid-animate',
-                'render_type'		 => 'none',
+                'render_type'         => 'none',
                 'frontend_available' => true,
             ]
         );
         $this->add_control(
             'animate_item_type',
             [
-                'label' => __( 'Animation', 'uicore-elements' ),
+                'label' => __('Animation', 'uicore-elements'),
                 'type' => Controls_Manager::SELECT,
                 'default' => 'fadeInUp',
                 'options' => [
-                    'fadeInUp'      => __( 'Fade In Up', 'uicore-elements' ),
-					'fadeInDown'    => __( 'Fade In Down', 'uicore-elements' ),
-					'fadeInLeft'    => __( 'Fade In Left', 'uicore-elements' ),
-					'fadeInRight'   => __( 'Fade In Right', 'uicore-elements' ),
-					'fadeIn'        => __( 'Fade In', 'uicore-elements' ),
-					'zoomIn'        => __( 'Zoom In', 'uicore-elements' ),
+                    'fadeInUp'      => __('Fade In Up', 'uicore-elements'),
+                    'fadeInDown'    => __('Fade In Down', 'uicore-elements'),
+                    'fadeInLeft'    => __('Fade In Left', 'uicore-elements'),
+                    'fadeInRight'   => __('Fade In Right', 'uicore-elements'),
+                    'fadeIn'        => __('Fade In', 'uicore-elements'),
+                    'zoomIn'        => __('Zoom In', 'uicore-elements'),
                 ],
                 'condition' => array(
                     'animate_items' => 'ui-e-grid-animate',
@@ -86,12 +89,12 @@ trait Animation_Trait {
         $this->add_control(
             'animate_item_speed',
             [
-                'label' => __( 'Speed', 'uicore-elements' ),
+                'label' => __('Speed', 'uicore-elements'),
                 'type' => Controls_Manager::SLIDER,
                 'condition' => array(
                     'animate_items' => 'ui-e-grid-animate',
                 ),
-                'default'=> [
+                'default' => [
                     'unit' => 'px',
                     'size' => 1500,
                 ],
@@ -109,10 +112,10 @@ trait Animation_Trait {
         );
         $this->add_control(
             'animate_item_delay',
-        [
-                'label' => __( 'Animation Delay', 'uicore-elements' ),
+            [
+                'label' => __('Animation Delay', 'uicore-elements'),
                 'type' => Controls_Manager::SLIDER,
-                'default'=> [
+                'default' => [
                     'unit' => 'px',
                     'size' => 200,
                 ],
@@ -133,13 +136,13 @@ trait Animation_Trait {
         );
         $this->add_control(
             'animate_item_stagger',
-        [
-                'label' => __( 'Stagger', 'uicore-elements' ),
+            [
+                'label' => __('Stagger', 'uicore-elements'),
                 'type' => Controls_Manager::SLIDER,
                 'condition' => array(
                     'animate_items' => 'ui-e-grid-animate',
                 ),
-                'default'=> [
+                'default' => [
                     'unit' => 'px',
                     'size' => 16,
                 ],
@@ -156,14 +159,14 @@ trait Animation_Trait {
             ]
         );
         $this->add_control(
-			'hr',
-			[
-				'type' => \Elementor\Controls_Manager::DIVIDER,
+            'hr',
+            [
+                'type' => \Elementor\Controls_Manager::DIVIDER,
                 'condition' => array(
                     'animate_items' => 'ui-e-grid-animate',
                 ),
-			]
-		);
+            ]
+        );
     }
 
     /**
@@ -193,7 +196,7 @@ trait Animation_Trait {
         $animation_list = wp_parse_args($this->animation, $animation_list);
 
         // Add new animations if requested
-        if( $use_new ){
+        if ($use_new) {
             $animation_list = array_merge($animation_list, $new_animations);
         }
 
@@ -205,7 +208,7 @@ trait Animation_Trait {
         // Format the list of animations, with translated strings, to be used as elementor option's array
         foreach ($animation_list as $key => $value) {
             $slug = $key !== '' ? "ui-e-item-anim-$key" : '';
-            $list[$slug] = esc_html( sprintf('%s', $value), 'uicore-elements');
+            $list[$slug] = esc_html(sprintf('%s', $value), 'uicore-elements');
         }
 
         return $list;

@@ -107,6 +107,7 @@ class HighlightedText extends UiCoreWidget
                 'placeholder' => __('Some Text', 'uicore-elements'),
                 'default' => __('Some Text', 'uicore-elements'),
                 'condition' => ['type' => 'text'],
+                'dynamic' => ['active' => true],
             ]
         );
 
@@ -528,7 +529,7 @@ class HighlightedText extends UiCoreWidget
         $content = $settings['content'];
         $delay =  $settings['shape_animation_delay'];
 ?>
-        <<?php echo esc_html($tag);
+        <<?php echo Helper::esc_tag($tag);
             echo $delay ? ' data-delay="' . esc_attr($delay) . '"' : ''; ?> class="ui-e--highlighted-text">
             <?php
 
@@ -569,7 +570,7 @@ class HighlightedText extends UiCoreWidget
                 }
             }
             ?>
-        </<?php echo esc_html($tag); ?>>
+        </<?php echo Helper::esc_tag($tag); ?>>
     <?php
 
     }

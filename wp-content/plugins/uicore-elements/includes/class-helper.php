@@ -268,6 +268,30 @@ class Helper
     }
 
     /**
+     * Sanitizes HTML tags. Since is a custom sanitizer, require us, by wp plugin repo security standards,
+     * to add `//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped` comment.
+     *
+     * @param mixed  $raw_tag  The HTML tag to sanitize.
+     * @param string $default  Default HTML value to fallback to in case an invalid tag is passed. Default is 'h3'.
+     * @return string  The sanitized HTML tag.
+     *
+     * @since 1.3.5
+     */
+    public static function esc_tag($raw_tag, $default = 'h3')
+    {
+
+        $allowed_tags_names = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'span', 'p', 'a'];
+        $tag = sanitize_key(strtolower($raw_tag)); // normalizes to [a-z0-9_]
+
+        // fallback if tag not whitelisted
+        if (! in_array($tag, $allowed_tags_names, true)) {
+            $tag = $default;
+        }
+
+        return $tag;
+    }
+
+    /**
      * Sanitizes SVG content, also allowing `post` tags and atts. Since is a custom sanitizer, require us,
      * by wp plugin repo security standards, to add `//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped` comment.
      *

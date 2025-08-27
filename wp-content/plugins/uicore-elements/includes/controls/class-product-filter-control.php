@@ -1,4 +1,5 @@
 <?php
+
 namespace UiCoreElements\Controls;
 
 use UiCoreElements\Controls\Post_Filter;

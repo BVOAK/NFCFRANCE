@@ -1,4 +1,5 @@
 <?php
+
 namespace UiCoreElements\Utils;
 
 use Elementor\Controls_Manager;
@@ -8,7 +9,8 @@ use Elementor\Group_Control_Box_Shadow;
 
 defined('ABSPATH') || exit();
 
-trait Grid_Trait {
+trait Grid_Trait
+{
 
     /**
      * Registers the grid layout controls.
@@ -21,7 +23,7 @@ trait Grid_Trait {
         $this->add_responsive_control(
             'columns',
             [
-                'label'           => __( 'Columns', 'uicore-elements' ),
+                'label'           => __('Columns', 'uicore-elements'),
                 'type'            => Controls_Manager::SELECT,
                 'desktop_default' => 3,
                 'tablet_default'  => 2,
@@ -46,19 +48,19 @@ trait Grid_Trait {
         $this->add_responsive_control(
             'gap',
             [
-                'label'     => esc_html__( 'Items Gap', 'uicore-elements' ),
+                'label'     => esc_html__('Items Gap', 'uicore-elements'),
                 'type'      => Controls_Manager::SLIDER,
                 'size_units' => ['px'],
-				'range' => [
-					'px' => [
-						'min' => 0,
-						'max' => 200,
-					],
-				],
-				'default' => [
-					'unit' => 'px',
-					'size' => 20,
-				],
+                'range' => [
+                    'px' => [
+                        'min' => 0,
+                        'max' => 200,
+                    ],
+                ],
+                'default' => [
+                    'unit' => 'px',
+                    'size' => 20,
+                ],
                 'selectors' => [
                     '{{WRAPPER}} .ui-e-grid' => 'grid-gap: {{SIZE}}{{UNIT}};',
                     '{{WRAPPER}} .ui-e-adv-grid' => 'grid-gap: {{SIZE}}{{UNIT}};', // Old APG Suport

@@ -1423,7 +1423,7 @@ class Accordion extends UiCoreWidget
             ?>
                 <div <?php $this->print_render_attribute_string($item_key); ?>>
 
-                    <<?php echo esc_html($titleTag) ?> <?php $this->print_render_attribute_string($tab_title_setting_key); ?>>
+                    <<?php echo Helper::esc_tag($titleTag) ?> <?php $this->print_render_attribute_string($tab_title_setting_key); ?>>
 
                         <?php if ($settings['accordion_icon']['value']) :
                             // TODO: remove `ui-e-icon` class after, at least, 3 releases from 1.2.1. Kept for compatibility purposes
@@ -1455,7 +1455,7 @@ class Accordion extends UiCoreWidget
                             <?php echo esc_html($item['tab_title']); ?>
                         </span>
 
-                    </<?php echo esc_html($titleTag) ?>>
+                    </<?php echo Helper::esc_tag($titleTag) ?>>
 
                     <div <?php $this->print_render_attribute_string($tab_content_setting_key); ?>>
                         <?php

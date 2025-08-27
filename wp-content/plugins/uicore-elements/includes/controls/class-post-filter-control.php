@@ -1,4 +1,5 @@
 <?php
+
 namespace UiCoreElements\Controls;
 
 use Elementor\Controls_Manager;
@@ -122,11 +123,11 @@ class Post_Filter extends Group_Control_Base
     private static function get_post_types($args = [], $only_products = false)
     {
 
-        if($only_products){
+        if ($only_products) {
             return [
-                'product' => esc_html__( 'Custom', 'uicore-elements' ),
-                'current' => esc_html__( 'Current', 'uicore-elements' ),
-                'related' => esc_html__( 'Related', 'uicore-elements' )
+                'product' => esc_html__('Custom', 'uicore-elements'),
+                'current' => esc_html__('Current', 'uicore-elements'),
+                'related' => esc_html__('Related', 'uicore-elements')
             ];
         }
 
@@ -150,12 +151,12 @@ class Post_Filter extends Group_Control_Base
         unset($post_types['e-landing-page']);
         unset($post_types['uicore-tb']);
 
-        if(!$only_products){
+        if (!$only_products) {
             unset($post_types['product']);
         }
 
-        $post_types['current'] = esc_html__( 'Current', 'uicore-elements' );
-        $post_types['related'] = esc_html__( 'Related', 'uicore-elements' );
+        $post_types['current'] = esc_html__('Current', 'uicore-elements');
+        $post_types['related'] = esc_html__('Related', 'uicore-elements');
 
         return $post_types;
     }
