@@ -124,6 +124,16 @@ function nfc_configurator_init()
         }
     }
 
+    if (class_exists('NFC_Button_Renderer')) {
+        new NFC_Button_Renderer();  // 🆕 MANQUANT !
+        error_log('NFC: Button Renderer initialisé');
+    }
+    
+    if (class_exists('NFC_WooCommerce_Integration')) {
+        new NFC_WooCommerce_Integration();  // Existant
+        error_log('NFC: WC Integration initialisé');  
+    }
+
     error_log('NFC: Configurateur initialisé via fichiers séparés');
 }
 add_action('after_setup_theme', 'nfc_configurator_init');

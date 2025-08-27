@@ -10,141 +10,61 @@ if (!defined('ABSPATH')) {
 
 require_once __DIR__ . '/class-nfc-product-button-manager.php';
 
-class NFC_WooCommerce_Integration {
-    
+class NFC_WooCommerce_Integration
+{
+
     // Configuration produits configurables
     private $button_manager;
     private $configurable_products = [571, 572, 573]; // IDs uniquement
-    
-    public function __construct() {
+
+    public function __construct()
+    {
+        // Instancier le button manager (GARDER)
         $this->button_manager = new NFC_Product_Button_Manager();
         add_action('init', [$this, 'init']);
     }
-    
-    public function init() {
-        // SHORTCODE BOUTON
-        add_shortcode('nfc_configurator_button', [$this, 'configurator_button_shortcode']);
-        
-        // HOOKS PANIER/COMMANDES (essentiels)
+
+    public function init()
+    {
+        // ✅ GARDER : Hooks panier/commandes essentiels
         add_filter('woocommerce_add_to_cart_validation', [$this, 'validate_add_to_cart'], 10, 3);
         add_filter('woocommerce_cart_item_name', [$this, 'modify_cart_item_name'], 10, 2);
         add_filter('woocommerce_cart_item_thumbnail', [$this, 'modify_cart_item_thumbnail'], 10, 2);
         add_action('woocommerce_order_status_completed', [$this, 'handle_completed_order']);
-        
-        // ENHANCED ADMIN DISPLAY
+
+        // ✅ GARDER : Admin et emails
         add_action('woocommerce_admin_order_data_after_order_details', [$this, 'display_enhanced_admin_order_meta']);
         add_action('woocommerce_email_order_details', [$this, 'customize_order_emails'], 5, 4);
-        
-        // STYLES ADMIN
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_styles']);
-        
-        // API REST (pour configurateur)
+
+        // ✅ GARDER : API REST
         add_action('rest_api_init', [$this, 'register_rest_routes']);
-        
-        // Nettoyage session
+
+        // ✅ GARDER : Nettoyage session
         add_action('wp_logout', [$this, 'cleanup_session_data']);
         add_action('wp_login', [$this, 'cleanup_session_data']);
+
+        // 🆕 AJOUTER : Handlers AJAX pour les nouveaux boutons
+        add_action('wp_ajax_nfc_add_to_cart_with_files', [$this, 'ajax_add_to_cart_with_files']);
+        add_action('wp_ajax_nopriv_nfc_add_to_cart_with_files', [$this, 'ajax_add_to_cart_with_files']);
+
+        add_action('wp', [$this, 'debug_button_integration']);
     }
-    
+
     /**
      * Vérifie si un produit est configurable
      */
-    public function is_configurable_product($product_id) {
-        //return in_array(intval($product_id), $this->configurable_products);
+    public function is_configurable_product($product_id)
+    {
+        // Utiliser le button manager au lieu des IDs hardcodés
         return $this->button_manager->is_configurable_product($product_id);
     }
-    
-    /**
-     * SHORTCODE BOUTON CONFIGURATEUR - COMPATIBLE ELEMENTOR + TRADUCTION
-     */
-    public function configurator_button_shortcode($atts) {
-        global $product;
-        
-        $atts = shortcode_atts([
-            'product_id' => $product ? $product->get_id() : 0,
-            'text' => __('Personnaliser en ligne', 'nfc-configurator'),
-            'size' => 'sm', // xs, sm, md, lg, xl
-            'animation' => 'flip', // fade, grow, shrink, pulse, float, flip, etc.
-            'class' => '' // Classes additionnelles
-        ], $atts);
-        
-        $product_id = intval($atts['product_id']);
-        
-        if (!$this->is_configurable_product($product_id)) {
-            return '';
-        }
-        
-        $configurator_url = home_url('/configurateur?product_id=' . $product_id);
-        
-        // Classes Elementor
-        $elementor_classes = [
-            'elementor-button',
-            'elementor-button-link',
-            'elementor-size-' . esc_attr($atts['size'])
-        ];
-        
-        // Animation si spécifiée
-        if (!empty($atts['animation'])) {
-            $elementor_classes[] = 'elementor-animation-' . esc_attr($atts['animation']);
-        }
-        
-        // Classes additionnelles
-        if (!empty($atts['class'])) {
-            $elementor_classes[] = esc_attr($atts['class']);
-        }
-        
-        // Classe NFC pour identification
-        $elementor_classes[] = 'nfc-configurator-button';
-        
-        $button_text = esc_html($atts['text']);
-        
-        ob_start();
-        ?>
-        <div class="nfc-configurator-button-wrapper">
-            <a class="<?php echo implode(' ', $elementor_classes); ?>" 
-               href="<?php echo esc_url($configurator_url); ?>"
-               data-product-id="<?php echo $product_id; ?>">
-               <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB4PSIwIiB5PSIwIiB2aWV3Qm94PSIwIDAgNjgyLjY2NyA2ODIuNjY3IiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48Zz48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiIGNsaXBQYXRoVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNMCA1MTJoNTEyVjBIMFoiIGZpbGw9IiMwMDAwMDAiIG9wYWNpdHk9IjEiIGRhdGEtb3JpZ2luYWw9IiMwMDAwMDAiPjwvcGF0aD48L2NsaXBQYXRoPjwvZGVmcz48ZyBjbGlwLXBhdGg9InVybCgjYSkiIHRyYW5zZm9ybT0ibWF0cml4KDEuMzMzMzMgMCAwIC0xLjMzMzMzIDAgNjgyLjY2NykiPjxwYXRoIGQ9Ik0wIDBjMC0xNDEuMzg1LTExNC42MTUtMjU2LTI1Ni0yNTZTLTUxMi0xNDEuMzg1LTUxMiAwczExNC42MTUgMjU2IDI1NiAyNTZTMCAxNDEuMzg1IDAgMCIgc3R5bGU9ImZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg1MTIgMjU2KSIgZmlsbD0iI2ZmYzY0MCIgZGF0YS1vcmlnaW5hbD0iI2ZmYzY0MCI+PC9wYXRoPjxwYXRoIGQ9Ik0wIDBjNDkuMzcyIDU1LjcwNCA5Ny41NTkgMjQ1Ljg0NiAxMTAuNjk2IDMwMC43MDkgMS42NDkgNi44ODUtNC41NSAxMy4wODUtMTEuNDM2IDExLjQzNi01NC44NjMtMTMuMTM3LTI0NS4wMDUtNjEuMzI0LTMwMC43MDktMTEwLjY5Ni02NS4zMzktNTcuOTExLTgwLjAzNy0xNzEuNDIxLTgwLjAzNy0xNzEuNDIxbDU1LjAzMi01NS4wMzMgNTUuMDMzLTU1LjAzMlMtNTcuOTExLTY1LjMzOSAwIDAiIHN0eWxlPSJmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoNDAxLjAzNSAxOTkuNTg2KSIgZmlsbD0iI2ZmZmZmZiIgZGF0YS1vcmlnaW5hbD0iI2ZmZmZmZiI+PC9wYXRoPjxwYXRoIGQ9Ik0wIDBjNDcuNTgzIDQyLjE3NCAxOTMuMjQ4IDgzLjQ3OSAyNjguOTA5IDEwMi44MTZhMjE2NS4yNjcgMjE2NS4yNjcgMCAwIDEgNy44ODEgMzEuOGMxLjY0OCA2Ljg4NS00LjU1MSAxMy4wODQtMTEuNDM2IDExLjQzNUMyMTAuNDkgMTMyLjkxNCAyMC4zNDkgODQuNzI3LTM1LjM1NSAzNS4zNTVjLTY1LjMzOS01Ny45MTEtODAuMDM3LTE3MS40MjEtODAuMDM3LTE3MS40MjFsMzUuMzU1LTM1LjM1NVMtNjUuMzM5LTU3LjkxMSAwIDAiIHN0eWxlPSJmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjM0Ljk0MSAzNjUuNjgpIiBmaWxsPSIjZjJmMmYyIiBkYXRhLW9yaWdpbmFsPSIjZjJmMmYyIj48L3BhdGg+PHBhdGggZD0iTTAgMGMyNS41MjYtNTUuNDU2IDcwLjI5LTEwMC4yMiAxMjUuNzQ2LTEyNS43NDZsNzQuNjQgNzQuNjRMNzQuNjQgNzQuNjRaIiBzdHlsZT0iZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIzLjM0MiAxNDkuMDg4KSIgZmlsbD0iIzQ2NTM2NSIgZGF0YS1vcmlnaW5hbD0iIzQ2NTM2NSI+PC9wYXRoPjxwYXRoIGQ9Im0wIDAgODMuNzcxIDgzLjc3MS0zNS4zNTUgMzUuMzU1LTc0LjY0MS03NC42NEEyNTUuODc2IDI1NS44NzYgMCAwIDEgMCAwIiBzdHlsZT0iZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQ5LjU2NyAxMDQuNjAyKSIgZmlsbD0iIzNlNDk1OSIgZGF0YS1vcmlnaW5hbD0iIzNlNDk1OSI+PC9wYXRoPjxwYXRoIGQ9Im0wIDAtMTM4Ljk3MiAxMzguOTcyYy00LjE0MyA0LjE0My00LjE0MyAxMC44NiAwIDE1LjAwM2w0NC4wMjEgNDQuMDJjNC4xNDMgNC4xNDMgMTAuODYgNC4xNDMgMTUuMDAzIDBMNTkuMDI0IDU5LjAyNGM0LjE0My00LjE0MyA0LjE0My0xMC44NiAwLTE1LjAwM0wxNS4wMDMgMEMxMC44Ni00LjE0MyA0LjE0My00LjE0MyAwIDAiIHN0eWxlPSJmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjAwLjgzIDYxLjg1OCkiIGZpbGw9IiMyMWQ4ZGUiIGRhdGEtb3JpZ2luYWw9IiMyMWQ4ZGUiPjwvcGF0aD48cGF0aCBkPSJtMCAwIDQ0LjAyMSA0NC4wMjFjNC4xNDMgNC4xNDMgMTAuODYgNC4xNDMgMTUuMDAzIDBMMjMuNjY4IDc5LjM3NmMtNC4xNDMgNC4xNDMtMTAuODYgNC4xNDMtMTUuMDAzIDBsLTQ0LjAyLTQ0LjAyMWMtNC4xNDMtNC4xNDMtNC4xNDMtMTAuODYgMC0xNS4wMDNMMC0xNS4wMDNDLTQuMTQzLTEwLjg2LTQuMTQzLTQuMTQzIDAgMCIgc3R5bGU9ImZpbGwtb3BhY2l0eToxO2ZpbGwtcnVsZTpub256ZXJvO3N0cm9rZTpub25lIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5Ny4yMTMgMTgwLjQ3NykiIGZpbGw9IiMxNmM2Y2MiIGRhdGEtb3JpZ2luYWw9IiMxNmM2Y2MiPjwvcGF0aD48cGF0aCBkPSJNMCAwYzQ5LjM3MiA1NS43MDQgOTcuNTU5IDI0NS44NDYgMTEwLjY5NiAzMDAuNzEgMS42NDkgNi44ODUtNC41NSAxMy4wODQtMTEuNDM1IDExLjQzNS0zNi40ODUtOC43MzYtMTMyLjc4Ny0zMi45NzUtMjA5LjYtNjIuNzUzIDU5LjUxMyAyMC45NzggNzUuNDM0LTYwLjc5MyAxOS4yMjItMTIxLjI0OEMtMTQ3LjMyOSA2Ny42OS0xMjAuNDM4IDIuNjE2LTc3LjY3MS0xLjk2OGM0MC4zMDktNC4zMjEgMzcuNzIxLTMxLjUwMSAxNS4zMTItNDQuMDI2Qy0zOS42MTUtMzQuNTUxLTE3LjMyMS0xOS41NDIgMCAwIiBzdHlsZT0iZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOm5vbmUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQwMS4wMzUgMTk5LjU4NikiIGZpbGw9IiNmZjZkM2IiIGRhdGEtb3JpZ2luYWw9IiNmZjZkM2IiPjwvcGF0aD48cGF0aCBkPSJNMCAwYzU2LjAwNSAyMC40MTcgMTE4Ljc3OSAzNy42OTcgMTYwLjM5MyA0OC4zMzIgMy4zIDEyLjkxMyA1Ljk2NSAyMy44MDIgNy44OCAzMS44IDEuNjQ5IDYuODg1LTQuNTUgMTMuMDg0LTExLjQzNiAxMS40MzYtMzYuNDg0LTguNzM3LTEzMi43ODYtMzIuOTc2LTIwOS41OTktNjIuNzUzQy0yMy41MDkgMzkuMTI2LTQuNzk5IDI0LjYwNSAwIDAiIHN0eWxlPSJmaWxsLW9wYWNpdHk6MTtmaWxsLXJ1bGU6bm9uemVybztzdHJva2U6bm9uZSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzQzLjQ1OCA0MjAuMTY0KSIgZmlsbD0iI2YxNTQyNCIgZGF0YS1vcmlnaW5hbD0iI2YxNTQyNCI+PC9wYXRoPjwvZz48L2c+PC9zdmc+" />
-                <span class="elementor-button-content-wrapper">
-                    <span class="ui-btn-anim-wrapp d-flex">
-                        <span class="elementor-button-text"><?php echo $button_text; ?></span>
-                        <span class="elementor-button-text"><?php echo $button_text; ?></span>
-                    </span>
-                </span>
-            </a>
-        </div>
-        <?php
-        return ob_get_clean();
-    }
-    
-    /**
-     * Valide l'ajout au panier pour produits configurables
-     */
-    public function validate_add_to_cart($passed, $product_id, $quantity) {
-        if ($this->is_configurable_product($product_id)) {
-            if (!isset($_POST['nfc_config'])) {
-                wc_add_notice('Ce produit doit être personnalisé via le configurateur.', 'error');
-                return false;
-            }
-        }
-        return $passed;
-    }
-    
-    /**
-     * Modifie le nom dans le panier
-     */
-    public function modify_cart_item_name($name, $cart_item) {
-        if (isset($cart_item['nfc_config'])) {
-            $config = $cart_item['nfc_config'];
-            $name .= '<br><small>🎨 Personnalisé (' . ucfirst($config['color']) . ')</small>';
-        }
-        return $name;
-    }
-    
+
     /**
      * Modifie la miniature dans le panier
      */
-    public function modify_cart_item_thumbnail($thumbnail, $cart_item) {
+    public function modify_cart_item_thumbnail($thumbnail, $cart_item)
+    {
         if (isset($cart_item['nfc_config'])) {
             // Si un screenshot thumbnail existe, l'utiliser
             if (isset($cart_item['nfc_config']['screenshot']['thumbnail'])) {
@@ -159,34 +79,37 @@ class NFC_WooCommerce_Integration {
         }
         return $thumbnail;
     }
-    
+
     /**
      * Gère les commandes terminées
      */
-    public function handle_completed_order($order_id) {
+    public function handle_completed_order($order_id)
+    {
         $order = wc_get_order($order_id);
-        if (!$order) return;
-        
+        if (!$order)
+            return;
+
         $has_nfc_items = false;
-        
+
         foreach ($order->get_items() as $item) {
             if ($item->get_meta('_nfc_config_complete')) {
                 $has_nfc_items = true;
                 do_action('nfc_order_item_ready_for_production', $item, $order);
             }
         }
-        
+
         if ($has_nfc_items) {
             $order->add_order_note('✅ Commande NFC personnalisée - Prête pour production');
         }
     }
-    
+
     /**
      * ENHANCED ADMIN ORDER DISPLAY - Version complète avec fichiers
      */
-    public function display_enhanced_admin_order_meta($order) {
+    public function display_enhanced_admin_order_meta($order)
+    {
         $has_nfc_items = false;
-        
+
         foreach ($order->get_items() as $item_id => $item) {
             $config_data = $item->get_meta('_nfc_config_complete');
             if ($config_data) {
@@ -194,49 +117,49 @@ class NFC_WooCommerce_Integration {
                     echo '<h3 style="margin-top: 30px;">🎨 Cartes NFC Personnalisées</h3>';
                     $has_nfc_items = true;
                 }
-                
+
                 $config = json_decode($config_data, true);
                 $urls = NFC_File_Handler::get_download_urls($order->get_id(), $item_id);
-                
+
                 echo '<div class="nfc-admin-item" style="background: #f9f9f9; padding: 20px; margin: 15px 0; border-left: 4px solid #667eea; border-radius: 4px;">';
-                
+
                 // Titre de l'article
                 echo '<h4 style="margin: 0 0 15px 0; color: #333;">' . esc_html($item->get_name()) . '</h4>';
-                
+
                 // Grille d'informations
                 echo '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">';
-                
+
                 // Colonne gauche - Infos de base
                 echo '<div>';
                 echo '<h5 style="margin: 0 0 10px 0; color: #667eea;">📋 Configuration</h5>';
                 echo '<table style="width: 100%; border-collapse: collapse;">';
                 echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Couleur:</td><td>' . ucfirst($config['color'] ?? 'Non défini') . '</td></tr>';
                 echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Nom:</td><td>' . esc_html(($config['user']['firstName'] ?? '') . ' ' . ($config['user']['lastName'] ?? '')) . '</td></tr>';
-                
+
                 if (isset($config['image']['name'])) {
                     echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Image:</td><td>' . esc_html($config['image']['name']) . '</td></tr>';
-                    
+
                     // Paramètres transformation
                     $scale = $item->get_meta('_nfc_image_scale') ?: 100;
                     $x = $item->get_meta('_nfc_image_x') ?: 0;
                     $y = $item->get_meta('_nfc_image_y') ?: 0;
-                    
+
                     echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Taille:</td><td>' . $scale . '%</td></tr>';
                     echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Position X:</td><td>' . ($x > 0 ? '+' : '') . $x . 'px</td></tr>';
                     echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Position Y:</td><td>' . ($y > 0 ? '+' : '') . $y . 'px</td></tr>';
                 }
                 echo '</table>';
                 echo '</div>';
-                
+
                 // Colonne droite - Actions et aperçu
                 echo '<div>';
                 echo '<h5 style="margin: 0 0 10px 0; color: #667eea;">🔧 Actions</h5>';
-                
+
                 // Boutons de téléchargement
                 if (isset($config['image']['name'])) {
                     echo '<p><a href="' . esc_url($urls['logo_download']) . '" class="button button-secondary" style="margin-right: 10px;">📷 Télécharger logo</a></p>';
                 }
-                
+
                 // Screenshot actions
                 $screenshot_info = $item->get_meta('_nfc_screenshot_info');
                 if ($screenshot_info) {
@@ -244,41 +167,42 @@ class NFC_WooCommerce_Integration {
                     echo '<a href="' . esc_url($urls['screenshot_view']) . '" class="button button-secondary" target="_blank" style="margin-right: 5px;">👁️ Voir aperçu</a>';
                     echo '<a href="' . esc_url($urls['screenshot_download']) . '" class="button button-secondary">💾 Télécharger</a>';
                     echo '</p>';
-                    
+
                     // Miniature screenshot si disponible
                     echo '<div style="margin-top: 10px;">';
                     echo '<img src="' . esc_url($urls['screenshot_view']) . '" style="max-width: 200px; height: auto; border: 1px solid #ddd; border-radius: 4px;" alt="Aperçu configuration">';
                     echo '</div>';
                 }
                 echo '</div>';
-                
+
                 echo '</div>'; // Fin grille
-                
+
                 // Section JSON (collapsible)
                 echo '<details style="margin-top: 15px;">';
                 echo '<summary style="cursor: pointer; color: #667eea; font-weight: 600;">📄 Configuration complète (JSON)</summary>';
                 echo '<pre style="background: #f0f0f0; padding: 10px; border-radius: 4px; font-size: 11px; max-height: 200px; overflow: auto; margin-top: 10px;">' . esc_html(json_encode($config, JSON_PRETTY_PRINT)) . '</pre>';
                 echo '</details>';
-                
+
                 echo '</div>'; // Fin nfc-admin-item
             }
         }
     }
-    
+
     /**
      * Enqueue admin styles
      */
-    public function enqueue_admin_styles($hook) {
+    public function enqueue_admin_styles($hook)
+    {
         // Seulement sur les pages de commandes
         if (!in_array($hook, ['post.php', 'post-new.php', 'edit.php'])) {
             return;
         }
-        
+
         global $post_type;
         if ($post_type !== 'shop_order') {
             return;
         }
-        
+
         // Styles inline pour l'admin
         wp_add_inline_style('wp-admin', '
             .nfc-admin-item {
@@ -299,20 +223,21 @@ class NFC_WooCommerce_Integration {
             }
         ');
     }
-    
+
     /**
      * Personnalise les emails de commande  
      */
-    public function customize_order_emails($order, $sent_to_admin, $plain_text, $email) {
+    /* public function customize_order_emails($order, $sent_to_admin, $plain_text, $email)
+    {
         $has_nfc_items = false;
-        
+
         foreach ($order->get_items() as $item) {
             if ($item->get_meta('_nfc_config_complete')) {
                 $has_nfc_items = true;
                 break;
             }
         }
-        
+
         if ($has_nfc_items) {
             if ($plain_text) {
                 echo "\n=== CARTES NFC PERSONNALISÉES ===\n";
@@ -324,58 +249,334 @@ class NFC_WooCommerce_Integration {
                 echo '</div>';
             }
         }
-    }
-    
+    } */
+
     /**
      * API REST pour variations
      */
-    public function register_rest_routes() {
+    public function register_rest_routes()
+    {
         register_rest_route('nfc/v1', '/product/(?P<product_id>\d+)/variations', [
             'methods' => 'GET',
             'callback' => [$this, 'get_product_variations'],
             'permission_callback' => '__return_true'
         ]);
     }
-    
+
     /**
      * API: Récupère variations
      */
-    public function get_product_variations($request) {
+    public function get_product_variations($request)
+    {
         $product_id = $request['product_id'];
-        
+
         if (!$this->is_configurable_product($product_id)) {
             return new WP_Error('not_configurable', 'Produit non configurable', ['status' => 400]);
         }
-        
+
         try {
             $nfc_product = new NFC_Product_Manager();
             $product_data = $nfc_product->get_product_data($product_id);
-            
+
             if (is_wp_error($product_data)) {
                 return $product_data;
             }
-            
+
             return rest_ensure_response($product_data['variations']);
-            
+
         } catch (Exception $e) {
             return new WP_Error('server_error', $e->getMessage(), ['status' => 500]);
         }
     }
-    
+
     /**
      * Nettoyage session
      */
-    public function cleanup_session_data() {
+    public function cleanup_session_data()
+    {
         if (session_id()) {
             foreach ($_SESSION as $key => $value) {
-                if (strpos($key, 'nfc_config_') === 0 && 
-                    isset($value['timestamp']) && 
-                    (time() - $value['timestamp']) > (24 * 60 * 60)) {
+                if (
+                    strpos($key, 'nfc_config_') === 0 &&
+                    isset($value['timestamp']) &&
+                    (time() - $value['timestamp']) > (24 * 60 * 60)
+                ) {
                     unset($_SESSION[$key]);
                 }
             }
         }
     }
+
+
+    /**
+     * Handler AJAX pour ajouter au panier avec métadonnées fichiers
+     * 
+     * @return void
+     */
+    public function ajax_add_to_cart_with_files()
+    {
+        try {
+            // Vérification de sécurité
+            if (!wp_verify_nonce($_POST['nonce'] ?? '', 'nfc_buttons')) {
+                wp_send_json_error([
+                    'message' => __('Sécurité : nonce invalide', 'nfc-configurator')
+                ], 403);
+            }
+
+            // Récupération des données
+            $product_id = intval($_POST['product_id'] ?? 0);
+            $quantity = intval($_POST['quantity'] ?? 1);
+            $requires_files = ($_POST['requires_files'] ?? '') === 'true';
+
+            if (!$product_id) {
+                wp_send_json_error([
+                    'message' => __('ID produit manquant', 'nfc-configurator')
+                ], 400);
+            }
+
+            // Vérifier que le produit existe et est valide
+            $product = wc_get_product($product_id);
+            if (!$product || $product->get_status() !== 'publish') {
+                wp_send_json_error([
+                    'message' => __('Produit introuvable ou non disponible', 'nfc-configurator')
+                ], 404);
+            }
+
+            // Vérifier que le produit accepte les fichiers
+            if ($requires_files && !$this->button_manager->has_file_upload($product_id)) {
+                wp_send_json_error([
+                    'message' => __('Ce produit n\'accepte pas l\'envoi de fichiers', 'nfc-configurator')
+                ], 400);
+            }
+
+            // Données pour l'ajout au panier
+            $cart_item_data = [
+                'nfc_requires_files' => $requires_files,
+                'nfc_added_via' => 'button_renderer',
+                'nfc_timestamp' => time()
+            ];
+
+            // Log de l'action
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log("NFC AJAX: Ajout au panier - Produit {$product_id}, Fichiers: " . ($requires_files ? 'oui' : 'non'));
+            }
+
+            // Ajouter au panier
+            $cart_item_key = WC()->cart->add_to_cart(
+                $product_id,
+                $quantity,
+                0, // variation_id (0 pour produit simple)
+                [], // variation data
+                $cart_item_data // cart item data
+            );
+
+            if (!$cart_item_key) {
+                wp_send_json_error([
+                    'message' => __('Impossible d\'ajouter le produit au panier', 'nfc-configurator')
+                ], 500);
+            }
+
+            // Préparer les URLs
+            $cart_url = wc_get_cart_url();
+            $checkout_url = wc_get_checkout_url();
+
+            // Message de succès selon le contexte
+            $message = $requires_files
+                ? __('Produit ajouté ! Vous pourrez envoyer vos fichiers depuis le panier.', 'nfc-configurator')
+                : __('Produit ajouté au panier avec succès', 'nfc-configurator');
+
+            // Réponse de succès
+            wp_send_json_success([
+                'message' => $message,
+                'cart_item_key' => $cart_item_key,
+                'cart_url' => $cart_url,
+                'checkout_url' => $checkout_url,
+                'cart_count' => WC()->cart->get_cart_contents_count(),
+                'requires_files' => $requires_files,
+                'redirect_url' => $requires_files ? $cart_url : null
+            ]);
+
+        } catch (Exception $e) {
+            error_log('NFC AJAX Error: ' . $e->getMessage());
+
+            wp_send_json_error([
+                'message' => __('Erreur technique lors de l\'ajout au panier', 'nfc-configurator'),
+                'debug' => defined('WP_DEBUG') && WP_DEBUG ? $e->getMessage() : null
+            ], 500);
+        }
+    }
+
+    /**
+     * Modification de la validation d'ajout au panier (mise à jour)
+     * 
+     * @param bool $passed
+     * @param int $product_id
+     * @param int $quantity
+     * @return bool
+     */
+    public function validate_add_to_cart($passed, $product_id, $quantity)
+    {
+        // Utiliser le nouveau button manager au lieu des IDs hardcodés
+        if ($this->button_manager->is_configurable_product($product_id)) {
+
+            // Si ajout via AJAX avec métadonnées, autoriser
+            if (wp_doing_ajax() && isset($_POST['nfc_requires_files'])) {
+                return $passed;
+            }
+
+            // Si configuration NFC présente, autoriser
+            if (isset($_POST['nfc_config'])) {
+                return $passed;
+            }
+
+            // Sinon, rediriger vers configurateur ou bloquer
+            if ($this->button_manager->has_file_upload($product_id)) {
+                wc_add_notice(
+                    __('Ce produit nécessite une personnalisation. Utilisez les boutons "Personnaliser" ou "Envoyer fichiers".', 'nfc-configurator'),
+                    'error'
+                );
+            } else {
+                wc_add_notice(
+                    __('Ce produit doit être personnalisé via le configurateur.', 'nfc-configurator'),
+                    'error'
+                );
+            }
+
+            return false;
+        }
+
+        return $passed;
+    }
+
+    /**
+     * Modification du nom dans le panier (mise à jour)
+     * 
+     * @param string $name
+     * @param array $cart_item
+     * @return string
+     */
+    public function modify_cart_item_name($name, $cart_item)
+    {
+        // Ancienne logique (garder pour compatibilité)
+        if (isset($cart_item['nfc_config'])) {
+            $config = $cart_item['nfc_config'];
+            $name .= '<br><small>🎨 Personnalisé (' . ucfirst($config['color'] ?? 'standard') . ')</small>';
+        }
+
+        // Nouvelle logique pour fichiers
+        if (isset($cart_item['nfc_requires_files']) && $cart_item['nfc_requires_files']) {
+            $name .= '<br><small>📎 ' . __('Envoi de fichiers requis', 'nfc-configurator') . '</small>';
+
+            // Ajouter bouton d'upload si pas encore fait
+            if (!isset($cart_item['nfc_files_uploaded']) || !$cart_item['nfc_files_uploaded']) {
+                $name .= '<br><small class="nfc-upload-prompt">';
+                $name .= '<a href="#" class="nfc-upload-trigger" data-cart-key="' . esc_attr($cart_item['key'] ?? '') . '">';
+                $name .= '📁 ' . __('Cliquez pour envoyer vos fichiers', 'nfc-configurator');
+                $name .= '</a></small>';
+            }
+        }
+
+        return $name;
+    }
+
+    /**
+     * Méthode utilitaire pour obtenir les contraintes de fichiers
+     * 
+     * @param int $product_id
+     * @return array
+     */
+    public function get_product_file_constraints($product_id)
+    {
+        return $this->button_manager->get_file_constraints($product_id);
+    }
+
+    /**
+     * Méthode pour marquer les fichiers comme uploadés
+     * 
+     * @param string $cart_item_key
+     * @param array $file_data
+     * @return bool
+     */
+    public function mark_files_uploaded($cart_item_key, $file_data)
+    {
+        $cart = WC()->cart->get_cart();
+
+        if (isset($cart[$cart_item_key])) {
+            WC()->cart->cart_contents[$cart_item_key]['nfc_files_uploaded'] = true;
+            WC()->cart->cart_contents[$cart_item_key]['nfc_uploaded_files'] = $file_data;
+            WC()->cart->set_session();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Hook pour afficher les informations de fichiers dans les emails
+     * 
+     * @param WC_Order $order
+     * @param bool $sent_to_admin
+     * @param bool $plain_text
+     * @param WC_Email $email
+     */
+    public function customize_order_emails($order, $sent_to_admin, $plain_text, $email)
+    {
+        // Logique existante + ajout info fichiers
+        foreach ($order->get_items() as $item) {
+            $requires_files = $item->get_meta('nfc_requires_files');
+            if ($requires_files) {
+                if (!$plain_text) {
+                    echo '<p><strong>' . __('⚠️ Attention :', 'nfc-configurator') . '</strong> ';
+                    echo __('Ce produit nécessite l\'envoi de fichiers de personnalisation.', 'nfc-configurator') . '</p>';
+                } else {
+                    echo __('ATTENTION : Ce produit nécessite l\'envoi de fichiers de personnalisation.', 'nfc-configurator') . "\n\n";
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Handler pour debug des boutons (développement uniquement)
+     */
+    public function debug_button_integration()
+    {
+        if (!defined('WP_DEBUG') || !WP_DEBUG || !current_user_can('administrator')) {
+            return;
+        }
+
+        if (isset($_GET['debug_nfc_integration'])) {
+            $product_id = intval($_GET['debug_nfc_integration']);
+
+            echo '<div style="background: #f1f1f1; padding: 20px; margin: 20px; border-radius: 8px;">';
+            echo "<h3>Debug NFC Integration - Produit {$product_id}</h3>";
+
+            // Test button manager
+            echo '<h4>Button Manager :</h4>';
+            $config = $this->button_manager->get_product_button_config($product_id);
+            echo '<pre>' . json_encode($config, JSON_PRETTY_PRINT) . '</pre>';
+
+            // Test ACF
+            echo '<h4>ACF Direct :</h4>';
+            $acf_data = [
+                'nfc_product_type' => get_field('nfc_product_type', $product_id),
+                'nfc_has_configurator' => get_field('nfc_has_configurator', $product_id),
+                'nfc_requires_files' => get_field('nfc_requires_files', $product_id),
+            ];
+            echo '<pre>' . json_encode($acf_data, JSON_PRETTY_PRINT) . '</pre>';
+
+            // Test URLs AJAX
+            echo '<h4>URLs AJAX :</h4>';
+            echo '<p><strong>AJAX URL :</strong> ' . admin_url('admin-ajax.php') . '</p>';
+            echo '<p><strong>Nonce :</strong> ' . wp_create_nonce('nfc_buttons') . '</p>';
+
+            echo '</div>';
+            wp_die();
+        }
+    }
+
+
 }
 
 // Initialisation

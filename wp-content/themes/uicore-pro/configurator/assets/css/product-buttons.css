@@ -1,0 +1,537 @@
+/**
+ * Styles CSS pour les boutons produits NFC
+ * Compatible thème UICore et Elementor
+ * Mobile-first responsive design
+ * 
+ * @package NFC_Configurator
+ * @version 1.0.0
+ * 
+ * Fichier : configurator/assets/css/product-buttons.css
+ */
+
+/* ========================================
+   VARIABLES CSS
+======================================== */
+
+:root {
+    /* Couleurs principales */
+    --nfc-btn-primary-bg: #FF4757;
+    --nfc-btn-primary-color: #ffffff;
+    --nfc-btn-primary-hover: #e73c4e;
+    --nfc-btn-primary-active: #d13241;
+    
+    /* Couleurs secondaires */
+    --nfc-btn-secondary-bg: transparent;
+    --nfc-btn-secondary-color: #FF4757;
+    --nfc-btn-secondary-border: 2px solid #FF4757;
+    --nfc-btn-secondary-hover-bg: #FF4757;
+    --nfc-btn-secondary-hover-color: #ffffff;
+    
+    /* Design system */
+    --nfc-btn-border-radius: 8px;
+    --nfc-btn-transition: all 0.3s ease;
+    --nfc-btn-shadow: 0 2px 8px rgba(255, 71, 87, 0.15);
+    --nfc-btn-shadow-hover: 0 4px 16px rgba(255, 71, 87, 0.25);
+    --nfc-btn-shadow-focus: 0 0 0 4px rgba(255, 71, 87, 0.15);
+    
+    /* Espacement */
+    --nfc-btn-gap: 1rem;
+    --nfc-btn-gap-mobile: 0.75rem;
+    
+    /* Animation */
+    --nfc-btn-scale-hover: 1.02;
+    --nfc-btn-scale-active: 0.98;
+    
+    /* Couleurs d'état */
+    --nfc-btn-disabled-bg: #e2e8f0;
+    --nfc-btn-disabled-color: #64748b;
+    --nfc-btn-loading-bg: #f1f5f9;
+}
+
+/* ========================================
+   COMPOSANTS DE BASE
+======================================== */
+
+/* Container principal des boutons */
+.nfc-product-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--nfc-btn-gap-mobile);
+    width: 100%;
+    margin: 1rem 0;
+}
+
+/* Bouton de base NFC */
+.nfc-btn {
+    /* Reset */
+    appearance: none;
+    border: none;
+    outline: none;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    
+    /* Layout */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    
+    /* Typography */
+    font-family: inherit;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    
+    /* Design */
+    border-radius: var(--nfc-btn-border-radius);
+    transition: var(--nfc-btn-transition);
+    box-shadow: var(--nfc-btn-shadow);
+    
+    /* States */
+    position: relative;
+    overflow: hidden;
+}
+
+/* États interactifs globaux */
+.nfc-btn:hover {
+    transform: translateY(-1px) scale(var(--nfc-btn-scale-hover));
+    box-shadow: var(--nfc-btn-shadow-hover);
+}
+
+.nfc-btn:active {
+    transform: translateY(0) scale(var(--nfc-btn-scale-active));
+}
+
+.nfc-btn:focus-visible {
+    box-shadow: var(--nfc-btn-shadow-focus);
+}
+
+.nfc-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* ========================================
+   STYLES DE BOUTONS
+======================================== */
+
+/* Bouton primaire (solid) */
+.nfc-btn-primary.nfc-btn-solid {
+    background: var(--nfc-btn-primary-bg);
+    color: var(--nfc-btn-primary-color);
+    border: 2px solid var(--nfc-btn-primary-bg);
+}
+
+.nfc-btn-primary.nfc-btn-solid:hover {
+    background: var(--nfc-btn-primary-hover);
+    border-color: var(--nfc-btn-primary-hover);
+}
+
+.nfc-btn-primary.nfc-btn-solid:active {
+    background: var(--nfc-btn-primary-active);
+    border-color: var(--nfc-btn-primary-active);
+}
+
+/* Bouton secondaire (outline) */
+.nfc-btn-secondary.nfc-btn-outline {
+    background: var(--nfc-btn-secondary-bg);
+    color: var(--nfc-btn-secondary-color);
+    border: var(--nfc-btn-secondary-border);
+}
+
+.nfc-btn-secondary.nfc-btn-outline:hover {
+    background: var(--nfc-btn-secondary-hover-bg);
+    color: var(--nfc-btn-secondary-hover-color);
+    border-color: var(--nfc-btn-secondary-hover-bg);
+}
+
+/* Bouton secondaire style ghost */
+.nfc-btn-secondary.nfc-btn-ghost {
+    background: transparent;
+    color: var(--nfc-btn-secondary-color);
+    border: 1px solid transparent;
+    box-shadow: none;
+}
+
+.nfc-btn-secondary.nfc-btn-ghost:hover {
+    background: rgba(255, 71, 87, 0.1);
+    border-color: rgba(255, 71, 87, 0.2);
+}
+
+/* ========================================
+   TAILLES DE BOUTONS
+======================================== */
+
+.nfc-btn.nfc-size-xs {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    min-height: 32px;
+}
+
+.nfc-btn.nfc-size-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    min-height: 36px;
+}
+
+.nfc-btn.nfc-size-md {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    min-height: 44px;
+}
+
+.nfc-btn.nfc-size-lg {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    min-height: 52px;
+}
+
+.nfc-btn.nfc-size-xl {
+    padding: 1.25rem 2.5rem;
+    font-size: 1.25rem;
+    min-height: 60px;
+}
+
+/* ========================================
+   ICÔNES
+======================================== */
+
+.nfc-btn i {
+    font-size: 0.9em;
+    flex-shrink: 0;
+}
+
+.nfc-btn .nfc-btn-text {
+    flex: 1;
+    white-space: nowrap;
+}
+
+/* Icônes spécifiques */
+.nfc-icon-configurator {
+    color: inherit;
+}
+
+.nfc-icon-upload {
+    color: inherit;
+}
+
+.nfc-icon-cart {
+    color: inherit;
+}
+
+/* ========================================
+   ÉTATS DE LOADING
+======================================== */
+
+.nfc-btn.nfc-btn-loading {
+    pointer-events: none;
+    position: relative;
+}
+
+.nfc-btn.nfc-btn-loading .nfc-btn-text {
+    opacity: 0;
+}
+
+.nfc-btn.nfc-btn-loading .nfc-btn-loading {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit;
+    border-radius: inherit;
+}
+
+.nfc-btn-loading i.fa-spinner {
+    animation: nfc-spin 1s linear infinite;
+}
+
+@keyframes nfc-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ========================================
+   LAYOUTS
+======================================== */
+
+/* Layout single button */
+.nfc-product-buttons.nfc-single-button {
+    align-items: center;
+}
+
+.nfc-product-buttons.nfc-single-button .nfc-btn {
+    width: 100%;
+    max-width: 320px;
+}
+
+/* Layout dual buttons - Mobile first (vertical) */
+.nfc-product-buttons.nfc-dual-buttons {
+    flex-direction: column;
+    gap: var(--nfc-btn-gap-mobile);
+}
+
+.nfc-product-buttons.nfc-dual-buttons .nfc-btn {
+    width: 100%;
+}
+
+/* Layout dual buttons - Horizontal forcé */
+.nfc-product-buttons.nfc-layout-horizontal {
+    flex-direction: row;
+    gap: var(--nfc-btn-gap);
+}
+
+.nfc-product-buttons.nfc-layout-horizontal .nfc-btn {
+    flex: 1;
+    min-width: 0; /* Permet le shrink */
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+
+/* Tablet et plus (768px+) */
+@media (min-width: 768px) {
+    .nfc-product-buttons {
+        gap: var(--nfc-btn-gap);
+    }
+    
+    /* Dual buttons automatiquement horizontal sur desktop */
+    .nfc-product-buttons.nfc-dual-buttons:not(.nfc-layout-vertical) {
+        flex-direction: row;
+    }
+    
+    .nfc-product-buttons.nfc-dual-buttons:not(.nfc-layout-vertical) .nfc-btn {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    /* Single button centré avec largeur max */
+    .nfc-product-buttons.nfc-single-button .nfc-btn {
+        max-width: 280px;
+    }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+    .nfc-product-buttons.nfc-single-button .nfc-btn {
+        max-width: 300px;
+    }
+}
+
+/* ========================================
+   CONTRAINTES FICHIERS
+======================================== */
+
+.nfc-file-constraints {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+
+.nfc-constraints-details {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.nfc-constraints-summary {
+    padding: 0.75rem;
+    background: #f8fafc;
+    cursor: pointer;
+    list-style: none;
+    transition: background-color 0.2s ease;
+}
+
+.nfc-constraints-summary:hover {
+    background: #f1f5f9;
+}
+
+.nfc-constraints-summary::-webkit-details-marker {
+    display: none;
+}
+
+.nfc-constraints-summary::marker {
+    display: none;
+}
+
+.nfc-constraints-content {
+    padding: 1rem;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+}
+
+.nfc-constraint-item {
+    margin: 0 0 0.5rem 0;
+    line-height: 1.5;
+}
+
+.nfc-constraint-item:last-child {
+    margin-bottom: 0;
+}
+
+.nfc-constraint-item strong {
+    color: #374151;
+    font-weight: 600;
+}
+
+.nfc-constraint-instructions {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: #fffbeb;
+    border: 1px solid #fbbf24;
+    border-radius: 4px;
+    font-style: italic;
+    color: #92400e;
+}
+
+/* ========================================
+   INTÉGRATION ELEMENTOR
+======================================== */
+
+/* Compatibilité classes Elementor */
+.elementor-button.nfc-btn {
+    /* Hérite des styles NFC mais garde la compatibilité */
+    font-family: inherit;
+}
+
+.elementor-button.nfc-btn .elementor-button-content-wrapper {
+    /* Désactiver wrapper Elementor si présent */
+    display: contents;
+}
+
+/* Animation Elementor grow intégrée */
+.elementor-animation-grow.nfc-btn:hover {
+    transform: translateY(-1px) scale(1.05);
+}
+
+/* ========================================
+   DARK MODE SUPPORT (optionnel)
+======================================== */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --nfc-btn-secondary-bg: transparent;
+        --nfc-btn-secondary-color: #FF6B7A;
+        --nfc-btn-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --nfc-btn-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+    
+    .nfc-constraints-details {
+        border-color: #374151;
+    }
+    
+    .nfc-constraints-summary {
+        background: #1f2937;
+        color: #f9fafb;
+    }
+    
+    .nfc-constraints-content {
+        background: #111827;
+        color: #e5e7eb;
+        border-color: #374151;
+    }
+}
+
+/* ========================================
+   ANIMATIONS AVANCÉES
+======================================== */
+
+/* Animation d'apparition */
+@keyframes nfc-fade-in {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nfc-product-buttons {
+    animation: nfc-fade-in 0.4s ease-out;
+}
+
+/* Animation de succès */
+@keyframes nfc-success-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+    }
+}
+
+.nfc-btn.nfc-btn-success {
+    animation: nfc-success-pulse 0.6s ease-out;
+    background: #22c55e !important;
+    border-color: #22c55e !important;
+}
+
+/* ========================================
+   UTILITAIRES
+======================================== */
+
+/* Classes utilitaires pour forçage */
+.nfc-btn-full-width {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.nfc-btn-compact {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+
+.nfc-btn-rounded {
+    border-radius: 2rem !important;
+}
+
+/* États spéciaux */
+.nfc-btn-disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+/* ========================================
+   ACCESSIBILITÉ
+======================================== */
+
+/* Focus visible amélioré */
+.nfc-btn:focus-visible {
+    outline: 2px solid var(--nfc-btn-primary-bg);
+    outline-offset: 2px;
+}
+
+/* Réduction des mouvements */
+@media (prefers-reduced-motion: reduce) {
+    .nfc-btn {
+        transition: none;
+    }
+    
+    .nfc-btn:hover {
+        transform: none;
+    }
+    
+    .nfc-product-buttons {
+        animation: none;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .nfc-btn {
+        border-width: 2px;
+    }
+    
+    .nfc-btn-secondary.nfc-btn-outline {
+        border-width: 3px;
+    }
+}
