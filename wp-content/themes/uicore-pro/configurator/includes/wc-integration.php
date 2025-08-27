@@ -313,95 +313,92 @@ class NFC_WooCommerce_Integration
      * 
      * @return void
      */
+    /**
+     * Handler AJAX pour ajouter au panier avec métadonnées fichiers - VERSION DEBUG
+     */
     public function ajax_add_to_cart_with_files()
     {
-        try {
-            // Vérification de sécurité
-            if (!wp_verify_nonce($_POST['nonce'] ?? '', 'nfc_buttons')) {
-                wp_send_json_error([
-                    'message' => __('Sécurité : nonce invalide', 'nfc-configurator')
-                ], 403);
-            }
 
-            // Récupération des données
+        try {
+            // 1. RÉCUPÉRATION DES DONNÉES (simplifié)
             $product_id = intval($_POST['product_id'] ?? 0);
             $quantity = intval($_POST['quantity'] ?? 1);
-            $requires_files = ($_POST['requires_files'] ?? '') === 'true';
 
             if (!$product_id) {
-                wp_send_json_error([
-                    'message' => __('ID produit manquant', 'nfc-configurator')
-                ], 400);
+                wp_send_json_error(['message' => 'ID produit manquant'], 400);
             }
 
-            // Vérifier que le produit existe et est valide
+            // 2. VÉRIFIER PRODUIT (simplifié)
             $product = wc_get_product($product_id);
-            if (!$product || $product->get_status() !== 'publish') {
-                wp_send_json_error([
-                    'message' => __('Produit introuvable ou non disponible', 'nfc-configurator')
-                ], 404);
+            if (!$product) {
+                wp_send_json_error(['message' => 'Produit introuvable'], 404);
             }
 
-            // Vérifier que le produit accepte les fichiers
-            if ($requires_files && !$this->button_manager->has_file_upload($product_id)) {
-                wp_send_json_error([
-                    'message' => __('Ce produit n\'accepte pas l\'envoi de fichiers', 'nfc-configurator')
-                ], 400);
-            }
 
-            // Données pour l'ajout au panier
+            // 3. AJOUT AU PANIER (simplifié)
             $cart_item_data = [
-                'nfc_requires_files' => $requires_files,
-                'nfc_added_via' => 'button_renderer',
-                'nfc_timestamp' => time()
+                'nfc_requires_files' => true,
+                'nfc_added_via' => 'button_test'
             ];
 
-            // Log de l'action
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log("NFC AJAX: Ajout au panier - Produit {$product_id}, Fichiers: " . ($requires_files ? 'oui' : 'non'));
+            // S'assurer que WC est chargé
+            if (!function_exists('WC') || !WC()->cart) {
+                wp_send_json_error(['message' => 'Panier non disponible'], 500);
             }
 
-            // Ajouter au panier
-            $cart_item_key = WC()->cart->add_to_cart(
-                $product_id,
-                $quantity,
-                0, // variation_id (0 pour produit simple)
-                [], // variation data
-                $cart_item_data // cart item data
-            );
+            // Ajouter le paramètre pour la validation
+            $_POST['nfc_requires_files'] = $_POST['requires_files'];
+
+            // 🆕 GESTION DES VARIATIONS
+            if ($product->is_type('variable')) {
+
+                $available_variations = $product->get_available_variations();
+
+                if (empty($available_variations)) {
+                    wp_send_json_error(['message' => 'Aucune variation disponible pour ce produit'], 400);
+                }
+
+                // Prendre la première variation disponible
+                $first_variation = $available_variations[0];
+                $variation_id = $first_variation['variation_id'];
+                $variation_attributes = $first_variation['attributes'];
+
+                $cart_item_key = WC()->cart->add_to_cart(
+                    $product_id,
+                    $quantity,
+                    $variation_id,         // ← ID de la variation
+                    $variation_attributes, // ← Attributs (couleur, etc.)
+                    $cart_item_data
+                );
+
+            } else {
+                // Produit simple
+                $cart_item_key = WC()->cart->add_to_cart(
+                    $product_id,
+                    $quantity,
+                    0,
+                    [],
+                    $cart_item_data
+                );
+            }
 
             if (!$cart_item_key) {
-                wp_send_json_error([
-                    'message' => __('Impossible d\'ajouter le produit au panier', 'nfc-configurator')
-                ], 500);
+                wp_send_json_error(['message' => 'Échec ajout au panier'], 500);
             }
 
-            // Préparer les URLs
-            $cart_url = wc_get_cart_url();
-            $checkout_url = wc_get_checkout_url();
 
-            // Message de succès selon le contexte
-            $message = $requires_files
-                ? __('Produit ajouté ! Vous pourrez envoyer vos fichiers depuis le panier.', 'nfc-configurator')
-                : __('Produit ajouté au panier avec succès', 'nfc-configurator');
-
-            // Réponse de succès
+            // 4. RÉPONSE DE SUCCÈS
             wp_send_json_success([
-                'message' => $message,
+                'message' => 'Produit ajouté avec succès !',
                 'cart_item_key' => $cart_item_key,
-                'cart_url' => $cart_url,
-                'checkout_url' => $checkout_url,
-                'cart_count' => WC()->cart->get_cart_contents_count(),
-                'requires_files' => $requires_files,
-                'redirect_url' => $requires_files ? $cart_url : null
+                'cart_url' => wc_get_cart_url(),
+                'cart_count' => WC()->cart->get_cart_contents_count()
             ]);
 
         } catch (Exception $e) {
-            error_log('NFC AJAX Error: ' . $e->getMessage());
-
             wp_send_json_error([
-                'message' => __('Erreur technique lors de l\'ajout au panier', 'nfc-configurator'),
-                'debug' => defined('WP_DEBUG') && WP_DEBUG ? $e->getMessage() : null
+                'message' => 'Erreur: ' . $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ], 500);
         }
     }
@@ -416,6 +413,7 @@ class NFC_WooCommerce_Integration
      */
     public function validate_add_to_cart($passed, $product_id, $quantity)
     {
+
         // Utiliser le nouveau button manager au lieu des IDs hardcodés
         if ($this->button_manager->is_configurable_product($product_id)) {
 
@@ -429,18 +427,11 @@ class NFC_WooCommerce_Integration
                 return $passed;
             }
 
-            // Sinon, rediriger vers configurateur ou bloquer
-            if ($this->button_manager->has_file_upload($product_id)) {
-                wc_add_notice(
-                    __('Ce produit nécessite une personnalisation. Utilisez les boutons "Personnaliser" ou "Envoyer fichiers".', 'nfc-configurator'),
-                    'error'
-                );
-            } else {
-                wc_add_notice(
-                    __('Ce produit doit être personnalisé via le configurateur.', 'nfc-configurator'),
-                    'error'
-                );
-            }
+            // Sinon, bloquer
+            wc_add_notice(
+                __('Ce produit nécessite une personnalisation. Utilisez les boutons "Personnaliser" ou "Envoyer fichiers".', 'nfc-configurator'),
+                'error'
+            );
 
             return false;
         }
@@ -578,6 +569,3 @@ class NFC_WooCommerce_Integration
 
 
 }
-
-// Initialisation
-new NFC_WooCommerce_Integration();

@@ -228,6 +228,25 @@ class NFC_Button_Renderer {
         // Classes CSS
         $primary_css = $this->get_button_css_classes($atts, 'dual', 'primary');
         $secondary_css = $this->get_button_css_classes($atts, 'dual', 'secondary');
+
+        // Classes Elementor
+        $elementor_classes = [
+            'elementor-button',
+            'elementor-button-link',
+            'elementor-size-' . esc_attr($atts['size'])
+        ];
+        
+        // Animation si spécifiée
+        if (!empty($atts['animation'])) {
+            $elementor_classes[] = 'elementor-animation-' . esc_attr($atts['animation']);
+        }
+        
+        // Classes additionnelles
+        if (!empty($atts['class'])) {
+            $elementor_classes[] = esc_attr($atts['class']);
+        }
+        
+
         
         ob_start();
         ?>
@@ -235,22 +254,38 @@ class NFC_Button_Renderer {
             
             <!-- Bouton principal (configurateur) -->
             <a href="<?php echo esc_url($config['configurator_url']); ?>" 
-               class="<?php echo esc_attr($primary_css); ?>"
+               class="<?php echo implode(' ', $elementor_classes); ?> nfc-configurator-button"
                data-product-id="<?php echo esc_attr($product_id); ?>"
                data-action="configurator"
                data-nfc-button="configurator">
-                <i class="<?php echo esc_attr($primary_props['icon']); ?>"></i>
-                <span class="nfc-btn-text"><?php echo esc_html($primary_props['text']); ?></span>
+                <img src="<?php echo get_template_directory_uri() ?>/assets/img/brush.svg" />
+                <span class="elementor-button-content-wrapper">
+                    <span class="ui-btn-anim-wrapp d-flex">
+                        <span class="elementor-button-text nfc-btn-text"><?php echo esc_html($primary_props['text']); ?></span>
+                        <span class="elementor-button-text nfc-btn-text"><?php echo esc_html($primary_props['text']); ?></span>
+                    </span>
+                </span>
             </a>
             
             <!-- Bouton secondaire (fichiers) -->
             <button type="button" 
-                    class="<?php echo esc_attr($secondary_css); ?>"
+                    class="<?php echo implode(' ', $elementor_classes); ?> nfc-addtocart-button"
                     data-product-id="<?php echo esc_attr($product_id); ?>"
                     data-action="add-with-files"
                     data-nfc-button="files">
-                <i class="<?php echo esc_attr($secondary_props['icon']); ?>"></i>
-                <span class="nfc-btn-text"><?php echo esc_html($secondary_props['text']); ?></span>
+                <img src="<?php echo get_template_directory_uri() ?>/assets/img/add-to-cart.svg" />
+                <span class="elementor-button-content-wrapper">
+                    <span class="ui-btn-anim-wrapp d-flex">
+                        <span class="elementor-button-text nfc-btn-text">
+                            <span class="nfc-btn-text"><?php echo esc_html($secondary_props['text1']); ?></span>
+                            <small class="nfc-btn-text d-block"><?php echo esc_html($secondary_props['text2']); ?></small>
+                        </span>
+                       <span class="elementor-button-text nfc-btn-text">
+                            <span class="nfc-btn-text"><?php echo esc_html($secondary_props['text1']); ?></span>
+                            <small class="nfc-btn-text d-block"><?php echo esc_html($secondary_props['text2']); ?></small>
+                        </span>
+                    </span>
+                </span>
                 <span class="nfc-btn-loading" style="display: none;">
                     <i class="fas fa-spinner fa-spin"></i>
                     <?php echo esc_html__('Ajout en cours...', 'nfc-configurator'); ?>
@@ -297,7 +332,8 @@ class NFC_Button_Renderer {
                 
             case 'files':
                 return [
-                    'text' => __('Commander et envoyer fichiers', 'nfc-configurator'),
+                    'text1' => __('Ajout au panier', 'nfc-configurator'),
+                    'text2' => __('et envoyer mes fichiers graphiques', 'nfc-configurator'),
                     'icon' => 'fas fa-upload nfc-icon-upload'
                 ];
                 
