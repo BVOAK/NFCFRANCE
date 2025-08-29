@@ -159,7 +159,7 @@ class NFC_Product_Manager {
         }
         
         // Script inline minimal pour déplacer le bouton
-        wp_add_inline_script('jquery', "
+        /* wp_add_inline_script('jquery', "
             jQuery(document).ready(function($) {
                 var productId = '{$post->ID}';
                 var buttonMoved = false;
@@ -186,7 +186,7 @@ class NFC_Product_Manager {
                     setTimeout(moveConfiguratorButton, 100);
                 });
             });
-        ");
+        "); */
     }
     
     /**
