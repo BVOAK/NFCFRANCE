@@ -785,3 +785,218 @@ html {
     opacity: 0;
     transition: all 0.4s ease;
   }
+
+
+  /* ==========================================================================
+   LOGO VERSO + CHECKBOX INFORMATIONS - Extensions
+   ========================================================================== */
+
+/* Zone logo verso dans l'aperçu carte */
+.logo-verso-area {
+    transition: all 0.3s ease;
+}
+
+.logo-verso-placeholder {
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Couleur placeholder selon carte */
+.card-preview.noir .logo-verso-placeholder {
+    border-color: rgba(255,255,255,0.3) !important;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Image logo verso */
+#logoVersoImage {
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* États logo verso */
+.logo-verso-area.has-logo .logo-verso-placeholder {
+    display: none !important;
+}
+
+.logo-verso-area.has-logo #logoVersoImage {
+    display: block !important;
+    opacity: 1;
+}
+
+/* ==========================================================================
+   CHECKBOX INFORMATIONS - Contrôle affichage user-section
+   ========================================================================== */
+
+/* Par défaut, les infos utilisateur sont visibles (checkbox cochée) */
+.card-preview.verso .user-section {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Quand checkbox décochée, masquer les infos utilisateur */
+body:has(#checkboxInformations:not(:checked)) .card-preview.verso .user-section,
+.checkbox-off .card-preview.verso .user-section {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Alternative pour navigateurs sans :has() */
+.user-section.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Animation douce pour le QR code quand user-section disparaît */
+body:has(#checkboxInformations:not(:checked)) .card-preview.verso .qr-section,
+.checkbox-off .card-preview.verso .qr-section {
+    margin-left: 0;
+}
+
+/* ==========================================================================
+   SECTIONS CONFIGURATION LOGO VERSO
+   ========================================================================== */
+
+/* Section configuration logo verso */
+.config-section.logo-verso-section {
+    background: rgba(248, 249, 250, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.config-section.logo-verso-section:hover {
+    background: rgba(248, 249, 250, 1);
+    border-color: rgba(0, 123, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+}
+
+/* Zone d'upload logo verso */
+#logoVersoUploadZone {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+#logoVersoUploadZone:hover {
+    border-color: var(--bs-primary, #0d6efd) !important;
+    background-color: rgba(13, 110, 253, 0.05) !important;
+    transform: translateY(-1px);
+}
+
+#logoVersoUploadZone.drag-over {
+    border-color: var(--bs-success, #198754) !important;
+    background-color: rgba(25, 135, 84, 0.1) !important;
+    transform: scale(1.02);
+}
+
+/* Contrôles logo verso */
+#logoVersoControls {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    padding: 0.75rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* Animation apparition logo verso */
+.logo-verso-area.has-logo #logoVersoImage {
+    animation: logoVersoAppear 0.4s ease-out;
+}
+
+@keyframes logoVersoAppear {
+    from { 
+        opacity: 0; 
+        transform: scale(0.8); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVE LOGO VERSO
+   ========================================================================== */
+
+/* Tablettes */
+@media (max-width: 991.98px) {
+    .logo-verso-area {
+        width: 40px !important;
+        height: 40px !important;
+        top: 12px !important;
+        left: 12px !important;
+    }
+    
+    .logo-verso-placeholder span {
+        font-size: 16px !important;
+    }
+}
+
+/* Mobiles */
+@media (max-width: 767.98px) {
+    .logo-verso-area {
+        width: 35px !important;
+        height: 35px !important;
+        top: 10px !important;
+        left: 10px !important;
+    }
+    
+    .logo-verso-placeholder span {
+        font-size: 14px !important;
+    }
+    
+    /* Ajustements mobile pour checkbox */
+    .checkbox-wrapper-3 .toggle {
+        width: 35px;
+        height: 18px;
+    }
+    
+    .checkbox-wrapper-3 .toggle span {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* ==========================================================================
+   AMÉLIORATIONS UX SUPPLÉMENTAIRES
+   ========================================================================== */
+
+/* Upload zone avec feedback visuel */
+#logoVersoUploadZone.uploading {
+    animation: uploadPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes uploadPulse {
+    0%, 100% {
+        border-color: rgba(0, 0, 0, 0.125);
+        background-color: var(--bs-light, #f8f9fa);
+    }
+    50% {
+        border-color: var(--bs-primary, #0d6efd);
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+}
+
+/* Amélioration checkbox toggle (déjà présent mais on s'assure de la compatibilité) */
+.checkbox-wrapper-3 #checkboxInformations:checked + .toggle:before {
+    background: #947ADA;
+}
+
+.checkbox-wrapper-3 #checkboxInformations:checked + .toggle span {
+    background: #4F2EDC;
+    transform: translateX(20px);
+    transition: all 0.2s cubic-bezier(0.8, 0.4, 0.3, 1.25), background 0.15s ease;
+    box-shadow: 0 3px 8px rgba(79, 46, 220, 0.2);
+}
