@@ -335,10 +335,10 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
 
                                                     <div class="d-flex gap-3 align-items-center">
                                                         <div class="upload-zone flex-grow-1 bg-light border p-2 text-center text-muted cursor-pointer"
-                                                            id="imageUploadZone">
+                                                            id="logoVersoUploadZone">
                                                             <span class="upload-text small">Sélectionner un
                                                                 logo...</span>
-                                                            <input type="file" id="imageInput"
+                                                            <input type="file" id="logoVersoInput"
                                                                 accept="image/jpeg,image/png,image/svg+xml"
                                                                 class="d-none">
                                                         </div>
