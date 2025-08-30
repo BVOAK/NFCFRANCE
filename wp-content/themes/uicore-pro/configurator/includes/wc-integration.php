@@ -114,7 +114,7 @@ class NFC_WooCommerce_Integration
             $config_data = $item->get_meta('_nfc_config_complete');
             if ($config_data) {
                 if (!$has_nfc_items) {
-                    echo '<h3 style="margin-top: 30px;">🎨 Cartes NFC Personnalisées</h3>';
+                    echo '<div style="display:flex; flex-direction:column; width: 100%; margin-top: 30px;"> <h3 style="margin-top: 30px; text-transform: uppercase; font-size: 20px;">Cartes NFC Personnalisées</h3>';
                     $has_nfc_items = true;
                 }
 
@@ -157,7 +157,19 @@ class NFC_WooCommerce_Integration
 
                 // Boutons de téléchargement
                 if (isset($config['image']['name'])) {
-                    echo '<p><a href="' . esc_url($urls['logo_download']) . '" class="button button-secondary" style="margin-right: 10px;">📷 Télécharger logo</a></p>';
+                    echo '<p>';
+                    if (isset($config['image']['name'])) {
+                        echo '<a href="' . esc_url($urls['logo_recto_download']) . '" class="button button-secondary" style="display:block">📷 Logo recto</a>';
+                        // Vérifier si logo verso existe
+                        $logo_verso_data = $item->get_meta('_nfc_logo_verso_data');
+                        if ($logo_verso_data) {
+                            echo '<a href="' . esc_url($urls['logo_verso_download']) . '" class="button button-secondary" style="display:block; margin-top: 5px">📷 Logo verso</a>';
+                        }
+                    }
+
+                    // Bouton screenshot
+                    echo '<a href="' . esc_url($urls['screenshot_download']) . '" class="button button-secondary d-block" style="display:block; margin-top: 5px">🖼️ Screenshot</a>';
+                    echo '</p>';
                 }
 
                 // Screenshot actions
@@ -183,7 +195,7 @@ class NFC_WooCommerce_Integration
                 echo '<pre style="background: #f0f0f0; padding: 10px; border-radius: 4px; font-size: 11px; max-height: 200px; overflow: auto; margin-top: 10px;">' . esc_html(json_encode($config, JSON_PRETTY_PRINT)) . '</pre>';
                 echo '</details>';
 
-                echo '</div>'; // Fin nfc-admin-item
+                echo '</div></div>'; // Fin nfc-admin-item
             }
         }
     }

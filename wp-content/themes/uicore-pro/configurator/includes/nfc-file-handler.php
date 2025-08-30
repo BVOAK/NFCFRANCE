@@ -219,6 +219,18 @@ class NFC_File_Handler
         switch ($type) {
             case 'verso':
                 $meta_key = '_nfc_logo_verso_data';
+                $image_data = $item->get_meta($meta_key);
+                
+                if (!$image_data) {
+                    $config_data = $item->get_meta('_nfc_config_complete');
+                    if ($config_data) {
+                        $config = json_decode($config_data, true);
+                        if (isset($config['image'])) {
+                            $image_data = $config['image'];
+                            error_log("Verso: utilisation image recto comme fallback");
+                        }
+                    }
+                }
                 break;
             case 'recto':
             default:
