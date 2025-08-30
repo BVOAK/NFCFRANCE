@@ -391,12 +391,17 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
 
                                                 <hr class="mt-4 mb-4" />
 
-                                                <div class="mb-3 config-step mt-3">
+                                                <div class="mb-3 config-step mt-3 checkbox-wrapper-6">
 
-                                                    <label class="form-label fw-medium small w-100">5. Renseigner vos
-                                                        informations (optionnel)
-                                                        <input type="checkbox" id="checkboxInformations" checked="" class="float-end checkbox-informations">
-                                                    </label>    
+                                                    <div class="w-100">
+                                                        <label class="form-label fw-medium small">5. Renseigner vos
+                                                            informations (optionnel)                                                    </label>    
+                                                        <div class="checkbox-wrapper-3 float-end">
+                                                            <input class="tgl tgl-light" id="checkboxInformations" checked="" type="checkbox"/>
+                                                            <label for="checkboxInformations" class="toggle"><span></span></label>
+                                                        </div>
+                                                    </div>
+
 
                                                     <div class="row">
                                                         <div class="col-6">

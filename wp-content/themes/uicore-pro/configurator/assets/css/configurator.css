@@ -11,16 +11,17 @@
   --nfc-success: #10b981;
   --nfc-danger: #ef4444;
   --nfc-warning: #f59e0b;
-  
+
   /* Couleurs interface selon maquette */
-  --nfc-background: #e8e9f3; /* Fond gris-bleu de la maquette */
+  --nfc-background: #e8e9f3;
+  /* Fond gris-bleu de la maquette */
   --nfc-surface: #ffffff;
   --nfc-border: #e2e8f0;
   --nfc-border-light: #f1f5f9;
   --nfc-text: #1a202c;
   --nfc-text-light: #64748b;
   --nfc-text-muted: #94a3b8;
-  
+
   /* Couleurs cartes */
   --card-white-bg: #ffffff;
   --card-white-text: #333333;
@@ -28,13 +29,13 @@
   --card-black-bg: #1a1a1a;
   --card-black-text: #ffffff;
   --card-black-border: #374151;
-  
+
   /* Dimensions cartes */
   --card-width: 450px;
   --card-height: 291px;
   --card-radius: 16px;
   --logo-size: 120px;
-  
+
   /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -42,7 +43,7 @@
   --spacing-lg: 24px;
   --spacing-xl: 32px;
   --spacing-2xl: 40px;
-  
+
   /* Transitions */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s ease;
@@ -50,16 +51,25 @@
 
 }
 
-.ui-btn-anim-wrapp { overflow: visible!important; }
+.ui-btn-anim-wrapp {
+  overflow: visible !important;
+}
 
 /* ==========================================================================
    Layout principal Bootstrap adapté
    ========================================================================== */
 
-.vh-hero { height: calc(100vh - 170px) !important; }
+.vh-hero {
+  height: calc(100vh - 170px) !important;
+}
 
-#accordionRV .accordion-button:not(.collapsed) { background-color: var(--nfc-primary); }
-#accordionRV .accordion-button:not(.collapsed) h3 { color: #FFF!important; }
+#accordionRV .accordion-button:not(.collapsed) {
+  background-color: var(--nfc-primary);
+}
+
+#accordionRV .accordion-button:not(.collapsed) h3 {
+  color: #FFF !important;
+}
 
 
 .nfc-configurator-wrapper {
@@ -160,7 +170,7 @@
   position: relative;
 }
 
-.support-option input[type="radio"]:checked + .support-preview {
+.support-option input[type="radio"]:checked+.support-preview {
   border-color: var(--nfc-primary) !important;
   box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
 }
@@ -193,7 +203,7 @@
 }
 
 /* Bouton upload Elementor */
-.upload-button { }
+.upload-button {}
 
 /* ==========================================================================
    Contrôles d'image - Bootstrap adapté
@@ -221,7 +231,7 @@
   border-radius: 50%;
   background: var(--nfc-primary) !important;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   border: 2px solid white;
 }
 
@@ -232,7 +242,7 @@
   background: var(--nfc-primary) !important;
   cursor: pointer;
   border: 2px solid white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .scale-value,
@@ -254,7 +264,8 @@
   font-weight: 500;
   transition: all var(--transition-fast);
   border-radius: 100%;
-  height: 50px; width: 50px;
+  height: 50px;
+  width: 50px;
 }
 
 .remove-image-btn:hover {
@@ -279,7 +290,7 @@
    Bouton ajout panier Elementor
    ========================================================================== */
 
-.add-to-cart-btn { }
+.add-to-cart-btn {}
 
 .add-to-cart-btn:hover:not(:disabled) {
   transform: translateY(-2px);
@@ -451,11 +462,13 @@
 
 /* Couleur du symbole NFC selon la carte */
 .card-preview.blanc .nfc-symbol img {
-  filter: brightness(0.2); /* Noir sur carte blanche */
+  filter: brightness(0.2);
+  /* Noir sur carte blanche */
 }
 
 .card-preview.noir .nfc-symbol img {
-  filter: brightness(10); /* Blanc sur carte noire */
+  filter: brightness(10);
+  /* Blanc sur carte noire */
 }
 
 /* ==========================================================================
@@ -511,11 +524,13 @@
 
 /* Couleur du QR selon la carte */
 .card-preview.blanc .qr-code svg {
-  color: var(--card-white-text); /* Noir sur carte blanche */
+  color: var(--card-white-text);
+  /* Noir sur carte blanche */
 }
 
 .card-preview.noir .qr-code svg {
-  color: var(--card-black-text); /* Blanc sur carte noire */
+  color: var(--card-black-text);
+  /* Blanc sur carte noire */
 }
 
 /* Si le SVG n'a pas currentColor, on force avec fill */
@@ -557,6 +572,7 @@
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -578,12 +594,12 @@
     width: var(--card-width);
     height: var(--card-height);
   }
-  
+
   .qr-code {
     width: 120px;
     height: 120px;
   }
-  
+
   .qr-code svg {
     width: 100px;
     height: 100px;
@@ -596,22 +612,22 @@
     width: 420px !important;
     height: 273px !important;
   }
-  
+
   .qr-code {
     width: 100px !important;
     height: 100px !important;
   }
-  
+
   .qr-code svg {
     width: 80px !important;
     height: 80px !important;
   }
-  
+
   .user-firstname,
   .user-lastname {
     font-size: 20px !important;
   }
-  
+
   .preview-column {
     height: auto !important;
     padding: 2rem;
@@ -624,36 +640,36 @@
     width: 300px !important;
     height: 195px !important;
   }
-  
+
   .qr-code {
     width: 70px !important;
     height: 70px !important;
   }
-  
+
   .qr-code svg {
     width: 50px !important;
     height: 50px !important;
   }
-  
+
   .user-firstname,
   .user-lastname {
     font-size: 16px !important;
   }
-  
+
   .preview-column {
     height: auto !important;
     padding: 1rem;
   }
-  
+
   .config-column {
     padding: 1.5rem !important;
   }
-  
+
   .add-to-cart-btn {
     padding: 0.75rem 2rem !important;
     border-radius: 1.5rem !important;
   }
-  
+
   .upload-zone {
     border-radius: 1rem !important;
   }
@@ -677,6 +693,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -696,3 +713,75 @@
 html {
   scroll-behavior: smooth;
 }
+
+
+/* ==========================================================================
+   Checkbox
+   ========================================================================== */
+
+.checkbox-wrapper-3 input[type="checkbox"] {
+    visibility: hidden;
+    display: none;
+  }
+
+  .checkbox-wrapper-3 .toggle {
+    position: relative;
+    display: block;
+    width: 40px;
+    height: 20px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transform: translate3d(0, 0, 0);
+  }
+  .checkbox-wrapper-3 .toggle:before {
+    content: "";
+    position: relative;
+    top: 3px;
+    left: 3px;
+    width: 34px;
+    height: 14px;
+    display: block;
+    background: #9A9999;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+  }
+  .checkbox-wrapper-3 .toggle span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    display: block;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(154, 153, 153, 0.5);
+    transition: all 0.2s ease;
+  }
+  .checkbox-wrapper-3 .toggle span:before {
+    content: "";
+    position: absolute;
+    display: block;
+    margin: -18px;
+    width: 56px;
+    height: 56px;
+    background: rgba(79, 46, 220, 0.5);
+    border-radius: 50%;
+    transform: scale(0);
+    opacity: 1;
+    pointer-events: none;
+  }
+
+  .checkbox-wrapper-3 #checkboxInformations:checked + .toggle:before {
+    background: #947ADA;
+  }
+  .checkbox-wrapper-3 #checkboxInformations:checked + .toggle span {
+    background: #4F2EDC;
+    transform: translateX(20px);
+    transition: all 0.2s cubic-bezier(0.8, 0.4, 0.3, 1.25), background 0.15s ease;
+    box-shadow: 0 3px 8px rgba(79, 46, 220, 0.2);
+  }
+  .checkbox-wrapper-3 #checkboxInformations:checked + .toggle span:before {
+    transform: scale(1);
+    opacity: 0;
+    transition: all 0.4s ease;
+  }
