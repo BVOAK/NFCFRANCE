@@ -349,7 +349,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.02);
 }
 
 .card-preview.noir .image-mask {

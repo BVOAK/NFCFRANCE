@@ -140,6 +140,81 @@ if (typeof window.NFCConfigurator === 'undefined') {
             });
         }
 
+        validateConfiguration() {
+            let isValid = true;
+            let errors = [];
+            
+            // ========================================
+            // SEULES VALIDATIONS OBLIGATOIRES :
+            // ========================================
+            
+            // 1. Couleur sélectionnée (essentiel pour le produit)
+            if (!this.state.selectedColor) {
+                isValid = false;
+                errors.push('Veuillez choisir une couleur de carte');
+            }
+            
+            // 2. Variation WooCommerce existe (technique)
+            if (!this.state.selectedVariation || !this.state.selectedVariation.id) {
+                isValid = false;
+                errors.push('Erreur technique: variation produit non trouvée');
+            }
+            
+            // ========================================
+            // VALIDATIONS OPTIONNELLES (si données présentes) :
+            // ========================================
+            
+            // Si nom renseigné, vérifier qu'il est valide
+            if (this.state.userInfo.firstName || this.state.userInfo.lastName) {
+                const namePattern = /^[a-zA-ZÀ-ÿ\s\-'\.]*$/; // Caractères autorisés + vide
+                
+                if (this.state.userInfo.firstName && !namePattern.test(this.state.userInfo.firstName)) {
+                    isValid = false;
+                    errors.push('Caractères non autorisés dans le prénom');
+                }
+                
+                if (this.state.userInfo.lastName && !namePattern.test(this.state.userInfo.lastName)) {
+                    isValid = false;
+                    errors.push('Caractères non autorisés dans le nom');
+                }
+            }
+            
+            // Si logo verso uploadé, vérifier cohérence
+            if (this.state.logoVerso) {
+                if (!this.state.logoVerso.file || !this.state.logoVerso.name) {
+                    isValid = false;
+                    errors.push('Problème avec le logo verso');
+                }
+                
+                const scale = this.state.logoVerso.scale || 100;
+                if (scale < 10 || scale > 200) {
+                    isValid = false;
+                    errors.push('Taille du logo verso invalide');
+                }
+            }
+            
+            // Si image recto uploadée, vérifier cohérence  
+            if (this.state.image) {
+                if (!this.state.image.data || !this.state.image.name) {
+                    isValid = false;
+                    errors.push('Problème avec l\'image recto');
+                }
+            }
+            
+            // Mettre à jour l'état
+            this.state.isValid = isValid;
+            
+            // Debug
+            if (!isValid) {
+                console.log('❌ Configuration invalide:', errors);
+            } else {
+                console.log('✅ Configuration valide');
+            }
+            
+            return { isValid, errors };
+        }
+
+        
         /**
          * Charge le QR Code SVG
          */
@@ -667,12 +742,66 @@ if (typeof window.NFCConfigurator === 'undefined') {
         /**
          * Gestion de la sélection d'image pour logo verso
          */
-        handleLogoVersoImageSelect(e) {
-            const file = e.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                this.processLogoVersoImage(file);
+        // Dans configurator.js, fonction handleLogoVersoImageSelect
+// AJOUTER ces lignes après le chargement réussi :
+
+handleLogoVersoImageSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        try {
+            console.log('📷 Traitement logo verso:', file.name);
+            
+            // Créer URL temporaire
+            const imageUrl = URL.createObjectURL(file);
+            
+            // Stocker dans l'état
+            this.state.logoVerso = {
+                file: file,
+                url: imageUrl,
+                name: file.name,
+                scale: 50, // Défaut
+            };
+            
+            // Afficher l'image
+            if (this.elements.logoVersoImage) {
+                this.elements.logoVersoImage.src = imageUrl;
+                this.elements.logoVersoImage.classList.remove('d-none');
             }
+            
+            // Masquer placeholder
+            if (this.elements.logoVersoPlaceholder) {
+                this.elements.logoVersoPlaceholder.classList.add('d-none');
+            }
+            
+            // ✅ CORRECTION 1: Mettre à jour le nom de fichier dans la zone d'upload
+            if (this.elements.logoVersoUploadZone) {
+                const uploadText = this.elements.logoVersoUploadZone.querySelector('span');
+                if (uploadText) {
+                    uploadText.textContent = file.name;
+                }
+                // Ou alternative si structure différente :
+                this.elements.logoVersoUploadZone.innerHTML = `
+                    <span class="upload-text small">${file.name}</span>
+                `;
+            }
+            
+            // Afficher zone de contrôles (si elle existe)
+            if (this.elements.logoVersoRemoveBtn) {
+                this.elements.logoVersoRemoveBtn.classList.remove('d-none');
+                this.elements.logoVersoRemoveBtn.classList.add('d-block');
+            }
+            
+            // Mettre à jour l'aperçu
+            this.updateLogoVersoTransform();
+            
+            console.log('✅ Logo verso chargé');
+            
+        } catch (error) {
+            console.error('❌ Erreur logo verso:', error);
+            this.showError('Erreur lors du chargement de l\'image verso');
         }
+    }
+}
 
 
         /**
@@ -728,14 +857,21 @@ if (typeof window.NFCConfigurator === 'undefined') {
         updateLogoVersoTransform() {
             if (!this.state.logoVerso || !this.elements.logoVersoImage) return;
             
-            const scale = this.elements.logoVersoScale ? this.elements.logoVersoScale.value : 100;
+            const scale = this.elements.logoVersoScale ? 
+                this.elements.logoVersoScale.value : 100;
             
             this.state.logoVerso.scale = scale;
             
             const transform = `scale(${scale / 100})`;
             this.elements.logoVersoImage.style.transform = transform;
             
-            console.log('🔄 Logo verso transform:', { scale });
+            // ✅ CORRECTION 2: Mettre à jour l'affichage du pourcentage
+            const scaleValueElement = document.getElementById('logoVersoScaleValue');
+            if (scaleValueElement) {
+                scaleValueElement.textContent = scale + '%';
+            }
+            
+            console.log('🔄 Logo verso transform:', { scale, transform });
         }
 
 
@@ -865,8 +1001,14 @@ if (typeof window.NFCConfigurator === 'undefined') {
          */
         async addToCart() {
             if (!this.state.isValid) {
-                this.showError('Veuillez remplir tous les champs requis');
-                return;
+                // Forcer une validation avant d'échouer
+                const validation = this.validateConfiguration();
+                if (!validation.isValid) {
+                    this.showError('Veuillez corriger: ' + validation.errors.join(', '));
+                    return;
+                }
+                // Si validation OK maintenant, continuer
+                this.state.isValid = true;
             }
 
             console.log('🛒 Ajout au panier avec screenshot...');
@@ -874,13 +1016,20 @@ if (typeof window.NFCConfigurator === 'undefined') {
 
             try {
                 // GÉNÉRER LE SCREENSHOT
-                console.log('📸 Génération du screenshot...');
-                const screenshot = await this.screenshotGenerator.generateScreenshot();
-                const thumbnail = await this.screenshotGenerator.generateThumbnail(300);
+                let screenshot = null;
+                let thumbnail = null;
                 
-                console.log('✅ Screenshot généré');
-
-                // Préparer les données de configuration
+                try {
+                    console.log('📸 Génération du screenshot...');
+                    screenshot = await this.screenshotGenerator.generateScreenshot();
+                    thumbnail = await this.screenshotGenerator.generateThumbnail(300);
+                    console.log('✅ Screenshot généré');
+                } catch (screenshotError) {
+                    console.warn('⚠️ Erreur screenshot (continuant sans):', screenshotError);
+                    // Continuer sans screenshot plutôt que planter
+                }
+                
+                // Préparer les données (avec ou sans screenshot)
                 const configData = {
                     variation_id: this.state.selectedVariation.id,
                     color: this.state.selectedColor,
@@ -888,15 +1037,20 @@ if (typeof window.NFCConfigurator === 'undefined') {
                     image: this.state.image,
                     logoVerso: this.state.logoVerso,
                     showUserInfo: this.state.showUserInfo,
-                    screenshot: {
-                        full: screenshot,
-                        thumbnail: thumbnail,
-                        generated_at: new Date().toISOString()
-                    },
                     timestamp: Date.now()
                 };
 
-                console.log('📦 Données config préparées');
+                // Ajouter screenshot seulement s'il existe
+                if (screenshot) {
+                    configData.screenshot = {
+                        full: screenshot,
+                        thumbnail: thumbnail,
+                        generated_at: new Date().toISOString()
+                    };
+                }
+
+                console.log('📦 Données config préparées (avec screenshot:', !!screenshot, ')');
+
 
                 // Appel Ajax
                 const response = await this.ajaxCall('nfc_add_to_cart', {
