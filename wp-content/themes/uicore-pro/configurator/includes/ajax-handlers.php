@@ -326,7 +326,7 @@ function nfc_save_config_handler() {
         }
         
         // Valider la configuration
-        $validation = nfc_validate_configuration($config);
+        $validation = nfc_validate_configuration_extended($config);
         if (!$validation['valid']) {
             wp_send_json_error($validation['message']);
             return;
@@ -611,7 +611,7 @@ function nfc_display_cart_item_data($item_data, $cart_item) {
     if (isset($cart_item['nfc_config'])) {
         $config = $cart_item['nfc_config'];
         
-        // Afficher les informations de configuration
+        // Afficher les informations de configuration RECTO
         $item_data[] = [
             'key' => 'Couleur',
             'value' => ucfirst($config['color'])
@@ -626,12 +626,27 @@ function nfc_display_cart_item_data($item_data, $cart_item) {
         
         if (isset($config['image']) && !empty($config['image']['name'])) {
             $item_data[] = [
-                'key' => 'Image personnalisée',
+                'key' => 'Image recto',
                 'value' => 'Logo: ' . $config['image']['name']
             ];
         }
         
-        // NOUVEAU : Afficher miniature screenshot dans le panier
+        // ✨ NOUVEAU : Afficher les informations VERSO
+        if (isset($config['logoVerso']) && !empty($config['logoVerso']['name'])) {
+            $item_data[] = [
+                'key' => 'Logo verso',
+                'value' => 'Logo: ' . $config['logoVerso']['name']
+            ];
+        }
+        
+        if (isset($config['showUserInfo'])) {
+            $item_data[] = [
+                'key' => 'Informations verso',
+                'value' => $config['showUserInfo'] ? 'Affichées' : 'Masquées'
+            ];
+        }
+        
+        // Screenshot thumbnail (existant)
         if (isset($config['screenshot']) && !empty($config['screenshot']['thumbnail'])) {
             $item_data[] = [
                 'key' => 'Aperçu',
@@ -639,7 +654,7 @@ function nfc_display_cart_item_data($item_data, $cart_item) {
             ];
         }
         
-        error_log('NFC: Données configuration affichées dans le panier');
+        error_log('NFC: Données configuration (recto + verso) affichées dans le panier');
     }
     
     return $item_data;
@@ -653,7 +668,7 @@ function nfc_save_order_item_meta($item, $cart_item_key, $values, $order) {
     if (isset($values['nfc_config'])) {
         $config = $values['nfc_config'];
         
-        // Sauvegarder les métadonnées importantes
+        // Sauvegarder les métadonnées RECTO (existantes)
         $item->add_meta_data('_nfc_couleur', ucfirst($config['color']));
         
         if (isset($config['user'])) {
@@ -661,26 +676,78 @@ function nfc_save_order_item_meta($item, $cart_item_key, $values, $order) {
         }
         
         if (isset($config['image']) && !empty($config['image']['name'])) {
-            $item->add_meta_data('_nfc_image', $config['image']['name']);
-            // Sauvegarder l'image complète pour la production
-            $item->add_meta_data('_nfc_image_data', $config['image']);
+            $item->add_meta_data('_nfc_image_recto', $config['image']['name']);
+            // Sauvegarder les données complètes de l'image recto
+            $item->add_meta_data('_nfc_image_recto_data', json_encode($config['image']));
         }
         
-        // NOUVEAU : Sauvegarder les paramètres de transformation image
-        if (isset($config['image'])) {
-            $item->add_meta_data('_nfc_image_scale', $config['image']['scale'] ?? 100);
-            $item->add_meta_data('_nfc_image_x', $config['image']['x'] ?? 0);
-            $item->add_meta_data('_nfc_image_y', $config['image']['y'] ?? 0);
+        // ✨ NOUVEAU : Sauvegarder les métadonnées VERSO
+        if (isset($config['logoVerso']) && !empty($config['logoVerso']['name'])) {
+            $item->add_meta_data('_nfc_logo_verso', $config['logoVerso']['name']);
+            // Sauvegarder les données complètes du logo verso
+            $item->add_meta_data('_nfc_logo_verso_data', json_encode($config['logoVerso']));
         }
         
-        // NOUVEAU : Sauvegarder les infos screenshot
-        if (isset($config['screenshot_processed'])) {
-            $item->add_meta_data('_nfc_screenshot_info', json_encode($config['screenshot_processed']));
+        if (isset($config['showUserInfo'])) {
+            $item->add_meta_data('_nfc_show_user_info', $config['showUserInfo'] ? 'Oui' : 'Non');
         }
         
-        // Sauvegarder la configuration complète pour référence
+        // ✨ NOUVEAU : Métadonnées lisibles pour l'admin
+        $verso_summary = [];
+        if (isset($config['logoVerso']) && !empty($config['logoVerso']['name'])) {
+            $verso_summary[] = 'Logo: ' . $config['logoVerso']['name'];
+        }
+        if (isset($config['showUserInfo'])) {
+            $verso_summary[] = 'Infos: ' . ($config['showUserInfo'] ? 'Affichées' : 'Masquées');
+        }
+        
+        if (!empty($verso_summary)) {
+            $item->add_meta_data('Configuration verso', implode(' • ', $verso_summary));
+        }
+        
+        // Screenshot (existant)
+        if (isset($config['screenshot'])) {
+            $item->add_meta_data('_nfc_screenshot_data', json_encode($config['screenshot']));
+        }
+        
+        // Configuration complète pour référence (existant)
         $item->add_meta_data('_nfc_config_complete', json_encode($config));
         
-        error_log('NFC: Métadonnées configuration avec screenshot sauvegardées dans la commande');
+        error_log('NFC: Métadonnées configuration (recto + verso) sauvegardées dans la commande');
     }
+}
+
+/**
+ * ✨ NOUVELLE : Validation étendue de la configuration avec verso
+ */
+function nfc_validate_configuration_extended($config) {
+    // Validation de base (existante)
+    if (empty($config['color']) || empty($config['user'])) {
+        return ['valid' => false, 'message' => 'Données de base manquantes'];
+    }
+    
+    if (empty($config['user']['firstName']) || empty($config['user']['lastName'])) {
+        return ['valid' => false, 'message' => 'Nom et prénom requis'];
+    }
+    
+    // ✨ NOUVEAU : Validation verso
+    if (isset($config['logoVerso'])) {
+        // Vérifier la cohérence des données logo verso
+        if (empty($config['logoVerso']['name']) || empty($config['logoVerso']['url'])) {
+            return ['valid' => false, 'message' => 'Données logo verso incohérentes'];
+        }
+        
+        // Vérifier que l'échelle est dans les limites
+        $scale = $config['logoVerso']['scale'] ?? 100;
+        if ($scale < 10 || $scale > 200) {
+            return ['valid' => false, 'message' => 'Taille logo verso hors limites (10-200%)'];
+        }
+    }
+    
+    // Vérifier showUserInfo (doit être un booléen)
+    if (isset($config['showUserInfo']) && !is_bool($config['showUserInfo'])) {
+        return ['valid' => false, 'message' => 'Paramètre affichage utilisateur invalide'];
+    }
+    
+    return ['valid' => true, 'message' => 'Configuration valide'];
 }

@@ -70,11 +70,11 @@ class NFC_WooCommerce_Integration
             if (isset($cart_item['nfc_config']['screenshot']['thumbnail'])) {
                 $screenshot_url = $cart_item['nfc_config']['screenshot']['thumbnail'];
                 $thumbnail = '<img src="' . esc_attr($screenshot_url) . '" alt="Aperçu personnalisé" style="width: 64px; height: auto; border-radius: 4px;">';
-            } else {
-                // Sinon, ajouter juste l'icône personnalisé
-                $thumbnail = '<div style="position: relative;">' . $thumbnail;
-                $thumbnail .= '<span style="position: absolute; top: -5px; right: -5px; background: #667eea; color: white; border-radius: 50%; width: 20px; height: 20px; text-align: center; font-size: 12px; line-height: 20px;">🎨</span>';
-                $thumbnail .= '</div>';
+            } elseif (isset($cart_item['nfc_config']['logoVerso']['url'])) {
+                $logo_url = $cart_item['nfc_config']['logoVerso']['url'];
+                $thumbnail = '<img src="' . esc_attr($logo_url) . '" 
+                            alt="Logo verso carte NFC" 
+                            style="width: 100%; height: auto; border-radius: 4px; border: 1px solid #ddd;">';
             }
         }
         return $thumbnail;
@@ -565,6 +565,40 @@ class NFC_WooCommerce_Integration
             echo '</div>';
             wp_die();
         }
+    }
+
+
+    /**
+     * ✨ NOUVEAU : Affichage détaillé verso dans l'admin commandes
+     */
+    public function display_verso_admin_details($config) {
+        echo '<div class="nfc-verso-details" style="margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 4px;">';
+        echo '<h4 style="margin-top: 0; color: #0073aa;">📱 Configuration Verso</h4>';
+        
+        // Logo verso
+        if (isset($config['logoVerso']) && !empty($config['logoVerso']['name'])) {
+            echo '<p><strong>Logo verso :</strong> ' . esc_html($config['logoVerso']['name']);
+            
+            // Détails techniques du logo
+            if (isset($config['logoVerso']['scale'])) {
+                echo ' <span style="color: #666;">(' . $config['logoVerso']['scale'] . '% de taille</span>';
+            }
+            if (isset($config['logoVerso']['x'], $config['logoVerso']['y'])) {
+                echo ' <span style="color: #666;">• Position: ' . $config['logoVerso']['x'] . ', ' . $config['logoVerso']['y'] . ')</span>';
+            }
+            echo '</p>';
+        } else {
+            echo '<p><strong>Logo verso :</strong> <em>Aucun logo</em></p>';
+        }
+        
+        // Affichage informations utilisateur
+        if (isset($config['showUserInfo'])) {
+            $status = $config['showUserInfo'] ? 'Affichées' : 'Masquées';
+            $color = $config['showUserInfo'] ? '#46b450' : '#dc3232';
+            echo '<p><strong>Informations utilisateur :</strong> <span style="color: ' . $color . ';">' . $status . '</span></p>';
+        }
+        
+        echo '</div>';
     }
 
 
