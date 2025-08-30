@@ -503,7 +503,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
         handleImageSelect(e) {
             const file = e.target.files[0];
             if (file) {
-                this.processImageFile(file);
+                this.processImageFile(file, 'recto');
             }
         }
 
@@ -513,28 +513,28 @@ if (typeof window.NFCConfigurator === 'undefined') {
         handleImageDrop(e) {
             const files = e.dataTransfer.files;
             if (files.length > 0) {
-                this.processImageFile(files[0]);
+                this.processImageFile(files[0], 'recto');
             }
         }
 
         /**
          * Traite le fichier image
          */
-        processImageFile(file) {
+        processImageFile(file, type = 'recto') {
             const validation = this.validateImageFile(file);
             if (!validation.valid) {
                 this.showError(validation.message);
                 return;
             }
 
-            console.log(`📷 Traitement image: ${file.name}`);
+            console.log(`📷 Traitement image ${type}: ${file.name}`);
 
             const reader = new FileReader();
             reader.onload = (e) => {
-                this.setImage(e.target.result, file.name);
+                this.setImage(e.target.result, file.name, type);
             };
             reader.onerror = () => {
-                this.showError('Erreur lors de la lecture du fichier');
+                this.showError(`Erreur lors de la lecture du fichier ${type}`);
             };
             reader.readAsDataURL(file);
         }
@@ -566,7 +566,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
         /**
          * Définit l'image - RÉVÉLATION AVEC BOOTSTRAP
          */
-        setImage(dataUrl, fileName) {
+        /* setImage(dataUrl, fileName) {
             this.state.image = {
                 data: dataUrl,
                 name: fileName,
@@ -607,7 +607,117 @@ if (typeof window.NFCConfigurator === 'undefined') {
 
             console.log('✅ setImage terminé - contrôles révélés');
         }
+ */
 
+setImage(dataUrl, fileName, type = 'recto') {
+    console.log(`📷 setImage appelé pour ${type}:`, fileName);
+
+    // Configuration selon le type
+    const isVerso = type === 'verso';
+    const stateKey = isVerso ? 'logoVerso' : 'image';
+    const defaultScale = isVerso ? 100 : 25;
+
+    // Stocker dans le bon endroit du state
+    this.state[stateKey] = {
+        data: dataUrl,
+        name: fileName,
+        scale: defaultScale,
+        x: 0,
+        y: 0
+    };
+
+    if (isVerso) {
+        // Affichage spécifique verso
+        this.displayLogoVersoOnCard();
+        this.revealLogoVersoControls(fileName);
+    } else {
+        // Affichage recto (existant)
+        this.displayImageOnCard();
+        this.revealRectoControls(fileName);
+    }
+
+    this.validateConfiguration();
+
+    console.log(`✅ setImage terminé pour ${type} - base64 stocké`);
+}
+
+
+displayLogoVersoOnCard() {
+    if (!this.state.logoVerso || !this.elements.logoVersoImage) {
+        return;
+    }
+
+    // Masquer le placeholder
+    if (this.elements.logoVersoPlaceholder) {
+        this.elements.logoVersoPlaceholder.classList.add('d-none');
+    }
+
+    // Configurer l'image
+    this.elements.logoVersoImage.src = this.state.logoVerso.data;
+    this.elements.logoVersoImage.classList.remove('d-none');
+    this.elements.logoVersoImage.style.opacity = '1';
+
+    // Appliquer les transformations
+    this.updateLogoVersoTransform();
+}
+
+
+revealLogoVersoControls(fileName) {
+    console.log('🔧 Révélation des contrôles logo verso...');
+
+    // Révéler bouton supprimer
+    if (this.elements.logoVersoRemoveBtn) {
+        this.elements.logoVersoRemoveBtn.classList.remove('d-none');
+        this.elements.logoVersoRemoveBtn.classList.add('d-block');
+    }
+
+    // Initialiser le slider à 100%
+    if (this.elements.logoVersoScale) {
+        this.elements.logoVersoScale.value = 100;
+    }
+
+    // Mettre à jour le texte de l'upload zone
+    if (this.elements.logoVersoUploadZone) {
+        const uploadText = this.elements.logoVersoUploadZone.querySelector('.upload-text');
+        if (uploadText) {
+            uploadText.innerHTML = `<span class="text-success">✓ ${fileName}</span>`;
+        } else {
+            // Fallback si structure différente
+            this.elements.logoVersoUploadZone.innerHTML = 
+                `<span class="upload-text text-success">✓ ${fileName}</span>`;
+        }
+    }
+
+    console.log('✅ Contrôles logo verso révélés');
+}
+
+revealRectoControls(fileName) {
+    console.log('🔧 Révélation des contrôles Bootstrap...');
+
+    if (this.elements.removeImageBtn) {
+        this.elements.removeImageBtn.classList.remove('d-none');
+        this.elements.removeImageBtn.classList.add('d-block');
+    }
+
+    // Initialiser les sliders
+    if (this.elements.imageScale) this.elements.imageScale.value = 25;
+    if (this.elements.imageX) this.elements.imageX.value = 0;
+    if (this.elements.imageY) this.elements.imageY.value = 0;
+
+    // Mettre à jour les labels
+    this.updateControlLabels();
+
+    // Mettre à jour le texte de l'upload zone
+    const uploadText = this.elements.imageUploadZone?.querySelector('.upload-text');
+    if (uploadText) {
+        uploadText.textContent = fileName;
+    }
+
+    console.log('✅ Contrôles recto révélés');
+}
+
+
+        
         /**
          * Affiche l'image sur la carte
          */
@@ -745,7 +855,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
         // Dans configurator.js, fonction handleLogoVersoImageSelect
         // AJOUTER ces lignes après le chargement réussi :
 
-        handleLogoVersoImageSelect(e) {
+/*         handleLogoVersoImageSelect(e) {
             const file = e.target.files[0];
             if (file) {
                 try {
@@ -801,13 +911,21 @@ if (typeof window.NFCConfigurator === 'undefined') {
                     this.showError('Erreur lors du chargement de l\'image verso');
                 }
             }
-        }
+        } */
 
+
+            handleLogoVersoImageSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        this.processImageFile(file, 'verso');
+        e.target.value = ''; // Reset pour permettre re-sélection
+    }
+}
 
         /**
          * Traitement de l'image logo verso
          */
-        async processLogoVersoImage(file) {
+/*         async processLogoVersoImage(file) {
             try {
                 console.log('📷 Traitement logo verso:', file.name);
 
@@ -848,8 +966,16 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 console.error('❌ Erreur logo verso:', error);
                 this.showError('Erreur lors du chargement de l\'image verso');
             }
-        }
+        } */
 
+
+            handleLogoVersoImageDrop(e) {
+    const files = Array.from(e.dataTransfer.files);
+    const file = files.find(f => f.type.startsWith('image/'));
+    if (file) {
+        this.processImageFile(file, 'verso');
+    }
+}
 
         /**
          * Mise à jour transformation logo verso
@@ -1039,6 +1165,21 @@ if (typeof window.NFCConfigurator === 'undefined') {
                     showUserInfo: this.state.showUserInfo,
                     timestamp: Date.now()
                 };
+
+                // 🔍 DEBUG : Vérifier les données avant envoi
+                console.log('🛒 ConfigData debug:', {
+                    hasImageRecto: !!configData.image?.data,
+                    hasLogoVerso: !!configData.logoVerso?.data,
+                    imageRectoDetails: configData.image ? {
+                        name: configData.image.name,
+                        dataLength: configData.image.data?.length || 0
+                    } : 'null',
+                    logoVersoDetails: configData.logoVerso ? {
+                        name: configData.logoVerso.name,
+                        hasData: !!configData.logoVerso.data,
+                        dataLength: configData.logoVerso.data?.length || 0
+                    } : 'null'
+                });
 
                 // Ajouter screenshot seulement s'il existe
                 if (screenshot) {
