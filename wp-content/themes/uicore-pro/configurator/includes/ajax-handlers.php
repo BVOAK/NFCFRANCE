@@ -108,7 +108,7 @@ function nfc_add_to_cart_handler() {
         error_log('NFC: Configuration décodée avec screenshot: ' . print_r(array_keys($config), true));
         
         // NOUVEAU : Valider la configuration avec screenshot
-        $validation = nfc_validate_configuration_with_screenshot($config);
+        $validation = nfc_validate_configuration($config);
         if (!$validation['valid']) {
             error_log('NFC: Configuration invalide: ' . $validation['message']);
             wp_send_json_error($validation['message']);
@@ -326,7 +326,7 @@ function nfc_save_config_handler() {
         }
         
         // Valider la configuration
-        $validation = nfc_validate_configuration_extended($config);
+        $validation = nfc_validate_configuration($config, ['skip_screenshot' => true]);
         if (!$validation['valid']) {
             wp_send_json_error($validation['message']);
             return;
@@ -387,69 +387,14 @@ function nfc_validate_image_handler() {
 /**
  * MODIFIÉ : Valide une configuration complète avec screenshot
  */
-function nfc_validate_configuration_with_screenshot($config) {
-    // Validation de base
-    $basic_validation = nfc_validate_configuration($config);
-    if (!$basic_validation['valid']) {
-        return $basic_validation;
-    }
+function nfc_validate_configuration($config, $options = []) {
+    // Options par défaut
+    $options = array_merge([
+        'skip_screenshot' => false,
+        'skip_images' => false
+    ], $options);
     
-    // Validation spécifique screenshot
-    if (isset($config['screenshot'])) {
-        // Vérifier que le screenshot a les bonnes données
-        if (!isset($config['screenshot']['full']) || !isset($config['screenshot']['thumbnail'])) {
-            return [
-                'valid' => false,
-                'message' => 'Données screenshot incomplètes'
-            ];
-        }
-        
-        // Vérifier format base64
-        if (!nfc_validate_base64_image($config['screenshot']['full'])) {
-            return [
-                'valid' => false,
-                'message' => 'Screenshot full invalide'
-            ];
-        }
-        
-        if (!nfc_validate_base64_image($config['screenshot']['thumbnail'])) {
-            return [
-                'valid' => false,
-                'message' => 'Screenshot thumbnail invalide'
-            ];
-        }
-        
-        error_log('NFC: Screenshot validé avec succès');
-    }
-    
-    return ['valid' => true];
-}
-
-/**
- * NOUVEAU : Valide une image base64
- */
-function nfc_validate_base64_image($base64_data) {
-    if (empty($base64_data)) {
-        return false;
-    }
-    
-    // Vérifier format base64 image
-    if (!preg_match('/^data:image\/(png|jpe?g);base64,/', $base64_data)) {
-        return false;
-    }
-    
-    // Tester décodage
-    $data = substr($base64_data, strpos($base64_data, ',') + 1);
-    $decoded = base64_decode($data);
-    
-    return $decoded !== false && strlen($decoded) > 100; // Au moins 100 bytes
-}
-
-/**
- * Valide une configuration complète
- */
-function nfc_validate_configuration($config) {
-    // Vérifications requises
+    // === VALIDATION DE BASE ===
     $required_fields = ['color', 'user', 'variation_id'];
     
     foreach ($required_fields as $field) {
@@ -488,14 +433,6 @@ function nfc_validate_configuration($config) {
         ];
     }
     
-    // Valider l'image si présente
-    if (isset($config['image']) && !empty($config['image']['data'])) {
-        $image_validation = nfc_validate_image_data($config['image']['data']);
-        if (!$image_validation['valid']) {
-            return $image_validation;
-        }
-    }
-    
     // Valider l'ID de variation
     $variation = wc_get_product($config['variation_id']);
     if (!$variation || !$variation->exists()) {
@@ -505,7 +442,106 @@ function nfc_validate_configuration($config) {
         ];
     }
     
-    return ['valid' => true];
+    // === VALIDATION VERSO ===
+    if (isset($config['logoVerso'])) {
+        // Vérifier la cohérence des données logo verso
+        if (empty($config['logoVerso']['name']) || empty($config['logoVerso']['url'])) {
+            return ['valid' => false, 'message' => 'Données logo verso incohérentes'];
+        }
+        
+        // Vérifier que l'échelle est dans les limites
+        $scale = $config['logoVerso']['scale'] ?? 100;
+        if ($scale < 10 || $scale > 200) {
+            return ['valid' => false, 'message' => 'Taille logo verso hors limites (10-200%)'];
+        }
+    }
+    
+    // Vérifier showUserInfo (doit être un booléen)
+    if (isset($config['showUserInfo']) && !is_bool($config['showUserInfo'])) {
+        return ['valid' => false, 'message' => 'Paramètre affichage utilisateur invalide'];
+    }
+    
+    // === VALIDATION IMAGES (optionnelle) ===
+    if (!$options['skip_images']) {
+        // Valider l'image recto si présente
+        if (isset($config['image']) && !empty($config['image']['data'])) {
+            $image_validation = nfc_validate_image_data($config['image']['data']);
+            if (!$image_validation['valid']) {
+                return $image_validation;
+            }
+        }
+        
+        // Valider l'image logo verso si présente
+        if (isset($config['logoVerso']['data']) && !empty($config['logoVerso']['data'])) {
+            $logo_validation = nfc_validate_image_data($config['logoVerso']['data']);
+            if (!$logo_validation['valid']) {
+                return [
+                    'valid' => false,
+                    'message' => 'Logo verso invalide: ' . $logo_validation['message']
+                ];
+            }
+        }
+    }
+    
+    // === VALIDATION SCREENSHOT (optionnelle) ===
+    if (!$options['skip_screenshot'] && isset($config['screenshot'])) {
+        // Vérifier que le screenshot a les bonnes données
+        if (!isset($config['screenshot']['full']) || !isset($config['screenshot']['thumbnail'])) {
+            return [
+                'valid' => false,
+                'message' => 'Données screenshot incomplètes'
+            ];
+        }
+        
+        // Vérifier format base64
+        if (!nfc_validate_base64_image($config['screenshot']['full'])) {
+            return [
+                'valid' => false,
+                'message' => 'Screenshot full invalide'
+            ];
+        }
+        
+        if (!nfc_validate_base64_image($config['screenshot']['thumbnail'])) {
+            return [
+                'valid' => false,
+                'message' => 'Screenshot thumbnail invalide'
+            ];
+        }
+        
+        error_log('NFC: Screenshot validé avec succès');
+    }
+    
+    // === LOGGING DÉTAILLÉ ===
+    $validation_summary = [
+        'base' => '✅',
+        'verso' => isset($config['logoVerso']) ? '✅ Logo' : '⚪ Pas de logo',
+        'user_info' => isset($config['showUserInfo']) ? ($config['showUserInfo'] ? '✅ Affiché' : '✅ Masqué') : '⚪ Défaut',
+        'screenshot' => (!$options['skip_screenshot'] && isset($config['screenshot'])) ? '✅' : '⚪ Ignoré'
+    ];
+    
+    error_log('NFC: Validation complète - ' . json_encode($validation_summary));
+    
+    return ['valid' => true, 'message' => 'Configuration complète validée'];
+}
+
+/**
+ * NOUVEAU : Valide une image base64
+ */
+function nfc_validate_base64_image($base64_data) {
+    if (empty($base64_data)) {
+        return false;
+    }
+    
+    // Vérifier format base64 image
+    if (!preg_match('/^data:image\/(png|jpe?g);base64,/', $base64_data)) {
+        return false;
+    }
+    
+    // Tester décodage
+    $data = substr($base64_data, strpos($base64_data, ',') + 1);
+    $decoded = base64_decode($data);
+    
+    return $decoded !== false && strlen($decoded) > 100; // Au moins 100 bytes
 }
 
 /**
@@ -715,39 +751,4 @@ function nfc_save_order_item_meta($item, $cart_item_key, $values, $order) {
         
         error_log('NFC: Métadonnées configuration (recto + verso) sauvegardées dans la commande');
     }
-}
-
-/**
- * ✨ NOUVELLE : Validation étendue de la configuration avec verso
- */
-function nfc_validate_configuration_extended($config) {
-    // Validation de base (existante)
-    if (empty($config['color']) || empty($config['user'])) {
-        return ['valid' => false, 'message' => 'Données de base manquantes'];
-    }
-    
-    if (empty($config['user']['firstName']) || empty($config['user']['lastName'])) {
-        return ['valid' => false, 'message' => 'Nom et prénom requis'];
-    }
-    
-    // ✨ NOUVEAU : Validation verso
-    if (isset($config['logoVerso'])) {
-        // Vérifier la cohérence des données logo verso
-        if (empty($config['logoVerso']['name']) || empty($config['logoVerso']['url'])) {
-            return ['valid' => false, 'message' => 'Données logo verso incohérentes'];
-        }
-        
-        // Vérifier que l'échelle est dans les limites
-        $scale = $config['logoVerso']['scale'] ?? 100;
-        if ($scale < 10 || $scale > 200) {
-            return ['valid' => false, 'message' => 'Taille logo verso hors limites (10-200%)'];
-        }
-    }
-    
-    // Vérifier showUserInfo (doit être un booléen)
-    if (isset($config['showUserInfo']) && !is_bool($config['showUserInfo'])) {
-        return ['valid' => false, 'message' => 'Paramètre affichage utilisateur invalide'];
-    }
-    
-    return ['valid' => true, 'message' => 'Configuration valide'];
 }
