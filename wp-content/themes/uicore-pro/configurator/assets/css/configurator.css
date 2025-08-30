@@ -6,8 +6,8 @@
 /* Variables CSS */
 :root {
   /* Couleurs principales NFC France */
-  --nfc-primary: #1c3e8f;
-  --nfc-secondary: #1c3e8f;
+  --nfc-primary: #0040C1 ;
+  --nfc-secondary: #0040C1 ;
   --nfc-success: #10b981;
   --nfc-danger: #ef4444;
   --nfc-warning: #f59e0b;
@@ -284,43 +284,6 @@
 
 .form-control::placeholder {
   color: #6c757d;
-}
-
-/* ==========================================================================
-   Bouton ajout panier Elementor
-   ========================================================================== */
-
-.add-to-cart-btn {}
-
-.add-to-cart-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  color: white !important;
-}
-
-.add-to-cart-btn:disabled {
-  background: #adb5bd !important;
-  border-color: #adb5bd !important;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-/* Animation bouton Elementor */
-.ui-btn-anim-wrapp {
-  position: relative;
-  overflow: hidden;
-}
-
-.ui-btn-anim-wrapp .elementor-button-text {
-  transition: transform 0.3s ease;
-}
-
-.add-to-cart-btn:hover:not(:disabled) .ui-btn-anim-wrapp .elementor-button-text:first-child {
-  transform: translateY(-100%);
-}
-
-.add-to-cart-btn:hover:not(:disabled) .ui-btn-anim-wrapp .elementor-button-text:last-child {
-  transform: translateY(-100%);
 }
 
 /* ==========================================================================

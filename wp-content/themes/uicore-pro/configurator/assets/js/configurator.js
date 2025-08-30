@@ -60,7 +60,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 this.setInitialState();
 
                 // Validation initiale
-                this.validateConfiguration();
+                //this.validateConfiguration();
 
                 console.log('✅ Configurateur initialisé avec succès');
 
@@ -285,7 +285,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
             this.updateCardVisuals(color);
 
             // Revalider
-            this.validateConfiguration();
+            //this.validateConfiguration();
 
             console.log(`✅ Couleur changée: ${color}`);
         }
@@ -321,7 +321,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
         updateUserInfo(field, value) {
             this.state.userInfo[field] = value.trim();
             this.updateCardUserInfo();
-            this.validateConfiguration();
+            //this.validateConfiguration();
         }
 
         /**
@@ -445,7 +445,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 uploadText.textContent = fileName;
             }
 
-            this.validateConfiguration();
+            //this.validateConfiguration();
 
             console.log('✅ setImage terminé - contrôles révélés');
         }
@@ -564,7 +564,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 this.elements.imageInput.value = '';
             }
 
-            this.validateConfiguration();
+            //this.validateConfiguration();
 
             console.log('✅ Image supprimée');
         }
@@ -572,7 +572,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
         /**
          * Valide la configuration
          */
-        validateConfiguration() {
+        /* validateConfiguration() {
             const { firstName, lastName } = this.state.userInfo;
             const isValid = firstName.length > 0 && lastName.length > 0;
 
@@ -581,7 +581,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
             if (this.elements.addToCartBtn) {
                 this.elements.addToCartBtn.disabled = !isValid;
             }
-        }
+        } */
 
         /**
          * NOUVEAU : Ajoute au panier avec screenshot
@@ -1006,33 +1006,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('✅ Logo verso supprimé');
         }
         
-        // ===================================================================
-        // FIX 2: BOUTON PANIER - Force activation
-        // ===================================================================
-        
-        const addToCartBtn = document.getElementById('addToCartBtn');
-        
-        function forceActivateCartButton() {
-            if (addToCartBtn) {
-                addToCartBtn.disabled = false;
-                addToCartBtn.classList.remove('disabled');
-                
-                // Retirer attribut disabled du DOM si présent
-                addToCartBtn.removeAttribute('disabled');
-                
-                console.log('🛒 Bouton panier activé de force');
-                console.log('🛒 État bouton:', {
-                    disabled: addToCartBtn.disabled,
-                    hasDisabledClass: addToCartBtn.classList.contains('disabled'),
-                    hasDisabledAttr: addToCartBtn.hasAttribute('disabled')
-                });
-            } else {
-                console.warn('❌ Bouton panier non trouvé');
-            }
-        }
-        
-        // Activer immédiatement
-        forceActivateCartButton();
         
         // Réactiver périodiquement (au cas où autre script le désactive)
         setInterval(forceActivateCartButton, 1000);
