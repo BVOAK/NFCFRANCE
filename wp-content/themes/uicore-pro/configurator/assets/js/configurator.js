@@ -724,408 +724,427 @@ document.addEventListener('DOMContentLoaded', () => {
 (function() {
     'use strict';
     
-    // Attendre que le DOM soit prêt et la classe de base disponible
+    console.log('🔧 FIX Configurateur - Chargement...');
+    
+    // Initialisation immédiate après DOM ready
     document.addEventListener('DOMContentLoaded', function() {
-        // Délai pour s'assurer que la classe principale est initialisée
+        console.log('📦 DOM Ready - Initialisation fix configurateur...');
+        
+        // Attendre un peu que tout soit chargé
         setTimeout(function() {
-            if (typeof window.NFCConfigurator !== 'undefined' && window.configurator) {
-                console.log('🔧 Extension configurateur - Initialisation...');
-                extendNFCConfigurator();
-            } else {
-                console.warn('⚠️ Classe NFCConfigurator non trouvée pour extension');
-            }
-        }, 200);
+            initConfiguratorFix();
+        }, 500);
     });
-
-    function extendNFCConfigurator() {
-        const configurator = window.configurator;
+    
+    function initConfiguratorFix() {
+        console.log('🚀 Initialisation fix configurateur...');
         
         // ===================================================================
-        // EXTENSION 1: INITIALISATION LOGO VERSO
+        // FIX 1: UPLOAD LOGO VERSO - Événements directs
         // ===================================================================
         
-        // Sauvegarder l'initialisation originale
-        const originalInit = configurator.initialize || configurator.init || function() {};
+        const logoVersoInput = document.getElementById('logoVersoInput');
+        const logoVersoUploadZone = document.getElementById('logoVersoUploadZone');
+        const logoVersoControls = document.getElementById('logoVersoControls');
+        const logoVersoImage = document.getElementById('logoVersoImage');
+        const logoVersoScale = document.getElementById('logoVersoScale');
+        const logoVersoScaleValue = document.getElementById('logoVersoScaleValue');
+        const removeLogoVersoBtn = document.getElementById('removeLogoVersoBtn');
+        const logoVersoArea = document.getElementById('logoVersoArea');
         
-        // Nouvelle initialisation étendue
-        configurator.initialize = function() {
-            // Appeler l'init original
-            originalInit.call(this);
-            
-            // Ajouter nos extensions
-            this.initLogoVerso();
-            this.initCheckboxInformations();
-            
-            console.log('✅ Extension logo verso + checkbox informations initialisée');
+        // État logo verso
+        let logoVersoState = {
+            dataUrl: null,
+            name: null,
+            scale: 100
         };
         
-        // ===================================================================
-        // EXTENSION 2: MÉTHODES LOGO VERSO
-        // ===================================================================
+        console.log('📷 Éléments logo verso trouvés:', {
+            input: !!logoVersoInput,
+            uploadZone: !!logoVersoUploadZone,
+            controls: !!logoVersoControls,
+            image: !!logoVersoImage
+        });
         
-        configurator.initLogoVerso = function() {
-            console.log('📷 Initialisation logo verso...');
-            
-            // Éléments DOM logo verso
-            this.elements = this.elements || {};
-            this.elements.logoVersoInput = document.getElementById('logoVersoInput');
-            this.elements.logoVersoUploadZone = document.getElementById('logoVersoUploadZone');
-            this.elements.logoVersoControls = document.getElementById('logoVersoControls');
-            this.elements.logoVersoImage = document.getElementById('logoVersoImage');
-            this.elements.logoVersoScale = document.getElementById('logoVersoScale');
-            this.elements.logoVersoScaleValue = document.getElementById('logoVersoScaleValue');
-            this.elements.removeLogoVersoBtn = document.getElementById('removeLogoVersoBtn');
-            this.elements.logoVersoArea = document.getElementById('logoVersoArea');
-            
-            // État logo verso
-            this.state = this.state || {};
-            this.state.logoVerso = {
-                dataUrl: null,
-                name: null,
-                scale: 100
-            };
-            
-            this.bindLogoVersoEvents();
-        };
+        // FIX: Click sur zone upload
+        if (logoVersoUploadZone && logoVersoInput) {
+            logoVersoUploadZone.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('📁 Click zone upload logo verso');
+                logoVersoInput.click();
+            });
+        }
         
-        configurator.bindLogoVersoEvents = function() {
-            const self = this;
+        // FIX: Click sur bouton "Ajouter logo" 
+        const addLogoBtn = document.querySelector('button[onclick*="logoVersoInput"]');
+        if (addLogoBtn && logoVersoInput) {
+            // Retirer l'ancien onclick
+            addLogoBtn.removeAttribute('onclick');
             
-            // Upload logo verso
-            if (this.elements.logoVersoInput) {
-                this.elements.logoVersoInput.addEventListener('change', function(e) {
-                    self.handleLogoVersoSelect(e);
-                });
-            }
+            addLogoBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔘 Click bouton ajouter logo verso');
+                logoVersoInput.click();
+            });
+        }
+        
+        // FIX: Input change
+        if (logoVersoInput) {
+            logoVersoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    console.log('📁 Fichier sélectionné:', file.name);
+                    processLogoVersoFile(file);
+                } else {
+                    console.log('❌ Aucun fichier sélectionné');
+                }
+            });
+        }
+        
+        // Drag & Drop
+        if (logoVersoUploadZone) {
+            logoVersoUploadZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.classList.add('drag-over');
+            });
             
-            // Click zone upload
-            if (this.elements.logoVersoUploadZone) {
-                this.elements.logoVersoUploadZone.addEventListener('click', function() {
-                    if (self.elements.logoVersoInput) {
-                        self.elements.logoVersoInput.click();
-                    }
-                });
+            logoVersoUploadZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.classList.remove('drag-over');
+            });
+            
+            logoVersoUploadZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.classList.remove('drag-over');
                 
-                // Drag & Drop logo verso
-                this.elements.logoVersoUploadZone.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.classList.add('drag-over');
-                });
-                
-                this.elements.logoVersoUploadZone.addEventListener('dragleave', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.classList.remove('drag-over');
-                });
-                
-                this.elements.logoVersoUploadZone.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.classList.remove('drag-over');
-                    
-                    const files = e.dataTransfer.files;
-                    if (files.length > 0) {
-                        self.processLogoVersoFile(files[0]);
-                    }
-                });
-            }
-            
-            // Slider taille logo verso
-            if (this.elements.logoVersoScale) {
-                this.elements.logoVersoScale.addEventListener('input', function(e) {
-                    const scale = parseInt(e.target.value);
-                    self.updateLogoVersoScale(scale);
-                });
-            }
-            
-            // Bouton supprimer logo verso
-            if (this.elements.removeLogoVersoBtn) {
-                this.elements.removeLogoVersoBtn.addEventListener('click', function() {
-                    self.removeLogoVerso();
-                });
-            }
-            
-            console.log('🔗 Événements logo verso bindés');
-        };
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    console.log('📁 Fichier droppé:', files[0].name);
+                    processLogoVersoFile(files[0]);
+                }
+            });
+        }
         
-        configurator.handleLogoVersoSelect = function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                console.log('📁 Logo verso sélectionné:', file.name);
-                this.processLogoVersoFile(file);
-            }
-        };
-        
-        configurator.processLogoVersoFile = function(file) {
-            // Utiliser la validation existante de la classe de base
-            const validation = this.validateImageFile ? this.validateImageFile(file) : { valid: true };
-            if (!validation.valid) {
-                this.showError ? this.showError(validation.message) : console.error(validation.message);
+        // Fonction traitement fichier
+        function processLogoVersoFile(file) {
+            console.log('🔄 Traitement fichier:', file.name, file.size, 'bytes');
+            
+            // Validation basique
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Format non supporté. Utilisez JPG, PNG ou SVG.');
                 return;
             }
             
-            console.log(`📷 Traitement logo verso: ${file.name}`);
-            
-            // Ajouter classe loading
-            if (this.elements.logoVersoUploadZone) {
-                this.elements.logoVersoUploadZone.classList.add('uploading');
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                alert('Fichier trop volumineux. Maximum 5MB.');
+                return;
             }
             
-            const self = this;
+            // Loading état
+            if (logoVersoUploadZone) {
+                logoVersoUploadZone.classList.add('uploading');
+            }
+            
             const reader = new FileReader();
             
             reader.onload = function(e) {
-                self.setLogoVerso(e.target.result, file.name);
+                console.log('✅ Fichier lu avec succès');
+                setLogoVerso(e.target.result, file.name);
                 
-                // Retirer classe loading
-                if (self.elements.logoVersoUploadZone) {
-                    self.elements.logoVersoUploadZone.classList.remove('uploading');
+                // Retirer loading
+                if (logoVersoUploadZone) {
+                    logoVersoUploadZone.classList.remove('uploading');
                 }
             };
             
             reader.onerror = function() {
-                console.error('Erreur lecture logo verso');
-                if (self.elements.logoVersoUploadZone) {
-                    self.elements.logoVersoUploadZone.classList.remove('uploading');
+                console.error('❌ Erreur lecture fichier');
+                alert('Erreur lors de la lecture du fichier');
+                if (logoVersoUploadZone) {
+                    logoVersoUploadZone.classList.remove('uploading');
                 }
             };
             
             reader.readAsDataURL(file);
-        };
+        }
         
-        configurator.setLogoVerso = function(dataUrl, fileName) {
+        // Fonction définir logo verso
+        function setLogoVerso(dataUrl, fileName) {
             console.log('🎨 Définition logo verso:', fileName);
             
-            // Mettre à jour l'état
-            this.state.logoVerso = {
+            // Mettre à jour état
+            logoVersoState = {
                 dataUrl: dataUrl,
                 name: fileName,
                 scale: 100
             };
             
-            // Mettre à jour l'aperçu
-            if (this.elements.logoVersoImage) {
-                this.elements.logoVersoImage.src = dataUrl;
-                this.elements.logoVersoImage.classList.remove('d-none');
+            // Mettre à jour aperçu
+            if (logoVersoImage) {
+                logoVersoImage.src = dataUrl;
+                logoVersoImage.classList.remove('d-none');
+                console.log('🖼️ Image logo verso mise à jour');
             }
             
-            if (this.elements.logoVersoArea) {
-                this.elements.logoVersoArea.classList.add('has-logo');
+            if (logoVersoArea) {
+                logoVersoArea.classList.add('has-logo');
             }
             
-            // Afficher les contrôles
-            if (this.elements.logoVersoControls) {
-                this.elements.logoVersoControls.classList.remove('d-none');
+            // Afficher contrôles
+            if (logoVersoControls) {
+                logoVersoControls.classList.remove('d-none');
+                console.log('🎛️ Contrôles logo verso affichés');
             }
             
             // Mettre à jour texte upload
-            const uploadText = this.elements.logoVersoUploadZone?.querySelector('.upload-text');
+            const uploadText = logoVersoUploadZone?.querySelector('.upload-text');
             if (uploadText) {
                 uploadText.textContent = `✅ ${fileName}`;
                 uploadText.style.color = '#198754';
             }
             
-            console.log('✅ Logo verso défini avec succès');
-        };
-        
-        configurator.updateLogoVersoScale = function(scale) {
-            this.state.logoVerso.scale = scale;
+            // Exposer état global
+            if (!window.nfcConfiguratorState) {
+                window.nfcConfiguratorState = {};
+            }
+            window.nfcConfiguratorState.logoVerso = logoVersoState;
             
-            // Mettre à jour l'aperçu
-            if (this.elements.logoVersoImage) {
-                this.elements.logoVersoImage.style.transform = `scale(${scale / 100})`;
+            console.log('✅ Logo verso défini avec succès');
+        }
+        
+        // Slider taille
+        if (logoVersoScale) {
+            logoVersoScale.addEventListener('input', function(e) {
+                const scale = parseInt(e.target.value);
+                updateLogoVersoScale(scale);
+            });
+        }
+        
+        function updateLogoVersoScale(scale) {
+            logoVersoState.scale = scale;
+            
+            if (logoVersoImage) {
+                logoVersoImage.style.transform = `scale(${scale / 100})`;
             }
             
-            // Mettre à jour affichage pourcentage
-            if (this.elements.logoVersoScaleValue) {
-                this.elements.logoVersoScaleValue.textContent = scale + '%';
+            if (logoVersoScaleValue) {
+                logoVersoScaleValue.textContent = scale + '%';
+            }
+            
+            // Mettre à jour état global
+            if (window.nfcConfiguratorState && window.nfcConfiguratorState.logoVerso) {
+                window.nfcConfiguratorState.logoVerso.scale = scale;
             }
             
             console.log(`🔧 Taille logo verso: ${scale}%`);
-        };
+        }
         
-        configurator.removeLogoVerso = function() {
+        // Bouton supprimer
+        if (removeLogoVersoBtn) {
+            removeLogoVersoBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                removeLogoVerso();
+            });
+        }
+        
+        function removeLogoVerso() {
             console.log('🗑️ Suppression logo verso...');
             
             // Reset état
-            this.state.logoVerso = {
+            logoVersoState = {
                 dataUrl: null,
                 name: null,
                 scale: 100
             };
             
             // Reset UI
-            if (this.elements.logoVersoImage) {
-                this.elements.logoVersoImage.src = '';
-                this.elements.logoVersoImage.classList.add('d-none');
-                this.elements.logoVersoImage.style.transform = 'scale(1)';
+            if (logoVersoImage) {
+                logoVersoImage.src = '';
+                logoVersoImage.classList.add('d-none');
+                logoVersoImage.style.transform = 'scale(1)';
             }
             
-            if (this.elements.logoVersoArea) {
-                this.elements.logoVersoArea.classList.remove('has-logo');
+            if (logoVersoArea) {
+                logoVersoArea.classList.remove('has-logo');
             }
             
-            if (this.elements.logoVersoControls) {
-                this.elements.logoVersoControls.classList.add('d-none');
+            if (logoVersoControls) {
+                logoVersoControls.classList.add('d-none');
             }
             
-            if (this.elements.logoVersoInput) {
-                this.elements.logoVersoInput.value = '';
+            if (logoVersoInput) {
+                logoVersoInput.value = '';
             }
             
-            if (this.elements.logoVersoScale) {
-                this.elements.logoVersoScale.value = 100;
+            if (logoVersoScale) {
+                logoVersoScale.value = 100;
             }
             
-            if (this.elements.logoVersoScaleValue) {
-                this.elements.logoVersoScaleValue.textContent = '100%';
+            if (logoVersoScaleValue) {
+                logoVersoScaleValue.textContent = '100%';
             }
             
-            // Restaurer texte upload
-            const uploadText = this.elements.logoVersoUploadZone?.querySelector('.upload-text');
+            // Restaurer texte
+            const uploadText = logoVersoUploadZone?.querySelector('.upload-text');
             if (uploadText) {
                 uploadText.textContent = 'Sélectionner un logo...';
                 uploadText.style.color = '';
             }
             
+            // Reset état global
+            if (window.nfcConfiguratorState) {
+                window.nfcConfiguratorState.logoVerso = null;
+            }
+            
             console.log('✅ Logo verso supprimé');
-        };
-        
-        // ===================================================================
-        // EXTENSION 3: GESTION CHECKBOX INFORMATIONS
-        // ===================================================================
-        
-        configurator.initCheckboxInformations = function() {
-            console.log('☑️ Initialisation checkbox informations...');
-            
-            this.elements.checkboxInformations = document.getElementById('checkboxInformations');
-            this.elements.userSection = document.querySelector('.card-preview.verso .user-section');
-            
-            if (this.elements.checkboxInformations) {
-                const self = this;
-                this.elements.checkboxInformations.addEventListener('change', function() {
-                    self.toggleUserInformations();
-                });
-                
-                // Initialiser l'état selon la checkbox
-                this.toggleUserInformations();
-            }
-        };
-        
-        configurator.toggleUserInformations = function() {
-            const isChecked = this.elements.checkboxInformations?.checked;
-            
-            // Fallback pour navigateurs sans support :has()
-            if (isChecked) {
-                document.body.classList.remove('checkbox-off');
-                if (this.elements.userSection) {
-                    this.elements.userSection.classList.remove('hidden');
-                }
-            } else {
-                document.body.classList.add('checkbox-off');
-                if (this.elements.userSection) {
-                    this.elements.userSection.classList.add('hidden');
-                }
-            }
-            
-            console.log('☑️ Informations utilisateur:', isChecked ? 'affichées' : 'masquées');
-        };
-        
-        // ===================================================================
-        // EXTENSION 4: OVERRIDE VALIDATION - NOM OPTIONNEL
-        // ===================================================================
-        
-        // Sauvegarder l'ancienne validation
-        const originalValidate = configurator.validateConfiguration;
-        
-        configurator.validateConfiguration = function() {
-            console.log('✅ Validation étendue - nom/prénom optionnels');
-            
-            // Configuration toujours valide maintenant
-            this.state = this.state || {};
-            this.state.isValid = true;
-            
-            // Débloquer bouton panier
-            this.elements = this.elements || {};
-            if (this.elements.addToCartBtn) {
-                this.elements.addToCartBtn.disabled = false;
-                this.elements.addToCartBtn.classList.remove('disabled');
-                
-                // S'assurer du texte correct
-                const btnText = this.elements.addToCartBtn.querySelector('span') || this.elements.addToCartBtn;
-                if (btnText && !this.elements.addToCartBtn.classList.contains('loading')) {
-                    // Garder le contenu existant s'il y a une icône
-                    if (!btnText.innerHTML.includes('fa-shopping-cart')) {
-                        btnText.innerHTML = '<i class="fas fa-shopping-cart me-2"></i>Ajouter au panier';
-                    }
-                }
-            }
-            
-            console.log('🎯 Validation étendue - toujours valide');
-        };
-        
-        // ===================================================================
-        // EXTENSION 5: OVERRIDE GETCONFIGURATION - INCLURE LOGO VERSO
-        // ===================================================================
-        
-        // Sauvegarder l'ancienne méthode
-        const originalGetConfig = configurator.getConfiguration;
-        
-        configurator.getConfiguration = function() {
-            // Récupérer config de base
-            const config = originalGetConfig ? originalGetConfig.call(this) : {};
-            
-            console.log('📦 Configuration de base:', config);
-            
-            // Ajouter logo verso si présent
-            if (this.state.logoVerso && this.state.logoVerso.dataUrl) {
-                config.logoVerso = {
-                    name: this.state.logoVerso.name,
-                    data: this.state.logoVerso.dataUrl,
-                    scale: this.state.logoVerso.scale
-                };
-                console.log('📷 Logo verso ajouté à la configuration');
-            }
-            
-            // S'assurer que les noms peuvent être vides (optionnels)
-            if (config.user) {
-                config.user.firstName = (config.user.firstName || '').trim();
-                config.user.lastName = (config.user.lastName || '').trim();
-            }
-            
-            // Ajouter état checkbox informations
-            if (this.elements.checkboxInformations) {
-                config.showUserInfo = this.elements.checkboxInformations.checked;
-            }
-            
-            console.log('📦 Configuration finale étendue:', config);
-            return config;
-        };
-        
-        // ===================================================================
-        // INITIALISATION FINALE
-        // ===================================================================
-        
-        // Réinitialiser avec les extensions
-        if (configurator.initialize) {
-            configurator.initialize();
         }
         
-        // Override validation immédiatement pour débloquer le bouton
-        configurator.validateConfiguration();
+        // ===================================================================
+        // FIX 2: BOUTON PANIER - Force activation
+        // ===================================================================
         
-        console.log('🎉 Extension configurateur NFC complète !');
+        const addToCartBtn = document.getElementById('addToCartBtn');
         
-        // Exposer méthodes debug
-        window.debugConfiguratorExtended = function() {
-            console.log('🔍 État configurateur étendu:', {
-                logoVerso: configurator.state?.logoVerso || null,
-                showUserInfo: configurator.elements?.checkboxInformations?.checked || false,
-                isValid: configurator.state?.isValid || false,
-                userInfo: configurator.state?.userInfo || null
+        function forceActivateCartButton() {
+            if (addToCartBtn) {
+                addToCartBtn.disabled = false;
+                addToCartBtn.classList.remove('disabled');
+                
+                // Retirer attribut disabled du DOM si présent
+                addToCartBtn.removeAttribute('disabled');
+                
+                console.log('🛒 Bouton panier activé de force');
+                console.log('🛒 État bouton:', {
+                    disabled: addToCartBtn.disabled,
+                    hasDisabledClass: addToCartBtn.classList.contains('disabled'),
+                    hasDisabledAttr: addToCartBtn.hasAttribute('disabled')
+                });
+            } else {
+                console.warn('❌ Bouton panier non trouvé');
+            }
+        }
+        
+        // Activer immédiatement
+        forceActivateCartButton();
+        
+        // Réactiver périodiquement (au cas où autre script le désactive)
+        setInterval(forceActivateCartButton, 1000);
+        
+        // ===================================================================
+        // FIX 3: CHECKBOX INFORMATIONS - Confirmation fonctionnement
+        // ===================================================================
+        
+        const checkboxInformations = document.getElementById('checkboxInformations');
+        const userSection = document.querySelector('.card-preview.verso .user-section');
+        
+        if (checkboxInformations) {
+            console.log('☑️ Checkbox informations trouvée');
+            
+            checkboxInformations.addEventListener('change', function() {
+                const isChecked = this.checked;
+                
+                // CSS classes pour compatibilité
+                if (isChecked) {
+                    document.body.classList.remove('checkbox-off');
+                    userSection?.classList.remove('hidden');
+                } else {
+                    document.body.classList.add('checkbox-off');  
+                    userSection?.classList.add('hidden');
+                }
+                
+                console.log('☑️ Informations utilisateur:', isChecked ? 'affichées' : 'masquées');
+            });
+            
+            // État initial
+            const isChecked = checkboxInformations.checked;
+            if (!isChecked) {
+                document.body.classList.add('checkbox-off');
+                userSection?.classList.add('hidden');
+            }
+        }
+        
+        // ===================================================================
+        // FIX 4: EXTENSION GETCONFIGURATION GLOBALE
+        // ===================================================================
+        
+        // Override de la fonction getConfiguration si elle existe
+        if (window.configurator && typeof window.configurator.getConfiguration === 'function') {
+            const originalGetConfig = window.configurator.getConfiguration;
+            
+            window.configurator.getConfiguration = function() {
+                const config = originalGetConfig.call(this);
+                
+                // Ajouter logo verso
+                if (window.nfcConfiguratorState?.logoVerso?.dataUrl) {
+                    config.logoVerso = window.nfcConfiguratorState.logoVerso;
+                    console.log('📷 Logo verso ajouté à la configuration');
+                }
+                
+                // Ajouter checkbox état
+                if (checkboxInformations) {
+                    config.showUserInfo = checkboxInformations.checked;
+                }
+                
+                // S'assurer que noms sont optionnels
+                if (config.user) {
+                    config.user.firstName = (config.user.firstName || '').trim();
+                    config.user.lastName = (config.user.lastName || '').trim();
+                }
+                
+                console.log('📦 Configuration finale:', config);
+                return config;
+            };
+        }
+        
+        // ===================================================================
+        // DEBUG ET ÉTAT GLOBAL
+        // ===================================================================
+        
+        // Exposer état global
+        window.nfcConfiguratorState = window.nfcConfiguratorState || {};
+        
+        // Fonction debug
+        window.debugConfiguratorFix = function() {
+            console.log('🔍 Debug configurateur fix:', {
+                logoVerso: window.nfcConfiguratorState?.logoVerso || null,
+                checkboxState: checkboxInformations?.checked || false,
+                cartButtonDisabled: addToCartBtn?.disabled || false,
+                elements: {
+                    logoVersoInput: !!logoVersoInput,
+                    logoVersoUploadZone: !!logoVersoUploadZone,
+                    addToCartBtn: !!addToCartBtn,
+                    checkboxInformations: !!checkboxInformations
+                }
             });
         };
+        
+        // Test automatique
+        setTimeout(function() {
+            console.log('🧪 Test automatique configurateur fix...');
+            window.debugConfiguratorFix();
+            
+            // Test click upload zone
+            if (logoVersoUploadZone) {
+                console.log('✅ Zone upload logo verso prête');
+            }
+            
+            // Test bouton panier
+            if (addToCartBtn && !addToCartBtn.disabled) {
+                console.log('✅ Bouton panier activé');
+            } else {
+                console.warn('❌ Problème bouton panier');
+            }
+            
+        }, 1000);
+        
+        console.log('✅ Fix configurateur initialisé avec succès !');
     }
     
 })();
