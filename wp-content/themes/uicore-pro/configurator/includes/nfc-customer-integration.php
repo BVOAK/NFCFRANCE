@@ -318,21 +318,104 @@ class NFC_Customer_Integration {
         
         try {
             // Utiliser le File Handler pour servir le fichier
-            if (class_exists('NFC_File_Handler')) {
-                // Rediriger vers la méthode de visualisation
-                $_GET['action'] = 'nfc_view_screenshot';
-                $_GET['nonce'] = wp_create_nonce('nfc_admin_view'); // Utiliser le nonce admin
-                
-                $file_handler = new NFC_File_Handler();
-                $file_handler->view_screenshot();
-            } else {
-                throw new Exception('File Handler non disponible');
-            }
+            $this->display_customer_screenshot_direct($order_id, $item_id, $type);
         } catch (Exception $e) {
             error_log('NFC: Erreur screenshot client: ' . $e->getMessage());
-            wp_die('Erreur lors de l\'affichage: ' . $e->getMessage(), 'Erreur', ['response' => 500]);
+            wp_die('Screenshot non disponible', 'Erreur', ['response' => 404]);
         }
     }
+
+    /**
+ * ✅ NOUVEAU: Affiche directement le screenshot au client
+ */
+private function display_customer_screenshot_direct($order_id, $item_id, $type = 'thumb') {
+    // Récupérer les données de la commande
+    $order = wc_get_order($order_id);
+    if (!$order) {
+        throw new Exception('Commande introuvable');
+    }
+    
+    $item = $order->get_item($item_id);
+    if (!$item) {
+        throw new Exception('Article introuvable');
+    }
+    
+    $file_path = null;
+    
+    // Méthode 1: Essayer screenshot_info d'abord
+    $screenshot_info = $item->get_meta('_nfc_screenshot_info');
+    if ($screenshot_info) {
+        if (is_string($screenshot_info)) {
+            $screenshot_info = json_decode($screenshot_info, true);
+        }
+        
+        $field_key = $type === 'thumb' ? 'thumbnail' : 'full_size';
+        if (isset($screenshot_info[$field_key]['path']) && file_exists($screenshot_info[$field_key]['path'])) {
+            $file_path = $screenshot_info[$field_key]['path'];
+        }
+    }
+    
+    // Méthode 2: Fallback vers génération depuis config
+    if (!$file_path) {
+        $config_data = $item->get_meta('_nfc_config_complete');
+        if ($config_data) {
+            // Utiliser le File Handler pour générer
+            if (class_exists('NFC_File_Handler')) {
+                $file_handler = new NFC_File_Handler();
+                // ✅ Utiliser la méthode publique qu'on a ajoutée
+                $file_handler->display_customer_screenshot($order_id, $item_id, $type);
+                return; // exit dans display_customer_screenshot
+            }
+        }
+    }
+    
+    if (!$file_path || !file_exists($file_path)) {
+        throw new Exception('Fichier screenshot introuvable');
+    }
+    
+    // Afficher le fichier
+    $this->display_image_file($file_path);
+}
+
+/**
+ * ✅ NOUVEAU: Affiche un fichier image avec les bons headers
+ */
+private function display_image_file($file_path) {
+    if (!file_exists($file_path)) {
+        throw new Exception('Fichier non trouvé');
+    }
+    
+    // Déterminer le type MIME
+    $mime_type = 'image/png'; // Par défaut
+    $extension = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
+    switch ($extension) {
+        case 'jpg':
+        case 'jpeg':
+            $mime_type = 'image/jpeg';
+            break;
+        case 'png':
+            $mime_type = 'image/png';
+            break;
+        case 'gif':
+            $mime_type = 'image/gif';
+            break;
+    }
+    
+    // Headers d'affichage
+    header('Content-Type: ' . $mime_type);
+    header('Content-Length: ' . filesize($file_path));
+    header('Cache-Control: public, max-age=3600'); // Cache 1h pour les clients
+    header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 3600) . ' GMT');
+    
+    // Nettoyer le buffer de sortie
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+    
+    // Lire et envoyer le fichier
+    readfile($file_path);
+    exit;
+}
     
     /**
      * Vérifie si un client peut voir une commande
@@ -361,6 +444,16 @@ class NFC_Customer_Integration {
                 return true;
             }
         }
+
+        // ✅ NOUVEAU: Pour les visiteurs, vérifier aussi dans l'URL si la clé est passée
+        if (!$current_user_id) {
+            $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+            if (strpos($request_uri, 'key=' . $order->get_order_key()) !== false) {
+                return true;
+            }
+        }
+
+        error_log("NFC: Accès refusé pour commande {$order_id}, user ID: {$current_user_id}");
         
         return false;
     }
