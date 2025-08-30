@@ -638,7 +638,7 @@ function nfc_validate_configuration($config, $options = [])
     if (!$options['skip_images'] && isset($config['image']) && is_array($config['image'])) {
         // Valider image recto si présente
         if (isset($config['image']['data']) && !empty($config['image']['data'])) {
-            $image_validation = nfc_validate_base64_image($config['image']['data']);
+            $image_validation = nfc_validate_image_data($config['image']['data']);
             if (!$image_validation['valid']) {
                 return [
                     'valid' => false,
@@ -807,32 +807,55 @@ function nfc_display_cart_item_data($item_data, $cart_item)
         ];
 
         if (isset($config['user'])) {
-            $item_data[] = [
-                'key' => 'Nom sur la carte',
-                'value' => $config['user']['firstName'] . ' ' . $config['user']['lastName']
-            ];
+            $firstName = trim($config['user']['firstName'] ?? '');
+            $lastName = trim($config['user']['lastName'] ?? '');
+            
+            if (!empty($firstName) || !empty($lastName)) {
+                $fullName = trim($firstName . ' ' . $lastName);
+                $item_data[] = [
+                    'key' => 'Nom sur la carte',
+                    'value' => $fullName
+                ];
+            }
         }
 
         if (isset($config['image']) && !empty($config['image']['name'])) {
             $item_data[] = [
                 'key' => 'Image recto',
-                'value' => 'Logo: ' . $config['image']['name']
+                'value' => $config['image']['name']
             ];
         }
 
         // ✨ NOUVEAU : Afficher les informations VERSO
         if (isset($config['logoVerso']) && !empty($config['logoVerso']['name'])) {
             $item_data[] = [
-                'key' => 'Logo verso',
-                'value' => 'Logo: ' . $config['logoVerso']['name']
+                'key' => 'Image verso',
+                'value' => $config['logoVerso']['name']
             ];
         }
 
         if (isset($config['showUserInfo'])) {
-            $item_data[] = [
-                'key' => 'Informations verso',
-                'value' => $config['showUserInfo'] ? 'Affichées' : 'Masquées'
-            ];
+            $firstName = trim($config['user']['firstName'] ?? '');
+            $lastName = trim($config['user']['lastName'] ?? '');
+            
+            if ($config['showUserInfo']) {
+                if (empty($firstName) && empty($lastName)) {
+                    $item_data[] = [
+                        'key' => 'Infos verso',
+                        'value' => 'Aucune donnée'
+                    ];
+                } else {
+                    $item_data[] = [
+                        'key' => 'Infos verso',
+                        'value' => 'Affichées'
+                    ];
+                }
+            } else {
+                $item_data[] = [
+                    'key' => 'Infos verso',
+                    'value' => 'Masquées'
+                ];
+            }
         }
 
         // Screenshot thumbnail (existant)
@@ -847,6 +870,33 @@ function nfc_display_cart_item_data($item_data, $cart_item)
     }
 
     return $item_data;
+}
+
+/**
+ * ✅ MASQUER les attributs de variation WooCommerce SEULEMENT si config NFC
+ */
+add_filter('woocommerce_display_item_meta', 'nfc_hide_variation_attributes', 10, 3);
+function nfc_hide_variation_attributes($html, $item, $args) 
+{
+    // Detecter si l'item a une config NFC
+    $has_nfc_config = false;
+    
+    if (is_array($item) && isset($item['nfc_config'])) {
+        // Item du panier
+        $has_nfc_config = true;
+    } elseif (method_exists($item, 'get_meta') && $item->get_meta('_nfc_config')) {
+        // Item de commande
+        $has_nfc_config = true;
+    }
+    
+    // ✅ SEULEMENT pour les items avec config NFC
+    if ($has_nfc_config) {
+        // Masquer les attributs de variation automatiques
+        // Notre fonction nfc_display_cart_item_data s'occupera de l'affichage
+        return ''; 
+    }
+    
+    return $html; // Comportement normal pour les items sans config
 }
 
 /**

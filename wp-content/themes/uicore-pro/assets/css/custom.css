@@ -1,0 +1,12 @@
+/**
+ * Product - CSS avec loader et états
+ */
+
+.single_variation_wrap { margin-top: 1em!important; }
+.woocommerce-price-suffix { color: #1c3e8f; }
+
+/*** Panier ***/
+/* Masquer la 2ème occurrence de "Couleur" dans le même item */
+.wc-block-components-product-metadata .wc-block-components-product-details:nth-child(2), .wc-block-components-product-metadata .wc-block-components-product-details:nth-child(n+2)  {
+    display: none !important;
+}

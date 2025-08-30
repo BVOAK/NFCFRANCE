@@ -58,7 +58,7 @@ add_filter('site_transient_update_plugins', 'uicore_disable_plugin_updates');
 // WooCommerce Styles
 function woocommerce_styles()
 {
-    wp_enqueue_style('product-styles', get_template_directory_uri() . '/assets/css/product.css', array(), '1.0', 'all');
+    wp_enqueue_style('custom-styles', get_template_directory_uri() . '/assets/css/custom.css', array(), '1.0', 'all');
 }
 add_action('wp_enqueue_scripts', 'woocommerce_styles');
 

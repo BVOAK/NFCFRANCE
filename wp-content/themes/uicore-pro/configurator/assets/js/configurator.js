@@ -106,7 +106,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
 
                 // Upload logo verso
                 logoVersoArea: document.getElementById('logoVersoArea'),
-                logoVersoPlaceholder: document.getElementById('logoVersoPlaceholder'), 
+                logoVersoPlaceholder: document.getElementById('logoVersoPlaceholder'),
                 logoVersoImage: document.getElementById('logoVersoImage'),
                 logoVersoUploadZone: document.getElementById('logoVersoUploadZone'),
                 logoVersoInput: document.getElementById('logoVersoInput'),
@@ -143,56 +143,56 @@ if (typeof window.NFCConfigurator === 'undefined') {
         validateConfiguration() {
             let isValid = true;
             let errors = [];
-            
+
             // ========================================
             // SEULES VALIDATIONS OBLIGATOIRES :
             // ========================================
-            
+
             // 1. Couleur sélectionnée (essentiel pour le produit)
             if (!this.state.selectedColor) {
                 isValid = false;
                 errors.push('Veuillez choisir une couleur de carte');
             }
-            
+
             // 2. Variation WooCommerce existe (technique)
             if (!this.state.selectedVariation || !this.state.selectedVariation.id) {
                 isValid = false;
                 errors.push('Erreur technique: variation produit non trouvée');
             }
-            
+
             // ========================================
             // VALIDATIONS OPTIONNELLES (si données présentes) :
             // ========================================
-            
+
             // Si nom renseigné, vérifier qu'il est valide
             if (this.state.userInfo.firstName || this.state.userInfo.lastName) {
                 const namePattern = /^[a-zA-ZÀ-ÿ\s\-'\.]*$/; // Caractères autorisés + vide
-                
+
                 if (this.state.userInfo.firstName && !namePattern.test(this.state.userInfo.firstName)) {
                     isValid = false;
                     errors.push('Caractères non autorisés dans le prénom');
                 }
-                
+
                 if (this.state.userInfo.lastName && !namePattern.test(this.state.userInfo.lastName)) {
                     isValid = false;
                     errors.push('Caractères non autorisés dans le nom');
                 }
             }
-            
+
             // Si logo verso uploadé, vérifier cohérence
             if (this.state.logoVerso) {
                 if (!this.state.logoVerso.file || !this.state.logoVerso.name) {
                     isValid = false;
                     errors.push('Problème avec le logo verso');
                 }
-                
+
                 const scale = this.state.logoVerso.scale || 100;
                 if (scale < 10 || scale > 200) {
                     isValid = false;
                     errors.push('Taille du logo verso invalide');
                 }
             }
-            
+
             // Si image recto uploadée, vérifier cohérence  
             if (this.state.image) {
                 if (!this.state.image.data || !this.state.image.name) {
@@ -200,21 +200,21 @@ if (typeof window.NFCConfigurator === 'undefined') {
                     errors.push('Problème avec l\'image recto');
                 }
             }
-            
+
             // Mettre à jour l'état
             this.state.isValid = isValid;
-            
+
             // Debug
             if (!isValid) {
                 console.log('❌ Configuration invalide:', errors);
             } else {
                 console.log('✅ Configuration valide');
             }
-            
+
             return { isValid, errors };
         }
 
-        
+
         /**
          * Charge le QR Code SVG
          */
@@ -275,8 +275,8 @@ if (typeof window.NFCConfigurator === 'undefined') {
 
             if (this.elements.lastNameInput) {
                 this.elements.lastNameInput.addEventListener('input', (e) => {
-                     this.state.userInfo.lastName = e.target.value;
-                     this.updateUserDisplays();
+                    this.state.userInfo.lastName = e.target.value;
+                    this.updateUserDisplays();
                 });
             }
 
@@ -459,7 +459,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
 
             if (this.elements.versoCard) {
                 this.elements.versoCard.className = `card-preview verso ${color} shadow-lg`;
-                
+
                 // Mise à jour du style selon la couleur
                 if (color === 'noir') {
                     this.elements.versoCard.style.background = '#1a1a1a';
@@ -733,7 +733,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
         handleLogoVersoImageDrop(e) {
             const files = Array.from(e.dataTransfer.files);
             const file = files.find(f => f.type.startsWith('image/'));
-            
+
             if (file) {
                 this.processLogoVersoImage(file);
             }
@@ -743,65 +743,65 @@ if (typeof window.NFCConfigurator === 'undefined') {
          * Gestion de la sélection d'image pour logo verso
          */
         // Dans configurator.js, fonction handleLogoVersoImageSelect
-// AJOUTER ces lignes après le chargement réussi :
+        // AJOUTER ces lignes après le chargement réussi :
 
-handleLogoVersoImageSelect(e) {
-    const file = e.target.files[0];
-    if (file) {
-        try {
-            console.log('📷 Traitement logo verso:', file.name);
-            
-            // Créer URL temporaire
-            const imageUrl = URL.createObjectURL(file);
-            
-            // Stocker dans l'état
-            this.state.logoVerso = {
-                file: file,
-                url: imageUrl,
-                name: file.name,
-                scale: 50, // Défaut
-            };
-            
-            // Afficher l'image
-            if (this.elements.logoVersoImage) {
-                this.elements.logoVersoImage.src = imageUrl;
-                this.elements.logoVersoImage.classList.remove('d-none');
-            }
-            
-            // Masquer placeholder
-            if (this.elements.logoVersoPlaceholder) {
-                this.elements.logoVersoPlaceholder.classList.add('d-none');
-            }
-            
-            // ✅ CORRECTION 1: Mettre à jour le nom de fichier dans la zone d'upload
-            if (this.elements.logoVersoUploadZone) {
-                const uploadText = this.elements.logoVersoUploadZone.querySelector('span');
-                if (uploadText) {
-                    uploadText.textContent = file.name;
-                }
-                // Ou alternative si structure différente :
-                this.elements.logoVersoUploadZone.innerHTML = `
+        handleLogoVersoImageSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                try {
+                    console.log('📷 Traitement logo verso:', file.name);
+
+                    // Créer URL temporaire
+                    const imageUrl = URL.createObjectURL(file);
+
+                    // Stocker dans l'état
+                    this.state.logoVerso = {
+                        file: file,
+                        url: imageUrl,
+                        name: file.name,
+                        scale: 50, // Défaut
+                    };
+
+                    // Afficher l'image
+                    if (this.elements.logoVersoImage) {
+                        this.elements.logoVersoImage.src = imageUrl;
+                        this.elements.logoVersoImage.classList.remove('d-none');
+                    }
+
+                    // Masquer placeholder
+                    if (this.elements.logoVersoPlaceholder) {
+                        this.elements.logoVersoPlaceholder.classList.add('d-none');
+                    }
+
+                    // ✅ CORRECTION 1: Mettre à jour le nom de fichier dans la zone d'upload
+                    if (this.elements.logoVersoUploadZone) {
+                        const uploadText = this.elements.logoVersoUploadZone.querySelector('span');
+                        if (uploadText) {
+                            uploadText.textContent = file.name;
+                        }
+                        // Ou alternative si structure différente :
+                        this.elements.logoVersoUploadZone.innerHTML = `
                     <span class="upload-text small">${file.name}</span>
                 `;
+                    }
+
+                    // Afficher zone de contrôles (si elle existe)
+                    if (this.elements.logoVersoRemoveBtn) {
+                        this.elements.logoVersoRemoveBtn.classList.remove('d-none');
+                        this.elements.logoVersoRemoveBtn.classList.add('d-block');
+                    }
+
+                    // Mettre à jour l'aperçu
+                    this.updateLogoVersoTransform();
+
+                    console.log('✅ Logo verso chargé');
+
+                } catch (error) {
+                    console.error('❌ Erreur logo verso:', error);
+                    this.showError('Erreur lors du chargement de l\'image verso');
+                }
             }
-            
-            // Afficher zone de contrôles (si elle existe)
-            if (this.elements.logoVersoRemoveBtn) {
-                this.elements.logoVersoRemoveBtn.classList.remove('d-none');
-                this.elements.logoVersoRemoveBtn.classList.add('d-block');
-            }
-            
-            // Mettre à jour l'aperçu
-            this.updateLogoVersoTransform();
-            
-            console.log('✅ Logo verso chargé');
-            
-        } catch (error) {
-            console.error('❌ Erreur logo verso:', error);
-            this.showError('Erreur lors du chargement de l\'image verso');
         }
-    }
-}
 
 
         /**
@@ -810,10 +810,10 @@ handleLogoVersoImageSelect(e) {
         async processLogoVersoImage(file) {
             try {
                 console.log('📷 Traitement logo verso:', file.name);
-                
+
                 // Créer URL temporaire
                 const imageUrl = URL.createObjectURL(file);
-                
+
                 // Stocker dans l'état
                 this.state.logoVerso = {
                     file: file,
@@ -821,29 +821,29 @@ handleLogoVersoImageSelect(e) {
                     name: file.name,
                     scale: 50, // Défaut
                 };
-                
+
                 // Afficher l'image
                 if (this.elements.logoVersoImage) {
                     this.elements.logoVersoImage.src = imageUrl;
                     this.elements.logoVersoImage.classList.remove('d-none');
                 }
-                
+
                 // Masquer placeholder
                 if (this.elements.logoVersoPlaceholder) {
                     this.elements.logoVersoPlaceholder.classList.add('d-none');
                 }
-                
+
                 // Afficher zone de contrôles (si elle existe)
                 if (this.elements.logoVersoRemoveBtn) {
                     this.elements.logoVersoRemoveBtn.classList.remove('d-none');
                     this.elements.logoVersoRemoveBtn.classList.add('d-block');
                 }
-                
+
                 // Mettre à jour l'aperçu
                 this.updateLogoVersoTransform();
-                
+
                 console.log('✅ Logo verso chargé');
-                
+
             } catch (error) {
                 console.error('❌ Erreur logo verso:', error);
                 this.showError('Erreur lors du chargement de l\'image verso');
@@ -856,21 +856,21 @@ handleLogoVersoImageSelect(e) {
          */
         updateLogoVersoTransform() {
             if (!this.state.logoVerso || !this.elements.logoVersoImage) return;
-            
-            const scale = this.elements.logoVersoScale ? 
+
+            const scale = this.elements.logoVersoScale ?
                 this.elements.logoVersoScale.value : 100;
-            
+
             this.state.logoVerso.scale = scale;
-            
+
             const transform = `scale(${scale / 100})`;
             this.elements.logoVersoImage.style.transform = transform;
-            
+
             // ✅ CORRECTION 2: Mettre à jour l'affichage du pourcentage
             const scaleValueElement = document.getElementById('logoVersoScaleValue');
             if (scaleValueElement) {
                 scaleValueElement.textContent = scale + '%';
             }
-            
+
             console.log('🔄 Logo verso transform:', { scale, transform });
         }
 
@@ -880,40 +880,40 @@ handleLogoVersoImageSelect(e) {
          */
         removeLogoVerso() {
             console.log('🗑️ Suppression logo verso');
-            
+
             // Libérer URL temporaire
             if (this.state.logoVerso?.url) {
                 URL.revokeObjectURL(this.state.logoVerso.url);
             }
-            
+
             // Reset état
             this.state.logoVerso = null;
-            
+
             // Masquer image
             if (this.elements.logoVersoImage) {
                 this.elements.logoVersoImage.classList.add('d-none');
                 this.elements.logoVersoImage.src = '';
             }
-            
+
             // Afficher placeholder
             if (this.elements.logoVersoPlaceholder) {
                 this.elements.logoVersoPlaceholder.classList.remove('d-none');
             }
-            
+
             // Masquer bouton supprimer
             if (this.elements.logoVersoRemoveBtn) {
                 this.elements.logoVersoRemoveBtn.classList.remove('d-block');
                 this.elements.logoVersoRemoveBtn.classList.add('d-none');
             }
-            
+
             // Reset sliders
             if (this.elements.logoVersoScale) this.elements.logoVersoScale.value = 100;
-            
+
             // Reset input file
             if (this.elements.logoVersoInput) {
                 this.elements.logoVersoInput.value = '';
             }
-            
+
             console.log('✅ Logo verso supprimé');
         }
 
@@ -922,7 +922,7 @@ handleLogoVersoImageSelect(e) {
          */
         updateLogoVersoColor(color) {
             if (!this.elements.logoVersoArea) return;
-            
+
             const placeholder = this.elements.logoVersoPlaceholder;
             if (placeholder) {
                 if (color === 'noir') {
@@ -941,23 +941,23 @@ handleLogoVersoImageSelect(e) {
          */
         toggleUserInfo(show) {
             console.log('👤 Toggle user info:', show);
-            
+
             this.state.showUserInfo = show;
-            
+
             if (this.elements.userSection) {
                 if (show) {
                     // ✨ AFFICHER la section avec placeholders si vide
                     this.elements.userSection.classList.remove('hidden');
-                    
+
                     // Forcer l'affichage des placeholders si les champs sont vides
                     this.updateUserDisplays();
-                    
+
                 } else {
                     // MASQUER complètement la section
                     this.elements.userSection.classList.add('hidden');
                 }
             }
-            
+
             // Alternative pour navigateurs supportant :has()
             document.body.classList.toggle('checkbox-off', !show);
         }
@@ -968,27 +968,27 @@ handleLogoVersoImageSelect(e) {
         updateUserDisplays() {
             const { firstName, lastName } = this.state.userInfo;
             const fullName = `${firstName} ${lastName}`.trim();
-            
+
             // Mise à jour recto (inchangé)
             if (this.elements.displayName) {
                 this.elements.displayName.textContent = fullName || 'Votre nom';
             }
-            
+
             // ✨ NOUVEAU : Mise à jour verso AVEC logique checkbox
             if (this.state.showUserInfo) {
                 // Checkbox COCHÉE = Afficher avec placeholders
                 if (this.elements.contactName) {
                     this.elements.contactName.textContent = fullName || 'Votre nom';
                 }
-                
+
                 if (this.elements.userFirstName) {
                     this.elements.userFirstName.textContent = firstName || 'Prénom';
                 }
-                
+
                 if (this.elements.userLastName) {
                     this.elements.userLastName.textContent = lastName || 'Nom';
                 }
-                
+
             } else {
                 // Checkbox DÉCOCHÉE = Masquer (géré par CSS via .hidden)
                 // Les textes restent mais sont cachés visuellement
@@ -1018,7 +1018,7 @@ handleLogoVersoImageSelect(e) {
                 // GÉNÉRER LE SCREENSHOT
                 let screenshot = null;
                 let thumbnail = null;
-                
+
                 try {
                     console.log('📸 Génération du screenshot...');
                     screenshot = await this.screenshotGenerator.generateScreenshot();
@@ -1028,13 +1028,13 @@ handleLogoVersoImageSelect(e) {
                     console.warn('⚠️ Erreur screenshot (continuant sans):', screenshotError);
                     // Continuer sans screenshot plutôt que planter
                 }
-                
+
                 // Préparer les données (avec ou sans screenshot)
                 const configData = {
                     variation_id: this.state.selectedVariation.id,
                     color: this.state.selectedColor,
                     user: this.state.userInfo,
-                    image: this.state.image,
+                    image: this.state.image && this.state.image.data ? this.state.image : null,
                     logoVerso: this.state.logoVerso,
                     showUserInfo: this.state.showUserInfo,
                     timestamp: Date.now()
