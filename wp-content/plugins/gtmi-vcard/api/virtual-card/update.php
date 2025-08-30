@@ -1,7 +1,7 @@
 <?php
 function gtmi_vcard_register_rest_routes_update_virtual_card(): void
 {
-    register_rest_route(route_namespace: 'gtmi_vcard/v1', route: '/vcard/(?P<id>\d+)', args: [
+    register_rest_route( 'gtmi_vcard/v1',  '/vcard/(?P<id>\d+)',  [
         'methods' => 'POST',
         'callback' => 'gtmi_vcard_update_virtual_card',
         'permission_callback' => '__return_true',
@@ -15,7 +15,7 @@ function gtmi_vcard_register_rest_routes_update_virtual_card(): void
         ]
     ]);
 }
-add_action(hook_name: 'rest_api_init', callback: 'gtmi_vcard_register_rest_routes_update_virtual_card');
+add_action( 'rest_api_init',  'gtmi_vcard_register_rest_routes_update_virtual_card');
 
 /**
  * Create lead via API REST
@@ -25,14 +25,14 @@ add_action(hook_name: 'rest_api_init', callback: 'gtmi_vcard_register_rest_route
  */
 function gtmi_vcard_update_virtual_card(WP_REST_Request $request): WP_REST_Response
 {
-    if (!gtmi_vcard_update_vcard_permissions(order_id: $request->get_param(key: 'order'))) {
-        return gtmi_vcard_api_response(message: 'Cannot update virtual card, permission denied', status: 403);
+    if (!gtmi_vcard_update_vcard_permissions( $request->get_param( 'order'))) {
+        return gtmi_vcard_api_response( 'Cannot update virtual card, permission denied',  403);
     }
-    $id = (int) $request->get_param(key: 'id');
+    $id = (int) $request->get_param( 'id');
 
-    $virtual_card_post = get_post(post: $id);
+    $virtual_card_post = get_post( $id);
     if (!$virtual_card_post || 'virtual_card' !== $virtual_card_post->post_type) {
-        return gtmi_vcard_api_response(message: 'Virtual card not found', success: 404);
+        return gtmi_vcard_api_response( 'Virtual card not found',  404);
     }
 
     $fields = [
@@ -66,32 +66,32 @@ function gtmi_vcard_update_virtual_card(WP_REST_Request $request): WP_REST_Respo
     // Get data from request
     $data_to_update = [];
     foreach ($fields as $numeric_key => $param_name) {
-        $data_to_update[$param_name] = $request->get_param(key: $param_name);
+        $data_to_update[$param_name] = $request->get_param( $param_name);
     }
     // Update ACF fields in a loop
     foreach ($data_to_update as $field_name => $value) {
         if ($value && !empty($value)) {
-            update_field(selector: $field_name, value: $value, post_id: $id);
+            update_field( $field_name,  $value,  $id);
         }
     }
 
-    return gtmi_vcard_api_response(message: 'Virtual card updated successfully', success: true, data: get_fields(post_id: $id));
+    return gtmi_vcard_api_response( 'Virtual card updated successfully',  true,  get_fields( $id));
 
 }
 // TODO review and handle permissions
 function gtmi_vcard_update_vcard_permissions(int $order_id): bool
 {
-    $order = wc_get_order(the_order: (int) $order_id);
+    $order = wc_get_order( (int) $order_id);
     $order_user_id = $order->get_customer_id();
     $current_user = wp_get_current_user();
     // check is admin or can edit virtual card
-    return current_user_can(capability: 'edit_posts') || true;// && $order_user_id === $current_user->ID;
+    return current_user_can( 'edit_posts') || true;// && $order_user_id === $current_user->ID;
 }
 
 function gtm_vcard_update_file(WP_REST_Request $request)
 {
     $file_params = $request->get_file_params();
-    $id = (int) $request->get_param(key: 'id');
+    $id = (int) $request->get_param( 'id');
     if (
         (isset($file_params['profile_picture']) && !empty($file_params['profile_picture']))
         || (isset($file_params['cover_image']) && !empty($file_params['cover_image']))
@@ -100,8 +100,8 @@ function gtm_vcard_update_file(WP_REST_Request $request)
         $subdir = $file_params['cover_image'] ? 'cover' : 'profile';
 
         $upload_dir = wp_upload_dir();
-        $new_file_path = $upload_dir['uploads'] . '/' . $subdir . '/' . $id . '.' . pathinfo(path: $file_info['name'], flags: PATHINFO_EXTENSION);
-        return move_uploaded_file(from: $file_info['tmp_name'], to: $new_file_path);
+        $new_file_path = $upload_dir['uploads'] . '/' . $subdir . '/' . $id . '.' . pathinfo( $file_info['name'],  PATHINFO_EXTENSION);
+        return move_uploaded_file( $file_info['tmp_name'],  $new_file_path);
     }
 
 }

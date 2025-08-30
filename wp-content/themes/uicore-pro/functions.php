@@ -81,7 +81,16 @@ function bootstrap_styles()
 
 add_action('wp_enqueue_scripts', 'bootstrap_styles');
 
-
+// Ajouter FontAwesome
+function soeasy_enqueue_fontawesome() {
+    wp_enqueue_style(
+        'fontawesome', 
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css',
+        array(),
+        '7.0.0'
+    );
+}
+add_action('wp_enqueue_scripts', 'soeasy_enqueue_fontawesome');
 
 
 /**

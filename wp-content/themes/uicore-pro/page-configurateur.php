@@ -65,14 +65,15 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
     <div class="nfc-configurator-wrapper" id="nfcConfiguratorWrapper">
         <div class="container-fluid">
 
-            <div class="nfc-configurator" id="nfcConfigurator">
+            <div class="nfc-configurator vh-hero" id="nfcConfigurator">
 
                 <!-- Layout Bootstrap 50/50 -->
                 <div class="row align-items-center">
 
                     <!-- Colonne Preview (gauche) -->
                     <div class="col-lg-5 p-0">
-                        <div class="preview-column d-flex flex-column align-items-center justify-content-center h-100">
+                        <div
+                            class="preview-column d-flex flex-column align-items-center justify-content-center vh-hero">
 
                             <!-- Header preview -->
                             <div class="preview-header mb-4 text-center">
@@ -115,6 +116,19 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
                                 <div class="card-preview verso blanc shadow-lg" data-side="verso">
                                     <div
                                         class="card-content w-100 h-100 d-flex align-items-center justify-content-between p-5">
+
+                                        <!-- NOUVEAU : Zone logo verso (en haut à gauche) -->
+                                        <div class="logo-verso-area position-absolute" id="logoVersoArea"
+                                            style="top: 15px; left: 15px; width: 50px; height: 50px; z-index: 10;">
+                                            <div class="logo-verso-placeholder text-center d-flex align-items-center justify-content-center w-100 h-100"
+                                                id="logoVersoPlaceholder"
+                                                style="border: 2px dashed rgba(0,0,0,0.2); border-radius: 6px; opacity: 0.4;">
+                                                <span style="font-size: 20px;">🏢</span>
+                                            </div>
+                                            <img id="logoVersoImage" class="d-none w-100 h-100"
+                                                style="object-fit: contain; border-radius: 4px;" alt="Logo verso">
+                                        </div>
+
                                         <!-- Nom à gauche -->
                                         <div class="user-section flex-grow-1">
                                             <div class="user-names d-flex flex-column gap-1">
@@ -129,7 +143,8 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
 
                                         <!-- QR Code à droite -->
                                         <div class="qr-section d-flex flex-column align-items-center gap-2 ms-4">
-                                            <div class="qr-code d-flex align-items-center justify-content-center rounded" id="qrCode">
+                                            <div class="qr-code d-flex align-items-center justify-content-center rounded"
+                                                id="qrCode">
                                                 <div class="qr-loading text-center"
                                                     style="font-size: 12px; color: #666;">
                                                     <?php echo esc_html__('Chargement QR...', 'nfc-configurator'); ?>
@@ -145,18 +160,18 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
                     </div>
 
                     <!-- Colonne Configuration (droite) -->
-                    <div class="col-lg-7 h-fit config-column">
-                        <div class="p-5">
+                    <div class="col-lg-7 config-column vh-hero overflow-y-auto">
+                        <div class="p-5 w-100">
 
                             <!-- Header Bootstrap -->
-                            <h1 class="display-5 fw-bold text-dark mb-5">
+                            <h1 class="display-5 fw-bold text-dark mb-5 mt-0">
                                 <?php echo esc_html__('Personnaliser votre carte :', 'nfc-configurator'); ?>
                             </h1>
 
                             <div class="config-form col-md-6">
 
                                 <!-- Sélection support -->
-                                <div class="config-section mb-4 pb-3 border-bottom">
+                                <div class="config-section mb-4 pb-4 border-bottom">
                                     <h3 class="h5 fw-semibold text-dark mb-3">
                                         <?php echo esc_html__('Choisissez votre support :', 'nfc-configurator'); ?>
                                     </h3>
@@ -176,146 +191,240 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
                                     </div>
                                 </div>
 
-                                <!-- Section Recto -->
-                                <div class="config-section mb-4 pb-3 border-bottom">
-                                    <h3 class="h5 fw-semibold text-dark mb-3">
-                                        <?php echo esc_html__('Recto :', 'nfc-configurator'); ?>
-                                    </h3>
+                                <div class="accordion" id="accordionRV">
 
-                                    <!-- Upload -->
-                                    <div class="mb-3">
-                                        <label class="form-label fw-medium small">
-                                            <?php echo esc_html__('1. Insérer une image ou un logo :', 'nfc-configurator'); ?>
-                                        </label>
-
-                                        <div class="d-flex gap-3 align-items-center">
-                                            <div class="upload-zone flex-grow-1 bg-light border p-3 text-center text-muted cursor-pointer"
-                                                id="imageUploadZone">
-                                                <span class="upload-text small">
-                                                    <?php echo esc_html__('Sélectionner un fichier...', 'nfc-configurator'); ?>
-                                                </span>
-                                                <input type="file" id="imageInput"
-                                                    accept="image/jpeg,image/png,image/svg+xml" class="d-none">
-                                            </div>
-                                            <!-- Bouton UICore/Elementor -->
-                                            <button type="button"
-                                                class="upload-button elementor-button elementor-button-link elementor-size-sm elementor-animation-flip"
-                                                onclick="document.getElementById('imageInput').click()">
-                                                <span class="elementor-button-content-wrapper">
-                                                    <span class="ui-btn-anim-wrapp">
-                                                        <span class="elementor-button-text">
-                                                            <?php echo esc_html__('Ajouter', 'nfc-configurator'); ?>
-                                                        </span>
-                                                        <span class="elementor-button-text">
-                                                            <?php echo esc_html__('Ajouter', 'nfc-configurator'); ?>
-                                                        </span>
-                                                    </span>
-                                                </span>
+                                    <!-- Section Recto -->
+                                    <div class="accordion-item" id="sectionRecto">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapseRecto" aria-expanded="true"
+                                                aria-controls="collapseRecto">
+                                                <h3 class="h5 fw-semibold text-dark m-0">
+                                                    <?php echo esc_html__('Recto :', 'nfc-configurator'); ?>
+                                                </h3>
                                             </button>
+                                        </h2>
+                                        <div id="collapseRecto" class="accordion-collapse collapse show"
+                                            data-bs-parent="#accordionRV">
+                                            <div class="accordion-body p-4">
+
+                                                <!-- Upload -->
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-medium small">
+                                                        <?php echo esc_html__('1. Insérer une image ou un logo :', 'nfc-configurator'); ?>
+                                                    </label>
+
+                                                    <div class="d-flex gap-3 align-items-center">
+                                                        <div class="upload-zone flex-grow-1 bg-light border p-2 text-center text-muted cursor-pointer"
+                                                            id="imageUploadZone">
+                                                            <span class="upload-text small">
+                                                                <?php echo esc_html__('Sélectionner un fichier...', 'nfc-configurator'); ?>
+                                                            </span>
+                                                            <input type="file" id="imageInput"
+                                                                accept="image/jpeg,image/png,image/svg+xml"
+                                                                class="d-none">
+                                                        </div>
+                                                        <button type="button"
+                                                            class="btn btn-outline-danger btn-sm float-end d-none remove-image-btn"
+                                                            id="removeImageBtn">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                        <!-- Bouton UICore/Elementor -->
+                                                        <button type="button"
+                                                            class="upload-button elementor-button elementor-button-link elementor-size-sm elementor-animation-flip p-3 px-4"
+                                                            onclick="document.getElementById('imageInput').click()">
+                                                            <span class="elementor-button-content-wrapper">
+                                                                <span class="ui-btn-anim-wrapp">
+                                                                    <span class="elementor-button-text">
+                                                                        <?php echo esc_html__('Ajouter', 'nfc-configurator'); ?>
+                                                                    </span>
+                                                                    <span class="elementor-button-text">
+                                                                        <?php echo esc_html__('Ajouter', 'nfc-configurator'); ?>
+                                                                    </span>
+                                                                </span>
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Contrôles image -->
+                                                <div id="imageAdjustStep" class="mt-3">
+                                                    <label class="form-label fw-medium small">
+                                                        <?php echo esc_html__('2. Ajuster l\'image ou le logo', 'nfc-configurator'); ?>
+                                                    </label>
+
+                                                    <div class="image-controls bg-light rounded border"
+                                                        id="imageControls">
+
+                                                        <!-- Contrôle taille -->
+                                                        <div class="row align-items-center mb-3">
+                                                            <div class="col-3">
+                                                                <label for="imageScale"
+                                                                    class="form-label small fw-medium mb-0">
+                                                                    <?php echo esc_html__('Taille :', 'nfc-configurator'); ?>
+                                                                </label>
+                                                            </div>
+                                                            <div class="col-7">
+                                                                <input type="range" id="imageScale" min="10" max="200"
+                                                                    value="25" class="form-range">
+                                                            </div>
+                                                            <div class="col-2 text-end">
+                                                                <span
+                                                                    class="scale-value small fw-semibold text-primary">25%</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Position X -->
+                                                        <div class="row align-items-center mb-3">
+                                                            <div class="col-3">
+                                                                <label for="imageX"
+                                                                    class="form-label small fw-medium mb-0">
+                                                                    <?php echo esc_html__('Position X :', 'nfc-configurator'); ?>
+                                                                </label>
+                                                            </div>
+                                                            <div class="col-7">
+                                                                <input type="range" id="imageX" min="-50" max="50"
+                                                                    value="0" class="form-range">
+                                                            </div>
+                                                            <div class="col-2 text-end">
+                                                                <span
+                                                                    class="position-value position-value-x small fw-semibold text-primary">0</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Position Y -->
+                                                        <div class="row align-items-center mb-3">
+                                                            <div class="col-3">
+                                                                <label for="imageY"
+                                                                    class="form-label small fw-medium mb-0">
+                                                                    <?php echo esc_html__('Position Y :', 'nfc-configurator'); ?>
+                                                                </label>
+                                                            </div>
+                                                            <div class="col-7">
+                                                                <input type="range" id="imageY" min="-50" max="50"
+                                                                    value="0" class="form-range">
+                                                            </div>
+                                                            <div class="col-2 text-end">
+                                                                <span
+                                                                    class="position-value position-value-y small fw-semibold text-primary">0</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <!-- Contrôles image -->
-                                    <div id="imageAdjustStep" class="mt-4">
-                                        <label class="form-label fw-medium small">
-                                            <?php echo esc_html__('2. Ajuster l\'image ou le logo', 'nfc-configurator'); ?>
-                                        </label>
-
-                                        <div class="image-controls bg-light rounded p-3 border" id="imageControls">
-
-                                            <!-- Contrôle taille -->
-                                            <div class="row align-items-center mb-3">
-                                                <div class="col-3">
-                                                    <label for="imageScale" class="form-label small fw-medium mb-0">
-                                                        <?php echo esc_html__('Taille :', 'nfc-configurator'); ?>
-                                                    </label>
-                                                </div>
-                                                <div class="col-7">
-                                                    <input type="range" id="imageScale" min="10" max="200" value="25"
-                                                        class="form-range">
-                                                </div>
-                                                <div class="col-2 text-end">
-                                                    <span class="scale-value small fw-semibold text-primary">25%</span>
-                                                </div>
-                                            </div>
-
-                                            <!-- Position X -->
-                                            <div class="row align-items-center mb-3">
-                                                <div class="col-3">
-                                                    <label for="imageX" class="form-label small fw-medium mb-0">
-                                                        <?php echo esc_html__('Position X :', 'nfc-configurator'); ?>
-                                                    </label>
-                                                </div>
-                                                <div class="col-7">
-                                                    <input type="range" id="imageX" min="-50" max="50" value="0"
-                                                        class="form-range">
-                                                </div>
-                                                <div class="col-2 text-end">
-                                                    <span
-                                                        class="position-value position-value-x small fw-semibold text-primary">0</span>
-                                                </div>
-                                            </div>
-
-                                            <!-- Position Y -->
-                                            <div class="row align-items-center mb-3">
-                                                <div class="col-3">
-                                                    <label for="imageY" class="form-label small fw-medium mb-0">
-                                                        <?php echo esc_html__('Position Y :', 'nfc-configurator'); ?>
-                                                    </label>
-                                                </div>
-                                                <div class="col-7">
-                                                    <input type="range" id="imageY" min="-50" max="50" value="0"
-                                                        class="form-range">
-                                                </div>
-                                                <div class="col-2 text-end">
-                                                    <span
-                                                        class="position-value position-value-y small fw-semibold text-primary">0</span>
-                                                </div>
-                                            </div>
-
-                                            <!-- Bouton supprimer UICore/Elementor -->
-                                            <button type="button"
-                                                class="remove-image-btn elementor-button elementor-button-danger elementor-size-sm w-100 mt-2 d-none elementor-animation-flip" id="removeImageBtn">
-                                                <span class="elementor-button-content-wrapper">
-                                                    <span class="ui-btn-anim-wrapp">
-                                                        <span class="elementor-button-text">
-                                                            <?php echo esc_html__('Supprimer l\'image', 'nfc-configurator'); ?>
-                                                        </span>
-                                                        <span class="elementor-button-text">
-                                                            <?php echo esc_html__('Supprimer l\'image', 'nfc-configurator'); ?>
-                                                        </span>
-                                                    </span>
-                                                </span>
+                                    <!-- Section Verso -->
+                                    <div class="accordion-item" id="sectionVerso">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVerso" aria-expanded="false" aria-controls="collapseVerso">
+                                                <h3 class="h5 fw-semibold text-dark m-0">
+                                                    <?php echo esc_html__('Verso :', 'nfc-configurator'); ?>
+                                                </h3>
                                             </button>
+                                        </h2>
+                                        <div id="collapseVerso" class="accordion-collapse collapse"
+                                            data-bs-parent="#accordionRV">
+                                            <div class="accordion-body p-4">
+
+                                                <div class="mb-3 config-step">
+                                                    <label class="form-label fw-medium small">3. Insérer un logo
+                                                        :</label>
+
+                                                    <div class="d-flex gap-3 align-items-center">
+                                                        <div class="upload-zone flex-grow-1 bg-light border p-2 text-center text-muted cursor-pointer"
+                                                            id="imageUploadZone">
+                                                            <span class="upload-text small">Sélectionner un
+                                                                logo...</span>
+                                                            <input type="file" id="imageInput"
+                                                                accept="image/jpeg,image/png,image/svg+xml"
+                                                                class="d-none">
+                                                        </div>
+                                                        <button type="button"
+                                                            class="btn btn-outline-danger btn-sm float-end d-none remove-image-btn"
+                                                            id="removeLogoVersoBtn">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                        <!-- Bouton UICore/Elementor -->
+                                                        <button type="button"
+                                                            class="upload-button elementor-button elementor-button-link elementor-size-sm elementor-animation-flip p-3 px-4"
+                                                            onclick="document.getElementById('logoVersoInput').click()">
+                                                            <span class="elementor-button-content-wrapper">
+                                                                <span class="ui-btn-anim-wrapp">
+                                                                    <span class="elementor-button-text">
+                                                                        Ajouter </span>
+                                                                    <span class="elementor-button-text">
+                                                                        Ajouter </span>
+                                                                </span>
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Contrôles logo verso (masqués par défaut) -->
+                                                <div id="imageAdjustStepVerso" class="mt-3">
+                                                    <label class="form-label fw-medium small">4. Ajuster le logo</label>
+                                                    <div id="logoVersoControls"
+                                                        class="image-controls bg-light rounded border">
+
+                                                        <!-- Taille logo verso -->
+                                                        <div class="row align-items-center mb-3">
+                                                            <div class="col-3">
+                                                                <label for="logoVersoScale"
+                                                                    class="form-label small fw-medium mb-0">Taille
+                                                                    :</label>
+                                                            </div>
+                                                            <div class="col-7">
+                                                                <input type="range" id="logoVersoScale" min="50"
+                                                                    max="150" value="100" class="form-range">
+                                                            </div>
+                                                            <div class="col-2 text-end">
+                                                                <span id="logoVersoScaleValue"
+                                                                    class="scale-value small fw-semibold text-primary">100%</span>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <hr class="mt-4 mb-4" />
+
+                                                <div class="mb-3 config-step mt-3">
+
+                                                    <label class="form-label fw-medium small w-100">5. Renseigner vos
+                                                        informations (optionnel)
+                                                        <input type="checkbox" id="checkboxInformations" checked="" class="float-end checkbox-informations">
+                                                    </label>    
+
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <input type="text" id="lastName"
+                                                                class="form-control rounded-pill bg-light p-2 px-3"
+                                                                placeholder="<?php echo esc_attr__('Nom', 'nfc-configurator'); ?>"
+                                                                required>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <input type="text" id="firstName"
+                                                                class="form-control rounded-pill bg-light p-2 px-3"
+                                                                placeholder="<?php echo esc_attr__('Prénom', 'nfc-configurator'); ?>"
+                                                                required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Section Verso -->
-                                <div class="config-section mb-4 pb-3 border-bottom">
-                                    <h3 class="h5 fw-semibold text-dark mb-3">
-                                        <?php echo esc_html__('Verso :', 'nfc-configurator'); ?>
-                                    </h3>
-
-                                    <div class="row g-3">
-                                        <div class="col-6">
-                                            <input type="text" id="lastName" class="form-control rounded-pill bg-light p-3"
-                                                placeholder="<?php echo esc_attr__('Nom', 'nfc-configurator'); ?>"
-                                                required>
-                                        </div>
-                                        <div class="col-6">
-                                            <input type="text" id="firstName" class="form-control rounded-pill bg-light p-3"
-                                                placeholder="<?php echo esc_attr__('Prénom', 'nfc-configurator'); ?>"
-                                                required>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <!-- Bouton Ajout Panier UICore/Elementor -->
-                                <div class="config-section">
+                                <div class="config-section mt-4">
                                     <button type="button"
                                         class="add-to-cart-btn elementor-button elementor-button-link w-100 elementor-animation-flip"
-                                        id="addToCartBtn" disabled>
+                                        id="addToCartBtn">
                                         <span class="elementor-button-content-wrapper">
                                             <span class="ui-btn-anim-wrapp">
                                                 <span class="elementor-button-text">
