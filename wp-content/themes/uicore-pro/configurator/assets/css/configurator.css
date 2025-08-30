@@ -460,8 +460,8 @@
 
 .user-firstname,
 .user-lastname {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 400;
   line-height: 1.1;
 }
 
@@ -757,6 +757,12 @@ html {
 /* Zone logo verso dans l'aperçu carte */
 .logo-verso-area {
     transition: all 0.3s ease;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 150px;
+    height: 50px;
+    z-index: 10;
 }
 
 .logo-verso-placeholder {
@@ -773,7 +779,6 @@ html {
 /* Image logo verso */
 #logoVersoImage {
     transition: transform 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* États logo verso */
@@ -795,6 +800,7 @@ html {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 1;
     transform: translateX(0);
+    margin-top: 20px;
 }
 
 /* Quand checkbox décochée, masquer les infos utilisateur */

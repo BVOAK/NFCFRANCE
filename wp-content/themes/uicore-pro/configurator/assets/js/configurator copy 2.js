@@ -104,15 +104,15 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 imageY: document.getElementById('imageY'),
                 removeImageBtn: document.getElementById('removeImageBtn'),
 
-                // Upload logo verso
+                // Logo verso
                 logoVersoArea: document.getElementById('logoVersoArea'),
                 logoVersoPlaceholder: document.getElementById('logoVersoPlaceholder'), 
                 logoVersoImage: document.getElementById('logoVersoImage'),
                 logoVersoUploadZone: document.getElementById('logoVersoUploadZone'),
                 logoVersoInput: document.getElementById('logoVersoInput'),
-
-                // Contrôles logo verso
                 logoVersoScale: document.getElementById('logoVersoScale'),
+                logoVersoX: document.getElementById('logoVersoX'),
+                logoVersoY: document.getElementById('logoVersoY'),
                 logoVersoRemoveBtn: document.getElementById('removeLogoVersoBtn'),
 
                 // QR Code
@@ -121,11 +121,6 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 // Checkbox informations utilisateur
                 checkboxInformations: document.getElementById('checkboxInformations'),
                 userSection: document.querySelector('.card-preview.verso .user-section'),
-
-                // Affichage noms verso
-                contactName: document.querySelector('.contact-name') || document.getElementById('contactName'),
-                userFirstName: document.querySelector('.user-firstname'),
-                userLastName: document.querySelector('.user-lastname'),
 
                 // Bouton ajout panier
                 addToCartBtn: document.getElementById('addToCartBtn'),
@@ -193,15 +188,13 @@ if (typeof window.NFCConfigurator === 'undefined') {
             // Informations utilisateur
             if (this.elements.firstNameInput) {
                 this.elements.firstNameInput.addEventListener('input', (e) => {
-                    this.state.userInfo.firstName = e.target.value;
-                    this.updateUserDisplays();
+                    this.updateUserInfo('firstName', e.target.value);
                 });
             }
 
             if (this.elements.lastNameInput) {
                 this.elements.lastNameInput.addEventListener('input', (e) => {
-                     this.state.userInfo.lastName = e.target.value;
-                     this.updateUserDisplays();
+                    this.updateUserInfo('lastName', e.target.value);
                 });
             }
 
@@ -299,6 +292,20 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 });
             }
 
+            if (this.elements.logoVersoX) {
+                this.elements.logoVersoX.addEventListener('input', (e) => {
+                    console.log('🎚️ Slider X logo verso:', e.target.value);
+                    this.updateLogoVersoTransform();
+                });
+            }
+
+            if (this.elements.logoVersoY) {
+                this.elements.logoVersoY.addEventListener('input', (e) => {
+                    console.log('🎚️ Slider Y logo verso:', e.target.value);
+                    this.updateLogoVersoTransform();
+                });
+            }
+
             if (this.elements.logoVersoRemoveBtn) {
                 this.elements.logoVersoRemoveBtn.addEventListener('click', () => {
                     this.removeLogoVerso();
@@ -345,8 +352,6 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 this.elements.checkboxInformations.checked = true;
                 this.state.showUserInfo = true;
             }
-
-            this.updateUserDisplays();
         }
 
         /**
@@ -395,7 +400,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 }
             }
 
-            this.updateLogoVersoColor(color);
+            console.log(`🎯 Visuels cartes mis à jour: ${color}`);
         }
 
         /**
@@ -691,6 +696,8 @@ if (typeof window.NFCConfigurator === 'undefined') {
                     url: imageUrl,
                     name: file.name,
                     scale: 50, // Défaut
+                    x: 0,
+                    y: 0
                 };
                 
                 // Afficher l'image
@@ -728,14 +735,21 @@ if (typeof window.NFCConfigurator === 'undefined') {
         updateLogoVersoTransform() {
             if (!this.state.logoVerso || !this.elements.logoVersoImage) return;
             
-            const scale = this.elements.logoVersoScale ? this.elements.logoVersoScale.value : 100;
+            // Récupérer valeurs sliders
+            const scale = this.elements.logoVersoScale ? this.elements.logoVersoScale.value : 50;
+            const x = this.elements.logoVersoX ? this.elements.logoVersoX.value : 0;
+            const y = this.elements.logoVersoY ? this.elements.logoVersoY.value : 0;
             
+            // Mettre à jour l'état
             this.state.logoVerso.scale = scale;
+            this.state.logoVerso.x = x;
+            this.state.logoVerso.y = y;
             
-            const transform = `scale(${scale / 100})`;
+            // Appliquer la transformation
+            const transform = `translate(-50%, -50%) translate(${x}px, ${y}px) scale(${scale / 100})`;
             this.elements.logoVersoImage.style.transform = transform;
             
-            console.log('🔄 Logo verso transform:', { scale });
+            console.log('🔄 Logo verso transform:', { scale, x, y });
         }
 
 
@@ -771,7 +785,9 @@ if (typeof window.NFCConfigurator === 'undefined') {
             }
             
             // Reset sliders
-            if (this.elements.logoVersoScale) this.elements.logoVersoScale.value = 100;
+            if (this.elements.logoVersoScale) this.elements.logoVersoScale.value = 50;
+            if (this.elements.logoVersoX) this.elements.logoVersoX.value = 0;
+            if (this.elements.logoVersoY) this.elements.logoVersoY.value = 0;
             
             // Reset input file
             if (this.elements.logoVersoInput) {
@@ -779,24 +795,6 @@ if (typeof window.NFCConfigurator === 'undefined') {
             }
             
             console.log('✅ Logo verso supprimé');
-        }
-
-        /**
-         * ✨ NOUVELLE : Met à jour la couleur du logo verso selon la carte
-         */
-        updateLogoVersoColor(color) {
-            if (!this.elements.logoVersoArea) return;
-            
-            const placeholder = this.elements.logoVersoPlaceholder;
-            if (placeholder) {
-                if (color === 'noir') {
-                    placeholder.style.borderColor = 'rgba(255,255,255,0.3)';
-                    placeholder.style.background = 'rgba(0, 0, 0, 0.1)';
-                } else {
-                    placeholder.style.borderColor = 'rgba(0,0,0,0.125)';
-                    placeholder.style.background = 'rgba(255, 255, 255, 0.1)';
-                }
-            }
         }
 
 
@@ -808,16 +806,11 @@ if (typeof window.NFCConfigurator === 'undefined') {
             
             this.state.showUserInfo = show;
             
+            // Gérer l'affichage via classes CSS
             if (this.elements.userSection) {
                 if (show) {
-                    // ✨ AFFICHER la section avec placeholders si vide
                     this.elements.userSection.classList.remove('hidden');
-                    
-                    // Forcer l'affichage des placeholders si les champs sont vides
-                    this.updateUserDisplays();
-                    
                 } else {
-                    // MASQUER complètement la section
                     this.elements.userSection.classList.add('hidden');
                 }
             }
@@ -826,38 +819,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
             document.body.classList.toggle('checkbox-off', !show);
         }
 
-        /**
-         * ✨ NOUVELLE : Met à jour tous les affichages utilisateur (recto + verso)
-         */
-        updateUserDisplays() {
-            const { firstName, lastName } = this.state.userInfo;
-            const fullName = `${firstName} ${lastName}`.trim();
-            
-            // Mise à jour recto (inchangé)
-            if (this.elements.displayName) {
-                this.elements.displayName.textContent = fullName || 'Votre nom';
-            }
-            
-            // ✨ NOUVEAU : Mise à jour verso AVEC logique checkbox
-            if (this.state.showUserInfo) {
-                // Checkbox COCHÉE = Afficher avec placeholders
-                if (this.elements.contactName) {
-                    this.elements.contactName.textContent = fullName || 'Votre nom';
-                }
-                
-                if (this.elements.userFirstName) {
-                    this.elements.userFirstName.textContent = firstName || 'Prénom';
-                }
-                
-                if (this.elements.userLastName) {
-                    this.elements.userLastName.textContent = lastName || 'Nom';
-                }
-                
-            } else {
-                // Checkbox DÉCOCHÉE = Masquer (géré par CSS via .hidden)
-                // Les textes restent mais sont cachés visuellement
-            }
-        }
+
 
 
         /**
@@ -886,8 +848,6 @@ if (typeof window.NFCConfigurator === 'undefined') {
                     color: this.state.selectedColor,
                     user: this.state.userInfo,
                     image: this.state.image,
-                    logoVerso: this.state.logoVerso,
-                    showUserInfo: this.state.showUserInfo,
                     screenshot: {
                         full: screenshot,
                         thumbnail: thumbnail,

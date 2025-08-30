@@ -118,8 +118,7 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
                                         class="card-content w-100 h-100 d-flex align-items-center justify-content-between p-5">
 
                                         <!-- NOUVEAU : Zone logo verso (en haut à gauche) -->
-                                        <div class="logo-verso-area position-absolute" id="logoVersoArea"
-                                            style="top: 15px; left: 15px; width: 50px; height: 50px; z-index: 10;">
+                                        <div class="logo-verso-area position-absolute" id="logoVersoArea">
                                             <div class="logo-verso-placeholder text-center d-flex align-items-center justify-content-center w-100 h-100"
                                                 id="logoVersoPlaceholder"
                                                 style="border: 2px dashed rgba(0,0,0,0.2); border-radius: 6px; opacity: 0.4;">
