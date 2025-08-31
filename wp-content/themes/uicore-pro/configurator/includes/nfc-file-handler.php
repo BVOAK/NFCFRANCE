@@ -272,20 +272,6 @@ class NFC_File_Handler
 
         error_log("NFC DEBUG: Données image récupérées, génération du fichier...");
     
-
-        // Récupérer les données image
-        $image_data = $item->get_meta($meta_key);
-        if (!$image_data) {
-            // ✅ NOUVEAU: Fallback vers la config complète
-            $config_data = $item->get_meta('_nfc_config_complete');
-            if ($config_data) {
-                $config = json_decode($config_data, true);
-                if (isset($config['image'])) {
-                    $image_data = $config['image'];
-                }
-            }
-        }
-
         if (!$image_data) {
             throw new Exception("Aucun logo {$type} trouvé pour cet article");
         }
