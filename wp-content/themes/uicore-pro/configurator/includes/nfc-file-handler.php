@@ -29,7 +29,6 @@ class NFC_File_Handler
         // Routes de téléchargement
         add_action('wp_ajax_nfc_download_logo', [$this, 'download_logo']);
         add_action('wp_ajax_nfc_download_screenshot', [$this, 'download_screenshot']);
-        add_action('wp_ajax_nfc_view_screenshot', [$this, 'view_screenshot']);
 
         // Pas d'accès public (admin seulement)
 
@@ -121,13 +120,6 @@ class NFC_File_Handler
         if (!$order_id || !$item_id) {
             wp_die('Paramètres manquants', 'Erreur', ['response' => 400]);
         }
-
-        /* try {
-            $this->serve_screenshot_file($order_id, $item_id, $type);
-        } catch (Exception $e) {
-            error_log('NFC: Erreur download screenshot: ' . $e->getMessage());
-            wp_die('Erreur lors du téléchargement: ' . $e->getMessage(), 'Erreur', ['response' => 500]);
-        } */
     }
 
     /**
@@ -155,13 +147,6 @@ class NFC_File_Handler
         if (!$order_id || !$item_id) {
             wp_die('Paramètres manquants', 'Erreur', ['response' => 400]);
         }
-
-       /*  try {
-            $this->display_screenshot_file($order_id, $item_id, $type);
-        } catch (Exception $e) {
-            error_log('NFC: Erreur view screenshot: ' . $e->getMessage());
-            wp_die('Erreur lors de l\'affichage: ' . $e->getMessage(), 'Erreur', ['response' => 500]);
-        } */
     }
 
     /**
@@ -454,39 +439,6 @@ class NFC_File_Handler
                 'type' => 'verso',
                 'nonce' => $nonce_download
             ], $admin_ajax_url),
-
-            'screenshot_download' => add_query_arg([
-                'action' => 'nfc_download_screenshot',
-                'order_id' => $order_id,
-                'item_id' => $item_id,
-                'type' => 'full',
-                'nonce' => $nonce_download
-            ], $admin_ajax_url),
-
-            // ✅ NOUVEAU: Screenshot thumb séparé
-            'screenshot_thumb_download' => add_query_arg([
-                'action' => 'nfc_download_screenshot',
-                'order_id' => $order_id,
-                'item_id' => $item_id,
-                'type' => 'thumb',
-                'nonce' => $nonce_download
-            ], $admin_ajax_url),
-
-            'screenshot_view' => add_query_arg([
-                'action' => 'nfc_view_screenshot',
-                'order_id' => $order_id,
-                'item_id' => $item_id,
-                'type' => 'thumb',
-                'nonce' => $nonce_view
-            ], $admin_ajax_url),
-
-            'screenshot_view_full' => add_query_arg([
-                'action' => 'nfc_view_screenshot',
-                'order_id' => $order_id,
-                'item_id' => $item_id,
-                'type' => 'full',
-                'nonce' => $nonce_view
-            ], $admin_ajax_url)
         ];
     }
 

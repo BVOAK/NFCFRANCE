@@ -32,6 +32,9 @@ class NFC_Customer_Integration
         // Scripts et styles front-end
         add_action('wp_enqueue_scripts', [$this, 'enqueue_customer_assets']);
 
+        add_action('wp_ajax_nfc_customer_screenshot', [$this, 'serve_customer_screenshot']);
+        add_action('wp_ajax_nopriv_nfc_customer_screenshot', [$this, 'serve_customer_screenshot']);
+
         error_log('NFC: Customer Integration initialisé');
     }
 
@@ -78,6 +81,40 @@ class NFC_Customer_Integration
             echo '</div>';
         } else {
             echo '<span class="nfc-custom-badge">🎨 Personnalisé</span>';
+        }
+    }
+
+    /**
+     * Sert les screenshots aux clients autorisés
+     */
+    public function serve_customer_screenshot()
+    {
+        $order_id = intval($_GET['order_id'] ?? 0);
+        $item_id = intval($_GET['item_id'] ?? 0);
+        $type = sanitize_text_field($_GET['type'] ?? 'thumb');
+        $nonce = sanitize_text_field($_GET['nonce'] ?? '');
+
+        // Vérifier le nonce
+        if (!wp_verify_nonce($nonce, "nfc_customer_screenshot_{$order_id}_{$item_id}")) {
+            wp_die('Accès non autorisé', 'Erreur', ['response' => 403]);
+        }
+
+        // Vérifier les permissions
+        if (!$this->can_customer_view_order($order_id)) {
+            wp_die('Accès refusé', 'Erreur', ['response' => 403]);
+        }
+
+        try {
+            // Utiliser le File Handler pour servir le fichier
+            if (class_exists('NFC_File_Handler')) {
+                $file_handler = new NFC_File_Handler();
+                $file_handler->display_customer_screenshot($order_id, $item_id, $type);
+            } else {
+                wp_die('Service non disponible', 'Erreur', ['response' => 500]);
+            }
+        } catch (Exception $e) {
+            error_log('NFC: Erreur screenshot client: ' . $e->getMessage());
+            wp_die('Screenshot non disponible', 'Erreur', ['response' => 404]);
         }
     }
 
