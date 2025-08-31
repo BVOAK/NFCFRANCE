@@ -68,17 +68,12 @@ class NFC_WooCommerce_Integration
      */
     public function modify_cart_item_thumbnail($thumbnail, $cart_item)
     {
-        if (isset($cart_item['nfc_config'])) {
-            // Si un screenshot thumbnail existe, l'utiliser
-            if (isset($cart_item['nfc_config']['screenshot']['thumbnail'])) {
-                $screenshot_url = $cart_item['nfc_config']['screenshot']['thumbnail'];
-                $thumbnail = '<img src="' . esc_attr($screenshot_url) . '" alt="Aperçu personnalisé" style="width: 64px; height: auto; border-radius: 4px;">';
-            } elseif (isset($cart_item['nfc_config']['logoVerso']['url'])) {
-                $logo_url = $cart_item['nfc_config']['logoVerso']['url'];
-                $thumbnail = '<img src="' . esc_attr($logo_url) . '" 
-                            alt="Logo verso carte NFC" 
-                            style="width: 100%; height: auto; border-radius: 4px; border: 1px solid #ddd;">';
-            }
+        if (isset($cart_item['nfc_config']['screenshot_base64_data']['thumbnail'])) {
+            $screenshot_url = $cart_item['nfc_config']['screenshot_base64_data']['thumbnail'];
+            $thumbnail = '<img src="' . esc_attr($screenshot_url) . '" 
+                alt="Configuration personnalisée" 
+                class="nfc-screenshot" 
+                style="max-width:64px;height:auto;">';
         }
         return $thumbnail;
     }

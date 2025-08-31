@@ -122,12 +122,12 @@ class NFC_File_Handler
             wp_die('Paramètres manquants', 'Erreur', ['response' => 400]);
         }
 
-        /* try {
+        try {
             $this->serve_screenshot_file($order_id, $item_id, $type);
         } catch (Exception $e) {
             error_log('NFC: Erreur download screenshot: ' . $e->getMessage());
             wp_die('Erreur lors du téléchargement: ' . $e->getMessage(), 'Erreur', ['response' => 500]);
-        } */
+        }
     }
 
     /**
@@ -156,12 +156,12 @@ class NFC_File_Handler
             wp_die('Paramètres manquants', 'Erreur', ['response' => 400]);
         }
 
-       /*  try {
+        try {
             $this->display_screenshot_file($order_id, $item_id, $type);
         } catch (Exception $e) {
             error_log('NFC: Erreur view screenshot: ' . $e->getMessage());
             wp_die('Erreur lors de l\'affichage: ' . $e->getMessage(), 'Erreur', ['response' => 500]);
-        } */
+        }
     }
 
     /**
@@ -295,6 +295,415 @@ class NFC_File_Handler
         $download_filename = "commande-{$order_id}-{$type}-{$filename}";
         $this->serve_file($file_path, $download_filename, 'logo');
     }
+
+    /**
+     * Sert le fichier screenshot
+     */
+private function serve_screenshot_file($order_id, $item_id, $type)
+{
+    error_log("NFC DEBUG: serve_screenshot_file - order:{$order_id}, item:{$item_id}, type:{$type}");
+    
+    $order = wc_get_order($order_id);
+    if (!$order) {
+        throw new Exception('Commande introuvable');
+    }
+
+    $item = $order->get_item($item_id);
+    if (!$item) {
+        throw new Exception('Article introuvable');
+    }
+
+    // ✅ DEBUG COMPLET POUR COMMANDE 3466
+    if ($order_id == 3466) {
+        error_log("=== DEBUG COMPLET COMMANDE 3466 ITEM {$item_id} ===");
+        
+        // Voir TOUTES les métadonnées
+        $all_meta = $item->get_meta_data();
+        error_log("TOUTES LES MÉTADONNÉES:");
+        foreach ($all_meta as $meta) {
+            error_log("  - " . $meta->key . " = " . substr($meta->value, 0, 100) . "...");
+        }
+        
+        // Voir _nfc_screenshot_data spécifiquement
+        $screenshot_data = $item->get_meta('_nfc_screenshot_data');
+        error_log("_nfc_screenshot_data: " . ($screenshot_data ? 'EXISTS (' . strlen($screenshot_data) . ' chars)' : 'NULL'));
+        if ($screenshot_data) {
+            if (is_string($screenshot_data)) {
+                $decoded = json_decode($screenshot_data, true);
+                if ($decoded) {
+                    error_log("Screenshot data clés: " . implode(', ', array_keys($decoded)));
+                    if (isset($decoded['thumbnail'])) {
+                        error_log("Thumbnail length: " . strlen($decoded['thumbnail']));
+                        error_log("Thumbnail start: " . substr($decoded['thumbnail'], 0, 50));
+                    }
+                    if (isset($decoded['full'])) {
+                        error_log("Full length: " . strlen($decoded['full']));
+                        error_log("Full start: " . substr($decoded['full'], 0, 50));
+                    }
+                } else {
+                    error_log("Screenshot data JSON decode failed: " . json_last_error_msg());
+                }
+            } else {
+                error_log("Screenshot data type: " . gettype($screenshot_data));
+                error_log("Screenshot data value: " . print_r($screenshot_data, true));
+            }
+        }
+        
+        // Voir _nfc_screenshot_info
+        $screenshot_info = $item->get_meta('_nfc_screenshot_info');
+        error_log("_nfc_screenshot_info: " . ($screenshot_info ? 'EXISTS' : 'NULL'));
+        
+        // Voir _nfc_config_complete
+        $config_complete = $item->get_meta('_nfc_config_complete');
+        error_log("_nfc_config_complete: " . ($config_complete ? 'EXISTS (' . strlen($config_complete) . ' chars)' : 'NULL'));
+        if ($config_complete) {
+            $config = json_decode($config_complete, true);
+            if ($config && isset($config['screenshot'])) {
+                error_log("Config contient screenshot avec clés: " . implode(', ', array_keys($config['screenshot'])));
+                if (isset($config['screenshot']['thumbnail'])) {
+                    error_log("Config screenshot thumbnail length: " . strlen($config['screenshot']['thumbnail']));
+                }
+                if (isset($config['screenshot']['full'])) {
+                    error_log("Config screenshot full length: " . strlen($config['screenshot']['full']));
+                }
+            } else {
+                error_log("Config ne contient pas de screenshot");
+            }
+        }
+        
+        error_log("=== FIN DEBUG 3466 ===");
+    }
+
+    $file_path = null;
+    $filename = "commande-{$order_id}-apercu-{$type}.png";
+
+    // ✅ MÉTHODE 1: Fichiers physiques 
+    $screenshot_info = $item->get_meta('_nfc_screenshot_info');
+    if ($screenshot_info) {
+        error_log("NFC: Tentative méthode 1 - screenshot_info");
+        if (is_string($screenshot_info)) {
+            $screenshot_info = json_decode($screenshot_info, true);
+        }
+        $field_key = $type === 'thumb' ? 'thumbnail' : 'full_size';
+        if (isset($screenshot_info[$field_key]['path']) && file_exists($screenshot_info[$field_key]['path'])) {
+            $file_path = $screenshot_info[$field_key]['path'];
+            $filename = $screenshot_info[$field_key]['filename'];
+            error_log("NFC: ✅ Méthode 1 réussie: {$file_path}");
+        } else {
+            error_log("NFC: ❌ Méthode 1 - fichier physique non trouvé");
+        }
+    } else {
+        error_log("NFC: ❌ Méthode 1 - pas de screenshot_info");
+    }
+
+    // ✅ MÉTHODE 2: PRIORITÉ Base64
+    if (!$file_path) {
+        error_log("NFC: Tentative méthode 2 - base64 data");
+        $screenshot_data_raw = $item->get_meta('_nfc_screenshot_data');
+        
+        if ($screenshot_data_raw) {
+            // Décoder le JSON
+            $screenshot_data = json_decode($screenshot_data_raw, true);
+            if (!$screenshot_data) {
+                error_log("NFC: ❌ Erreur décodage JSON screenshot data: " . json_last_error_msg());
+            } else {
+                $base64_data = null;
+                if ($type === 'thumb' && isset($screenshot_data['thumbnail']) && !empty($screenshot_data['thumbnail'])) {
+                    $base64_data = $screenshot_data['thumbnail'];
+                    error_log("NFC: ✅ Base64 thumbnail trouvé (" . strlen($base64_data) . " chars)");
+                } elseif ($type === 'full' && isset($screenshot_data['full']) && !empty($screenshot_data['full'])) {
+                    $base64_data = $screenshot_data['full'];
+                    error_log("NFC: ✅ Base64 full trouvé (" . strlen($base64_data) . " chars)");
+                }
+                
+                if ($base64_data) {
+                    try {
+                        $file_path = $this->create_temp_file_from_base64($base64_data, $order_id, $item_id, $type);
+                        error_log("NFC: ✅ Méthode 2 réussie: {$file_path}");
+                    } catch (Exception $e) {
+                        error_log("NFC: ❌ Méthode 2 échouée: " . $e->getMessage());
+                    }
+                }
+            }
+        } else {
+            error_log("NFC: ❌ Métadonnée _nfc_screenshot_data introuvable");
+        }
+    }
+
+    // ✅ MÉTHODE 3: Config fallback
+    if (!$file_path) {
+        error_log("NFC: Tentative méthode 3 - génération config");
+        $config_data = $item->get_meta('_nfc_config_complete');
+        if ($config_data) {
+            $file_path = $this->generate_screenshot_from_config($order_id, $item_id, $config_data, $type);
+            error_log("NFC: ⚠️ Méthode 3 utilisée (placeholder): {$file_path}");
+        } else {
+            error_log("NFC: ❌ Méthode 3 - pas de config_complete");
+        }
+    }
+
+    if (!$file_path || !file_exists($file_path)) {
+        error_log("NFC: ❌ ÉCHEC TOTAL - aucun fichier disponible");
+        throw new Exception('Aucun screenshot disponible');
+    }
+
+    error_log("NFC: 🎯 FINAL - Utilisation du fichier: {$file_path}");
+
+    // Servir le fichier
+    $this->serve_file($file_path, $filename, 'screenshot');
+}
+
+    private function create_temp_file_from_base64($base64_data, $order_id, $item_id, $type)
+    {
+        // Supprimer le préfixe data:image si présent
+        if (strpos($base64_data, 'data:image') === 0) {
+            $base64_data = substr($base64_data, strpos($base64_data, ',') + 1);
+        }
+
+        // Décoder les données
+        $image_data = base64_decode($base64_data);
+        if (!$image_data) {
+            throw new Exception('Données base64 invalides');
+        }
+
+        // Créer dossier temporaire si nécessaire
+        $temp_dir = $this->screenshots_dir . 'temp/';
+        if (!file_exists($temp_dir)) {
+            wp_mkdir_p($temp_dir);
+            // Sécuriser le dossier
+            file_put_contents($temp_dir . '.htaccess', "Order deny,allow\nDeny from all\nAllow from 127.0.0.1\n");
+        }
+
+        // Nom de fichier temporaire
+        $filename = "temp-{$order_id}-{$item_id}-{$type}-" . md5($base64_data) . ".png";
+        $file_path = $temp_dir . $filename;
+
+        // Vérifier si le fichier existe déjà (cache)
+        if (file_exists($file_path) && (time() - filemtime($file_path)) < 3600) {
+            return $file_path; // Utiliser le cache 1h
+        }
+
+        // Sauvegarder les données
+        if (file_put_contents($file_path, $image_data) === false) {
+            throw new Exception('Impossible de créer le fichier temporaire');
+        }
+
+        return $file_path;
+    }
+
+
+    /**
+     * ✅ NOUVEAU: Génère un screenshot à la volée depuis la config (fallback)
+     */
+    private function generate_screenshot_from_config($order_id, $item_id, $config_data, $type = 'full')
+    {
+        $config = json_decode($config_data, true);
+        if (!$config) {
+            throw new Exception('Configuration invalide');
+        }
+
+        // Dimensions selon le type
+        $width = $type === 'thumb' ? 400 : 800;
+        $height = $type === 'thumb' ? 250 : 500;
+
+        // Créer l'image avec les vraies couleurs NFC
+        $image = imagecreate($width, $height);
+
+        // Couleurs de la carte selon la config
+        $card_colors = [
+            'noir' => ['bg' => [45, 45, 45], 'text' => [255, 255, 255]],
+            'blanc' => ['bg' => [250, 250, 250], 'text' => [45, 45, 45]],
+            'bleu' => ['bg' => [0, 64, 193], 'text' => [255, 255, 255]],
+            'rouge' => ['bg' => [220, 38, 127], 'text' => [255, 255, 255]]
+        ];
+
+        $color_config = $card_colors[$config['color']] ?? $card_colors['blanc'];
+
+        // Couleurs
+        $bg_color = imagecolorallocate($image, ...$color_config['bg']);
+        $text_color = imagecolorallocate($image, ...$color_config['text']);
+        $accent_color = imagecolorallocate($image, 100, 150, 255);
+
+        // Fond de carte
+        imagefill($image, 0, 0, $bg_color);
+
+        // Bordures arrondies simulées
+        $border_color = imagecolorallocate($image, max(0, $color_config['bg'][0] - 30), max(0, $color_config['bg'][1] - 30), max(0, $color_config['bg'][2] - 30));
+        imagerectangle($image, 0, 0, $width - 1, $height - 1, $border_color);
+        imagerectangle($image, 1, 1, $width - 2, $height - 2, $border_color);
+
+        // Logo NFC France (simulé)
+        $logo_text = "NFC FRANCE";
+        $x = 20;
+        $y = 20;
+        imagestring($image, 5, $x, $y, $logo_text, $accent_color);
+
+        // Nom de l'utilisateur si présent
+        if (isset($config['user'])) {
+            $user_name = trim(($config['user']['firstName'] ?? '') . ' ' . ($config['user']['lastName'] ?? ''));
+            if ($user_name) {
+                $y += 40;
+                imagestring($image, 4, $x, $y, $user_name, $text_color);
+            }
+        }
+
+        // Informations sur la carte
+        $y += 40;
+        imagestring($image, 3, $x, $y, "Couleur: " . ucfirst($config['color']), $text_color);
+
+        if (isset($config['image']['name'])) {
+            $y += 25;
+            $logo_name = substr($config['image']['name'], 0, 30);
+            imagestring($image, 3, $x, $y, "Logo: " . $logo_name, $text_color);
+        }
+
+        // Numéro de commande en bas
+        $bottom_text = "Commande #{$order_id}";
+        $x_bottom = $width - (strlen($bottom_text) * 8) - 20;
+        $y_bottom = $height - 25;
+        imagestring($image, 2, $x_bottom, $y_bottom, $bottom_text, $accent_color);
+
+        // Sauvegarder le fichier
+        $filename = "generated-{$order_id}-{$item_id}-{$type}-" . md5($config_data) . ".png";
+        $file_path = $this->screenshots_dir . $filename;
+
+        if (!imagepng($image, $file_path)) {
+            imagedestroy($image);
+            throw new Exception('Impossible de sauvegarder le screenshot généré');
+        }
+
+        imagedestroy($image);
+        return $file_path;
+    }
+
+    /**
+     * ✅ NOUVEAU: Méthode spécifique pour clients (appelée depuis NFC_Customer_Integration)
+     */
+    public function display_customer_screenshot($order_id, $item_id, $type = 'thumb')
+    {
+        try {
+            $this->display_screenshot_file($order_id, $item_id, $type);
+        } catch (Exception $e) {
+            // En cas d'erreur, essayer de générer depuis la config
+            $order = wc_get_order($order_id);
+            $item = $order->get_item($item_id);
+            $config_data = $item->get_meta('_nfc_config_complete');
+
+            if ($config_data) {
+                $file_path = $this->generate_screenshot_from_config($order_id, $item_id, $config_data, $type);
+                $this->display_file($file_path);
+            } else {
+                throw $e; // Re-lancer l'erreur originale
+            }
+        }
+    }
+
+    /**
+     * Affiche le screenshot dans le navigateur
+     */
+private function display_screenshot_file($order_id, $item_id, $type)
+{
+    error_log("NFC DEBUG: display_screenshot_file - order:{$order_id}, item:{$item_id}, type:{$type}");
+    
+    $order = wc_get_order($order_id);
+    if (!$order) {
+        throw new Exception('Commande introuvable');
+    }
+
+    $item = $order->get_item($item_id);
+    if (!$item) {
+        throw new Exception('Article introuvable');
+    }
+
+    $file_path = null;
+
+    // ✅ MÉTHODE 1: Fichiers physiques (_nfc_screenshot_info) - nouvelles commandes
+    $screenshot_info = $item->get_meta('_nfc_screenshot_info');
+    if ($screenshot_info) {
+        error_log("NFC: Tentative méthode 1 - screenshot_info");
+        if (is_string($screenshot_info)) {
+            $screenshot_info = json_decode($screenshot_info, true);
+        }
+
+        $field_key = $type === 'thumb' ? 'thumbnail' : 'full_size';
+        if (isset($screenshot_info[$field_key]['path']) && file_exists($screenshot_info[$field_key]['path'])) {
+            $file_path = $screenshot_info[$field_key]['path'];
+            error_log("NFC: ✅ Méthode 1 réussie: {$file_path}");
+        }
+    }
+
+    // ✅ MÉTHODE 2: PRIORITÉ ABSOLUE - Base64 depuis _nfc_screenshot_data
+    if (!$file_path) {
+        error_log("NFC: Tentative méthode 2 - base64 data");
+        $screenshot_data = $item->get_meta('_nfc_screenshot_data');
+        
+        if ($screenshot_data) {
+            if (is_string($screenshot_data)) {
+                $screenshot_data = json_decode($screenshot_data, true);
+            }
+            
+            $base64_data = null;
+            if ($type === 'thumb' && isset($screenshot_data['thumbnail'])) {
+                $base64_data = $screenshot_data['thumbnail'];
+                error_log("NFC: Base64 thumbnail trouvé (" . strlen($base64_data) . " chars)");
+            } elseif ($type === 'full' && isset($screenshot_data['full'])) {
+                $base64_data = $screenshot_data['full'];
+                error_log("NFC: Base64 full trouvé (" . strlen($base64_data) . " chars)");
+            }
+            
+            if ($base64_data) {
+                try {
+                    $file_path = $this->create_temp_file_from_base64($base64_data, $order_id, $item_id, $type);
+                    error_log("NFC: ✅ Méthode 2 réussie: {$file_path}");
+                } catch (Exception $e) {
+                    error_log("NFC: ❌ Méthode 2 échouée: " . $e->getMessage());
+                }
+            }
+        }
+    }
+
+    // ✅ MÉTHODE 3: Fallback config (SEULEMENT si base64 pas trouvé)
+    if (!$file_path) {
+        error_log("NFC: Tentative méthode 3 - génération config");
+        $config_data = $item->get_meta('_nfc_config_complete');
+        if ($config_data) {
+            // D'abord essayer de récupérer depuis la config complète
+            $config = json_decode($config_data, true);
+            if ($config && isset($config['screenshot'])) {
+                error_log("NFC: Config contient screenshot, tentative récupération base64");
+                
+                $base64_from_config = null;
+                if ($type === 'thumb' && isset($config['screenshot']['thumbnail'])) {
+                    $base64_from_config = $config['screenshot']['thumbnail'];
+                } elseif ($type === 'full' && isset($config['screenshot']['full'])) {
+                    $base64_from_config = $config['screenshot']['full'];
+                }
+                
+                if ($base64_from_config) {
+                    try {
+                        $file_path = $this->create_temp_file_from_base64($base64_from_config, $order_id, $item_id, $type);
+                        error_log("NFC: ✅ Méthode 3 base64 réussie: {$file_path}");
+                    } catch (Exception $e) {
+                        error_log("NFC: ❌ Méthode 3 base64 échouée: " . $e->getMessage());
+                    }
+                }
+            }
+            
+            // Si pas de base64 dans config, générer placeholder
+            if (!$file_path) {
+                $file_path = $this->generate_screenshot_from_config($order_id, $item_id, $config_data, $type);
+                error_log("NFC: ⚠️ Méthode 3 placeholder: {$file_path}");
+            }
+        }
+    }
+
+    if (!$file_path || !file_exists($file_path)) {
+        throw new Exception('Aucun screenshot disponible après tous les fallbacks');
+    }
+
+    // Afficher le fichier
+    $this->display_file($file_path);
+}
 
 
     /**

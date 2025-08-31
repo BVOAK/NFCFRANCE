@@ -478,7 +478,6 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
 <!-- Scripts configurateur -->
 <script src="<?php echo get_template_directory_uri(); ?>/configurator/assets/js/canvas-handler.js?v=3.2"></script>
 <script src="<?php echo get_template_directory_uri(); ?>/configurator/assets/js/wc-integration.js?v=3.2"></script>
-<script src="<?php echo get_template_directory_uri(); ?>/configurator/assets/js/screenshot-generator.js?v=1.0"></script>
 <script src="<?php echo get_template_directory_uri(); ?>/configurator/assets/js/configurator.js?v=3.2"></script>
 
 <?php get_footer(); ?>

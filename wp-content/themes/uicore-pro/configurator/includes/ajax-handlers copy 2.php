@@ -169,6 +169,106 @@ function nfc_add_to_cart_handler()
 }
 
 /**
+ * NOUVEAU : Traite et stocke le screenshot
+ */
+function nfc_process_screenshot($screenshot_data)
+{
+    try {
+        // Créer le dossier de stockage si nécessaire
+        $upload_dir = wp_upload_dir();
+        $nfc_dir = $upload_dir['basedir'] . '/nfc-screenshots/';
+
+        if (!file_exists($nfc_dir)) {
+            wp_mkdir_p($nfc_dir);
+            // Ajouter .htaccess pour sécurité
+            file_put_contents($nfc_dir . '.htaccess', "Order deny,allow\nDeny from all\n");
+        }
+
+        // Générer nom unique
+        $timestamp = time();
+        $random = wp_generate_password(8, false);
+        $filename_base = "screenshot-{$timestamp}-{$random}";
+
+        $result = [
+            'success' => true,
+            'data' => [
+                'full_size' => null,
+                'thumbnail' => null,
+                'generated_at' => $screenshot_data['generated_at'] ?? date('c'),
+                'storage_path' => $nfc_dir
+            ]
+        ];
+
+        // Traiter screenshot full size
+        if (isset($screenshot_data['full']) && !empty($screenshot_data['full'])) {
+            $full_file = nfc_save_base64_image($screenshot_data['full'], $nfc_dir . $filename_base . '-full.png');
+            if ($full_file) {
+                $result['data']['full_size'] = [
+                    'filename' => basename($full_file),
+                    'path' => $full_file,
+                    'size' => filesize($full_file)
+                ];
+                error_log('NFC: Screenshot full sauvegardé: ' . $full_file);
+            }
+        }
+
+        // Traiter thumbnail  
+        if (isset($screenshot_data['thumbnail']) && !empty($screenshot_data['thumbnail'])) {
+            $thumb_file = nfc_save_base64_image($screenshot_data['thumbnail'], $nfc_dir . $filename_base . '-thumb.png');
+            if ($thumb_file) {
+                $result['data']['thumbnail'] = [
+                    'filename' => basename($thumb_file),
+                    'path' => $thumb_file,
+                    'size' => filesize($thumb_file)
+                ];
+                error_log('NFC: Screenshot thumbnail sauvegardé: ' . $thumb_file);
+            }
+        }
+
+        return $result;
+
+    } catch (Exception $e) {
+        error_log('NFC: Erreur traitement screenshot: ' . $e->getMessage());
+        return [
+            'success' => false,
+            'error' => $e->getMessage()
+        ];
+    }
+}
+
+/**
+ * NOUVEAU : Sauvegarde une image base64 en fichier
+ */
+function nfc_save_base64_image($base64_data, $file_path)
+{
+    try {
+        // Extraire les données base64
+        if (preg_match('/^data:image\/\w+;base64,/', $base64_data)) {
+            $data = substr($base64_data, strpos($base64_data, ',') + 1);
+        } else {
+            $data = $base64_data;
+        }
+
+        $data = base64_decode($data);
+        if ($data === false) {
+            throw new Exception('Données base64 invalides');
+        }
+
+        // Sauvegarder le fichier
+        $result = file_put_contents($file_path, $data);
+        if ($result === false) {
+            throw new Exception('Impossible d\'écrire le fichier');
+        }
+
+        return $file_path;
+
+    } catch (Exception $e) {
+        error_log('NFC: Erreur sauvegarde image: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
  * Handler pour récuperer les variations d'un produit
  */
 function nfc_get_variations_handler()
@@ -410,9 +510,22 @@ function nfc_validate_configuration($config, $options = [])
     // VALIDATION SCREENSHOT (SI PRÉSENT)
     // ========================================
 
-    if (!$options['skip_screenshot'] && isset($config['screenshot'])) {
-        error_log('NFC: Screenshot présent dans config');
-    }
+    /* if (!$options['skip_screenshot'] && isset($config['screenshot']) && is_array($config['screenshot'])) {
+        // Vérifier structure screenshot
+        if (isset($config['screenshot']['full']) && !empty($config['screenshot']['full'])) {
+            $screenshot_validation = nfc_validate_base64_image($config['screenshot']['full']);
+            if (!$screenshot_validation['valid']) {
+                return [
+                    'valid' => false,
+                    'message' => 'Screenshot: ' . $screenshot_validation['message']
+                ];
+            }
+        }
+    } */
+
+        if (!$options['skip_screenshot'] && isset($config['screenshot'])) {
+    error_log('NFC: Screenshot présent, validation ignorée temporairement');
+}
 
     // ✅ TOUT OK
     return [
@@ -696,6 +809,7 @@ function nfc_save_order_item_meta($item, $cart_item_key, $values, $order)
 
         // Screenshot (existant)
         if (isset($config['screenshot_processed'])) {
+            // Les données structurées du screenshot après traitement nfc_process_screenshot()
             $item->add_meta_data('_nfc_screenshot_info', json_encode($config['screenshot_processed']));
             error_log('NFC: Screenshot info structurées sauvées : ' . json_encode(array_keys($config['screenshot_processed'])));
         }
