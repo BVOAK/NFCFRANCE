@@ -478,6 +478,49 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
 <!-- Scripts configurateur -->
 <script src="<?php echo get_template_directory_uri(); ?>/configurator/assets/js/canvas-handler.js?v=3.2"></script>
 <script src="<?php echo get_template_directory_uri(); ?>/configurator/assets/js/wc-integration.js?v=3.2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" 
+        integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer"></script>
+<script src="<?php echo get_template_directory_uri(); ?>/configurator/assets/js/html2canvas-screenshot.js?v=<?php echo time(); ?>"></script>
 <script src="<?php echo get_template_directory_uri(); ?>/configurator/assets/js/configurator.js?v=3.2"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Test que les modules sont bien chargés
+    if (typeof html2canvas !== 'undefined') {
+        console.log('✅ HTML2Canvas chargé:', html2canvas.version || 'version inconnue');
+    } else {
+        console.error('❌ HTML2Canvas non chargé');
+    }
+    
+    if (typeof window.NFCScreenshotCapture !== 'undefined') {
+        console.log('✅ NFCScreenshotCapture disponible');
+    } else {
+        console.error('❌ NFCScreenshotCapture non disponible');
+    }
+    
+    // Ajouter bouton de test temporaire (à retirer en production)
+    if (window.location.search.includes('debug=screenshot')) {
+        setTimeout(() => {
+            const testButton = document.createElement('button');
+            testButton.innerHTML = '🧪 Test Screenshot';
+            testButton.style.cssText = `
+                position: fixed; top: 10px; right: 10px; z-index: 9999;
+                padding: 10px; background: #0040C1; color: white;
+                border: none; border-radius: 4px; cursor: pointer;
+            `;
+            testButton.onclick = async () => {
+                if (window.configurator && window.configurator.testScreenshot) {
+                    await window.configurator.testScreenshot();
+                } else {
+                    console.error('❌ Configurateur non disponible pour test');
+                }
+            };
+            document.body.appendChild(testButton);
+        }, 2000);
+    }
+});
+</script>
 
 <?php get_footer(); ?>

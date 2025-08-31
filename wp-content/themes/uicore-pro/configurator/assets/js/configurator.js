@@ -61,15 +61,19 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 // État initial
                 this.setInitialState();
 
-                // Validation initiale
-                //this.validateConfiguration();
-
-                console.log('✅ Configurateur initialisé avec succès');
+                // Screenshot HTML2Canvas
+                this.screenshotCapture = new window.NFCScreenshotCapture(this);
+                await this.screenshotCapture.init();
+                console.log('✅ Module screenshot prêt');
 
             } catch (error) {
                 console.error('❌ Erreur initialisation configurateur:', error);
                 this.showError('Erreur lors du chargement du configurateur: ' + error.message);
+                console.error('⚠️ Erreur init screenshot:', error);
+                this.screenshotCapture = null;
             }
+
+
         }
 
         /**
@@ -181,7 +185,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
 
             // Si logo verso uploadé, vérifier cohérence
             if (this.state.logoVerso) {
-                if (!this.state.logoVerso.data || !this.state.logoVerso.name) { 
+                if (!this.state.logoVerso.data || !this.state.logoVerso.name) {
                     isValid = false;
                     errors.push('Problème avec le logo verso');
                 }
@@ -563,30 +567,91 @@ if (typeof window.NFCConfigurator === 'undefined') {
             return { valid: true };
         }
 
-        /**
-         * Définit l'image - RÉVÉLATION AVEC BOOTSTRAP
-         */
-        /* setImage(dataUrl, fileName) {
-            this.state.image = {
+
+        setImage(dataUrl, fileName, type = 'recto') {
+            console.log(`📷 setImage appelé pour ${type}:`, fileName);
+
+            // Configuration selon le type
+            const isVerso = type === 'verso';
+            const stateKey = isVerso ? 'logoVerso' : 'image';
+            const defaultScale = isVerso ? 100 : 25;
+
+            // Stocker dans le bon endroit du state
+            this.state[stateKey] = {
                 data: dataUrl,
                 name: fileName,
-                scale: 25,
+                scale: defaultScale,
                 x: 0,
                 y: 0
             };
 
-            console.log('📷 setImage appelé:', fileName);
+            if (isVerso) {
+                // Affichage spécifique verso
+                this.displayLogoVersoOnCard();
+                this.revealLogoVersoControls(fileName);
+            } else {
+                // Affichage recto (existant)
+                this.displayImageOnCard();
+                this.revealRectoControls(fileName);
+            }
 
-            // Afficher l'image
-            this.displayImageOnCard();
+            this.validateConfiguration();
 
-            // RÉVÉLER LES CONTRÔLES AVEC BOOTSTRAP
+            console.log(`✅ setImage terminé pour ${type} - base64 stocké`);
+        }
+
+
+        displayLogoVersoOnCard() {
+            if (!this.state.logoVerso || !this.elements.logoVersoImage) {
+                return;
+            }
+
+            // Masquer le placeholder
+            if (this.elements.logoVersoPlaceholder) {
+                this.elements.logoVersoPlaceholder.classList.add('d-none');
+            }
+
+            // Configurer l'image
+            this.elements.logoVersoImage.src = this.state.logoVerso.data;
+            this.elements.logoVersoImage.classList.remove('d-none');
+            this.elements.logoVersoImage.style.opacity = '1';
+
+            // Appliquer les transformations
+            this.updateLogoVersoTransform();
+        }
+
+
+        revealLogoVersoControls(fileName) {
+            console.log('🔧 Révélation des contrôles logo verso...');
+
+            // Révéler bouton supprimer
+            if (this.elements.logoVersoRemoveBtn) {
+                this.elements.logoVersoRemoveBtn.classList.remove('d-none');
+                this.elements.logoVersoRemoveBtn.classList.add('d-block');
+            }
+
+            // Initialiser le slider à 100%
+            if (this.elements.logoVersoScale) {
+                this.elements.logoVersoScale.value = 100;
+            }
+
+            // Mettre à jour le texte de l'upload zone
+            if (this.elements.logoVersoUploadZone) {
+                const uploadText = this.elements.logoVersoUploadZone.querySelector('.upload-text');
+                if (uploadText) {
+                    uploadText.textContent = fileName;
+                }
+            }
+
+            console.log('✅ Contrôles logo verso révélés');
+        }
+
+        revealRectoControls(fileName) {
             console.log('🔧 Révélation des contrôles Bootstrap...');
 
             if (this.elements.removeImageBtn) {
                 this.elements.removeImageBtn.classList.remove('d-none');
                 this.elements.removeImageBtn.classList.add('d-block');
-                console.log('✅ removeImageBtn révélé avec Bootstrap');
             }
 
             // Initialiser les sliders
@@ -603,117 +668,11 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 uploadText.textContent = fileName;
             }
 
-            //this.validateConfiguration();
-
-            console.log('✅ setImage terminé - contrôles révélés');
+            console.log('✅ Contrôles recto révélés');
         }
- */
-
-setImage(dataUrl, fileName, type = 'recto') {
-    console.log(`📷 setImage appelé pour ${type}:`, fileName);
-
-    // Configuration selon le type
-    const isVerso = type === 'verso';
-    const stateKey = isVerso ? 'logoVerso' : 'image';
-    const defaultScale = isVerso ? 100 : 25;
-
-    // Stocker dans le bon endroit du state
-    this.state[stateKey] = {
-        data: dataUrl,
-        name: fileName,
-        scale: defaultScale,
-        x: 0,
-        y: 0
-    };
-
-    if (isVerso) {
-        // Affichage spécifique verso
-        this.displayLogoVersoOnCard();
-        this.revealLogoVersoControls(fileName);
-    } else {
-        // Affichage recto (existant)
-        this.displayImageOnCard();
-        this.revealRectoControls(fileName);
-    }
-
-    this.validateConfiguration();
-
-    console.log(`✅ setImage terminé pour ${type} - base64 stocké`);
-}
 
 
-displayLogoVersoOnCard() {
-    if (!this.state.logoVerso || !this.elements.logoVersoImage) {
-        return;
-    }
 
-    // Masquer le placeholder
-    if (this.elements.logoVersoPlaceholder) {
-        this.elements.logoVersoPlaceholder.classList.add('d-none');
-    }
-
-    // Configurer l'image
-    this.elements.logoVersoImage.src = this.state.logoVerso.data;
-    this.elements.logoVersoImage.classList.remove('d-none');
-    this.elements.logoVersoImage.style.opacity = '1';
-
-    // Appliquer les transformations
-    this.updateLogoVersoTransform();
-}
-
-
-revealLogoVersoControls(fileName) {
-    console.log('🔧 Révélation des contrôles logo verso...');
-
-    // Révéler bouton supprimer
-    if (this.elements.logoVersoRemoveBtn) {
-        this.elements.logoVersoRemoveBtn.classList.remove('d-none');
-        this.elements.logoVersoRemoveBtn.classList.add('d-block');
-    }
-
-    // Initialiser le slider à 100%
-    if (this.elements.logoVersoScale) {
-        this.elements.logoVersoScale.value = 100;
-    }
-
-    // Mettre à jour le texte de l'upload zone
-    if (this.elements.logoVersoUploadZone) {
-        const uploadText = this.elements.logoVersoUploadZone.querySelector('.upload-text');
-        if (uploadText) {
-            uploadText.textContent = fileName;
-        }
-    }
-
-    console.log('✅ Contrôles logo verso révélés');
-}
-
-revealRectoControls(fileName) {
-    console.log('🔧 Révélation des contrôles Bootstrap...');
-
-    if (this.elements.removeImageBtn) {
-        this.elements.removeImageBtn.classList.remove('d-none');
-        this.elements.removeImageBtn.classList.add('d-block');
-    }
-
-    // Initialiser les sliders
-    if (this.elements.imageScale) this.elements.imageScale.value = 25;
-    if (this.elements.imageX) this.elements.imageX.value = 0;
-    if (this.elements.imageY) this.elements.imageY.value = 0;
-
-    // Mettre à jour les labels
-    this.updateControlLabels();
-
-    // Mettre à jour le texte de l'upload zone
-    const uploadText = this.elements.imageUploadZone?.querySelector('.upload-text');
-    if (uploadText) {
-        uploadText.textContent = fileName;
-    }
-
-    console.log('✅ Contrôles recto révélés');
-}
-
-
-        
         /**
          * Affiche l'image sur la carte
          */
@@ -851,127 +810,127 @@ revealRectoControls(fileName) {
         // Dans configurator.js, fonction handleLogoVersoImageSelect
         // AJOUTER ces lignes après le chargement réussi :
 
-/*         handleLogoVersoImageSelect(e) {
+        /*         handleLogoVersoImageSelect(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        try {
+                            console.log('📷 Traitement logo verso:', file.name);
+        
+                            // Créer URL temporaire
+                            const imageUrl = URL.createObjectURL(file);
+        
+                            // Stocker dans l'état
+                            this.state.logoVerso = {
+                                file: file,
+                                url: imageUrl,
+                                name: file.name,
+                                scale: 50, // Défaut
+                            };
+        
+                            // Afficher l'image
+                            if (this.elements.logoVersoImage) {
+                                this.elements.logoVersoImage.src = imageUrl;
+                                this.elements.logoVersoImage.classList.remove('d-none');
+                            }
+        
+                            // Masquer placeholder
+                            if (this.elements.logoVersoPlaceholder) {
+                                this.elements.logoVersoPlaceholder.classList.add('d-none');
+                            }
+        
+                            // ✅ CORRECTION 1: Mettre à jour le nom de fichier dans la zone d'upload
+                            if (this.elements.logoVersoUploadZone) {
+                                const uploadText = this.elements.logoVersoUploadZone.querySelector('span');
+                                if (uploadText) {
+                                    uploadText.textContent = file.name;
+                                }
+                                // Ou alternative si structure différente :
+                                this.elements.logoVersoUploadZone.innerHTML = `
+                            <span class="upload-text small">${file.name}</span>
+                        `;
+                            }
+        
+                            // Afficher zone de contrôles (si elle existe)
+                            if (this.elements.logoVersoRemoveBtn) {
+                                this.elements.logoVersoRemoveBtn.classList.remove('d-none');
+                                this.elements.logoVersoRemoveBtn.classList.add('d-block');
+                            }
+        
+                            // Mettre à jour l'aperçu
+                            this.updateLogoVersoTransform();
+        
+                            console.log('✅ Logo verso chargé');
+        
+                        } catch (error) {
+                            console.error('❌ Erreur logo verso:', error);
+                            this.showError('Erreur lors du chargement de l\'image verso');
+                        }
+                    }
+                } */
+
+
+        handleLogoVersoImageSelect(e) {
             const file = e.target.files[0];
             if (file) {
-                try {
-                    console.log('📷 Traitement logo verso:', file.name);
-
-                    // Créer URL temporaire
-                    const imageUrl = URL.createObjectURL(file);
-
-                    // Stocker dans l'état
-                    this.state.logoVerso = {
-                        file: file,
-                        url: imageUrl,
-                        name: file.name,
-                        scale: 50, // Défaut
-                    };
-
-                    // Afficher l'image
-                    if (this.elements.logoVersoImage) {
-                        this.elements.logoVersoImage.src = imageUrl;
-                        this.elements.logoVersoImage.classList.remove('d-none');
-                    }
-
-                    // Masquer placeholder
-                    if (this.elements.logoVersoPlaceholder) {
-                        this.elements.logoVersoPlaceholder.classList.add('d-none');
-                    }
-
-                    // ✅ CORRECTION 1: Mettre à jour le nom de fichier dans la zone d'upload
-                    if (this.elements.logoVersoUploadZone) {
-                        const uploadText = this.elements.logoVersoUploadZone.querySelector('span');
-                        if (uploadText) {
-                            uploadText.textContent = file.name;
-                        }
-                        // Ou alternative si structure différente :
-                        this.elements.logoVersoUploadZone.innerHTML = `
-                    <span class="upload-text small">${file.name}</span>
-                `;
-                    }
-
-                    // Afficher zone de contrôles (si elle existe)
-                    if (this.elements.logoVersoRemoveBtn) {
-                        this.elements.logoVersoRemoveBtn.classList.remove('d-none');
-                        this.elements.logoVersoRemoveBtn.classList.add('d-block');
-                    }
-
-                    // Mettre à jour l'aperçu
-                    this.updateLogoVersoTransform();
-
-                    console.log('✅ Logo verso chargé');
-
-                } catch (error) {
-                    console.error('❌ Erreur logo verso:', error);
-                    this.showError('Erreur lors du chargement de l\'image verso');
-                }
+                this.processImageFile(file, 'verso');
+                e.target.value = ''; // Reset pour permettre re-sélection
             }
-        } */
-
-
-            handleLogoVersoImageSelect(e) {
-    const file = e.target.files[0];
-    if (file) {
-        this.processImageFile(file, 'verso');
-        e.target.value = ''; // Reset pour permettre re-sélection
-    }
-}
+        }
 
         /**
          * Traitement de l'image logo verso
          */
-/*         async processLogoVersoImage(file) {
-            try {
-                console.log('📷 Traitement logo verso:', file.name);
+        /*         async processLogoVersoImage(file) {
+                    try {
+                        console.log('📷 Traitement logo verso:', file.name);
+        
+                        // Créer URL temporaire
+                        const imageUrl = URL.createObjectURL(file);
+        
+                        // Stocker dans l'état
+                        this.state.logoVerso = {
+                            file: file,
+                            url: imageUrl,
+                            name: file.name,
+                            scale: 50, // Défaut
+                        };
+        
+                        // Afficher l'image
+                        if (this.elements.logoVersoImage) {
+                            this.elements.logoVersoImage.src = imageUrl;
+                            this.elements.logoVersoImage.classList.remove('d-none');
+                        }
+        
+                        // Masquer placeholder
+                        if (this.elements.logoVersoPlaceholder) {
+                            this.elements.logoVersoPlaceholder.classList.add('d-none');
+                        }
+        
+                        // Afficher zone de contrôles (si elle existe)
+                        if (this.elements.logoVersoRemoveBtn) {
+                            this.elements.logoVersoRemoveBtn.classList.remove('d-none');
+                            this.elements.logoVersoRemoveBtn.classList.add('d-block');
+                        }
+        
+                        // Mettre à jour l'aperçu
+                        this.updateLogoVersoTransform();
+        
+                        console.log('✅ Logo verso chargé');
+        
+                    } catch (error) {
+                        console.error('❌ Erreur logo verso:', error);
+                        this.showError('Erreur lors du chargement de l\'image verso');
+                    }
+                } */
 
-                // Créer URL temporaire
-                const imageUrl = URL.createObjectURL(file);
 
-                // Stocker dans l'état
-                this.state.logoVerso = {
-                    file: file,
-                    url: imageUrl,
-                    name: file.name,
-                    scale: 50, // Défaut
-                };
-
-                // Afficher l'image
-                if (this.elements.logoVersoImage) {
-                    this.elements.logoVersoImage.src = imageUrl;
-                    this.elements.logoVersoImage.classList.remove('d-none');
-                }
-
-                // Masquer placeholder
-                if (this.elements.logoVersoPlaceholder) {
-                    this.elements.logoVersoPlaceholder.classList.add('d-none');
-                }
-
-                // Afficher zone de contrôles (si elle existe)
-                if (this.elements.logoVersoRemoveBtn) {
-                    this.elements.logoVersoRemoveBtn.classList.remove('d-none');
-                    this.elements.logoVersoRemoveBtn.classList.add('d-block');
-                }
-
-                // Mettre à jour l'aperçu
-                this.updateLogoVersoTransform();
-
-                console.log('✅ Logo verso chargé');
-
-            } catch (error) {
-                console.error('❌ Erreur logo verso:', error);
-                this.showError('Erreur lors du chargement de l\'image verso');
+        handleLogoVersoImageDrop(e) {
+            const files = Array.from(e.dataTransfer.files);
+            const file = files.find(f => f.type.startsWith('image/'));
+            if (file) {
+                this.processImageFile(file, 'verso');
             }
-        } */
-
-
-            handleLogoVersoImageDrop(e) {
-    const files = Array.from(e.dataTransfer.files);
-    const file = files.find(f => f.type.startsWith('image/'));
-    if (file) {
-        this.processImageFile(file, 'verso');
-    }
-}
+        }
 
         /**
          * Mise à jour transformation logo verso
@@ -1139,16 +1098,17 @@ revealRectoControls(fileName) {
             try {
                 // GÉNÉRER LE SCREENSHOT
                 let screenshot = null;
-                let thumbnail = null;
-
-                try {
-                    console.log('📸 Génération du screenshot...');
-                    screenshot = await this.screenshotGenerator.generateScreenshot();
-                    thumbnail = await this.screenshotGenerator.generateThumbnail(300);
-                    console.log('✅ Screenshot généré');
-                } catch (screenshotError) {
-                    console.warn('⚠️ Erreur screenshot (continuant sans):', screenshotError);
-                    // Continuer sans screenshot plutôt que planter
+                if (this.screenshotCapture) {
+                    try {
+                        console.log('📸 Génération screenshot HTML2Canvas...');
+                        screenshotData = await this.screenshotCapture.generateBothFormats(300);
+                        console.log('✅ Screenshot HTML2Canvas généré');
+                    } catch (screenshotError) {
+                        console.error('⚠️ Erreur screenshot HTML2Canvas:', screenshotError);
+                        // Continuer sans screenshot plutôt que planter
+                    }
+                } else {
+                    console.warn('⚠️ Module screenshot non disponible');
                 }
 
                 // Préparer les données (avec ou sans screenshot)
@@ -1166,6 +1126,7 @@ revealRectoControls(fileName) {
                 console.log('🛒 ConfigData debug:', {
                     hasImageRecto: !!configData.image?.data,
                     hasLogoVerso: !!configData.logoVerso?.data,
+                    hasScreenshot: !!screenshotData,
                     imageRectoDetails: configData.image ? {
                         name: configData.image.name,
                         dataLength: configData.image.data?.length || 0
@@ -1174,15 +1135,21 @@ revealRectoControls(fileName) {
                         name: configData.logoVerso.name,
                         hasData: !!configData.logoVerso.data,
                         dataLength: configData.logoVerso.data?.length || 0
+                    } : 'null',
+                    screenshotDetails: screenshotData ? {
+                        hasFull: !!screenshotData.full,
+                        hasThumbnail: !!screenshotData.thumbnail,
+                        fullLength: screenshotData.full?.length || 0,
+                        thumbnailLength: screenshotData.thumbnail?.length || 0
                     } : 'null'
                 });
 
                 // Ajouter screenshot seulement s'il existe
-                if (screenshot) {
+                if (screenshotData) {
                     configData.screenshot = {
-                        full: screenshot,
-                        thumbnail: thumbnail,
-                        generated_at: new Date().toISOString()
+                        full: screenshotData.full,
+                        thumbnail: screenshotData.thumbnail,
+                        generated_at: screenshotData.generated_at
                     };
                 }
 
@@ -1208,6 +1175,37 @@ revealRectoControls(fileName) {
                 console.error('❌ Erreur ajout panier:', error);
                 this.showError('Erreur: ' + error.message);
                 this.showLoading(false);
+            }
+        }
+
+
+                /**
+         * 🧪 Méthode de test pour vérifier le screenshot
+         * À appeler depuis la console : configurator.testScreenshot()
+         */
+        async testScreenshot() {
+            if (!this.screenshotCapture) {
+                console.error('❌ Module screenshot non initialisé');
+                return;
+            }
+            
+            try {
+                console.log('🧪 Test screenshot depuis configurateur...');
+                const result = await this.screenshotCapture.testCapture();
+                
+                if (result.success) {
+                    console.log('✅ Test réussi!');
+                    // Afficher les images dans la console pour debug
+                    console.log('🖼️ Aperçu screenshot:');
+                    console.log('Full:', result.full.substring(0, 100) + '...');
+                    console.log('Thumbnail:', result.thumbnail.substring(0, 100) + '...');
+                } else {
+                    console.error('❌ Test échoué:', result.error);
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('❌ Erreur test:', error);
             }
         }
 
