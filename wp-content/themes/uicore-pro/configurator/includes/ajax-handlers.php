@@ -120,19 +120,19 @@ function nfc_add_to_cart_handler()
         // NOUVEAU : Traiter le screenshot
         $screenshot_info = null;
         if (isset($config['screenshot'])) {
-            error_log('NFC: Traitement du screenshot...');
-            $screenshot_info = nfc_process_screenshot($config['screenshot']);
-            if ($screenshot_info['success']) {
-                error_log('NFC: Screenshot traité avec succès');
-                $config['screenshot_processed'] = $screenshot_info['data'];
-                $config['screenshot'] = [
-                    'thumbnail' => $config['screenshot']['thumbnail'],
-                    'generated_at' => $config['screenshot']['generated_at']
-                ];
-            } else {
-                error_log('NFC: Échec screenshot (continuant): ' . $screenshot_info['error']);
-                // PAS D'ARRÊT - continuer sans screenshot
-            }
+            error_log('NFC: Conservation des données screenshot base64...');
+            
+            // ✅ GARDER les données base64 complètes pour sauvegarde ultérieure
+            $screenshot_base64 = [
+                'full' => $config['screenshot']['full'] ?? null,
+                'thumbnail' => $config['screenshot']['thumbnail'] ?? null,
+                'generated_at' => $config['screenshot']['generated_at'] ?? date('c')
+            ];
+            
+            // Conserver dans la config du panier
+            $config['screenshot_base64_data'] = $screenshot_base64;
+            
+            error_log('NFC: ✅ Données base64 conservées - Full: ' . strlen($screenshot_base64['full']) . ' chars, Thumb: ' . strlen($screenshot_base64['thumbnail']) . ' chars');
         }
 
         // Ajouter au panier WooCommerce

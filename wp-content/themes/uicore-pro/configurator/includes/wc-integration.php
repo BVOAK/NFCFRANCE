@@ -49,6 +49,9 @@ class NFC_WooCommerce_Integration
         add_action('wp_ajax_nopriv_nfc_add_to_cart_with_files', [$this, 'ajax_add_to_cart_with_files']);
 
         add_action('wp', [$this, 'debug_button_integration']);
+
+        // 🆕 CRITIQUE : Hook pour sauvegarder les screenshots en métadonnées de commande
+        add_action('woocommerce_checkout_create_order_line_item', [$this, 'save_screenshot_metadata'], 10, 4);
     }
 
     /**
@@ -611,6 +614,36 @@ class NFC_WooCommerce_Integration
         }
         
         echo '</div>';
+    }
+
+
+    /**
+     * 🆕 CRITIQUE : Sauvegarde les données screenshot du panier vers les métadonnées de commande
+     */
+    public function save_screenshot_metadata($item, $cart_item_key, $values, $order)
+    {
+        if (!isset($values['nfc_config'])) {
+            return;
+        }
+
+        $config = $values['nfc_config'];
+        
+        // Sauvegarder les données base64 screenshot si présentes
+        if (isset($config['screenshot_base64_data'])) {
+            $screenshot_data = $config['screenshot_base64_data'];
+            
+            error_log('NFC: 💾 Sauvegarde screenshot en métadonnées commande...');
+            error_log('NFC: - Full size: ' . strlen($screenshot_data['full'] ?? '') . ' chars');
+            error_log('NFC: - Thumbnail: ' . strlen($screenshot_data['thumbnail'] ?? '') . ' chars');
+            
+            // ✅ SAUVEGARDER en tant que métadonnée de l'item de commande
+            $item->add_meta_data('_nfc_screenshot_data', json_encode($screenshot_data));
+            
+            error_log('NFC: ✅ Screenshot métadonnées sauvegardées');
+        }
+        
+        // Garder aussi la config complète (comme avant)
+        $item->add_meta_data('_nfc_config_complete', json_encode($config));
     }
 
 

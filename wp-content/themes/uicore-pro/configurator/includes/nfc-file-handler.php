@@ -399,33 +399,34 @@ private function serve_screenshot_file($order_id, $item_id, $type)
     // ✅ MÉTHODE 2: PRIORITÉ Base64
     if (!$file_path) {
         error_log("NFC: Tentative méthode 2 - base64 data");
-        $screenshot_data = $item->get_meta('_nfc_screenshot_data');
-        if ($screenshot_data) {
-            if (is_string($screenshot_data)) {
-                $screenshot_data = json_decode($screenshot_data, true);
-            }
-            
-            $base64_data = null;
-            if ($type === 'thumb' && isset($screenshot_data['thumbnail'])) {
-                $base64_data = $screenshot_data['thumbnail'];
-                error_log("NFC: Base64 thumbnail trouvé (" . strlen($base64_data) . " chars)");
-            } elseif ($type === 'full' && isset($screenshot_data['full'])) {
-                $base64_data = $screenshot_data['full'];
-                error_log("NFC: Base64 full trouvé (" . strlen($base64_data) . " chars)");
+        $screenshot_data_raw = $item->get_meta('_nfc_screenshot_data');
+        
+        if ($screenshot_data_raw) {
+            // Décoder le JSON
+            $screenshot_data = json_decode($screenshot_data_raw, true);
+            if (!$screenshot_data) {
+                error_log("NFC: ❌ Erreur décodage JSON screenshot data: " . json_last_error_msg());
             } else {
-                error_log("NFC: ❌ Méthode 2 - pas de données base64 pour type {$type}");
-            }
-            
-            if ($base64_data) {
-                try {
-                    $file_path = $this->create_temp_file_from_base64($base64_data, $order_id, $item_id, $type);
-                    error_log("NFC: ✅ Méthode 2 réussie: {$file_path}");
-                } catch (Exception $e) {
-                    error_log("NFC: ❌ Méthode 2 échouée: " . $e->getMessage());
+                $base64_data = null;
+                if ($type === 'thumb' && isset($screenshot_data['thumbnail']) && !empty($screenshot_data['thumbnail'])) {
+                    $base64_data = $screenshot_data['thumbnail'];
+                    error_log("NFC: ✅ Base64 thumbnail trouvé (" . strlen($base64_data) . " chars)");
+                } elseif ($type === 'full' && isset($screenshot_data['full']) && !empty($screenshot_data['full'])) {
+                    $base64_data = $screenshot_data['full'];
+                    error_log("NFC: ✅ Base64 full trouvé (" . strlen($base64_data) . " chars)");
+                }
+                
+                if ($base64_data) {
+                    try {
+                        $file_path = $this->create_temp_file_from_base64($base64_data, $order_id, $item_id, $type);
+                        error_log("NFC: ✅ Méthode 2 réussie: {$file_path}");
+                    } catch (Exception $e) {
+                        error_log("NFC: ❌ Méthode 2 échouée: " . $e->getMessage());
+                    }
                 }
             }
         } else {
-            error_log("NFC: ❌ Méthode 2 - pas de screenshot_data");
+            error_log("NFC: ❌ Métadonnée _nfc_screenshot_data introuvable");
         }
     }
 
