@@ -946,8 +946,16 @@ function nfc_save_order_item_meta($item, $cart_item_key, $values, $order)
         }
 
         // Screenshot (existant)
+        if (isset($config['screenshot_processed'])) {
+            // Les données structurées du screenshot après traitement nfc_process_screenshot()
+            $item->add_meta_data('_nfc_screenshot_info', json_encode($config['screenshot_processed']));
+            error_log('NFC: Screenshot info structurées sauvées : ' . json_encode(array_keys($config['screenshot_processed'])));
+        }
+
+        // AUSSI sauver les données brutes en backup
         if (isset($config['screenshot'])) {
             $item->add_meta_data('_nfc_screenshot_data', json_encode($config['screenshot']));
+            error_log('NFC: Screenshot data brutes sauvées : ' . json_encode(array_keys($config['screenshot'])));
         }
 
         // Configuration complète pour référence (existant)
