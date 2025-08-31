@@ -181,7 +181,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
 
             // Si logo verso uploadé, vérifier cohérence
             if (this.state.logoVerso) {
-                if (!this.state.logoVerso.file || !this.state.logoVerso.name) {
+                if (!this.state.logoVerso.data || !this.state.logoVerso.name) { 
                     isValid = false;
                     errors.push('Problème avec le logo verso');
                 }
@@ -189,7 +189,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 const scale = this.state.logoVerso.scale || 100;
                 if (scale < 10 || scale > 200) {
                     isValid = false;
-                    errors.push('Taille du logo verso invalide');
+                    errors.push('Taille du logo verso invalide (10-200%)');
                 }
             }
 
@@ -680,11 +680,7 @@ revealLogoVersoControls(fileName) {
     if (this.elements.logoVersoUploadZone) {
         const uploadText = this.elements.logoVersoUploadZone.querySelector('.upload-text');
         if (uploadText) {
-            uploadText.innerHTML = `<span class="text-success">✓ ${fileName}</span>`;
-        } else {
-            // Fallback si structure différente
-            this.elements.logoVersoUploadZone.innerHTML = 
-                `<span class="upload-text text-success">✓ ${fileName}</span>`;
+            uploadText.textContent = fileName;
         }
     }
 

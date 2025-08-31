@@ -203,6 +203,8 @@ class NFC_File_Handler
      */
     private function serve_logo_file($order_id, $item_id, $type = 'recto')
     {
+        error_log("NFC DEBUG: serve_logo_file appelé - order:{$order_id}, item:{$item_id}, type:{$type}");
+    
         // Récupérer les données de la commande
         $order = wc_get_order($order_id);
         if (!$order) {
@@ -214,21 +216,41 @@ class NFC_File_Handler
             throw new Exception('Article introuvable');
         }
 
-        // ✅ NOUVEAU: Choisir les bonnes métadonnées selon le type
+        // ✅ DEBUG : Voir toutes les métadonnées
+        $all_meta = $item->get_meta_data();
+        error_log("NFC DEBUG: Toutes les métadonnées de l'item:");
+        foreach ($all_meta as $meta) {
+            error_log("  - " . $meta->key . " = " . substr($meta->value, 0, 100) . "...");
+        }
+
+        // Choisir les bonnes métadonnées selon le type
         $meta_key = '';
         switch ($type) {
             case 'verso':
                 $meta_key = '_nfc_logo_verso_data';
                 $image_data = $item->get_meta($meta_key);
+                error_log("NFC DEBUG: Recherche verso dans {$meta_key} = " . ($image_data ? 'TROUVÉ' : 'VIDE'));
                 
                 if (!$image_data) {
+                    error_log("NFC DEBUG: Verso vide, recherche dans config complète...");
                     $config_data = $item->get_meta('_nfc_config_complete');
                     if ($config_data) {
                         $config = json_decode($config_data, true);
-                        if (isset($config['image'])) {
-                            $image_data = $config['image'];
-                            error_log("Verso: utilisation image recto comme fallback");
+                        error_log("NFC DEBUG: Config complète - clés: " . implode(', ', array_keys($config)));
+                        
+                        if (isset($config['logoVerso'])) {
+                            error_log("NFC DEBUG: logoVerso trouvé - clés: " . implode(', ', array_keys($config['logoVerso'])));
+                            if (!empty($config['logoVerso']['data'])) {
+                                $image_data = $config['logoVerso'];
+                                error_log("NFC DEBUG: Logo verso récupéré depuis config, taille data: " . strlen($config['logoVerso']['data']));
+                            } else {
+                                error_log("NFC DEBUG: logoVerso.data est vide");
+                            }
+                        } else {
+                            error_log("NFC DEBUG: Pas de logoVerso dans la config");
                         }
+                    } else {
+                        error_log("NFC DEBUG: Pas de config complète");
                     }
                 }
                 break;
@@ -242,6 +264,14 @@ class NFC_File_Handler
                 }
                 break;
         }
+
+        if (!$image_data) {
+            error_log("NFC DEBUG: ÉCHEC - Aucune donnée image trouvée pour {$type}");
+            throw new Exception("Aucun logo {$type} trouvé pour cet article");
+        }
+
+        error_log("NFC DEBUG: Données image récupérées, génération du fichier...");
+    
 
         // Récupérer les données image
         $image_data = $item->get_meta($meta_key);
