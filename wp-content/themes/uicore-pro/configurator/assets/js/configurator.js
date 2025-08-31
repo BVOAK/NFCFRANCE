@@ -45,34 +45,34 @@ if (typeof window.NFCConfigurator === 'undefined') {
         async init() {
             try {
                 console.log('🚀 Initialisation du configurateur NFC');
-
                 // Cache des éléments DOM
                 this.cacheElements();
-
                 // Charger le QR Code SVG
                 await this.loadQRCodeSVG();
-
-                // NOUVEAU : Initialiser screenshot generator
-                this.screenshotGenerator = new window.NFCScreenshotGenerator(this);
-
                 // Bind les événements
                 this.bindEvents();
-
                 // État initial
                 this.setInitialState();
-
-                // Screenshot HTML2Canvas
-                this.screenshotCapture = new window.NFCScreenshotCapture(this);
-                await this.screenshotCapture.init();
-                console.log('✅ Module screenshot prêt');
 
             } catch (error) {
                 console.error('❌ Erreur initialisation configurateur:', error);
                 this.showError('Erreur lors du chargement du configurateur: ' + error.message);
-                console.error('⚠️ Erreur init screenshot:', error);
-                this.screenshotCapture = null;
             }
 
+            // Screenshot HTML2Canvas
+            console.log('🔄 Initialisation module screenshot HTML2Canvas...');
+            try {
+                if (typeof window.NFCScreenshotCapture === 'undefined') {
+                    throw new Error('Module NFCScreenshotCapture non trouvé');
+                }
+                
+                this.screenshotCapture = new window.NFCScreenshotCapture(this);
+                await this.screenshotCapture.init();
+                console.log('✅ Module screenshot HTML2Canvas prêt');
+            } catch (error) {
+                console.error('⚠️ Erreur init screenshot:', error);
+                this.screenshotCapture = null; // Continuer sans screenshot
+            }
 
         }
 
@@ -1268,11 +1268,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
         // Vérifier que le screenshot generator est disponible
-        if (typeof window.NFCScreenshotGenerator === 'undefined') {
-            console.error('❌ NFCScreenshotGenerator non trouvé ! Inclure screenshot-generator.js');
-            return;
-        }
-
         window.nfcConfigurator = new window.NFCConfigurator();
         console.log('✅ Configurateur avec screenshot initialisé');
     } catch (error) {
