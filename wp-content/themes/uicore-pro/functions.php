@@ -256,3 +256,205 @@ add_action('init', function() {
         wp_die();
     }
 });
+
+///////////////////////////////////////////////////////////////
+
+/**
+ * CODE DE DEBUG POUR LE PANIER - SCREENSHOTS
+ * À ajouter temporairement dans functions.php pour déboguer les screenshots du panier
+ */
+
+// 🔍 HOOK 1: Debug des données dans le panier 
+add_action('woocommerce_cart_loaded_from_session', 'nfc_debug_cart_screenshots');
+function nfc_debug_cart_screenshots() {
+    if (!WC()->cart->is_empty()) {
+        error_log('🔍 === DEBUG PANIER SCREENSHOTS ===');
+        
+        foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+            if (isset($cart_item['nfc_config'])) {
+                $config = $cart_item['nfc_config'];
+                
+                error_log("📦 Item panier: {$cart_item_key}");
+                error_log("   - Produit: " . $cart_item['data']->get_name());
+                error_log("   - A config NFC: OUI");
+                
+                // Debug screenshot original
+                if (isset($config['screenshot'])) {
+                    $original_screenshot = $config['screenshot'];
+                    error_log("   - Screenshot original:");
+                    error_log("     * Full: " . (isset($original_screenshot['full']) ? strlen($original_screenshot['full']) . ' chars' : 'NON'));
+                    error_log("     * Thumbnail: " . (isset($original_screenshot['thumbnail']) ? strlen($original_screenshot['thumbnail']) . ' chars' : 'NON'));
+                    error_log("     * Generated_at: " . ($original_screenshot['generated_at'] ?? 'NON'));
+                }
+                
+                // Debug screenshot_base64_data (ajouté par notre correction)
+                if (isset($config['screenshot_base64_data'])) {
+                    $base64_data = $config['screenshot_base64_data'];
+                    error_log("   - Screenshot base64 data:");
+                    error_log("     * Full: " . (isset($base64_data['full']) ? strlen($base64_data['full']) . ' chars' : 'NON'));
+                    error_log("     * Thumbnail: " . (isset($base64_data['thumbnail']) ? strlen($base64_data['thumbnail']) . ' chars' : 'NON'));
+                    error_log("     * Generated_at: " . ($base64_data['generated_at'] ?? 'NON'));
+                } else {
+                    error_log("   - ❌ PAS de screenshot_base64_data dans config");
+                }
+                
+                // Debug autres données importantes
+                error_log("   - Couleur: " . ($config['color'] ?? 'NON'));
+                error_log("   - Logo recto: " . (isset($config['image']['name']) ? $config['image']['name'] : 'NON'));
+                error_log("   - Logo verso: " . (isset($config['logoVerso']['name']) ? $config['logoVerso']['name'] : 'NON'));
+                
+                error_log("---");
+            }
+        }
+        error_log('🔍 === FIN DEBUG PANIER ===');
+    }
+}
+
+// 🔍 HOOK 2: Debug de la thumbnail dans le panier (voir si elle s'affiche)
+add_filter('woocommerce_cart_item_thumbnail', 'nfc_debug_cart_thumbnail', 999, 3);
+function nfc_debug_cart_thumbnail($thumbnail, $cart_item, $cart_item_key) {
+    if (isset($cart_item['nfc_config'])) {
+        error_log("🖼️ DEBUG THUMBNAIL pour item: {$cart_item_key}");
+        error_log("   - Thumbnail original: " . substr($thumbnail, 0, 100) . "...");
+        
+        // Vérifier si on a un screenshot thumbnail
+        if (isset($cart_item['nfc_config']['screenshot']['thumbnail'])) {
+            $screenshot_url = $cart_item['nfc_config']['screenshot']['thumbnail'];
+            error_log("   - Screenshot thumbnail trouvé: " . substr($screenshot_url, 0, 100) . "...");
+            
+            // Créer nouvelle thumbnail avec screenshot
+            $new_thumbnail = '<img src="' . esc_attr($screenshot_url) . '" 
+                alt="Configuration personnalisée" 
+                class="nfc-cart-screenshot" 
+                style="max-width:64px;height:auto;border:2px solid #007cba;">';
+            
+            error_log("   - ✅ Thumbnail remplacée par screenshot");
+            return $new_thumbnail;
+        } else {
+            error_log("   - ❌ Pas de screenshot thumbnail disponible");
+        }
+    }
+    
+    return $thumbnail;
+}
+
+// 🔍 HOOK 3: Debug des métadonnées affichées dans le panier
+add_filter('woocommerce_get_item_data', 'nfc_debug_cart_item_data', 999, 2);
+function nfc_debug_cart_item_data($item_data, $cart_item) {
+    if (isset($cart_item['nfc_config'])) {
+        error_log("📝 DEBUG ITEM DATA pour config NFC");
+        error_log("   - Item data actuel: " . print_r($item_data, true));
+        
+        $config = $cart_item['nfc_config'];
+        
+        // Ajouter info de debug sur le screenshot
+        if (isset($config['screenshot_base64_data'])) {
+            $item_data[] = [
+                'key' => '🔍 DEBUG Screenshot',
+                'value' => 'Base64 data disponible ✅'
+            ];
+        } elseif (isset($config['screenshot'])) {
+            $item_data[] = [
+                'key' => '🔍 DEBUG Screenshot',
+                'value' => 'Screenshot original seulement ⚠️'
+            ];
+        } else {
+            $item_data[] = [
+                'key' => '🔍 DEBUG Screenshot',
+                'value' => 'Aucun screenshot ❌'
+            ];
+        }
+        
+        // Info de debug sur la config complète
+        $item_data[] = [
+            'key' => '🔍 DEBUG Config',
+            'value' => 'Taille JSON: ' . strlen(json_encode($config)) . ' chars'
+        ];
+        
+        error_log("   - Item data avec debug: " . print_r($item_data, true));
+    }
+    
+    return $item_data;
+}
+
+// 🔍 HOOK 4: Debug console JavaScript dans le panier
+add_action('wp_footer', 'nfc_add_cart_debug_js');
+function nfc_add_cart_debug_js() {
+    if (is_cart() || is_checkout()) {
+        ?>
+        <script>
+        console.log('🔍 NFC Cart Debug activé');
+        
+        // Debug des images dans le panier
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartThumbnails = document.querySelectorAll('.product-thumbnail img, .nfc-cart-screenshot');
+            console.log('🖼️ Thumbnails trouvées dans le panier:', cartThumbnails.length);
+            
+            cartThumbnails.forEach((img, index) => {
+                console.log(`   ${index + 1}. Src:`, img.src);
+                console.log(`      Alt:`, img.alt);
+                console.log(`      Classes:`, img.className);
+                
+                // Tester si l'image se charge bien
+                img.onload = () => console.log(`   ✅ Image ${index + 1} chargée`);
+                img.onerror = () => console.error(`   ❌ Erreur chargement image ${index + 1}`);
+            });
+            
+            // Debug des données meta affichées
+            const metaData = document.querySelectorAll('.woocommerce-cart-item .woocommerce-item-meta');
+            console.log('📝 Métadonnées trouvées:', metaData.length);
+            
+            metaData.forEach((meta, index) => {
+                console.log(`   Meta ${index + 1}:`, meta.textContent);
+            });
+        });
+        </script>
+        <?php
+    }
+}
+
+// 📋 FONCTION UTILITAIRE: Test manuel des données du panier
+function nfc_test_cart_data() {
+    if (!WC()->cart->is_empty()) {
+        echo "<h3>🔍 DEBUG PANIER NFC</h3>";
+        echo "<pre style='background:#f0f0f0;padding:15px;margin:15px 0;font-size:12px;'>";
+        
+        foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+            if (isset($cart_item['nfc_config'])) {
+                echo "📦 ITEM: {$cart_item_key}\n";
+                echo "   Produit: " . $cart_item['data']->get_name() . "\n";
+                
+                $config = $cart_item['nfc_config'];
+                
+                // Test screenshot
+                if (isset($config['screenshot'])) {
+                    echo "   Screenshot original: ✅\n";
+                    echo "     - Full: " . (isset($config['screenshot']['full']) ? 'OUI (' . strlen($config['screenshot']['full']) . ' chars)' : 'NON') . "\n";
+                    echo "     - Thumbnail: " . (isset($config['screenshot']['thumbnail']) ? 'OUI (' . strlen($config['screenshot']['thumbnail']) . ' chars)' : 'NON') . "\n";
+                }
+                
+                if (isset($config['screenshot_base64_data'])) {
+                    echo "   Screenshot base64_data: ✅\n";
+                    echo "     - Full: " . (isset($config['screenshot_base64_data']['full']) ? 'OUI (' . strlen($config['screenshot_base64_data']['full']) . ' chars)' : 'NON') . "\n";
+                    echo "     - Thumbnail: " . (isset($config['screenshot_base64_data']['thumbnail']) ? 'OUI (' . strlen($config['screenshot_base64_data']['thumbnail']) . ' chars)' : 'NON') . "\n";
+                } else {
+                    echo "   Screenshot base64_data: ❌ MANQUANT\n";
+                }
+                
+                echo "   Couleur: " . ($config['color'] ?? 'NON') . "\n";
+                echo "   Logo recto: " . (isset($config['image']['name']) ? $config['image']['name'] : 'NON') . "\n";
+                echo "   Logo verso: " . (isset($config['logoVerso']['name']) ? $config['logoVerso']['name'] : 'NON') . "\n";
+                echo "\n";
+            }
+        }
+        
+        echo "</pre>";
+    } else {
+        echo "<p>🛒 Panier vide</p>";
+    }
+}
+
+// Pour afficher le debug, ajoute ceci dans ton template de panier ou visite /?nfc_debug_cart=1
+if (isset($_GET['nfc_debug_cart'])) {
+    add_action('wp_footer', 'nfc_test_cart_data');
+}

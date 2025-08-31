@@ -47,7 +47,7 @@ if (typeof window.NFCScreenshotGenerator === 'undefined') {
                 ctx.drawImage(versoImage, this.cardWidth + 40, 20);
                 
                 // Ajouter labels
-                this.addLabels(ctx, compositeWidth);
+                this.addLabels(ctx, compositeWidth, compositeHeight);
                 
                 // Convertir en base64
                 const screenshotBase64 = canvas.toDataURL('image/png', 1.0);
@@ -285,7 +285,7 @@ if (typeof window.NFCScreenshotGenerator === 'undefined') {
         /**
          * Ajoute les labels aux cartes
          */
-        addLabels(ctx, compositeWidth) {
+        addLabels(ctx, compositeWidth, compositeHeight) {
             ctx.save();
             ctx.font = 'bold 16px Arial';
             ctx.fillStyle = '#666666';

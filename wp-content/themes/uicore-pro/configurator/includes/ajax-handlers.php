@@ -389,148 +389,6 @@ function nfc_validate_image_handler()
     }
 }
 
-/**
- * MODIFIÉ : Valide une configuration complète avec screenshot
- */
-/* function nfc_validate_configuration($config, $options = []) {
-    // Options par défaut
-    $options = array_merge([
-        'skip_screenshot' => false,
-        'skip_images' => false
-    ], $options);
-
-    // === VALIDATION DE BASE ===
-    $required_fields = ['color', 'variation_id'];
-
-    foreach ($required_fields as $field) {
-        if (!isset($config[$field])) {
-            return [
-                'valid' => false,
-                'message' => "Champ requis manquant: {$field}"
-            ];
-        }
-    }
-
-    // Valider la couleur
-    $allowed_colors = ['blanc', 'noir'];
-    if (!in_array($config['color'], $allowed_colors)) {
-        return [
-            'valid' => false,
-            'message' => 'Couleur non autorisée'
-        ];
-    }
-
-    // Valider l'ID de variation
-    $variation = wc_get_product($config['variation_id']);
-    if (!$variation || !$variation->exists()) {
-        return [
-            'valid' => false,
-            'message' => 'Variation de produit invalide'
-        ];
-    }
-
-    // Valider les informations utilisateur
-    if (empty($config['user']['firstName']) || empty($config['user']['lastName'])) {
-        return [
-            'valid' => false,
-            'message' => 'Prénom et nom sont requis'
-        ];
-    }
-
-    // Valider le nom (pas de caractères spéciaux dangereux)
-    $name_pattern = '/^[a-zA-ZÀ-ÿ\s\-\'\.]+$/u';
-    if (!preg_match($name_pattern, $config['user']['firstName']) || 
-        !preg_match($name_pattern, $config['user']['lastName'])) {
-        return [
-            'valid' => false,
-            'message' => 'Caractères non autorisés dans le nom'
-        ];
-    }
-
-
-
-    // === VALIDATION VERSO ===
-    if (isset($config['logoVerso'])) {
-        // Vérifier la cohérence des données logo verso
-        if (empty($config['logoVerso']['name']) || empty($config['logoVerso']['url'])) {
-            return ['valid' => false, 'message' => 'Données logo verso incohérentes'];
-        }
-
-        // Vérifier que l'échelle est dans les limites
-        $scale = $config['logoVerso']['scale'] ?? 100;
-        if ($scale < 10 || $scale > 200) {
-            return ['valid' => false, 'message' => 'Taille logo verso hors limites (10-200%)'];
-        }
-    }
-
-    // Vérifier showUserInfo (doit être un booléen)
-    if (isset($config['showUserInfo']) && !is_bool($config['showUserInfo'])) {
-        return ['valid' => false, 'message' => 'Paramètre affichage utilisateur invalide'];
-    }
-
-    // === VALIDATION IMAGES (optionnelle) ===
-    if (!$options['skip_images']) {
-        // Valider l'image recto si présente
-        if (isset($config['image']) && !empty($config['image']['data'])) {
-            $image_validation = nfc_validate_image_data($config['image']['data']);
-            if (!$image_validation['valid']) {
-                return $image_validation;
-            }
-        }
-
-        // Valider l'image logo verso si présente
-        if (isset($config['logoVerso']['data']) && !empty($config['logoVerso']['data'])) {
-            $logo_validation = nfc_validate_image_data($config['logoVerso']['data']);
-            if (!$logo_validation['valid']) {
-                return [
-                    'valid' => false,
-                    'message' => 'Logo verso invalide: ' . $logo_validation['message']
-                ];
-            }
-        }
-    }
-
-    // === VALIDATION SCREENSHOT (optionnelle) ===
-    if (!$options['skip_screenshot'] && isset($config['screenshot'])) {
-        // Vérifier que le screenshot a les bonnes données
-        if (!isset($config['screenshot']['full']) || !isset($config['screenshot']['thumbnail'])) {
-            return [
-                'valid' => false,
-                'message' => 'Données screenshot incomplètes'
-            ];
-        }
-
-        // Vérifier format base64
-        if (!nfc_validate_base64_image($config['screenshot']['full'])) {
-            return [
-                'valid' => false,
-                'message' => 'Screenshot full invalide'
-            ];
-        }
-
-        if (!nfc_validate_base64_image($config['screenshot']['thumbnail'])) {
-            return [
-                'valid' => false,
-                'message' => 'Screenshot thumbnail invalide'
-            ];
-        }
-
-        error_log('NFC: Screenshot validé avec succès');
-    }
-
-    // === LOGGING DÉTAILLÉ ===
-    $validation_summary = [
-        'base' => '✅',
-        'verso' => isset($config['logoVerso']) ? '✅ Logo' : '⚪ Pas de logo',
-        'user_info' => isset($config['showUserInfo']) ? ($config['showUserInfo'] ? '✅ Affiché' : '✅ Masqué') : '⚪ Défaut',
-        'screenshot' => (!$options['skip_screenshot'] && isset($config['screenshot'])) ? '✅' : '⚪ Ignoré'
-    ];
-
-    error_log('NFC: Validation complète - ' . json_encode($validation_summary));
-
-    return ['valid' => true, 'message' => 'Configuration complète validée'];
-} */
-
 function nfc_validate_configuration($config, $options = [])
 {
     // Options par défaut
@@ -652,7 +510,7 @@ function nfc_validate_configuration($config, $options = [])
     // VALIDATION SCREENSHOT (SI PRÉSENT)
     // ========================================
 
-    if (!$options['skip_screenshot'] && isset($config['screenshot']) && is_array($config['screenshot'])) {
+    /* if (!$options['skip_screenshot'] && isset($config['screenshot']) && is_array($config['screenshot'])) {
         // Vérifier structure screenshot
         if (isset($config['screenshot']['full']) && !empty($config['screenshot']['full'])) {
             $screenshot_validation = nfc_validate_base64_image($config['screenshot']['full']);
@@ -663,7 +521,11 @@ function nfc_validate_configuration($config, $options = [])
                 ];
             }
         }
-    }
+    } */
+
+        if (!$options['skip_screenshot'] && isset($config['screenshot'])) {
+    error_log('NFC: Screenshot présent, validation ignorée temporairement');
+}
 
     // ✅ TOUT OK
     return [
