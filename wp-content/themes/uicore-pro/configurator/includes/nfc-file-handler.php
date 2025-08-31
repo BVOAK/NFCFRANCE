@@ -184,6 +184,60 @@ class NFC_File_Handler
     }
 
     /**
+     * ✅ AJOUTER : Méthode pour servir screenshots aux clients
+     */
+    public function display_customer_screenshot($order_id, $item_id, $type = 'thumb')
+    {
+        // Récupérer les données
+        $order = wc_get_order($order_id);
+        if (!$order) {
+            wp_die('Commande introuvable', 'Erreur', ['response' => 404]);
+        }
+
+        $item = $order->get_item($item_id);
+        if (!$item) {
+            wp_die('Article introuvable', 'Erreur', ['response' => 404]);
+        }
+
+        // Essayer de récupérer le screenshot depuis les métadonnées
+        $screenshot_data = $item->get_meta('_nfc_screenshot_data');
+
+        if ($screenshot_data) {
+            $data = json_decode($screenshot_data, true);
+            $base64_data = null;
+
+            if ($type === 'thumb' && isset($data['thumbnail'])) {
+                $base64_data = $data['thumbnail'];
+            } elseif ($type === 'full' && isset($data['full'])) {
+                $base64_data = $data['full'];
+            }
+
+            if ($base64_data) {
+                // Nettoyer le base64
+                if (strpos($base64_data, 'data:image') === 0) {
+                    $base64_data = substr($base64_data, strpos($base64_data, ',') + 1);
+                }
+
+                $image_data = base64_decode($base64_data);
+                if ($image_data) {
+                    header('Content-Type: image/png');
+                    header('Content-Length: ' . strlen($image_data));
+                    header('Cache-Control: public, max-age=3600');
+
+                    while (ob_get_level()) {
+                        ob_end_clean();
+                    }
+
+                    echo $image_data;
+                    exit;
+                }
+            }
+        }
+
+        wp_die('Screenshot non disponible', 'Erreur', ['response' => 404]);
+    }
+
+    /**
      * Sert le fichier logo
      */
     private function serve_logo_file($order_id, $item_id, $type = 'recto')
