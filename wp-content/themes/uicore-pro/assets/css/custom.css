@@ -5,6 +5,204 @@
 
 /*** Panier ***/
 /* Masquer la 2ème occurrence de "Couleur" dans le même item */
-.wc-block-components-product-metadata .wc-block-components-product-details:nth-child(2), .wc-block-components-product-metadata .wc-block-components-product-details:nth-child(n+2)  {
+.woocommerce-cart .wc-block-components-product-metadata .wc-block-components-product-details:nth-child(2), 
+.wc-block-components-product-metadata .wc-block-components-product-details:nth-child(n+2)  {
+    display: none !important;
+}
+.woocommerce-cart .wc-block-components-totals-wrapper { padding: 15px!important; }
+.woocommerce-cart .wp-block-woocommerce-cart-order-summary-totals-block { padding-bottom: 0; }
+
+/**** order-received ****/
+.woocommerce-order-received .woocommerce-table__product-name a { text-transform: uppercase; font-weight: 700; font-size:24px; color: #0040C1; }
+.woocommerce-order-received .wc-item-meta { padding-left: 0; font-size:14px; }
+
+.woocommerce table.shop_table td { font-weight: 400!important; }
+
+/* Bloc configuration dans order-details-item.php */
+.nfc-configuration-block {
+    margin-top: 12px;
+    padding: 30px;
+    background: var(--uicore-light-color);
+    border-left: 3px solid #0040C1;
+}
+
+.nfc-configuration-block > strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #0040C1;
+    font-weight: 600;
+}
+
+.nfc-config-item {
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.nfc-label {
+    font-weight: 500;
+    color: #666;
+}
+
+.nfc-value {
+    color: #333;
+}
+
+/* Classes couleurs pour styling */
+.nfc-color-blanc { color: #333; }
+.nfc-color-noir { color: #000; font-weight: 600; }
+.nfc-color-bleu { color: #0040C1; font-weight: 600; }
+.nfc-color-rouge { color: #e62e26; font-weight: 600; }
+
+.nfc-screenshot-item {
+    margin-top: 8px;
+}
+
+.nfc-screenshot-container {
+    margin-top: 4px;
+}
+
+.nfc-screenshot-thumb {
+    max-width: 200px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Section globale dans order-details.php */
+.nfc-order-summary {
+    margin-top: 30px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.nfc-summary-data > h3 {
+    background: #0040C1;
+    color: white;
+    margin: 0;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.nfc-order-meta {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e5e5e5;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 14px;
+}
+
+.nfc-order-meta span {
+    color: #666;
+}
+
+.nfc-order-status[data-status="completed"],
+.nfc-order-status[data-status="processing"] {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.nfc-order-paid[data-paid="true"] {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.nfc-order-paid[data-paid="false"] {
+    color: #ffc107;
+    font-weight: 600;
+}
+
+.nfc-configurations-list {
+    padding: 20px;
+}
+
+.nfc-config-summary {
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.nfc-config-summary:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.nfc-config-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.nfc-card-number {
+    font-weight: 600;
+    color: #0040C1;
+}
+
+.nfc-product-name {
+    color: #666;
+    font-size: 14px;
+}
+
+.nfc-config-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.nfc-detail {
+    display: flex;
+    font-size: 14px;
+}
+
+.nfc-detail-label {
+    font-weight: 500;
+    color: #666;
+    min-width: 80px;
+    flex-shrink: 0;
+}
+
+.nfc-detail-value {
+    color: #333;
+}
+
+.nfc-config-screenshot {
+    text-align: center;
+}
+
+.nfc-config-screenshot .nfc-screenshot-thumb {
+    max-width: 150px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nfc-order-meta {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .nfc-config-details {
+        grid-template-columns: 1fr;
+    }
+    
+    .nfc-config-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}
+
+/* Classes utilitaires pour le JavaScript */
+.nfc-config-data {
+    display: none !important;
+}
+
+#nfc-order-data {
     display: none !important;
 }

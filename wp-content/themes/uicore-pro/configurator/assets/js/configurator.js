@@ -65,7 +65,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 if (typeof window.NFCScreenshotCapture === 'undefined') {
                     throw new Error('Module NFCScreenshotCapture non trouvé');
                 }
-                
+
                 this.screenshotCapture = new window.NFCScreenshotCapture(this);
                 await this.screenshotCapture.init();
                 console.log('✅ Module screenshot HTML2Canvas prêt');
@@ -804,70 +804,6 @@ if (typeof window.NFCConfigurator === 'undefined') {
             }
         }
 
-        /**
-         * Gestion de la sélection d'image pour logo verso
-         */
-        // Dans configurator.js, fonction handleLogoVersoImageSelect
-        // AJOUTER ces lignes après le chargement réussi :
-
-        /*         handleLogoVersoImageSelect(e) {
-                    const file = e.target.files[0];
-                    if (file) {
-                        try {
-                            console.log('📷 Traitement logo verso:', file.name);
-        
-                            // Créer URL temporaire
-                            const imageUrl = URL.createObjectURL(file);
-        
-                            // Stocker dans l'état
-                            this.state.logoVerso = {
-                                file: file,
-                                url: imageUrl,
-                                name: file.name,
-                                scale: 50, // Défaut
-                            };
-        
-                            // Afficher l'image
-                            if (this.elements.logoVersoImage) {
-                                this.elements.logoVersoImage.src = imageUrl;
-                                this.elements.logoVersoImage.classList.remove('d-none');
-                            }
-        
-                            // Masquer placeholder
-                            if (this.elements.logoVersoPlaceholder) {
-                                this.elements.logoVersoPlaceholder.classList.add('d-none');
-                            }
-        
-                            // ✅ CORRECTION 1: Mettre à jour le nom de fichier dans la zone d'upload
-                            if (this.elements.logoVersoUploadZone) {
-                                const uploadText = this.elements.logoVersoUploadZone.querySelector('span');
-                                if (uploadText) {
-                                    uploadText.textContent = file.name;
-                                }
-                                // Ou alternative si structure différente :
-                                this.elements.logoVersoUploadZone.innerHTML = `
-                            <span class="upload-text small">${file.name}</span>
-                        `;
-                            }
-        
-                            // Afficher zone de contrôles (si elle existe)
-                            if (this.elements.logoVersoRemoveBtn) {
-                                this.elements.logoVersoRemoveBtn.classList.remove('d-none');
-                                this.elements.logoVersoRemoveBtn.classList.add('d-block');
-                            }
-        
-                            // Mettre à jour l'aperçu
-                            this.updateLogoVersoTransform();
-        
-                            console.log('✅ Logo verso chargé');
-        
-                        } catch (error) {
-                            console.error('❌ Erreur logo verso:', error);
-                            this.showError('Erreur lors du chargement de l\'image verso');
-                        }
-                    }
-                } */
-
 
         handleLogoVersoImageSelect(e) {
             const file = e.target.files[0];
@@ -876,53 +812,6 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 e.target.value = ''; // Reset pour permettre re-sélection
             }
         }
-
-        /**
-         * Traitement de l'image logo verso
-         */
-        /*         async processLogoVersoImage(file) {
-                    try {
-                        console.log('📷 Traitement logo verso:', file.name);
-        
-                        // Créer URL temporaire
-                        const imageUrl = URL.createObjectURL(file);
-        
-                        // Stocker dans l'état
-                        this.state.logoVerso = {
-                            file: file,
-                            url: imageUrl,
-                            name: file.name,
-                            scale: 50, // Défaut
-                        };
-        
-                        // Afficher l'image
-                        if (this.elements.logoVersoImage) {
-                            this.elements.logoVersoImage.src = imageUrl;
-                            this.elements.logoVersoImage.classList.remove('d-none');
-                        }
-        
-                        // Masquer placeholder
-                        if (this.elements.logoVersoPlaceholder) {
-                            this.elements.logoVersoPlaceholder.classList.add('d-none');
-                        }
-        
-                        // Afficher zone de contrôles (si elle existe)
-                        if (this.elements.logoVersoRemoveBtn) {
-                            this.elements.logoVersoRemoveBtn.classList.remove('d-none');
-                            this.elements.logoVersoRemoveBtn.classList.add('d-block');
-                        }
-        
-                        // Mettre à jour l'aperçu
-                        this.updateLogoVersoTransform();
-        
-                        console.log('✅ Logo verso chargé');
-        
-                    } catch (error) {
-                        console.error('❌ Erreur logo verso:', error);
-                        this.showError('Erreur lors du chargement de l\'image verso');
-                    }
-                } */
-
 
         handleLogoVersoImageDrop(e) {
             const files = Array.from(e.dataTransfer.files);
@@ -1097,7 +986,8 @@ if (typeof window.NFCConfigurator === 'undefined') {
 
             try {
                 // GÉNÉRER LE SCREENSHOT
-                let screenshot = null;
+                let screenshotData = null;
+
                 if (this.screenshotCapture) {
                     try {
                         console.log('📸 Génération screenshot HTML2Canvas...');
@@ -1153,7 +1043,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
                     };
                 }
 
-                console.log('📦 Données config préparées (avec screenshot:', !!screenshot, ')');
+                console.log('📦 Données config préparées (avec screenshot:', !!screenshotData, ')');
 
 
                 // Appel Ajax
@@ -1179,20 +1069,20 @@ if (typeof window.NFCConfigurator === 'undefined') {
         }
 
 
-                /**
-         * 🧪 Méthode de test pour vérifier le screenshot
-         * À appeler depuis la console : configurator.testScreenshot()
-         */
+        /**
+ * 🧪 Méthode de test pour vérifier le screenshot
+ * À appeler depuis la console : configurator.testScreenshot()
+ */
         async testScreenshot() {
             if (!this.screenshotCapture) {
                 console.error('❌ Module screenshot non initialisé');
                 return;
             }
-            
+
             try {
                 console.log('🧪 Test screenshot depuis configurateur...');
                 const result = await this.screenshotCapture.testCapture();
-                
+
                 if (result.success) {
                     console.log('✅ Test réussi!');
                     // Afficher les images dans la console pour debug
@@ -1202,7 +1092,7 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 } else {
                     console.error('❌ Test échoué:', result.error);
                 }
-                
+
                 return result;
             } catch (error) {
                 console.error('❌ Erreur test:', error);

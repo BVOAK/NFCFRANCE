@@ -883,3 +883,187 @@ body:has(#checkboxInformations:not(:checked)) .card-preview.verso .qr-section,
         background-color: rgba(13, 110, 253, 0.1);
     }
 }
+
+
+/* CORRECTION : Optimisation logo verso pour screenshot */
+#logoVersoImage {
+    /* Éviter les transforms complexes qui cassent HTML2Canvas */
+    transform-origin: center center;
+    
+    /* Assurer des dimensions explicites */
+    width: auto;
+    height: auto;
+    max-width: 150px;
+    max-height: 50px;
+    
+    /* Préserver les proportions */
+    object-fit: contain;
+    object-position: center;
+    
+    /* Éviter les artefacts de rendu */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    
+    /* Transition smooth pour les changements */
+    transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+
+/* ✨ AMÉLIORATION : Zone logo verso plus stable */
+.logo-verso-area {
+    /* Position fixe pour éviter les décalages */
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 150px;
+    height: 50px;
+    
+    /* Éviter les débordements */
+    overflow: visible;
+    
+    /* Z-index pour superposition correcte */
+    z-index: 10;
+    
+    /* Centrage du contenu */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* ✨ CORRECTION : Image container stable */
+.logo-verso-area img {
+    /* Forcer les dimensions à être explicites */
+    width: auto !important;
+    height: auto !important;
+    max-width: 100%;
+    max-height: 100%;
+    
+    /* Position relative pour éviter les décalages absolus */
+    position: relative;
+    
+    /* Préservation des proportions */
+    aspect-ratio: auto;
+    object-fit: contain;
+}
+
+/* ✨ OPTIMISATION : Carte verso pour screenshot */
+.card-preview.verso {
+    /* Assurer des dimensions stables */
+    min-height: var(--card-height);
+    min-width: var(--card-width);
+    
+    /* Éviter les transformations qui cassent la capture */
+    transform-style: flat;
+    
+    /* Optimisation rendu */
+    will-change: auto;
+    contain: layout style paint;
+}
+
+/* ✨ CORRECTION : Éliminer les transforms problématiques pendant capture */
+.screenshot-mode #logoVersoImage {
+    /* Remplacer transform par dimensions explicites */
+    transform: none !important;
+}
+
+.screenshot-mode .logo-verso-area {
+    /* Stabiliser la position */
+    transform: none !important;
+}
+
+/* ✨ AMÉLIORATION : Qualité d'image pour capture */
+.card-preview img,
+.logo-verso-area img,
+#logoVersoImage {
+    /* Améliorer la qualité de rendu */
+    image-rendering: auto !important;
+    image-rendering: -webkit-optimize-quality !important;
+    image-rendering: smooth !important;
+    
+    /* Éviter les artefacts de compression */
+    image-orientation: from-image;
+    
+    /* Stabiliser les dimensions */
+    box-sizing: content-box;
+}
+
+/* ✨ OPTIMISATION : Éviter les éléments flottants problématiques */
+.preview-column * {
+    /* Stabiliser le layout pour HTML2Canvas */
+    transform-style: flat;
+    backface-visibility: hidden;
+}
+
+/* ✨ CORRECTION : Placeholder logo stable */
+.logo-verso-placeholder {
+    /* Dimensions explicites */
+    width: 100%;
+    height: 100%;
+    
+    /* Éviter les transformations */
+    transform: none !important;
+    
+    /* Style stable */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Bordure stable */
+    border: 2px dashed currentColor;
+    border-radius: 4px;
+}
+
+/* ✨ CLASSE UTILITAIRE : Mode capture screenshot */
+body.screenshot-capturing .preview-column {
+    /* Optimisations temporaires pendant capture */
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+}
+
+body.screenshot-capturing .preview-column * {
+    /* Simplifier tous les transforms pendant capture */
+    animation: none !important;
+    transition: none !important;
+}
+
+body.screenshot-capturing #logoVersoImage {
+    /* Forcer dimensions explicites */
+    transform: none !important;
+}
+
+/* ✨ AMÉLIORATION : Réduire les effets visuels pendant capture */
+@media print {
+    .card-preview,
+    .logo-verso-area,
+    #logoVersoImage {
+        /* Optimisations pour impression/capture */
+        transform: none !important;
+        filter: none !important;
+        box-shadow: none !important;
+    }
+}
+
+/* ✨ CORRECTION SPÉCIFIQUE : Logos avec ratio d'aspect préservé */
+#logoVersoImage[src] {
+    /* S'assurer que les images chargées gardent leurs proportions */
+    width: auto;
+    height: auto;
+    max-width: 150px;
+    max-height: 50px;
+    
+    /* Calculer automatiquement les dimensions selon le scale */
+    aspect-ratio: attr(width) / attr(height);
+}
+
+/* ✨ DEBUGGING : Classes pour identifier les problèmes */
+.debug-screenshot-transforms * {
+    outline: 1px solid rgba(255, 0, 0, 0.3) !important;
+}
+
+.debug-screenshot-transforms [style*="transform"] {
+    outline: 2px solid rgba(255, 255, 0, 0.5) !important;
+}
+
+.debug-screenshot-transforms #logoVersoImage {
+    outline: 3px solid rgba(0, 255, 0, 0.7) !important;
+}
