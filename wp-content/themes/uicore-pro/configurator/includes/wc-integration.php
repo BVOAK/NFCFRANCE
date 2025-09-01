@@ -849,7 +849,7 @@ class NFC_WooCommerce_Integration
      * ✨ DEBUG: Méthode pour vérifier que les handlers sont bien enregistrés
      * À appeler temporairement dans init() pour debug
      */
-    private function debug_ajax_handlers()
+    public function debug_ajax_handlers()
     {
         if (!defined('WP_DEBUG') || !WP_DEBUG) {
             return;
