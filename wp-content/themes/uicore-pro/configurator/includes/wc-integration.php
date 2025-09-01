@@ -348,7 +348,7 @@ class NFC_WooCommerce_Integration
     
     // ✅ FIX: Nom de fichier correct (underscore, pas tiret)
     wp_enqueue_script('nfc-admin-downloads',
-        get_template_directory_uri() . '/configurator/assets/js/admin_downloads.js', // ← Underscore !
+        get_template_directory_uri() . '/configurator/assets/js/admin-downloads.js', // ← Underscore !
         ['jquery'],
         '1.1',
         true
