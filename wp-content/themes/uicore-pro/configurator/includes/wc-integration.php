@@ -321,27 +321,36 @@ class NFC_WooCommerce_Integration
      */
     public function enqueue_admin_styles($hook)
 {
-    // Uniquement sur les pages de commandes
-    if ($hook !== 'post.php' && $hook !== 'edit.php') {
+    // ✅ FIX: Hook correct pour WooCommerce HPOS
+    global $pagenow, $post_type;
+    
+    // Vérifier la nouvelle page des commandes (HPOS)
+    $is_orders_page = (
+        $pagenow === 'admin.php' && isset($_GET['page']) && $_GET['page'] === 'wc-orders'
+    ) || (
+        $pagenow === 'post.php' && $post_type === 'shop_order'
+    ) || (
+        $pagenow === 'edit.php' && $post_type === 'shop_order'
+    );
+
+    if (!$is_orders_page) {
         return;
     }
     
-    if (get_post_type() !== 'shop_order') {
-        return;
-    }
+    error_log('🔧 NFC Admin styles chargés sur: ' . $hook . ' - Page: ' . $pagenow);
     
-    // CSS admin existant...
+    // CSS admin
     wp_enqueue_style('nfc-admin-orders', 
         get_template_directory_uri() . '/configurator/assets/css/admin-orders.css', 
         [], 
-        '1.2'
+        '1.3'
     );
     
-    // ✨ NOUVEAU : JavaScript pour les boutons de téléchargement
+    // ✅ FIX: Nom de fichier correct (underscore, pas tiret)
     wp_enqueue_script('nfc-admin-downloads',
-        get_template_directory_uri() . '/configurator/assets/js/admin-downloads.js',
+        get_template_directory_uri() . '/configurator/assets/js/admin_downloads.js', // ← Underscore !
         ['jquery'],
-        '1.0',
+        '1.1',
         true
     );
     
