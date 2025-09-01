@@ -10,6 +10,7 @@
         
         init() {
             console.log('🔧 NFC Admin Downloads initialisé');
+            console.log('📝 nfcAdminAjax config:', nfcAdminAjax);
             this.bindEvents();
         },
 
