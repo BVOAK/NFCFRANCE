@@ -163,64 +163,93 @@ class NFC_Enterprise_Tests
         echo "</div>";
     }
 
-    private function test_multi_card_creation() {
-        echo "<div class='test-section'>";
-        echo "<h2>🎯 Test 3: Création Multi-cartes</h2>";
+    private function test_multi_card_creation() 
+{
+    echo "<div class='test-section'>";
+    echo "<h2>🎯 Test 3: Création Multi-cartes</h2>";
+    
+    try {
+        $product_id = $this->get_test_nfc_product_id();
+        $order = $this->create_test_order(5, 'Multi');
         
-        try {
-            // Créer commande 5 cartes
-            $quantity = 5;
-            $order = $this->create_test_order($quantity);
-            $this->test_order_ids[] = $order->get_id();
+        if ($product_id && $order) {
+            $product = wc_get_product($product_id);
+            $order->add_product($product, 5);
+            $order->calculate_totals();
+            $order->set_status('processing'); 
+            $order->save();
             
-            echo "<p>Commande test #{$order->get_id()} créée avec $quantity cartes</p>";
+            echo "<p>Commande test #{$order->get_id()} créée avec 5 cartes</p>";
             
             // Déclencher traitement
             NFC_Enterprise_Core::process_order_vcards($order->get_id());
             
-            // Vérifier résultat
-            $cards = NFC_Enterprise_Core::get_user_enterprise_cards($order->get_customer_id());
-            $new_cards = array_filter($cards, function($card) use ($order) {
+            // Vérifier résultats
+            $user_cards = NFC_Enterprise_Core::get_user_enterprise_cards($order->get_customer_id());
+            $order_cards = array_filter($user_cards, function($card) use ($order) {
                 return $card['order_id'] == $order->get_id();
             });
             
-                            if (count($new_cards) === $quantity) {
-                $this->log_success("✅ $quantity cartes créées correctement");
-                
-                // Vérifier identifiants uniques
-                $identifiers = array_column($new_cards, 'card_identifier');
-                if (count($identifiers) === count(array_unique($identifiers))) {
-                    $this->log_success("✅ Identifiants uniques générés");
-                } else {
-                    $this->log_error("❌ Identifiants dupliqués détectés");
-                }
-                
-                // Vérifier positions séquentielles
-                $positions = array_column($new_cards, 'card_position');
-                sort($positions);
-                $expected_positions = range(1, $quantity);
-                
-                if ($positions === $expected_positions) {
-                    $this->log_success("✅ Positions séquentielles correctes");
-                } else {
-                    $this->log_error("❌ Positions incorrectes: " . implode(', ', $positions));
-                }
-                
-                // Stocker IDs pour nettoyage
-                foreach ($new_cards as $card) {
-                    $this->test_vcard_ids[] = $card['vcard_id'];
-                }
-                
+            $card_count = count($order_cards);
+            if ($card_count === 5) {
+                $this->log_success("✅ 5 cartes créées correctement");
             } else {
-                $this->log_error("❌ Nombre de cartes incorrect: " . count($new_cards) . " (attendu: $quantity)");
+                $this->log_error("❌ Nombre de cartes incorrect: $card_count (attendu: 5)");
             }
             
-        } catch (Exception $e) {
-            $this->log_error("❌ Erreur: " . $e->getMessage());
+            // ✅ CORRECTIF: Vérifier les identifiants uniques
+            $identifiers = array_column($order_cards, 'card_identifier');
+            $unique_identifiers = array_unique($identifiers);
+            
+            if (count($identifiers) === count($unique_identifiers)) {
+                $this->log_success("✅ Identifiants uniques générés");
+            } else {
+                $this->log_error("❌ Identifiants dupliqués détectés");
+            }
+            
+            // ✅ CORRECTIF: Vérifier les positions (logique corrigée)
+            $positions = array_column($order_cards, 'card_position');
+            sort($positions); // Trier les positions pour comparaison
+            $expected_positions = range(1, 5); // [1, 2, 3, 4, 5]
+            
+            if ($positions === $expected_positions) {
+                $this->log_success("✅ Positions correctes: " . implode(', ', $positions));
+            } else {
+                $this->log_error("❌ Positions incorrectes: " . implode(', ', $positions) . " (attendu: " . implode(', ', $expected_positions) . ")");
+                
+                // Debug détaillé
+                error_log("NFC Enterprise Test: Positions détectées: " . print_r($positions, true));
+                error_log("NFC Enterprise Test: Positions attendues: " . print_r($expected_positions, true));
+                
+                foreach ($order_cards as $card) {
+                    error_log("NFC Enterprise Test: Carte {$card['vcard_id']} - Position: {$card['card_position']} - Identifiant: {$card['card_identifier']}");
+                }
+            }
+            
+            // ✅ Vérification des statuts
+            $statuses = array_column($order_cards, 'card_status');
+            $expected_status = 'configured'; // ou ton statut par défaut
+            $all_status_correct = array_reduce($statuses, function($carry, $status) use ($expected_status) {
+                return $carry && ($status === $expected_status);
+            }, true);
+            
+            if ($all_status_correct) {
+                $this->log_success("✅ Statuts corrects: tous '$expected_status'");
+            } else {
+                $this->log_error("❌ Statuts incorrects: " . implode(', ', array_unique($statuses)));
+            }
+            
+        } else {
+            $this->log_error("❌ Impossible de créer commande ou produit test");
         }
         
-        echo "</div>";
+    } catch (Exception $e) {
+        $this->log_error("❌ Erreur: " . $e->getMessage());
+        error_log("NFC Enterprise Test Exception: " . $e->getTraceAsString());
     }
+    
+    echo "</div>";
+}
 
     private function test_card_retrieval() {
         echo "<div class='test-section'>";
