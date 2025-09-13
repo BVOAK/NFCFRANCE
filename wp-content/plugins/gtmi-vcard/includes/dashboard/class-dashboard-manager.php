@@ -507,27 +507,290 @@ class NFC_Dashboard_Manager
      */
     private function render_overview_page($vcard) {
         $user_id = get_current_user_id();
+        
+        // NOUVEAU : Récupérer le résumé des produits utilisateur
         $products_summary = nfc_get_user_products_summary($user_id);
+        
+        // NOUVEAU : Déterminer le type de dashboard
+        $dashboard_type = $this->determine_dashboard_type($products_summary);
         
         echo '<div class="dashboard-overview">';
         
-        // Header avec résumé
-        $this->render_dashboard_header($products_summary);
-        
-        // Sections selon les produits de l'utilisateur
-        if ($products_summary['has_vcard']) {
-            $this->render_vcard_section($products_summary);
+        // DEBUG : Afficher les informations de diagnostic
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            echo '<div class="alert alert-info">';
+            echo '<h6><i class="fas fa-bug me-2"></i>DEBUG - Évolution Dashboard</h6>';
+            echo '<p><strong>Type détecté :</strong> ' . $dashboard_type . '</p>';
+            echo '<p><strong>vCards :</strong> ' . count($products_summary['vcard_profiles'] ?? []) . '</p>';
+            echo '<p><strong>Avis Google :</strong> ' . count($products_summary['google_reviews_profiles'] ?? []) . '</p>';
+            echo '</div>';
         }
         
-        if ($products_summary['has_google_reviews']) {
-            $this->render_google_reviews_section($products_summary);
+        // LOGIQUE ADAPTATIVE
+        switch ($dashboard_type) {
+            case 'simple':
+                // Interface simple existante (1 vCard ou moins)
+                $this->render_simple_overview($vcard, $products_summary);
+                break;
+                
+            case 'multi_vcard':
+                // Interface multi-profils vCard seulement
+                $this->render_multi_vcard_overview($products_summary);
+                break;
+                
+            case 'google_reviews_only':
+                // Interface Avis Google seulement
+                $this->render_google_reviews_only_overview($products_summary);
+                break;
+                
+            case 'unified':
+                // Interface complète avec vCard + Avis Google
+                $this->render_unified_overview($products_summary);
+                break;
+                
+            default:
+                // Fallback vers interface simple
+                $this->render_simple_overview($vcard, $products_summary);
         }
         
-        // Si aucun produit
-        if (!$products_summary['has_vcard'] && !$products_summary['has_google_reviews']) {
-            $this->render_no_products_message();
+        echo '</div>';
+    }
+
+    /**
+     * NOUVEAU : Déterminer le type de dashboard selon les produits
+     */
+    private function determine_dashboard_type($products_summary) 
+    {
+        $vcard_count = count($products_summary['vcard_profiles'] ?? []);
+        $google_count = count($products_summary['google_reviews_profiles'] ?? []);
+        
+        // Aucun produit → Interface simple avec message
+        if ($vcard_count === 0 && $google_count === 0) {
+            return 'simple';
         }
         
+        // 1 seule vCard et pas d'Avis Google → Interface simple existante
+        if ($vcard_count === 1 && $google_count === 0) {
+            return 'simple';
+        }
+        
+        // Plusieurs vCards et pas d'Avis Google → Interface multi-vCard
+        if ($vcard_count > 1 && $google_count === 0) {
+            return 'multi_vcard';
+        }
+        
+        // Seulement Avis Google → Interface Avis Google
+        if ($vcard_count === 0 && $google_count > 0) {
+            return 'google_reviews_only';
+        }
+        
+        // vCard + Avis Google → Interface unifiée
+        if ($vcard_count > 0 && $google_count > 0) {
+            return 'unified';
+        }
+        
+        // Fallback
+        return 'simple';
+    }
+
+    private function render_simple_overview($vcard, $products_summary) 
+    {
+        // Utiliser le template existant si 1 vCard
+        if (!empty($products_summary['vcard_profiles']) && count($products_summary['vcard_profiles']) === 1) {
+            $template_path = $this->plugin_path . 'templates/dashboard/simple/overview.php';
+            if (file_exists($template_path)) {
+                include $template_path;
+                return;
+            }
+        }
+        
+        // Message si aucune vCard
+        echo '<div class="empty-state text-center py-5">';
+        echo '<i class="fas fa-box-open fa-3x text-muted mb-3"></i>';
+        echo '<h4>Aucun produit NFC configuré</h4>';
+        echo '<p class="text-muted">Commandez vos premiers produits NFC pour commencer.</p>';
+        echo '<a href="/boutique-nfc/" class="btn btn-primary">';
+        echo '<i class="fas fa-shopping-cart me-2"></i>Découvrir nos produits';
+        echo '</a>';
+        echo '</div>';
+    }
+
+    /**
+     * Interface multi-profils vCard
+     */
+    private function render_multi_vcard_overview($products_summary) 
+    {
+        $vcard_profiles = $products_summary['vcard_profiles'] ?? [];
+        
+        ?>
+        <div class="multi-vcard-overview">
+            <!-- Header -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="h4 mb-1">
+                                <i class="fas fa-id-card me-2 text-primary"></i>
+                                Mes Cartes vCard
+                                <span class="badge bg-primary ms-2"><?php echo count($vcard_profiles); ?> carte(s)</span>
+                            </h2>
+                            <p class="text-muted mb-0">Gérez tous vos profils vCard individuels</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="/boutique-nfc/" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-plus me-2"></i>Commander plus
+                            </a>
+                            <button class="btn btn-primary btn-sm" onclick="alert('Export global à implémenter')">
+                                <i class="fas fa-download me-2"></i>Export
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats globales -->
+            <div class="row mb-4">
+                <?php
+                $total_views = array_sum(array_column($vcard_profiles, 'views') ?: []);
+                $total_contacts = array_sum(array_column($vcard_profiles, 'contacts') ?: []);
+                $configured_cards = array_filter($vcard_profiles, function($p) { 
+                    return isset($p['vcard_data']['is_configured']) && $p['vcard_data']['is_configured']; 
+                });
+                ?>
+                <div class="col-md-3">
+                    <div class="dashboard-card p-3 text-center">
+                        <div class="h4 text-primary mb-1"><?php echo number_format($total_views); ?></div>
+                        <small class="text-muted">Vues totales</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dashboard-card p-3 text-center">
+                        <div class="h4 text-success mb-1"><?php echo number_format($total_contacts); ?></div>
+                        <small class="text-muted">Leads générés</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dashboard-card p-3 text-center">
+                        <div class="h4 text-info mb-1"><?php echo count($configured_cards); ?>/<?php echo count($vcard_profiles); ?></div>
+                        <small class="text-muted">Configurées</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="dashboard-card p-3 text-center">
+                        <div class="h4 text-warning mb-1">
+                            <?php echo count($vcard_profiles) > 0 ? round((count($configured_cards) / count($vcard_profiles)) * 100) : 0; ?>%
+                        </div>
+                        <small class="text-muted">Progression</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des profils selon cahier des charges -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5 class="mb-0">Mes Profils vCard</h5>
+                </div>
+                <div class="card-body p-0">
+                    <?php foreach ($vcard_profiles as $profile): ?>
+                        <?php 
+                        $full_name = isset($profile['vcard_data']) ? nfc_format_vcard_full_name($profile['vcard_data']) : 'Profil à configurer';
+                        $position = isset($profile['vcard_data']) ? nfc_format_vcard_position($profile['vcard_data']) : '';
+                        $views = isset($profile['stats']['views']) ? $profile['stats']['views'] : 0;
+                        $contacts = isset($profile['stats']['contacts']) ? $profile['stats']['contacts'] : 0;
+                        $status_info = nfc_get_card_display_status($profile);
+                        ?>
+                        <div class="border-bottom p-3">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="profile-avatar me-3">
+                                            <?php 
+                                            $initials = '';
+                                            if (isset($profile['vcard_data']['firstname'])) {
+                                                $initials .= substr($profile['vcard_data']['firstname'], 0, 1);
+                                            }
+                                            if (isset($profile['vcard_data']['lastname'])) {
+                                                $initials .= substr($profile['vcard_data']['lastname'], 0, 1);
+                                            }
+                                            echo $initials ?: 'NC';
+                                            ?>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold"><?php echo esc_html($full_name); ?></div>
+                                            <?php if ($position): ?>
+                                                <small class="text-muted"><?php echo esc_html($position); ?></small>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <div class="small">
+                                            👁️ <?php echo number_format($views); ?> vues | 
+                                            📞 <?php echo number_format($contacts); ?> contacts
+                                        </div>
+                                        <span class="badge bg-<?php echo esc_attr($status_info['color']); ?> mt-1">
+                                            <?php echo esc_html($status_info['label']); ?>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex gap-1 justify-content-end">
+                                        <a href="?page=vcard-edit&vcard_id=<?php echo $profile['vcard_id']; ?>" 
+                                           class="btn btn-primary btn-sm">
+                                            Modifier vCard
+                                        </a>
+                                        <div class="btn-group">
+                                            <a href="?page=statistics&vcard_id=<?php echo $profile['vcard_id']; ?>" 
+                                               class="btn btn-info btn-sm">Stats</a>
+                                            <a href="?page=contacts&vcard_id=<?php echo $profile['vcard_id']; ?>" 
+                                               class="btn btn-success btn-sm">Leads</a>
+                                            <button class="btn btn-warning btn-sm" 
+                                                    onclick="renewCard('<?php echo esc_js($profile['card_identifier']); ?>')">
+                                                Renouveler
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+        function renewCard(identifier) {
+            if (confirm('Renouveler la carte ' + identifier + ' ?')) {
+                window.location.href = '/boutique-nfc/?context=renewal&card_id=' + identifier;
+            }
+        }
+        </script>
+        <?php
+    }
+
+/**
+     *  Interface Avis Google seulement (préparation)
+     */
+    private function render_google_reviews_only_overview($products_summary) 
+    {
+        echo '<div class="alert alert-info">';
+        echo '<h5><i class="fas fa-star me-2"></i>Interface Avis Google</h5>';
+        echo '<p>Cette interface sera développée dans la Phase 2.</p>';
+        echo '<p><strong>Profils détectés :</strong> ' . count($products_summary['google_reviews_profiles']) . '</p>';
+        echo '</div>';
+    }
+
+    /**
+     * Interface unifiée vCard + Avis Google (préparation)
+     */
+    private function render_unified_overview($products_summary) 
+    {
+        echo '<div class="alert alert-success">';
+        echo '<h5><i class="fas fa-layer-group me-2"></i>Dashboard Unifié</h5>';
+        echo '<p>Interface complète vCard + Avis Google - Sera développée en Phase 3.</p>';
+        echo '<p><strong>vCards :</strong> ' . count($products_summary['vcard_profiles']) . 
+             ' | <strong>Avis Google :</strong> ' . count($products_summary['google_reviews_profiles']) . '</p>';
         echo '</div>';
     }
 
