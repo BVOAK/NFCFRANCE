@@ -273,7 +273,7 @@ function nfc_fill_vcard_fields($vcard_id, $order, $identifier, $position)
         'postcode' => $order->get_billing_postcode(),
         'city' => $order->get_billing_city(),
         'country' => $order->get_billing_country(),
-        'order_id' => $order_id,
+        'order' => $order_id,
         'customer_id' => $order->get_customer_id(),
         'card_status' => 'pending', // À configurer
         'card_identifier' => $identifier,
