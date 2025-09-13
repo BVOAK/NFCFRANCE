@@ -209,34 +209,36 @@ class NFC_Enterprise_Tests
             
             // ✅ CORRECTIF: Vérifier les positions (logique corrigée)
             $positions = array_column($order_cards, 'card_position');
+            $positions = array_map('intval', $positions);
             sort($positions); // Trier les positions pour comparaison
+
             $expected_positions = range(1, 5); // [1, 2, 3, 4, 5]
-            
+
             if ($positions === $expected_positions) {
                 $this->log_success("✅ Positions correctes: " . implode(', ', $positions));
             } else {
                 $this->log_error("❌ Positions incorrectes: " . implode(', ', $positions) . " (attendu: " . implode(', ', $expected_positions) . ")");
                 
-                // Debug détaillé
-                error_log("NFC Enterprise Test: Positions détectées: " . print_r($positions, true));
-                error_log("NFC Enterprise Test: Positions attendues: " . print_r($expected_positions, true));
-                
+                // Debug détaillé avec types
                 foreach ($order_cards as $card) {
-                    error_log("NFC Enterprise Test: Carte {$card['vcard_id']} - Position: {$card['card_position']} - Identifiant: {$card['card_identifier']}");
+                    $pos = $card['card_position'];
+                    $type = gettype($pos);
+                    error_log("NFC Enterprise Test: Carte {$card['vcard_id']} - Position: $pos (type: $type)");
                 }
             }
-            
-            // ✅ Vérification des statuts
+
+            // ✅ Vérification des statuts (corriger le statut attendu)
             $statuses = array_column($order_cards, 'card_status');
-            $expected_status = 'configured'; // ou ton statut par défaut
+            $expected_status = 'configured'; // ✅ CHANGER de 'pending' vers 'configured'
+
             $all_status_correct = array_reduce($statuses, function($carry, $status) use ($expected_status) {
                 return $carry && ($status === $expected_status);
             }, true);
-            
+
             if ($all_status_correct) {
                 $this->log_success("✅ Statuts corrects: tous '$expected_status'");
             } else {
-                $this->log_error("❌ Statuts incorrects: " . implode(', ', array_unique($statuses)));
+                $this->log_error("❌ Statuts incorrects: " . implode(', ', array_unique($statuses)) . " (attendu: '$expected_status')");
             }
             
         } else {

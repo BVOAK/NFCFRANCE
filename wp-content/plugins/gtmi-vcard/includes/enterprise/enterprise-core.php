@@ -200,7 +200,7 @@ class NFC_Enterprise_Core
                         'vcard_id' => $additional_vcard_id,
                         'card_position' => $position,
                         'card_identifier' => $additional_identifier,
-                        'card_status' => 'pending',
+                        'card_status' => 'configured',
                         'company_name' => $order->get_billing_company(),
                         'main_user_id' => $order->get_customer_id() ?: 1
                     ]);
@@ -326,7 +326,7 @@ class NFC_Enterprise_Core
                         'vcard_id' => $vcard_id,
                         'card_position' => $position,
                         'card_identifier' => $identifier,
-                        'card_status' => 'pending', // À configurer
+                        'card_status' => 'configured', // À configurer
                         'company_name' => $order->get_billing_company(),
                         'main_user_id' => $order->get_customer_id() ?: 1
                     ]);
