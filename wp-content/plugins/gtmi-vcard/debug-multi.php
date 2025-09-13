@@ -9,6 +9,41 @@
 // Charger WordPress
 require_once('../../../wp-load.php');
 
+// 🚨 FONCTION TEMPORAIRE - À SUPPRIMER APRÈS AVOIR FIXÉ functions.php
+if (!function_exists('gtmi_vcard_is_nfc_product')) {
+    function gtmi_vcard_is_nfc_product($product_id) {
+        error_log("DEBUG: Checking product $product_id for NFC");
+        
+        // Pour les tests, considérer TOUS les produits comme NFC
+        // (à adapter selon tes vrais produits)
+        $product = wc_get_product($product_id);
+        if (!$product) {
+            return false;
+        }
+        
+        $product_name = strtolower($product->get_name());
+        
+        // Mots-clés NFC
+        $nfc_keywords = ['nfc', 'carte', 'vcard', 'virtuelle', 'digital'];
+        foreach ($nfc_keywords as $keyword) {
+            if (strpos($product_name, $keyword) !== false) {
+                error_log("DEBUG: Product $product_id ($product_name) IS NFC");
+                return true;
+            }
+        }
+        
+        // IDs spécifiques (adapte selon tes produits)
+        $nfc_ids = [571, 572, 573, 574, 575];
+        if (in_array($product_id, $nfc_ids)) {
+            error_log("DEBUG: Product $product_id IS NFC (by ID)");
+            return true;
+        }
+        
+        error_log("DEBUG: Product $product_id ($product_name) is NOT NFC");
+        return false;
+    }
+}
+
 // Vérifier les permissions
 if (!current_user_can('administrator')) {
     wp_die('Accès non autorisé');
