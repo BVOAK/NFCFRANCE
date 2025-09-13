@@ -730,7 +730,7 @@ class NFC_Dashboard_Manager
         echo '<div class="alert alert-info">Dashboard Étape 2A actif avec routing</div>';
     }
 
-    private function get_user_vcards($user_id) {
+    public function get_user_vcards($user_id) {
         $enterprise_cards = NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
         
         if (!empty($enterprise_cards)) {
