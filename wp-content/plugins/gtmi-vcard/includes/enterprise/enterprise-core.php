@@ -496,7 +496,7 @@ class NFC_Enterprise_Core
     /**
      * Récupère stats basiques d'une vCard
      */
-    private static function get_vcard_basic_stats($vcard_id) 
+    public static function get_vcard_basic_stats($vcard_id) 
     {
         // Utiliser système existant si disponible
         if (function_exists('gtmi_vcard_get_statistics')) {
