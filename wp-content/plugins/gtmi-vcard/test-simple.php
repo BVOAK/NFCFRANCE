@@ -186,7 +186,8 @@ if ($table_exists && class_exists('NFC_Enterprise_Core')) {
         echo "<div class='info'>📋 Cartes utilisateur: " . count($user_cards) . "</div>";
         
         // Test détection type dashboard
-        $dashboard_type = nfc_get_dashboard_type($user_id);
+        $user_cards = nfc_get_user_vcard_profiles($user_id);
+        $dashboard_info = count($user_cards) . " profils vCard";
         echo "<div class='info'>🖥️ Type dashboard: $dashboard_type</div>";
         
         // Test stats globales

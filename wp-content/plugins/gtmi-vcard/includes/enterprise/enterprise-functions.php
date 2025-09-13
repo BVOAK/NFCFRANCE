@@ -309,3 +309,27 @@ function nfc_enterprise_activate() {
     NFC_Enterprise_Core::create_database_tables();
     flush_rewrite_rules();
 }
+
+/**
+ * Récupère tous les profils Avis Google d'un utilisateur
+ */
+function nfc_get_user_google_reviews_profiles($user_id) {
+    // Pour l'instant retourne un array vide, on implémentera plus tard
+    return [];
+}
+
+/**
+ * Résumé des produits d'un utilisateur pour le dashboard
+ */
+function nfc_get_user_products_summary($user_id) {
+    $vcard_profiles = nfc_get_user_vcard_profiles($user_id);
+    $google_reviews_profiles = nfc_get_user_google_reviews_profiles($user_id);
+    
+    return [
+        'vcard_profiles' => $vcard_profiles,
+        'google_reviews_profiles' => $google_reviews_profiles,
+        'has_vcard' => !empty($vcard_profiles),
+        'has_google_reviews' => !empty($google_reviews_profiles),
+        'total_products' => count($vcard_profiles) + count($google_reviews_profiles)
+    ];
+}

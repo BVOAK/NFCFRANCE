@@ -505,14 +505,65 @@ class NFC_Dashboard_Manager
     /**
      * PAGES INDIVIDUELLES - VERSION TEST
      */
-    private function render_overview_page($vcard)
-    {
-        $template_path = $this->plugin_path . 'templates/dashboard/simple/overview.php';
-        if (file_exists($template_path)) {
-            include $template_path;
-        } else {
-            $this->render_test_page('overview', 'Vue d\'ensemble', $vcard);
+    private function render_overview_page($vcard) {
+        $user_id = get_current_user_id();
+        $products_summary = nfc_get_user_products_summary($user_id);
+        
+        echo '<div class="dashboard-overview">';
+        
+        // Header avec résumé
+        $this->render_dashboard_header($products_summary);
+        
+        // Sections selon les produits de l'utilisateur
+        if ($products_summary['has_vcard']) {
+            $this->render_vcard_section($products_summary);
         }
+        
+        if ($products_summary['has_google_reviews']) {
+            $this->render_google_reviews_section($products_summary);
+        }
+        
+        // Si aucun produit
+        if (!$products_summary['has_vcard'] && !$products_summary['has_google_reviews']) {
+            $this->render_no_products_message();
+        }
+        
+        echo '</div>';
+    }
+
+    private function render_dashboard_header($products_summary) {
+        ?>
+        <div class="dashboard-header">
+            <div class="welcome-section">
+                <h1>Bienvenue sur votre Dashboard NFC</h1>
+                <p>Gérez tous vos profils depuis cette interface unifiée.</p>
+            </div>
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="summary-icon">👤</div>
+                    <div class="summary-content">
+                        <h3><?php echo count($products_summary['vcard_profiles']); ?></h3>
+                        <p>Profils vCard</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">⭐</div>
+                    <div class="summary-content">
+                        <h3><?php echo count($products_summary['google_reviews_profiles']); ?></h3>
+                        <p>Profils Avis Google</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+
+    private function render_vcard_section($products_summary) {
+        include $this->plugin_path . 'templates/dashboard/sections/vcard-profiles-section.php';
+    }
+
+    private function render_google_reviews_section($products_summary) {
+        include $this->plugin_path . 'templates/dashboard/sections/google-reviews-section.php';
     }
 
     private function render_vcard_edit_page($vcard)
