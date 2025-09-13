@@ -165,51 +165,132 @@ if (isset($_GET['action']) && $_GET['action'] === 'test_create') {
         
         // ÉTAPE 5: Traitement enterprise
         echo "<h3>⚙️ Traitement Enterprise</h3>";
+
+if (class_exists('NFC_Enterprise_Core')) {
+    echo "<div class='info'>📝 Début traitement NFC_Enterprise_Core...</div>";
+    
+    // ✅ CORRECTIF: Compter directement en base avant traitement
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'nfc_enterprise_cards';
+    $user_id = $order->get_customer_id() ?: get_current_user_id();
+    
+    $count_before_db = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM $table_name WHERE main_user_id = %d",
+        $user_id
+    ));
+    
+    echo "<div class='info'>📊 Cartes avant traitement (BDD directe): $count_before_db</div>";
+    
+    // Traitement
+    NFC_Enterprise_Core::process_order_vcards($order->get_id());
+    
+    // ✅ CORRECTIF: Compter directement en base après traitement
+    $count_after_db = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM $table_name WHERE main_user_id = %d",
+        $user_id
+    ));
+    
+    // ✅ CORRECTIF: Compter les cartes spécifiques à cette commande
+    $count_for_this_order = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM $table_name WHERE order_id = %d",
+        $order->get_id()
+    ));
+    
+    $cards_created_count = $count_after_db - $count_before_db;
+    
+    echo "<div class='success'>✅ Traitement terminé</div>";
+    echo "<div class='info'>📊 Cartes après traitement (BDD directe): $count_after_db</div>";
+    echo "<div class='info'>📊 Cartes créées (différence): $cards_created_count</div>";
+    echo "<div class='info'>📊 Cartes pour cette commande: $count_for_this_order</div>";
+    
+    // ✅ CORRECTIF: Récupérer les cartes directement de la BDD pour cette commande
+    $order_cards_db = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM $table_name WHERE order_id = %d ORDER BY card_position ASC",
+        $order->get_id()
+    ), ARRAY_A);
+    
+    echo "<h3>📊 Résultat Final (Données BDD Directes)</h3>";
+    
+    $final_count = count($order_cards_db);
+    
+    if ($final_count === 5) {
+        echo "<div class='success'>🎉 <strong>SUCCESS!</strong> $final_count cartes créées pour cette commande (attendu: 5)</div>";
+    } elseif ($final_count > 0) {
+        echo "<div class='warning'>⚠️ <strong>Partiellement réussi:</strong> $final_count cartes créées (attendu: 5)</div>";
+    } else {
+        echo "<div class='error'>❌ <strong>ÉCHEC:</strong> Aucune carte créée</div>";
+    }
+    
+    if (!empty($order_cards_db)) {
+        echo "<h4>📋 Détails des Cartes Créées (BDD Directe)</h4>";
+        echo "<table>";
+        echo "<tr><th>ID</th><th>vCard ID</th><th>Identifiant</th><th>Position</th><th>Statut</th><th>Date Création</th></tr>";
         
-        if (class_exists('NFC_Enterprise_Core')) {
-            $user_id = $order->get_customer_id() ?: get_current_user_id();
-            $cards_before = NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
-            $count_before = count($cards_before);
+        foreach ($order_cards_db as $card) {
+            echo "<tr>";
+            echo "<td>{$card['id']}</td>";
+            echo "<td>{$card['vcard_id']}</td>";
+            echo "<td>{$card['card_identifier']}</td>";
+            echo "<td>{$card['card_position']}</td>";
+            echo "<td>{$card['card_status']}</td>";
+            echo "<td>{$card['created_at']}</td>";
+            echo "</tr>";
+        }
+        echo "</table>";
+        
+        // Debug comparaison get_user_enterprise_cards vs BDD directe
+        echo "<h4>🔍 Debug: Comparaison Méthodes Récupération</h4>";
+        
+        $cards_via_method = NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
+        $cards_method_for_order = array_filter($cards_via_method, function($card) use ($order) {
+            return $card['order_id'] == $order->get_id();
+        });
+        
+        echo "<p><strong>Via get_user_enterprise_cards():</strong> " . count($cards_method_for_order) . " cartes pour cette commande</p>";
+        echo "<p><strong>Via requête BDD directe:</strong> $final_count cartes pour cette commande</p>";
+        
+        if (count($cards_method_for_order) !== $final_count) {
+            echo "<div class='error'>❌ PROBLÈME: Différence entre les deux méthodes de récupération!</div>";
+            echo "<div class='info'>💡 La méthode get_user_enterprise_cards() ne retourne pas les nouvelles cartes</div>";
             
-            NFC_Enterprise_Core::process_order_vcards($order->get_id());
-            
-            $cards_after = NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
-            $count_after = count($cards_after);
-            $cards_created = $count_after - $count_before;
-            
-            echo "<div class='success'>✅ Cartes créées: $cards_created (avant: $count_before, après: $count_after)</div>";
-            
-            // Vérifier résultats
-            if ($cards_created === $nfc_items_found) {
-                echo "<div class='success'>🎉 SUCCESS! Nombre de cartes correct</div>";
-            } else {
-                echo "<div class='error'>❌ Nombre incorrect. Attendu: $nfc_items_found, Créé: $cards_created</div>";
+            // Debug plus poussé
+            echo "<h5>Debug Méthode get_user_enterprise_cards()</h5>";
+            echo "<p>Total cartes via méthode: " . count($cards_via_method) . "</p>";
+            if (!empty($cards_via_method)) {
+                echo "<p>Identifiants via méthode: ";
+                $identifiers = array_column($cards_via_method, 'card_identifier');
+                echo implode(', ', $identifiers) . "</p>";
             }
             
-            // Détails des cartes créées
-            $order_cards = array_filter($cards_after, function($card) use ($order) {
-                return $card['order_id'] == $order->get_id();
-            });
-            
-            if (!empty($order_cards)) {
-                echo "<h4>📋 Cartes Créées</h4>";
-                echo "<table>";
-                echo "<tr><th>vCard ID</th><th>Identifiant</th><th>Position</th><th>Statut</th></tr>";
-                
-                foreach ($order_cards as $card) {
-                    echo "<tr>";
-                    echo "<td>{$card['vcard_id']}</td>";
-                    echo "<td>{$card['card_identifier']}</td>";
-                    echo "<td>{$card['card_position']}</td>";
-                    echo "<td>{$card['card_status']}</td>";
-                    echo "</tr>";
-                }
-                echo "</table>";
-            }
+            echo "<h5>Debug BDD Directe</h5>";
+            echo "<p>Identifiants via BDD: ";
+            $db_identifiers = array_column($order_cards_db, 'card_identifier');
+            echo implode(', ', $db_identifiers) . "</p>";
             
         } else {
-            echo "<div class='error'>❌ Classe NFC_Enterprise_Core introuvable</div>";
+            echo "<div class='success'>✅ Cohérence entre les deux méthodes</div>";
         }
+        
+        // Test des positions
+        echo "<h4>🔍 Debug Positions</h4>";
+        $positions = array_column($order_cards_db, 'card_position');
+        $positions = array_map('intval', $positions); // Convertir en int
+        sort($positions);
+        $expected_positions = range(1, $final_count);
+        
+        echo "<p><strong>Positions trouvées:</strong> " . implode(', ', $positions) . "</p>";
+        echo "<p><strong>Positions attendues:</strong> " . implode(', ', $expected_positions) . "</p>";
+        
+        if ($positions === $expected_positions) {
+            echo "<div class='success'>✅ Positions correctes</div>";
+        } else {
+            echo "<div class='error'>❌ Positions incorrectes</div>";
+        }
+    }
+    
+} else {
+    echo "<div class='error'>❌ Classe NFC_Enterprise_Core introuvable</div>";
+}
         
     } catch (Exception $e) {
         echo "<div class='error'>❌ <strong>Erreur:</strong> " . $e->getMessage() . "</div>";
