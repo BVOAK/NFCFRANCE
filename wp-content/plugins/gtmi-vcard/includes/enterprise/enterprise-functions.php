@@ -7,87 +7,12 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-
 /**
- * Vérifie si un utilisateur a des cartes enterprise
+ * Récupère tous les profils vCard d'un utilisateur
+ * NOUVEAU : Dashboard unique - pas de distinction simple/enterprise
  */
-function nfc_user_has_enterprise_cards($user_id) {
-    $cards = NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
-    return count($cards) > 1; // Plus d'une carte = enterprise
-}
-
-/**
- * Détermine le type de dashboard à afficher
- */
-function nfc_get_dashboard_type($user_id) {
-    if (nfc_user_has_enterprise_cards($user_id)) {
-        return 'enterprise';
-    }
-    return 'simple';
-}
-
-/**
- * Récupère les cartes d'un utilisateur (unifié)
- */
-function nfc_get_user_cards($user_id, $type = 'auto') {
-    if ($type === 'auto') {
-        $type = nfc_get_dashboard_type($user_id);
-    }
-    
-    if ($type === 'enterprise') {
-        return NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
-    }
-    
-    // Fallback pour cartes simples existantes
-    return nfc_get_user_simple_cards($user_id);
-}
-
-/**
- * Récupère cartes simples (compatible avec existant)
- */
-function nfc_get_user_simple_cards($user_id) {
-    $args = [
-        'post_type' => 'virtual_card',
-        'author' => $user_id,
-        'post_status' => 'publish',
-        'posts_per_page' => -1,
-        'meta_query' => [
-            'relation' => 'OR',
-            [
-                'key' => 'is_enterprise_card',
-                'value' => '',
-                'compare' => '='
-            ],
-            [
-                'key' => 'is_enterprise_card',
-                'compare' => 'NOT EXISTS'
-            ]
-        ]
-    ];
-    
-    $vcards = get_posts($args);
-    $cards = [];
-    
-    foreach ($vcards as $vcard) {
-        $cards[] = [
-            'vcard_id' => $vcard->ID,
-            'card_identifier' => 'LEGACY-' . $vcard->ID,
-            'vcard_data' => [
-                'firstname' => get_field('firstname', $vcard->ID),
-                'lastname' => get_field('lastname', $vcard->ID),
-                'society' => get_field('society', $vcard->ID),
-                'service' => get_field('service', $vcard->ID),
-                'email' => get_field('email', $vcard->ID),
-                'is_configured' => true
-            ],
-            'vcard_url' => get_permalink($vcard->ID),
-            'stats' => NFC_Enterprise_Core::get_vcard_basic_stats($vcard->ID),
-            'card_status' => 'active',
-            'created_at' => $vcard->post_date
-        ];
-    }
-    
-    return $cards;
+function nfc_get_user_vcard_profiles($user_id) {
+    return NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
 }
 
 /**

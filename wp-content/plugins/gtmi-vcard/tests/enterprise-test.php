@@ -400,38 +400,6 @@ class NFC_Enterprise_Tests
         echo "</div>";
     }
 
-    private function test_dashboard_type_detection() {
-        echo "<div class='test-section'>";
-        echo "<h2>🖥️ Test 7: Détection Type Dashboard</h2>";
-        
-        try {
-            $user_id = get_current_user_id();
-            
-            // Test détection type dashboard
-            $dashboard_type = nfc_get_dashboard_type($user_id);
-            echo "<p>Type dashboard détecté: <strong>$dashboard_type</strong></p>";
-            
-            $has_enterprise = nfc_user_has_enterprise_cards($user_id);
-            echo "<p>A des cartes enterprise: <strong>" . ($has_enterprise ? 'Oui' : 'Non') . "</strong></p>";
-            
-            $user_cards = nfc_get_user_cards($user_id);
-            echo "<p>Nombre de cartes récupérées: <strong>" . count($user_cards) . "</strong></p>";
-            
-            if ($dashboard_type === 'enterprise' && count($user_cards) > 1) {
-                $this->log_success("✅ Détection enterprise correcte");
-            } elseif ($dashboard_type === 'simple' && count($user_cards) <= 1) {
-                $this->log_success("✅ Détection simple correcte");
-            } else {
-                $this->log_error("❌ Détection type dashboard incorrecte");
-            }
-            
-        } catch (Exception $e) {
-            $this->log_error("❌ Erreur: " . $e->getMessage());
-        }
-        
-        echo "</div>";
-    }
-
     private function test_helper_functions() {
         echo "<div class='test-section'>";
         echo "<h2>🛠️ Test 8: Fonctions Utilitaires</h2>";

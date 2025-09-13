@@ -195,7 +195,8 @@ class NFC_Dashboard_Manager
                 <link href="<?php echo $this->plugin_url; ?>assets/css/vcard-edit.css?v=<?php echo time(); ?>" rel="stylesheet">
             <?php } ?>
             <?php if ($current_page === 'contacts') { ?>
-                <link href="<?php echo $this->plugin_url; ?>assets/css/contacts-manager.css?v=<?php echo time(); ?>" rel="stylesheet">
+                <link href="<?php echo $this->plugin_url; ?>assets/css/contacts-manager.css?v=<?php echo time(); ?>"
+                    rel="stylesheet">
             <?php } ?>
             <?php if ($current_page === 'statitics') { ?>
                 <link href="<?php echo $this->plugin_url; ?>assets/css/statitics.css?v=<?php echo time(); ?>" rel="stylesheet">
@@ -375,10 +376,10 @@ class NFC_Dashboard_Manager
                             search_placeholder: <?php echo json_encode(__('Rechercher un contact...', 'gtmi_vcard')); ?>
                         }
                     };
-                    
+
                     // Debug immédiat
                     console.log('📧 Configuration NFCContacts injectée AVANT script:', window.nfcContactsConfig);
-                    
+
                     // Vérification que tout est là
                     if (window.nfcContactsConfig.vcard_id && window.nfcContactsConfig.api_url) {
                         console.log('✅ Configuration NFCContacts valide');
@@ -386,7 +387,8 @@ class NFC_Dashboard_Manager
                         console.error('❌ Configuration NFCContacts invalide:', window.nfcContactsConfig);
                     }
                 </script>
-                                <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/contacts-manager.js?v=<?php echo time(); ?>"></script>
+                <script
+                    src="<?php echo $this->plugin_url; ?>assets/js/dashboard/contacts-manager.js?v=<?php echo time(); ?>"></script>
 
             <?php } ?>
             <?php if ($current_page === 'statistics') { ?>
@@ -409,7 +411,7 @@ class NFC_Dashboard_Manager
                     };
                     console.log('📊 STATS_CONFIG injecté:', window.STATS_CONFIG);
                 </script>
-                                <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/statistics.js?v=<?php echo time(); ?>"></script>
+                <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/statistics.js?v=<?php echo time(); ?>"></script>
 
             <?php } ?>
 
@@ -677,73 +679,26 @@ class NFC_Dashboard_Manager
         echo '<div class="alert alert-info">Dashboard Étape 2A actif avec routing</div>';
     }
 
-    private function get_user_vcards($user_id)
-{
-    error_log("🔍 DEBUG Dashboard: Recherche vCards pour user_id: {$user_id}");
-    
-    // Méthode 1: Récupérer via les commandes WooCommerce de l'utilisateur
-    $vcards_from_orders = $this->get_vcards_from_user_orders($user_id);
-    if (!empty($vcards_from_orders)) {
-        error_log("📦 Dashboard: " . count($vcards_from_orders) . " vCard(s) trouvée(s) via commandes WooCommerce");
-        foreach ($vcards_from_orders as $vcard) {
-            error_log("📦 vCard via commande: ID {$vcard->ID}, Titre: {$vcard->post_title}");
-        }
-        return $vcards_from_orders;
-    }
-
-    // Méthode 2: Récupérer toutes les vCards de l'utilisateur (ordre date DESC)
-    $args = [
-        'post_type' => 'virtual_card',
-        'author' => $user_id,
-        'post_status' => 'publish',
-        'posts_per_page' => -1,
-        'orderby' => 'date',
-        'order' => 'DESC'
-    ];
-
-    $vcards = get_posts($args);
-    error_log("📊 Dashboard: Recherche par auteur - " . count($vcards) . " vCard(s) trouvée(s)");
-
-    if (!empty($vcards)) {
-        foreach ($vcards as $vcard) {
-            error_log("📊 vCard par auteur: ID {$vcard->ID}, Titre: {$vcard->post_title}, Date: {$vcard->post_date}");
-        }
-        return $vcards;
-    }
-
-    // Méthode 3: Rechercher via meta_query avec différentes clés possibles
-    $meta_keys_to_try = ['user_id', 'user', 'owner_id', 'linked_user'];
-    
-    foreach ($meta_keys_to_try as $meta_key) {
-        $args_meta = [
-            'post_type' => 'virtual_card',
-            'post_status' => 'publish',
-            'posts_per_page' => -1,
-            'meta_query' => [
-                [
-                    'key' => $meta_key,
-                    'value' => $user_id,
-                    'compare' => '='
-                ]
-            ],
-            'orderby' => 'date',
-            'order' => 'DESC'
-        ];
-
-        $vcards_meta = get_posts($args_meta);
-        error_log("🔗 Dashboard: Recherche par meta '{$meta_key}' - " . count($vcards_meta) . " vCard(s) trouvée(s)");
+    private function get_user_vcards($user_id) {
+        $enterprise_cards = NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
         
-        if (!empty($vcards_meta)) {
-            foreach ($vcards_meta as $vcard) {
-                error_log("🔗 vCard via meta '{$meta_key}': ID {$vcard->ID}, Titre: {$vcard->post_title}");
+        if (!empty($enterprise_cards)) {
+            // Convertir au format attendu par le dashboard
+            $vcards = [];
+            foreach ($enterprise_cards as $card) {
+                $vcards[] = get_post($card['vcard_id']);
             }
-            return $vcards_meta;
+            return array_filter($vcards); // Supprimer les nulls
         }
+        
+        // Fallback pour anciennes vCards
+        return get_posts([
+            'post_type' => 'virtual_card',
+            'author' => $user_id,
+            'post_status' => 'publish',
+            'posts_per_page' => -1
+        ]);
     }
-
-    error_log("❌ Dashboard: Aucune vCard trouvée pour user_id: {$user_id}");
-    return [];
-}
 
     /**
      * NOUVEAU: Récupérer les vCards via les commandes WooCommerce

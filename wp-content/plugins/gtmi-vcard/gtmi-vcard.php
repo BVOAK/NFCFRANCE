@@ -107,9 +107,7 @@ function nfc_enterprise_dashboard_scripts() {
     wp_localize_script('jquery', 'nfcEnterprise', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('nfc_enterprise_action'),
-        'userId' => get_current_user_id(),
-        'dashboardType' => function_exists('nfc_get_dashboard_type') ? 
-            nfc_get_dashboard_type(get_current_user_id()) : 'simple'
+        'userId' => get_current_user_id()
     ]);
 }
 
