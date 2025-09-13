@@ -450,7 +450,64 @@ class NFC_Enterprise_Tests
         echo "</div>";
     }
 
+    private function get_test_nfc_product_id() {
+        // ✅ CORRECTION: Debug pour trouver les vrais produits NFC
+        error_log('NFC Enterprise Test: Recherche produits NFC...');
+        
+        // Chercher d'abord avec la fonction existante si elle existe
+        if (function_exists('gtmi_vcard_is_nfc_product')) {
+            $products = wc_get_products([
+                'limit' => 100,
+                'status' => 'publish'
+            ]);
+            
+            foreach ($products as $product) {
+                if (gtmi_vcard_is_nfc_product($product->get_id())) {
+                    error_log('NFC Enterprise Test: Produit NFC trouvé - ID: ' . $product->get_id() . ', Nom: ' . $product->get_name());
+                    return $product->get_id();
+                }
+            }
+        }
+        
+        // ✅ Fallback: Chercher par nom/slug
+        $nfc_keywords = ['nfc', 'vcard', 'carte', 'virtual', 'digitale'];
+        $products = wc_get_products([
+            'limit' => 100,
+            'status' => 'publish'
+        ]);
+        
+        foreach ($products as $product) {
+            $name = strtolower($product->get_name());
+            $slug = strtolower($product->get_slug());
+            
+            foreach ($nfc_keywords as $keyword) {
+                if (strpos($name, $keyword) !== false || strpos($slug, $keyword) !== false) {
+                    error_log('NFC Enterprise Test: Produit candidat trouvé par nom - ID: ' . $product->get_id() . ', Nom: ' . $product->get_name());
+                    return $product->get_id();
+                }
+            }
+        }
+        
+        // ✅ DEBUG: Afficher tous les produits disponibles
+        error_log('NFC Enterprise Test: Aucun produit NFC trouvé. Produits disponibles:');
+        foreach ($products as $product) {
+            error_log('  - ID: ' . $product->get_id() . ', Nom: ' . $product->get_name() . ', Slug: ' . $product->get_slug());
+        }
+        
+        // ✅ Retourner le premier produit comme fallback pour les tests
+        if (!empty($products)) {
+            $fallback = $products[0];
+            error_log('NFC Enterprise Test: Utilisation produit fallback - ID: ' . $fallback->get_id());
+            return $fallback->get_id();
+        }
+        
+        error_log('NFC Enterprise Test: ERREUR - Aucun produit trouvé dans le catalogue');
+        return 571;
+    }
+
     private function create_test_order($quantity = 1, $prefix = 'Test') {
+        error_log("NFC Enterprise Test: Création commande test avec $quantity cartes");
+        
         $order = wc_create_order();
         $order->set_billing_first_name($prefix);
         $order->set_billing_last_name('Enterprise');
@@ -459,45 +516,29 @@ class NFC_Enterprise_Tests
         $order->set_billing_phone('0123456789');
         $order->set_customer_id(get_current_user_id());
         
-        // Supposons que le produit ID 1 est un produit NFC
-        // À adapter selon votre catalogue
+        // ✅ CORRECTION: Trouver un vrai produit NFC
         $product_id = $this->get_test_nfc_product_id();
-        if ($product_id) {
-            $product = wc_get_product($product_id);
-            $order->add_product($product, $quantity);
+        if (!$product_id) {
+            throw new Exception('Aucun produit trouvé dans le catalogue pour les tests');
         }
+        
+        $product = wc_get_product($product_id);
+        if (!$product) {
+            throw new Exception("Produit ID $product_id introuvable");
+        }
+        
+        error_log("NFC Enterprise Test: Utilisation produit - ID: $product_id, Nom: " . $product->get_name());
+        
+        // ✅ Ajouter le produit à la commande
+        $order->add_product($product, $quantity);
         
         $order->calculate_totals();
         $order->set_status('processing');
         $order->save();
         
+        error_log("NFC Enterprise Test: Commande #{$order->get_id()} créée avec $quantity × " . $product->get_name());
+        
         return $order;
-    }
-
-    private function get_test_nfc_product_id() {
-        // Chercher un produit qui pourrait être NFC
-        $products = wc_get_products([
-            'limit' => 50,
-            'status' => 'publish'
-        ]);
-        
-        foreach ($products as $product) {
-            if (function_exists('gtmi_vcard_is_nfc_product') && 
-                gtmi_vcard_is_nfc_product($product->get_id())) {
-                return $product->get_id();
-            }
-            
-            // Fallback: chercher par nom
-            $name = strtolower($product->get_name());
-            if (strpos($name, 'nfc') !== false || 
-                strpos($name, 'vcard') !== false ||
-                strpos($name, 'carte') !== false) {
-                return $product->get_id();
-            }
-        }
-        
-        // Si aucun produit NFC trouvé, utiliser le premier produit
-        return !empty($products) ? $products[0]->get_id() : null;
     }
 
     private function cleanup_test_data() {

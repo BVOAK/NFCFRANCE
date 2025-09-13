@@ -23,9 +23,21 @@ class NFC_Enterprise_Core
             remove_action('woocommerce_order_status_completed', 'gtmi_vcard_new', 10);
         }, 20);
         
-        // Nouveau hook unifié
+        // ✅ CORRECTION: Nouveau hook unifié (une seule méthode)
         add_action('woocommerce_order_status_processing', [__CLASS__, 'process_order_vcards'], 10);
         add_action('woocommerce_order_status_completed', [__CLASS__, 'process_order_vcards'], 10);
+        
+        // ✅ AJOUT: Initialiser le système au démarrage de WordPress
+        add_action('plugins_loaded', [__CLASS__, 'initialize_system']);
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Initialise le système au bon moment
+     */
+    public static function initialize_system() 
+    {
+        // Ne rien faire pour l'instant, juste s'assurer que la classe est prête
+        error_log('NFC Enterprise: Système initialisé');
     }
 
     /**
