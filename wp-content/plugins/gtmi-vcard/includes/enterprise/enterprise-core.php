@@ -74,59 +74,204 @@ class NFC_Enterprise_Core
     }
 
     /**
-     * Traite les commandes - Détecte si simple ou multi-cartes
-     */
-    public static function process_order_vcards($order_id) 
-    {
-        if (!function_exists('wc_get_order')) {
-            return;
-        }
+ * Traite les commandes selon les types de produits
+ */
+public static function process_order_vcards($order_id) 
+{
+    if (!function_exists('wc_get_order')) {
+        return;
+    }
 
-        $order = wc_get_order($order_id);
-        if (!$order) {
-            return;
-        }
+    $order = wc_get_order($order_id);
+    if (!$order) {
+        return;
+    }
 
-        // ✅ CORRECTION: Vérifier duplication dans notre table enterprise
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'nfc_enterprise_cards';
-        $existing_enterprise_cards = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM $table_name WHERE order_id = %d", $order_id
-        ));
-        
-        if ($existing_enterprise_cards > 0) {
-            error_log("NFC Enterprise: Order $order_id already processed in enterprise system ($existing_enterprise_cards cards)");
-            return;
-        }
+    // Vérifier duplication
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'nfc_enterprise_cards';
+    $existing_cards = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM $table_name WHERE order_id = %d", $order_id
+    ));
+    
+    if ($existing_cards > 0) {
+        error_log("NFC Enterprise: Order $order_id already processed ($existing_cards cards)");
+        return;
+    }
 
-        // ✅ Si l'ancien système a déjà traité, migrer vers le nouveau
-        $existing_vcard = $order->get_meta('_gtmi_vcard_vcard_id');
-        if ($existing_vcard) {
-            error_log("NFC Enterprise: Order $order_id processed by old system, migrating vCard $existing_vcard");
-            self::migrate_legacy_vcard_to_enterprise($order, $existing_vcard);
-            return;
-        }
+    // ✅ NOUVEAUTÉ: Analyser les types de produits dans la commande
+    $order_analysis = self::analyze_order_by_categories($order);
+    
+    error_log("NFC Enterprise: Order $order_id analysis: " . json_encode([
+        'vcard_total' => $order_analysis['vcard_total_quantity'],
+        'google_reviews_total' => $order_analysis['google_reviews_total_quantity']
+    ]));
 
-        // Analyser les items de la commande
-        $nfc_items = self::get_nfc_items_from_order($order);
-        
-        if (empty($nfc_items)) {
-            return;
-        }
+    // ✅ Traitement vCard (logique existante étendue)
+    if ($order_analysis['vcard_total_quantity'] > 0) {
+        error_log("NFC Enterprise: Creating {$order_analysis['vcard_total_quantity']} individual vCard profiles");
+        self::process_vcard_products($order, $order_analysis['vcard_items']);
+    }
 
-        $total_cards = 0;
-        foreach ($nfc_items as $item) {
-            $total_cards += $item['quantity'];
-        }
+    // ✅ Traitement Avis Google (nouvelle logique)
+    if ($order_analysis['google_reviews_total_quantity'] > 0) {
+        error_log("NFC Enterprise: Creating 1 shared Google Reviews profile for {$order_analysis['google_reviews_total_quantity']} elements");
+        self::process_google_reviews_products($order, $order_analysis['google_reviews_items']);
+    }
 
-        if ($total_cards === 1) {
-            // Commande simple - utiliser système existant étendu
-            self::create_single_vcard($order, $nfc_items[0]);
-        } else {
-            // Commande multiple - nouveau système enterprise
-            self::create_enterprise_vcards($order, $nfc_items);
+    // Migration legacy si nécessaire
+    $existing_vcard = $order->get_meta('_gtmi_vcard_vcard_id');
+    if ($existing_vcard && $order_analysis['vcard_total_quantity'] === 0 && $order_analysis['google_reviews_total_quantity'] === 0) {
+        error_log("NFC Enterprise: Migrating legacy vCard $existing_vcard");
+        self::migrate_legacy_vcard_to_enterprise($order, $existing_vcard);
+    }
+}
+
+/**
+ * ✅ NOUVELLE: Analyse les produits par catégories
+ */
+private static function analyze_order_by_categories($order) 
+{
+    $analysis = [
+        'vcard_items' => [],
+        'google_reviews_items' => [],
+        'vcard_total_quantity' => 0,
+        'google_reviews_total_quantity' => 0
+    ];
+
+    foreach ($order->get_items() as $item_id => $item) {
+        $product_id = $item->get_product_id();
+        $product_type = nfc_detect_product_type($product_id);
+        $quantity = $item->get_quantity();
+
+        if ($product_type === 'vcard') {
+            $analysis['vcard_items'][] = [
+                'item_id' => $item_id,
+                'item' => $item,
+                'product_id' => $product_id,
+                'quantity' => $quantity,
+                'product_name' => $item->get_product()->get_name()
+            ];
+            $analysis['vcard_total_quantity'] += $quantity;
+
+        } elseif ($product_type === 'google_reviews_card') {
+            $analysis['google_reviews_items'][] = [
+                'item_id' => $item_id,
+                'item' => $item,
+                'product_id' => $product_id,
+                'quantity' => $quantity,
+                'product_name' => $item->get_product()->get_name()
+            ];
+            $analysis['google_reviews_total_quantity'] += $quantity;
         }
     }
+
+    return $analysis;
+}
+
+
+/**
+ * ✅ Traite les produits vCard (logique existante)
+ */
+private static function process_vcard_products($order, $vcard_items) 
+{
+    $created_vcards = [];
+    $global_position = 1; // Position globale pour tous les items vCard
+
+    foreach ($vcard_items as $item_data) {
+        $quantity = $item_data['quantity'];
+        
+        // Créer X vCards individuelles pour cette quantité
+        for ($item_position = 1; $item_position <= $quantity; $item_position++) {
+            $vcard_id = self::create_vcard_post($order, $global_position, $item_data['product_name']);
+            
+            if ($vcard_id) {
+                $identifier = self::generate_card_identifier($order->get_id(), $global_position);
+                
+                self::save_enterprise_card_record([
+                    'order_id' => $order->get_id(),
+                    'vcard_id' => $vcard_id,
+                    'card_position' => $global_position,
+                    'card_identifier' => $identifier,
+                    'card_status' => 'configured',
+                    'company_name' => $order->get_billing_company(),
+                    'main_user_id' => $order->get_customer_id() ?: 1
+                ]);
+
+                self::update_vcard_enterprise_meta($vcard_id, [
+                    'enterprise_order_id' => $order->get_id(),
+                    'enterprise_position' => $global_position,
+                    'card_identifier' => $identifier,
+                    'is_enterprise_card' => 'yes'
+                ]);
+
+                $created_vcards[] = [
+                    'vcard_id' => $vcard_id,
+                    'identifier' => $identifier,
+                    'position' => $global_position
+                ];
+
+                error_log("NFC Enterprise: vCard $vcard_id created with identifier $identifier (position $global_position)");
+                $global_position++;
+            }
+        }
+    }
+
+    // Email notification pour vCards
+    if (!empty($created_vcards)) {
+        do_action('nfc_enterprise_vcards_created', $order->get_id(), $created_vcards);
+    }
+
+    return $created_vcards;
+}
+
+
+/**
+ * ✅ NOUVELLE: Traite les produits Avis Google (profil partagé)
+ */
+private static function process_google_reviews_products($order, $google_reviews_items) 
+{
+    // Pour l'instant, on enregistre juste dans les logs
+    // Tu pourras étendre cette fonction plus tard pour créer le système Avis Google
+    
+    $total_elements = 0;
+    $elements_list = [];
+    
+    foreach ($google_reviews_items as $item_data) {
+        $quantity = $item_data['quantity'];
+        $total_elements += $quantity;
+        
+        // Générer identifiants pour chaque élément
+        for ($position = 1; $position <= $quantity; $position++) {
+            $identifier = "AG{$order->get_id()}-{$position}";
+            $elements_list[] = [
+                'identifier' => $identifier,
+                'product_name' => $item_data['product_name'],
+                'position' => $position,
+                'status' => 'pending'
+            ];
+            
+            error_log("NFC Enterprise: Google Reviews element $identifier created (position $position)");
+        }
+    }
+    
+    // Sauvegarder temporairement dans les métadonnées de commande
+    // En attendant l'implémentation complète du système Avis Google
+    $order->update_meta_data('_google_reviews_elements', json_encode($elements_list));
+    $order->update_meta_data('_google_reviews_total', $total_elements);
+    $order->save();
+    
+    error_log("NFC Enterprise: Google Reviews profile data saved for order {$order->get_id()} ($total_elements elements)");
+    
+    // TODO: Implémenter la création du post_type google_reviews_profile
+    // TODO: Implémenter la table wp_google_reviews_elements
+    
+    return [
+        'total_elements' => $total_elements,
+        'elements' => $elements_list
+    ];
+}
+
 
     /**
      * ✅ NOUVELLE MÉTHODE: Migre une vCard legacy vers le système enterprise
