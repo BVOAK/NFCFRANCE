@@ -16,12 +16,12 @@ class NFC_Enterprise_Core
     public static function init() 
     {
         add_action('init', [__CLASS__, 'create_database_tables']);
-        add_action('woocommerce_order_status_processing', [__CLASS__, 'handle_enterprise_order'], 20);
-        add_action('woocommerce_order_status_completed', [__CLASS__, 'handle_enterprise_order'], 20);
         
-        // Hooks pour compatibilité avec système existant
-        remove_action('woocommerce_order_status_processing', 'gtmi_vcard_new', 10);
-        remove_action('woocommerce_order_status_completed', 'gtmi_vcard_new', 10);
+        // Hooks pour compatibilité avec système existant (sécurisés)
+        add_action('init', function() {
+            remove_action('woocommerce_order_status_processing', 'gtmi_vcard_new', 10);
+            remove_action('woocommerce_order_status_completed', 'gtmi_vcard_new', 10);
+        }, 20);
         
         // Nouveau hook unifié
         add_action('woocommerce_order_status_processing', [__CLASS__, 'process_order_vcards'], 10);

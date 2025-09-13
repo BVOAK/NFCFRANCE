@@ -143,9 +143,7 @@ function nfc_ajax_update_card_status() {
 }
 
 // 🆕 Tests en mode développement
-if (defined('WP_DEBUG') && WP_DEBUG) {
-    require_once plugin_dir_path(__FILE__) . 'tests/enterprise-test.php';
-}
+require_once plugin_dir_path(__FILE__) . 'tests/enterprise-test.php';
 
 // Routes API REST vCard (existant)
 add_action('rest_api_init', function() {
