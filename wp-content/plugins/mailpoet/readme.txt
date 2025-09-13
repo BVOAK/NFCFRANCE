@@ -3,7 +3,7 @@ Contributors: mailpoet, woocommerce, automattic
 Tags: email marketing, post notification, woocommerce emails, email automation, newsletter
 Requires at least: 6.7
 Tested up to: 6.8
-Stable tag: 5.14.0
+Stable tag: 5.14.2
 Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -227,9 +227,9 @@ Check our [Knowledge Base](https://kb.mailpoet.com) or contact us through our [s
 
 == Changelog ==
 
-= 5.14.0 - 2025-08-25 =
-* Updated: Update the email editor version;
-* Fixed: Fix: license expiration notice was displayed only on the Plugins page; it now appears on all MailPoet admin pages;
-* Fixed: Fix the error "Call to a member function format on null"..
+= 5.14.2 - 2025-09-09 =
+* Improved: Optimized log cleanup by moving it to a dedicated recurring task.;
+* Improved: Enhanced CAPTCHA form HTML output processing;
+* Fixed: Invalid product attributes may break the Segments page.
 
 [See the changelog for all versions.](https://github.com/mailpoet/mailpoet/blob/trunk/mailpoet/changelog.txt)

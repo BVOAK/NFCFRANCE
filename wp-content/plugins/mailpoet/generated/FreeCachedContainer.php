@@ -264,6 +264,7 @@ class FreeCachedContainer extends Container
             'MailPoet\\Cron\\Workers\\InactiveSubscribers' => 'getInactiveSubscribersService',
             'MailPoet\\Cron\\Workers\\KeyCheck\\PremiumKeyCheck' => 'getPremiumKeyCheckService',
             'MailPoet\\Cron\\Workers\\KeyCheck\\SendingServiceKeyCheck' => 'getSendingServiceKeyCheckService',
+            'MailPoet\\Cron\\Workers\\LogCleanup' => 'getLogCleanupService',
             'MailPoet\\Cron\\Workers\\Mixpanel' => 'getMixpanelService',
             'MailPoet\\Cron\\Workers\\NewsletterTemplateThumbnails' => 'getNewsletterTemplateThumbnailsService',
             'MailPoet\\Cron\\Workers\\ReEngagementEmailsScheduler' => 'getReEngagementEmailsSchedulerService',
@@ -3148,6 +3149,16 @@ class FreeCachedContainer extends Container
     protected function getSendingServiceKeyCheckService()
     {
         return $this->services['MailPoet\\Cron\\Workers\\KeyCheck\\SendingServiceKeyCheck'] = new \MailPoet\Cron\Workers\KeyCheck\SendingServiceKeyCheck(($this->services['MailPoet\\Settings\\SettingsController'] ?? $this->getSettingsControllerService()), ($this->services['MailPoet\\Config\\ServicesChecker'] ?? ($this->services['MailPoet\\Config\\ServicesChecker'] = new \MailPoet\Config\ServicesChecker())), ($this->services['MailPoet\\Cron\\CronWorkerScheduler'] ?? $this->getCronWorkerSchedulerService()));
+    }
+
+    /**
+     * Gets the public 'MailPoet\Cron\Workers\LogCleanup' shared autowired service.
+     *
+     * @return \MailPoet\Cron\Workers\LogCleanup
+     */
+    protected function getLogCleanupService()
+    {
+        return $this->services['MailPoet\\Cron\\Workers\\LogCleanup'] = new \MailPoet\Cron\Workers\LogCleanup(($this->services['MailPoet\\Logging\\LogRepository'] ?? $this->getLogRepositoryService()));
     }
 
     /**

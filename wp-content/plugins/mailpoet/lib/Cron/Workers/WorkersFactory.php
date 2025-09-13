@@ -35,6 +35,7 @@ class WorkersFactory {
     BackfillEngagementData::TASK_TYPE,
     Mixpanel::TASK_TYPE,
     AbandonedCartWorker::TASK_TYPE,
+    LogCleanup::TASK_TYPE,
   ];
 
   /** @var ContainerWrapper */
@@ -89,6 +90,11 @@ class WorkersFactory {
   /** @return ExportFilesCleanup */
   public function createExportFilesCleanupWorker() {
     return $this->container->get(ExportFilesCleanup::class);
+  }
+
+  /** @return LogCleanup */
+  public function createLogCleanupWorker() {
+    return $this->container->get(LogCleanup::class);
   }
 
   /** @return InactiveSubscribers */

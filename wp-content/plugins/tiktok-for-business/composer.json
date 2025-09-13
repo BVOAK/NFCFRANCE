@@ -1,8 +1,8 @@
 {
-	"require": {},
 	"require-dev": {
 		"woocommerce/woocommerce-sniffs": "1.0.0",
-		"sirbrillig/phpcs-changed": "^2.11.1"
+		"sirbrillig/phpcs-changed": "^2.11.1",
+		"php-stubs/wordpress-stubs": "^6.8"
 	},
 	"config": {
 		"allow-plugins": {

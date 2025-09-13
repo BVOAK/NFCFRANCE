@@ -11,6 +11,8 @@
         init() {
             console.log('🔧 NFC Admin Downloads initialisé');
             console.log('📝 nfcAdminAjax config:', nfcAdminAjax);
+            console.log('📍 Page actuelle:', window.location.href);
+            console.log('🎯 jQuery version:', $.fn.jquery);
             this.bindEvents();
         },
 
@@ -49,28 +51,80 @@
                 return;
             }
             
+            console.log('📸 Début téléchargement screenshot:', {orderId, itemId});
+            
             // Feedback visuel
             const originalText = $button.text();
             $button.text('⏳ Téléchargement...');
             $button.prop('disabled', true);
             
-            // Construire URL de téléchargement
-            const downloadUrl = `${nfcAdminAjax.ajax_url}?action=nfc_download_screenshot&order_id=${orderId}&item_id=${itemId}&_wpnonce=${nfcAdminAjax.nonce}`;
-            
-            // Déclencher téléchargement
-            this.triggerDownload(downloadUrl, `nfc-screenshot-commande-${orderId}-item-${itemId}.png`)
-                .then(() => {
+            // ✅ FIX: Utiliser POST au lieu de GET pour WordPress AJAX
+            $.ajax({
+                url: nfcAdminAjax.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'nfc_download_screenshot',
+                    order_id: orderId,
+                    item_id: itemId,
+                    _wpnonce: nfcAdminAjax.nonce
+                },
+                xhrFields: {
+                    responseType: 'blob' // Important pour les fichiers binaires
+                },
+                success: (data, textStatus, xhr) => {
+                    console.log('✅ Screenshot reçu, déclenchement téléchargement...');
+                    
+                    // Créer un blob URL et déclencher le téléchargement
+                    const blob = new Blob([data], {type: 'image/png'});
+                    const url = window.URL.createObjectURL(blob);
+                    
+                    // Nom de fichier depuis les headers si disponible
+                    let filename = 'nfc-screenshot.png';
+                    const contentDisposition = xhr.getResponseHeader('Content-Disposition');
+                    if (contentDisposition) {
+                        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+                        if (filenameMatch) {
+                            filename = filenameMatch[1];
+                        }
+                    }
+                    
+                    // Déclencher téléchargement
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = filename;
+                    link.style.display = 'none';
+                    
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Nettoyer l'URL blob
+                    window.URL.revokeObjectURL(url);
+                    
                     console.log('✅ Screenshot téléchargé avec succès');
-                })
-                .catch((error) => {
-                    console.error('❌ Erreur téléchargement screenshot:', error);
-                    alert('❌ Erreur lors du téléchargement du screenshot');
-                })
-                .finally(() => {
+                },
+                error: (xhr, textStatus, errorThrown) => {
+                    console.error('❌ Erreur téléchargement screenshot:', {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        textStatus,
+                        errorThrown
+                    });
+                    
+                    // Essayer de lire le message d'erreur
+                    let errorMessage = `Erreur ${xhr.status}`;
+                    if (xhr.responseText) {
+                        errorMessage += `: ${xhr.responseText.substring(0, 100)}`;
+                    }
+                    
+                    alert(`❌ Erreur lors du téléchargement du screenshot\n${errorMessage}`);
+                },
+                complete: () => {
                     // Restaurer bouton
                     $button.text(originalText);
                     $button.prop('disabled', false);
-                });
+                }
+            });
         },
 
         /**

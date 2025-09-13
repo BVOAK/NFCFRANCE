@@ -76,8 +76,8 @@ class Tt4b_Mapi_Class {
 	 * @return string
 	 */
 	public function mapi_post( $endpoint, $access_token, $params, $version, $blocking = true ) {
-		$url  = $this->mapi_url . $version . '/' . $endpoint;
-		$args = array(
+		$url      = $this->mapi_url . $version . '/' . $endpoint;
+		$args     = array(
 			'blocking'    => $blocking,
 			'method'      => 'POST',
 			'data_format' => 'body',
@@ -88,7 +88,7 @@ class Tt4b_Mapi_Class {
 			'body'        => json_encode( $params ),
 		);
 		$response = wp_remote_post( $url, $args );
-		if ($blocking) {
+		if ( $blocking ) {
 			$this->logger->log_request( $url, $args );
 			$this->logger->log_response( __METHOD__, $response );
 		}
@@ -144,7 +144,7 @@ class Tt4b_Mapi_Class {
 			'external_business_id' => $external_business_id,
 			'full_data'            => 1,
 		);
-		$result = $this->mapi_get( $url, $access_token, $params, 'v1.2' );
+		$result = $this->mapi_get( $url, $access_token, $params, 'v1.2' ); // TODO: update to v1.3.
 		return $result;
 	}
 
@@ -198,7 +198,7 @@ class Tt4b_Mapi_Class {
 			'body'        => json_encode( $params ),
 		);
 		$response = wp_remote_post( $url, $args );
-		if ($blocking) {
+		if ( $blocking ) {
 			$this->logger->log_request( $url, $args );
 			$this->logger->log_response( __METHOD__, $response );
 		}
@@ -253,7 +253,11 @@ class Tt4b_Mapi_Class {
 			'tenure'               => $tenure,
 			'extra_data'           => $current_tiktok_for_woocommerce_version,
 		);
-		$this->mapi_post( $url, $access_token, $params, 'v1.2' );
+		$this->mapi_post( $url, $access_token, $params, 'v1.2' ); // TODO: update to v1.3.
+
+		// Send partner insights data.
+		$insights_data = $this->collect_partner_insights_data( $days_since_first_order );
+		$this->partner_insights_update( get_option( 'tt4b_external_data' ), $insights_data );
 	}
 
 	/**
@@ -460,9 +464,278 @@ class Tt4b_Mapi_Class {
 	}
 
 	/**
+	 * Update partner insights data
+	 *
+	 * @param string $external_data The external data.
+	 * @param array  $insights_data Partner insights data payload.
+	 *
+	 * @return string
+	 */
+	public function partner_insights_update( $external_data, $insights_data ) {
+		$base_url = 'https://biz-api.tiktok.com/plugin/v1.0/partner_insights/update/';
+		$url      = $base_url . '?external_data=' . $external_data;
+		$args     = array(
+			'method'      => 'POST',
+			'data_format' => 'body',
+			'headers'     => array(
+				'Content-Type' => 'application/json',
+			),
+			'body'        => json_encode( $insights_data ),
+		);
+		$this->logger->log_request( $url, $args );
+		$response = wp_remote_post( $url, $args );
+		$this->logger->log_response( __METHOD__, $response );
+		return wp_remote_retrieve_body( $response );
+	}
+
+	/**
+	 * Collect partner insights data
+	 *
+	 * @param integer $store_tenure Store tenure in days.
+	 *
+	 * @return array
+	 */
+	public function collect_partner_insights_data( $store_tenure ) {
+		// Get WordPress admin user info for contact details.
+		$admin_user = get_user_by( 'email', get_option( 'admin_email' ) );
+		$l30_gmv    = $this->get_last_30_days_gmv();
+		$l30_orders = $this->get_last_30_days_orders();
+
+		$advertiser_id = get_option( 'tt4b_advertiser_id' ) ?: '';
+		$email         = get_option( 'admin_email', '' ) ?: '';
+		$phone         = get_option( 'woocommerce_store_phone' ) ?: '';
+
+		// Validate that at least one of advertiser_id, email, phone are not empty
+		if ( empty( $advertiser_id ) && empty( $email ) && empty( $phone ) ) {
+			$logger = new Logger();
+			$logger->log( __METHOD__, 'Partner insights data collection failed: advertiser_id, email, and phone are all empty' );
+			return array();
+		}
+
+		return array(
+			'contact_info'      => array(
+				'advertiser_id' => $advertiser_id,
+				'email'         => $email,
+				'phone'         => $phone, // need to explicitly set default to empty string here or else WP defaults empty string to false
+				'first_name'    => $admin_user && $admin_user->first_name ? $admin_user->first_name : '',
+				'last_name'     => $admin_user && $admin_user->last_name ? $admin_user->last_name : '',
+			),
+			'company_info'      => array(
+				'registration_country' => $this->get_store_country(),
+				'website_url'          => $this->get_website_url(),
+				'number_skus'          => $this->get_product_count(),
+				'has_google_pixel'     => $this->has_google_analytics(),
+				'has_meta_pixel'       => $this->has_facebook_pixel(),
+				'store_tenure'         => round( $store_tenure / 365, 1 ), // 'store_tenure' is in years
+			),
+			'budget_indicators' => array(
+				'l30gmv'    => $this->calculate_gmv_tier( $l30_gmv ),
+				'l30orders' => $this->calculate_orders_tier( $l30_orders ),
+			),
+			'plan_type'         => 'defaultplan',
+			'other_indicators'  => json_encode(
+				array(
+					'plugin_version'      => get_option( 'tt4b_version', '1.0.0' ),
+					'woocommerce_version' => defined( 'WC_VERSION' ) ? WC_VERSION : 'unknown',
+				)
+			),
+		);
+	}
+
+	/**
+	 * Get last 30 days' GMV
+	 *
+	 * @return integer
+	 */
+	private function get_last_30_days_gmv() {
+		if ( ! function_exists( 'wc_get_orders' ) ) {
+			return 0;
+		}
+
+		$thirty_days_ago = gmdate( 'Y-m-d H:i:s', strtotime( '-30 days' ) );
+		$orders          = wc_get_orders(
+			array(
+				'status'       => array( 'wc-completed', 'wc-processing' ),
+				'date_created' => '>=' . $thirty_days_ago,
+				'limit'        => -1,
+			)
+		);
+
+		$l30_gmv = 0;
+		foreach ( $orders as $order ) {
+			if ( $order && $order->get_total() > 0 ) {
+				$l30_gmv += $order->get_total();
+			}
+		}
+
+		return intval( $l30_gmv );
+	}
+
+	/**
+	 * Get last 30 days' order count
+	 *
+	 * @return integer
+	 */
+	private function get_last_30_days_orders() {
+		if ( ! function_exists( 'wc_get_orders' ) ) {
+			return 0;
+		}
+
+		$thirty_days_ago = gmdate( 'Y-m-d H:i:s', strtotime( '-30 days' ) );
+		$orders          = wc_get_orders(
+			array(
+				'status'       => array( 'wc-completed', 'wc-processing' ),
+				'date_created' => '>=' . $thirty_days_ago,
+				'limit'        => -1,
+			)
+		);
+
+		return count( $orders );
+	}
+
+	/**
+	 * Calculate orders tier based on order count
+	 *
+	 * @param integer $order_count Number of orders.
+	 *
+	 * @return string
+	 */
+	private function calculate_orders_tier( $order_count ) {
+		if ( $order_count > 50000 ) {
+			return 'TIER_10';
+		} elseif ( $order_count >= 26000 ) {
+			return 'TIER_9';
+		} elseif ( $order_count >= 10001 ) {
+			return 'TIER_8';
+		} elseif ( $order_count >= 5001 ) {
+			return 'TIER_7';
+		} elseif ( $order_count >= 1001 ) {
+			return 'TIER_6';
+		} elseif ( $order_count >= 501 ) {
+			return 'TIER_5';
+		} elseif ( $order_count >= 201 ) {
+			return 'TIER_4';
+		} elseif ( $order_count >= 51 ) {
+			return 'TIER_3';
+		} elseif ( $order_count >= 26 ) {
+			return 'TIER_2';
+		} else {
+			return 'TIER_1';
+		}
+	}
+
+	/**
+	 * Get store country
+	 *
+	 * @return string
+	 */
+	private function get_store_country() {
+		if ( function_exists( 'wc_get_base_location' ) ) {
+			$location = wc_get_base_location();
+			if ( $location['country'] ) {
+				return $location['country'];
+			} else {
+				return 'default';
+			}
+		}
+		return 'default';
+	}
+
+	/**
+	 * Get website URL
+	 *
+	 * @return string
+	 */
+	private function get_website_url() {
+		$url = get_site_url();
+		return str_replace( array( 'http://', 'https://' ), '', $url );
+	}
+
+	/**
+	 * Get product count
+	 *
+	 * @return integer
+	 */
+	private function get_product_count() {
+		if ( function_exists( 'wc_get_products' ) ) {
+			$products = wc_get_products(
+				array(
+					'limit'  => -1,
+					'return' => 'ids',
+				)
+			);
+			return count( $products );
+		}
+		return 0;
+	}
+
+	/**
+	 * Check if Google Analytics is present
+	 *
+	 * @return boolean
+	 */
+	private function has_google_analytics() {
+		// Check for common GA patterns in options or active plugins.
+		$ga_options = array( 'googleanalytics_account', 'ga_id', 'google_analytics' );
+		foreach ( $ga_options as $option ) {
+			if ( get_option( $option ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Check if Facebook Pixel is present
+	 *
+	 * @return boolean
+	 */
+	private function has_facebook_pixel() {
+		// Check for common FB pixel patterns.
+		$fb_options = array( 'facebook_pixel_id', 'fb_pixel_id' );
+		foreach ( $fb_options as $option ) {
+			if ( get_option( $option ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Calculate GMV tier based on total GMV
+	 *
+	 * @param integer $total_gmv Total GMV amount.
+	 *
+	 * @return string
+	 */
+	private function calculate_gmv_tier( $total_gmv ) {
+		if ( $total_gmv > 300000 ) {
+			return 'TIER_10';
+		} elseif ( $total_gmv >= 200001 ) {
+			return 'TIER_9';
+		} elseif ( $total_gmv >= 100001 ) {
+			return 'TIER_8';
+		} elseif ( $total_gmv >= 50001 ) {
+			return 'TIER_7';
+		} elseif ( $total_gmv >= 20001 ) {
+			return 'TIER_6';
+		} elseif ( $total_gmv >= 15001 ) {
+			return 'TIER_5';
+		} elseif ( $total_gmv >= 10001 ) {
+			return 'TIER_4';
+		} elseif ( $total_gmv >= 5001 ) {
+			return 'TIER_3';
+		} elseif ( $total_gmv >= 1001 ) {
+			return 'TIER_2';
+		} else {
+			return 'TIER_1';
+		}
+	}
+
+	/**
 	 * TTS Disconnect
 	 *
-	 * @param string $external_data The external data
+	 * @param string $external_data The external data.
 	 *
 	 * @return void
 	 */

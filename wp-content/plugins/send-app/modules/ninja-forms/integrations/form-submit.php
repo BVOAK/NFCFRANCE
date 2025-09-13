@@ -27,7 +27,7 @@ class Form_Submit extends Form_Submit_Base {
 			'fields' => $form_data['fields'] ?? [],
 		];
 
-		$this->on_form_submit( $record, null );
+		$this->on_form_submit( $record, $form_data );
 	}
 
 	protected function register_submit_hook() {

@@ -3,7 +3,7 @@ Contributors: tiktokforbusiness, woocommerce, automattic
 Tags: tiktok
 Requires at least: 5.7.0
 Tested up to: 6.7.2
-Stable tag: 1.3.5
+Stable tag: 1.3.6
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -191,6 +191,9 @@ Order Cancellations, returns, and refunds can only be managed in [Seller Center.
 Please [open a support ticket](https://woo.com/contact-us/).
 
 == Changelog ==
+2025-09-10 - version 1.3.6
+* Update - Add partner enrichment API for high value sales team enablement
+
 2025-08-04 - version 1.3.5
 * Fix - Check for null response on product controller to avoid action scheduler failed jobs
 

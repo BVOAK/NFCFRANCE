@@ -2,10 +2,10 @@
 # This file is distributed under the same license as the WooPayments package.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooPayments 9.8.0\n"
+"Project-Id-Version: WooPayments 9.9.0\n"
 "Report-Msgid-Bugs-To: "
 "https://wordpress.org/support/plugin/woocommerce-payments\n"
-"POT-Creation-Date: 2025-08-13 08:54:31+00:00\n"
+"POT-Creation-Date: 2025-09-03 07:09:00+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -14,27 +14,68 @@ msgstr ""
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "X-Generator: node-wp-i18n 1.2.5\n"
 
-#: includes/admin/class-wc-payments-admin-settings.php:58
-msgid "You are using a test account. "
+#: includes/admin/class-wc-payments-admin-settings.php:93
+#. translators: %s: WooPayments
+msgid "%s is in test mode — all transactions are simulated!"
 msgstr ""
 
-#: includes/admin/class-wc-payments-admin-settings.php:63
+#: includes/admin/class-wc-payments-admin-settings.php:101
+#. translators: 1: Anchor opening tag; 2: Anchor closing tag
+msgid ""
+"You can use %1$stest card numbers%2$s to simulate various types of "
+"transactions."
+msgstr ""
+
+#: includes/admin/class-wc-payments-admin-settings.php:140
+msgid "You are using a test account."
+msgstr ""
+
+#: includes/admin/class-wc-payments-admin-settings.php:145
 #. translators: %s: URL to learn more
 msgid ""
 "Provide additional details about your business so you can begin accepting "
-"real payments. <a href=\"%s\" target=\"_blank\" rel=\"noreferrer "
-"noopener\">Learn more</a>"
+"real payments. %1$sLearn more%2$s"
 msgstr ""
 
-#: includes/admin/class-wc-payments-admin-settings.php:71
-#: dist/settings.js:1
+#: includes/admin/class-wc-payments-admin-settings.php:150
+#: includes/admin/class-wc-payments-admin-settings.php:231
+msgid ""
+"⚠️ Development mode is enabled for the store! There can be no live "
+"onboarding process while using development, testing, or staging WordPress "
+"environments!"
+msgstr ""
+
+#: includes/admin/class-wc-payments-admin-settings.php:154
+#: includes/admin/class-wc-payments-admin-settings.php:235
+#. translators: 1: Anchor opening tag; 2: Anchor closing tag; 3: Anchor opening
+#. tag; 4: Anchor closing tag
+msgid ""
+"To begin accepting real payments, please go to the live store or change "
+"your %1$sWordPress environment%2$s to a production one. %3$sLearn more%4$s"
+msgstr ""
+
+#: includes/admin/class-wc-payments-admin-settings.php:166
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/components/sandbox-mode-switch-to-live-notice/modal/index.tsx:59
 #: client/overview/task-list/strings.tsx:89
 msgid "Activate payments"
 msgstr ""
 
-#: includes/admin/class-wc-payments-admin-settings.php:102
+#: includes/admin/class-wc-payments-admin-settings.php:219
+msgid "You are using a sandbox test account."
+msgstr ""
+
+#: includes/admin/class-wc-payments-admin-settings.php:224
+#. translators: 1: Anchor opening tag; 2: Anchor closing tag; 3: Anchor opening
+#. tag; 4: Anchor closing tag
+msgid ""
+"To begin accepting real payments you will need to first %1$sreset your "
+"account%2$s and, then, provide additional details about your business. "
+"%3$sLearn more%4$s"
+msgstr ""
+
+#: includes/admin/class-wc-payments-admin-settings.php:257
 #: includes/admin/class-wc-payments-admin.php:492
 #: includes/admin/class-wc-payments-admin.php:1151
 #: dist/settings.js:1
@@ -134,7 +175,7 @@ msgstr ""
 
 #: includes/admin/class-wc-payments-admin.php:512
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:91
+#: client/deposits/details/index.tsx:90
 #: client/index.js:117
 msgid "Payout details"
 msgstr ""
@@ -154,6 +195,7 @@ msgstr ""
 
 #: includes/admin/class-wc-payments-admin.php:538
 #: dist/index.js:1
+#: client/disputes/new-evidence/index.tsx:608
 #: client/index.js:196
 #: client/payment-details/dispute-details/dispute-awaiting-response-details.tsx:129
 msgid "Challenge dispute"
@@ -348,7 +390,7 @@ msgstr ""
 #: includes/admin/class-wc-rest-payments-orders-controller.php:215
 #: includes/admin/class-wc-rest-payments-orders-controller.php:326
 #: includes/admin/class-wc-rest-payments-orders-controller.php:556
-#: includes/class-wc-payment-gateway-wcpay.php:3792
+#: includes/class-wc-payment-gateway-wcpay.php:3801
 msgid "Unknown error"
 msgstr ""
 
@@ -663,18 +705,18 @@ msgstr ""
 #: dist/blocks-checkout.js:1
 #: dist/checkout.js:1
 #: client/checkout/blocks/payment-processor.js:159
-#: client/checkout/classic/payment-processing.js:566
+#: client/checkout/classic/payment-processing.js:575
 msgid ""
 "Invalid or missing payment details. Please ensure the provided payment "
 "method is correctly entered."
 msgstr ""
 
 #: includes/class-payment-information.php:281
-#: includes/class-wc-payment-gateway-wcpay.php:1624
-#: includes/class-wc-payment-gateway-wcpay.php:1966
-#: includes/class-wc-payment-gateway-wcpay.php:3495
-#: includes/class-wc-payment-gateway-wcpay.php:3508
-#: includes/class-wc-payment-gateway-wcpay.php:3520
+#: includes/class-wc-payment-gateway-wcpay.php:1633
+#: includes/class-wc-payment-gateway-wcpay.php:1975
+#: includes/class-wc-payment-gateway-wcpay.php:3504
+#: includes/class-wc-payment-gateway-wcpay.php:3517
+#: includes/class-wc-payment-gateway-wcpay.php:3529
 msgid "We're not able to process this payment. Please try again later."
 msgstr ""
 
@@ -783,7 +825,7 @@ msgstr ""
 
 #: includes/class-wc-payment-gateway-wcpay.php:473
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:78
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:79
 msgid "Only icon"
 msgstr ""
 
@@ -808,10 +850,14 @@ msgid "Select the button theme you would like to show."
 msgstr ""
 
 #: includes/class-wc-payment-gateway-wcpay.php:486
+#: dist/settings.js:1
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:98
 msgid "Dark"
 msgstr ""
 
 #: includes/class-wc-payment-gateway-wcpay.php:487
+#: dist/settings.js:1
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:106
 msgid "Light"
 msgstr ""
 
@@ -918,31 +964,31 @@ msgid ""
 "your account."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1013
-#: includes/class-wc-payment-gateway-wcpay.php:1018
+#: includes/class-wc-payment-gateway-wcpay.php:1022
+#: includes/class-wc-payment-gateway-wcpay.php:1027
 msgid "Return to payments"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1047
+#: includes/class-wc-payment-gateway-wcpay.php:1056
 msgid "Save payment information to my account for future purchases."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1093
+#: includes/class-wc-payment-gateway-wcpay.php:1102
 msgid "Invalid phone number."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1103
-#: includes/class-wc-payment-gateway-wcpay.php:3486
+#: includes/class-wc-payment-gateway-wcpay.php:1112
+#: includes/class-wc-payment-gateway-wcpay.php:3495
 msgid ""
 "We're not able to process this payment. Please refresh the page and try "
 "again."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1111
+#: includes/class-wc-payment-gateway-wcpay.php:1120
 msgid "Your payment was not processed."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1169
+#: includes/class-wc-payment-gateway-wcpay.php:1178
 #: includes/compat/subscriptions/trait-wc-payment-gateway-wcpay-subscriptions.php:388
 #. translators: %1: the failed payment amount, %2: error message
 msgid ""
@@ -950,18 +996,18 @@ msgid ""
 "message: <code>%2$s</code>."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1186
+#: includes/class-wc-payment-gateway-wcpay.php:1195
 #. translators: %1: the failed payment amount, %2: error message
 msgid "A payment of %1$s <strong>failed</strong>. %2$s"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1191
+#: includes/class-wc-payment-gateway-wcpay.php:1200
 msgid ""
 "We couldn’t verify the postal code in the billing address. If the issue "
 "persists, suggest the customer to reach out to the card issuing bank."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1220
+#: includes/class-wc-payment-gateway-wcpay.php:1229
 #. translators: %1: the failed payment amount
 msgid ""
 "A payment of %1$s <strong>failed</strong> to complete because of too many "
@@ -969,33 +1015,33 @@ msgid ""
 "more attempts temporarily."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1463
+#: includes/class-wc-payment-gateway-wcpay.php:1472
 #. translators: %1: the last 4 digit of the credit card
 msgid "Payment method is changed to: <strong>Credit card ending in %1$s</strong>."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1475
+#: includes/class-wc-payment-gateway-wcpay.php:1484
 #: includes/payment-methods/class-cc-payment-method.php:104
 msgid "Credit / Debit Cards"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1513
+#: includes/class-wc-payment-gateway-wcpay.php:1522
 #. translators: %s: metadata. We do not need to translate WooPayMeta
 msgid ""
 "We're not able to process this payment. Please try again later. WooPayMeta: "
 "intent_meta_order_id: %1$s, order_id: %2$s"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:1840
+#: includes/class-wc-payment-gateway-wcpay.php:1849
 msgid "Payment method successfully added."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:2028
+#: includes/class-wc-payment-gateway-wcpay.php:2037
 #. translators: localized exception message
 msgid "UPE payment failed: %s"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:2277
+#: includes/class-wc-payment-gateway-wcpay.php:2286
 #. translators: an error message which will appear if a user tries to refund an
 #. order which is has been authorized but not yet charged.
 msgid ""
@@ -1005,63 +1051,63 @@ msgid ""
 "trigger a refund via the 'Refund' button."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:2291
+#: includes/class-wc-payment-gateway-wcpay.php:2300
 msgid "The refund amount is not valid."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:2319
+#: includes/class-wc-payment-gateway-wcpay.php:2328
 msgid ""
 "You shall refund this payment in the same application where the payment was "
 "made."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:2345
+#: includes/class-wc-payment-gateway-wcpay.php:2354
 #. translators: %1: the successfully charged amount, %2: error message
 msgid "A refund of %1$s failed to complete: %2$s"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:2362
+#: includes/class-wc-payment-gateway-wcpay.php:2371
 #. translators: %1$: order id.
 msgid "A refund cannot be found for order: %1$s"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3201
+#: includes/class-wc-payment-gateway-wcpay.php:3210
 msgid "Failed to update Stripe account. "
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3231
+#: includes/class-wc-payment-gateway-wcpay.php:3240
 msgid ""
 "Customer bank statement is invalid. Statement should be between 5 and 22 "
 "characters long, contain at least single Latin character and does not "
 "contain special characters: ' \" * &lt; &gt;"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3263
+#: includes/class-wc-payment-gateway-wcpay.php:3272
 msgid "Capture charge"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3264
+#: includes/class-wc-payment-gateway-wcpay.php:3273
 msgid "Cancel authorization"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3320
+#: includes/class-wc-payment-gateway-wcpay.php:3329
 #. translators: %s: formatted minimum amount with currency
 msgid "The minimum amount to capture is %s."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3423
+#: includes/class-wc-payment-gateway-wcpay.php:3432
 #. translators: %1: error message
 msgid ""
 "Canceling authorization <strong>failed</strong> to complete with the "
 "following message: <code>%1$s</code>."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3438
-#: includes/class-wc-payments-order-service.php:1355
+#: includes/class-wc-payment-gateway-wcpay.php:3447
+#: includes/class-wc-payments-order-service.php:1371
 msgid "Canceling authorization <strong>failed</strong> to complete."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3504
+#: includes/class-wc-payment-gateway-wcpay.php:3513
 #: includes/payment-methods/class-cc-payment-method.php:50
 #. translators: This will be used to indicate an unknown value for an ID.
 #: dist/index.js:1
@@ -1070,15 +1116,15 @@ msgstr ""
 msgid "unknown"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3585
+#: includes/class-wc-payment-gateway-wcpay.php:3594
 msgid "Payment method updated."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3588
+#: includes/class-wc-payment-gateway-wcpay.php:3597
 msgid "Payment method updated for all your current subscriptions."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3613
+#: includes/class-wc-payment-gateway-wcpay.php:3622
 #. translators: %1: transaction ID of the payment or a translated string
 #. indicating an unknown ID.
 msgid ""
@@ -1087,42 +1133,42 @@ msgid ""
 "so it was ignored and the order was not updated."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3659
+#: includes/class-wc-payment-gateway-wcpay.php:3668
 #. translators: %s: WooPayments
 msgid "A %s payment method was not provided"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3673
+#: includes/class-wc-payment-gateway-wcpay.php:3682
 msgid "We're not able to add this payment method. Please try again later"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3684
+#: includes/class-wc-payment-gateway-wcpay.php:3693
 msgid "Failed to add the provided payment method. Please try again later"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3791
+#: includes/class-wc-payment-gateway-wcpay.php:3800
 #. translators: %s: the error message.
 msgid "Intent creation failed with the following message: %s"
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3843
+#: includes/class-wc-payment-gateway-wcpay.php:3852
 msgid ""
 "We're not able to add this payment method. Please refresh the page and try "
 "again."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:3850
+#: includes/class-wc-payment-gateway-wcpay.php:3859
 msgid ""
 "You cannot add a new payment method so soon after the previous one. Please "
 "try again later."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:4145
-#: includes/class-wc-payment-gateway-wcpay.php:4155
+#: includes/class-wc-payment-gateway-wcpay.php:4154
+#: includes/class-wc-payment-gateway-wcpay.php:4164
 msgid "Unable to update UPE appearance values at this time."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:4500
+#: includes/class-wc-payment-gateway-wcpay.php:4509
 #. translators: %1$s: WooPayments
 msgid ""
 "%1$s gives your store flexibility to accept credit cards, debit cards, and "
@@ -1130,12 +1176,12 @@ msgid ""
 "like Google Pay to give customers even more choice."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:4510
+#: includes/class-wc-payment-gateway-wcpay.php:4519
 #. translators: %s: WooPay,
 msgid "Payments made simple — including %s, a new express checkout feature."
 msgstr ""
 
-#: includes/class-wc-payment-gateway-wcpay.php:4631
+#: includes/class-wc-payment-gateway-wcpay.php:4598
 msgid "A valid shipping address is required for Afterpay payments."
 msgstr ""
 
@@ -1153,46 +1199,46 @@ msgstr ""
 msgid "Failed to detect connection status"
 msgstr ""
 
-#: includes/class-wc-payments-account.php:1444
+#: includes/class-wc-payments-account.php:1445
 #. translators: %s: WooPayments
 msgid ""
 "Connection to WordPress.com failed. Please connect to WordPress.com to "
 "start using %s."
 msgstr ""
 
-#: includes/class-wc-payments-account.php:1509
+#: includes/class-wc-payments-account.php:1510
 #. translators: 1: WooPayments.
 msgid "Please <b>complete your %1$s setup</b> to process transactions."
 msgstr ""
 
-#: includes/class-wc-payments-account.php:1559
+#: includes/class-wc-payments-account.php:1560
 #. translators: %s: error message.
 msgid "There was a problem connecting your store to WordPress.com: \"%s\""
 msgstr ""
 
-#: includes/class-wc-payments-account.php:1602
+#: includes/class-wc-payments-account.php:1603
 msgid ""
 "There was a duplicate attempt to initiate account setup. Please wait a few "
 "seconds and try again."
 msgstr ""
 
-#: includes/class-wc-payments-account.php:1658
+#: includes/class-wc-payments-account.php:1659
 #. translators: 1: anchor opening markup 2: closing anchor markup
 msgid ""
 "Another account setup session is already in progress. Please finish it or "
 "%1$sclick here to start again%2$s."
 msgstr ""
 
-#: includes/class-wc-payments-account.php:1708
+#: includes/class-wc-payments-account.php:1709
 #. translators: %s: WooPayments.
 msgid "There was a problem setting up your %s account. Please try again."
 msgstr ""
 
-#: includes/class-wc-payments-account.php:2180
+#: includes/class-wc-payments-account.php:2181
 msgid "There was a problem processing your account data. Please try again."
 msgstr ""
 
-#: includes/class-wc-payments-account.php:2466
+#: includes/class-wc-payments-account.php:2467
 msgid "Failed to update Account locale. "
 msgstr ""
 
@@ -1345,8 +1391,8 @@ msgstr ""
 #: includes/class-wc-payments-captured-event-note.php:391
 #: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:129
 #: includes/in-person-payments/templates/html-in-person-payment-receipt.php:160
-#: dist/blocks-checkout.js:1
 #: dist/express-checkout.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
 #: client/express-checkout/transformers/wc-to-stripe.js:125
 #: client/payment-details/timeline/map-events.js:531
@@ -1561,8 +1607,8 @@ msgstr ""
 #: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:112
 #: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:599
 #: includes/in-person-payments/templates/html-in-person-payment-receipt.php:185
-#: dist/blocks-checkout.js:1
 #: dist/express-checkout.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
 #: client/express-checkout/transformers/wc-to-stripe.js:150
 #: client/payment-details/utils/tax-descriptions.ts:52
@@ -1715,19 +1761,19 @@ msgstr ""
 msgid "Failed to disable test drive account."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:420
+#: includes/class-wc-payments-order-service.php:427
 msgid "Dispute lost."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:555
+#: includes/class-wc-payments-order-service.php:562
 msgid "<strong>Fee details:</strong>"
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1408
+#: includes/class-wc-payments-order-service.php:1424
 msgid "Capture authorization <strong>failed</strong> to complete."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1508
+#: includes/class-wc-payments-order-service.php:1524
 #. translators: %1$s: the refund amount, %2$s: status (cancelled/unsuccessful),
 #. %3$s: WooPayments, %4$s: ID of the refund, %5$s: failure message or period
 msgid ""
@@ -1735,17 +1781,17 @@ msgid ""
 "(<code>%4$s</code>)%5$s"
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1515
+#: includes/class-wc-payments-order-service.php:1531
 #: dist/order.js:1
 #: client/order/order-status-change-strategies/index.tsx:16
 msgid "cancelled"
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1515
+#: includes/class-wc-payments-order-service.php:1531
 msgid "unsuccessful"
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1552
+#: includes/class-wc-payments-order-service.php:1568
 #. translators: %1: the successfully charged amount, %2: WooPayments, %3:
 #. transaction ID of the payment
 msgid ""
@@ -1753,25 +1799,25 @@ msgid ""
 "(<a>%3$s</a>)."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1579
+#: includes/class-wc-payments-order-service.php:1595
 #. translators: %1: the authorized amount, %2: WooPayments, %3: transaction ID
 #. of the payment
 msgid "A payment of %1$s <strong>failed</strong> using %2$s (<a>%3$s</a>)."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1613
+#: includes/class-wc-payments-order-service.php:1629
 #. translators: %1: the authorized amount, %2: WooPayments, %3: transaction ID
 #. of the payment, %4: timestamp
 msgid "A terminal payment of %1$s <strong>failed</strong> using %2$s (<a>%3$s</a>)"
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1645
+#: includes/class-wc-payments-order-service.php:1661
 #. translators: %1: the authorized amount, %2: WooPayments, %3: transaction ID
 #. of the payment
 msgid "A payment of %1$s was <strong>authorized</strong> using %2$s (<a>%3$s</a>)."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1671
+#: includes/class-wc-payments-order-service.php:1687
 #. translators: %1: the authorized amount, %2: WooPayments, %3: intent ID of
 #. the payment
 msgid ""
@@ -1779,7 +1825,7 @@ msgid ""
 "(<code>%3$s</code>)."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1699
+#: includes/class-wc-payments-order-service.php:1715
 #. translators: %1: the successfully charged amount, %2: WooPayments, %3:
 #. transaction ID of the payment
 msgid ""
@@ -1787,7 +1833,7 @@ msgid ""
 "(<a>%3$s</a>)."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1727
+#: includes/class-wc-payments-order-service.php:1743
 #. translators: %1: the authorized amount, %2: WooPayments, %3: transaction ID
 #. of the payment
 msgid ""
@@ -1795,33 +1841,33 @@ msgid ""
 "(<a>%3$s</a>)."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1759
+#: includes/class-wc-payments-order-service.php:1775
 #. translators: %1: the authorized amount, %2: transaction ID of the payment
 msgid "Payment authorization has <strong>expired</strong> (<a>%1$s</a>)."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1783
+#: includes/class-wc-payments-order-service.php:1799
 #. translators: %1: transaction ID of the payment
 msgid ""
 "Payment authorization was successfully <strong>cancelled</strong> "
 "(<a>%1$s</a>)."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1815
+#: includes/class-wc-payments-order-service.php:1831
 #. translators: %1: the authorized amount, %2: transaction ID of the payment
 msgid ""
 "&#x26D4; A payment of %1$s was <strong>held for review</strong> by one or "
 "more risk filters.<br><br><a>View more details</a>."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1849
+#: includes/class-wc-payments-order-service.php:1865
 #. translators: %1: the blocked amount, %2: transaction ID of the payment
 msgid ""
 "&#x1F6AB; A payment of %1$s was <strong>blocked</strong> by one or more "
 "risk filters.<br><br><a>View more details</a>."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1884
+#: includes/class-wc-payments-order-service.php:1900
 #. translators: %1: the disputed amount and currency; %2: the dispute reason;
 #. %3 the deadline date for responding to the inquiry
 msgid ""
@@ -1829,7 +1875,7 @@ msgid ""
 "<a>Response due by %3$s</a>."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1899
+#: includes/class-wc-payments-order-service.php:1915
 #. translators: %1: the disputed amount and currency; %2: the dispute reason;
 #. %3 the deadline date for responding to dispute
 msgid ""
@@ -1837,49 +1883,49 @@ msgid ""
 "%3$s</a>."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1927
+#: includes/class-wc-payments-order-service.php:1943
 #. translators: %1: the dispute status
 msgid ""
 "Payment inquiry has been closed with status %1$s. See <a>payment status</a> "
 "for more details."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1940
+#: includes/class-wc-payments-order-service.php:1956
 #. translators: %1: the dispute status
 msgid ""
 "Dispute has been closed with status %1$s. See <a>dispute overview</a> for "
 "more details."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1969
+#: includes/class-wc-payments-order-service.php:1985
 msgid "is pending"
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1971
+#: includes/class-wc-payments-order-service.php:1987
 msgid "was successfully processed"
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1977
+#: includes/class-wc-payments-order-service.php:1993
 #. translators: %1: the refund amount, %2: WooPayments, %3: ID of the refund,
 #. %4: status text
 msgid "A refund of %1$s %4$s using %2$s (<code>%3$s</code>)."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:1991
+#: includes/class-wc-payments-order-service.php:2007
 #. translators: %1: the refund amount, %2: WooPayments, %3: reason, %4: refund
 #. id, %5: status text
 msgid "A refund of %1$s %5$s using %2$s. Reason: %3$s. (<code>%4$s</code>)"
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:2174
+#: includes/class-wc-payments-order-service.php:2190
 msgid "Intent id was not included for payment complete status change."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:2247
+#: includes/class-wc-payments-order-service.php:2263
 msgid "The requested order was not found."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:2364
+#: includes/class-wc-payments-order-service.php:2406
 #. translators: %s: Formatted refund amount
 msgid ""
 "Refund of %s <strong>failed</strong> due to insufficient funds in your "
@@ -1888,7 +1934,7 @@ msgid ""
 "<a>Learn more</a>."
 msgstr ""
 
-#: includes/class-wc-payments-order-service.php:2384
+#: includes/class-wc-payments-order-service.php:2426
 #. translators: %1$s: Formatted refund amount
 msgid ""
 "Refund of %1$s <strong>failed</strong> due to insufficient funds in your "
@@ -2053,14 +2099,14 @@ msgstr ""
 #: includes/class-wc-payments-status.php:115
 #: includes/class-wc-payments-status.php:174
 #: dist/index.js:1
-#: client/merchant-feedback-prompt/index.tsx:78
+#: client/merchant-feedback-prompt/index.tsx:79
 msgid "Yes"
 msgstr ""
 
 #: includes/class-wc-payments-status.php:115
 #: includes/class-wc-payments-status.php:174
 #: dist/index.js:1
-#: client/merchant-feedback-prompt/index.tsx:86
+#: client/merchant-feedback-prompt/index.tsx:87
 msgid "No"
 msgstr ""
 
@@ -2435,141 +2481,141 @@ msgid ""
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1212
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:11
 msgid "Bank cannot process"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1214
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:14
 msgid "Check returned"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1216
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:17
 msgid "Credit not processed"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1218
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:35
 msgid "Customer initiated"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1220
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:38
 msgid "Debit not authorized"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1222
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:41
 msgid "Duplicate"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1224
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:61
 msgid "Transaction unauthorized"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1226
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:89
 msgid "Incorrect account details"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1228
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:92
 msgid "Insufficient funds"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1230
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:95
 msgid "Product not received"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1232
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:113
 msgid "Product unacceptable"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1234
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:134
 msgid "Subscription canceled"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1236
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:153
 msgid "Unrecognized"
 msgstr ""
 
 #: includes/class-wc-payments-utils.php:1239
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:80
 #: client/settings/settings-manager/index.js:54
 msgid "General"
@@ -2580,7 +2626,7 @@ msgstr ""
 #: includes/class-wc-payments-webhook-processing-service.php:556
 #: includes/class-wc-payments-webhook-processing-service.php:587
 #: includes/class-wc-payments-webhook-processing-service.php:618
-#: includes/class-wc-payments-webhook-processing-service.php:840
+#: includes/class-wc-payments-webhook-processing-service.php:859
 #. translators: %1: charge ID
 msgid "Could not find order via charge ID: %1$s"
 msgstr ""
@@ -2607,66 +2653,66 @@ msgstr ""
 msgid "%1$s not found in array"
 msgstr ""
 
-#: includes/class-wc-payments-webhook-processing-service.php:753
+#: includes/class-wc-payments-webhook-processing-service.php:772
 #. translators: %1: intent ID
 msgid "Could not find order via intent ID: %1$s"
 msgstr ""
 
-#: includes/class-wc-payments-webhook-processing-service.php:778
+#: includes/class-wc-payments-webhook-processing-service.php:797
 msgid "The customer's bank account has been closed."
 msgstr ""
 
-#: includes/class-wc-payments-webhook-processing-service.php:780
+#: includes/class-wc-payments-webhook-processing-service.php:799
 msgid "The customer has notified their bank that this payment was unauthorized."
 msgstr ""
 
-#: includes/class-wc-payments-webhook-processing-service.php:782
+#: includes/class-wc-payments-webhook-processing-service.php:801
 msgid "The customer's account has insufficient funds to cover this payment."
 msgstr ""
 
-#: includes/class-wc-payments-webhook-processing-service.php:784
+#: includes/class-wc-payments-webhook-processing-service.php:803
 msgid "The customer's bank account could not be located."
 msgstr ""
 
-#: includes/class-wc-payments-webhook-processing-service.php:786
+#: includes/class-wc-payments-webhook-processing-service.php:805
 msgid ""
 "Microdeposit transfers failed. Please check the account, institution and "
 "transit numbers."
 msgstr ""
 
-#: includes/class-wc-payments-webhook-processing-service.php:788
+#: includes/class-wc-payments-webhook-processing-service.php:807
 msgid "You have exceeded the number of allowed verification attempts."
 msgstr ""
 
-#: includes/class-wc-payments-webhook-processing-service.php:790
+#: includes/class-wc-payments-webhook-processing-service.php:809
 msgid ""
 "The mandate used for this renewal payment is invalid. You may need to bring "
 "the customer back to your store and ask them to resubmit their payment "
 "information."
 msgstr ""
 
-#: includes/class-wc-payments-webhook-processing-service.php:794
+#: includes/class-wc-payments-webhook-processing-service.php:813
 msgid "The customer's bank could not send pre-debit notification for the payment."
 msgstr ""
 
-#: includes/class-wc-payments-webhook-processing-service.php:796
+#: includes/class-wc-payments-webhook-processing-service.php:815
 msgid ""
 "For recurring payment greater than mandate amount or INR 15000, payment was "
 "not approved by the card holder."
 msgstr ""
 
-#: includes/class-wc-payments-webhook-processing-service.php:801
+#: includes/class-wc-payments-webhook-processing-service.php:820
 #. translators: %s Stripe error message.
 msgid "With the following message: <code>%s</code>"
 msgstr ""
 
-#: includes/class-wc-payments-webhook-processing-service.php:861
+#: includes/class-wc-payments-webhook-processing-service.php:880
 #. translators: %1: charge ID
 msgid "The refund amount is not valid for charge ID: %1$s"
 msgstr ""
 
 #: includes/class-wc-payments-woopay-button-handler.php:210
-#: includes/class-wc-payments.php:1790 includes/class-woopay-tracker.php:91
+#: includes/class-wc-payments.php:1801 includes/class-woopay-tracker.php:91
 #: includes/woopay/class-woopay-session.php:616
 #: includes/woopay/class-woopay-session.php:668
 #: includes/woopay/class-woopay-session.php:694
@@ -2675,9 +2721,9 @@ msgid "You aren’t authorized to do that."
 msgstr ""
 
 #: includes/class-wc-payments-woopay-button-handler.php:345
-#: dist/settings.js:1
 #: dist/blocks-checkout.js:1
 #: dist/woopay-express-button.js:1
+#: dist/settings.js:1
 #: dist/multi-currency.js:1
 #: client/checkout/woopay/express-button/woopay-express-checkout-button.js:31
 #: client/disable-confirmation-modal/index.js:145
@@ -2686,7 +2732,7 @@ msgstr ""
 msgid "WooPay"
 msgstr ""
 
-#: includes/class-wc-payments.php:1579
+#: includes/class-wc-payments.php:1590
 #. translators: %1$s: WooCommerce, %2$s: WooPayments, a1: documentation URL
 msgid ""
 "The %1$s version you have installed is not compatible with %2$s for a "
@@ -2694,17 +2740,17 @@ msgid ""
 "that via the <a1>the plugins page.</a1>"
 msgstr ""
 
-#: includes/class-wc-payments.php:1857
+#: includes/class-wc-payments.php:1868
 msgid "Contact information"
 msgstr ""
 
-#: includes/class-wc-payments.php:1864
+#: includes/class-wc-payments.php:1875
 #: dist/index.js:1
 #: client/connect-account-page/strings.tsx:113
 msgid "Email address"
 msgstr ""
 
-#: includes/class-wc-payments.php:2049
+#: includes/class-wc-payments.php:2060
 #. translators: %1$s: WooCommerce , %2$s: WooPayments, %3$s: The current
 #. WooCommerce version used by the store
 msgid ""
@@ -2713,7 +2759,7 @@ msgid ""
 "using %3$s). You can do that via the <a1>the plugins page.</a1>"
 msgstr ""
 
-#: includes/class-wc-payments.php:2053
+#: includes/class-wc-payments.php:2064
 #. translators: %1$s: WooCommerce , %2$s: WooPayments, %3$s: The current
 #. WooCommerce version used by the store
 msgid ""
@@ -2722,7 +2768,7 @@ msgid ""
 "%3$s). You can do that via the <a1>the plugins page.</a1>"
 msgstr ""
 
-#: includes/class-wc-payments.php:2057
+#: includes/class-wc-payments.php:2068
 #. translators: %1$s: WooCommerce , %2$s: WooPayments, %3$s: The current
 #. WooCommerce version used by the store
 msgid ""
@@ -2731,11 +2777,11 @@ msgid ""
 "using %3$s). You can do that via the <a1>the plugins page.</a1>"
 msgstr ""
 
-#: includes/class-wc-payments.php:2101
+#: includes/class-wc-payments.php:2112
 msgid "Mobile Number"
 msgstr ""
 
-#: includes/class-wc-payments.php:2101
+#: includes/class-wc-payments.php:2112
 msgid "is required to create an WooPay account."
 msgstr ""
 
@@ -2962,8 +3008,8 @@ msgstr ""
 
 #: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:121
 #: includes/express-checkout/class-wc-payments-express-checkout-button-helper.php:607
-#: dist/blocks-checkout.js:1
 #: dist/express-checkout.js:1
+#: dist/blocks-checkout.js:1
 #: client/express-checkout/transformers/wc-to-stripe.js:105
 msgid "Shipping"
 msgstr ""
@@ -3063,6 +3109,7 @@ msgstr ""
 #: dist/index.js:1
 #: dist/settings.js:1
 #: client/disputes/new-evidence/index.tsx:464
+#: client/onboarding/steps/embedded-kyc.tsx:65
 #: client/payment-details/dispute-details/dispute-steps.tsx:158
 #: client/payment-details/dispute-details/dispute-summary-row.tsx:42
 #: client/settings/buy-now-pay-later-section/index.js:31
@@ -3262,7 +3309,7 @@ msgstr ""
 
 #: includes/multi-currency/MultiCurrency.php:995
 #: dist/index.js:1
-#: client/merchant-feedback-prompt/index.tsx:88
+#: client/merchant-feedback-prompt/index.tsx:89
 #: client/overview/modal/connection-success/strings.tsx:7
 msgid "Dismiss"
 msgstr ""
@@ -4071,9 +4118,10 @@ msgstr ""
 #: dist/order.js:1
 #: dist/settings.js:1
 #: client/components/cancel-authorization-button/index.tsx:20
-#: client/connect-account-page/modal/index.js:88
+#: client/connect-account-page/modal/index.js:89
 #: client/deposits/instant-payouts/modal.tsx:41
 #: client/disputes/new-evidence/index.tsx:578
+#: client/onboarding/steps/embedded-kyc.tsx:71
 #: client/onboarding/strings.tsx:85
 #: client/order/order-status-change-strategies/index.tsx:85
 #: client/order/refund-confirm-modal/index.js:107
@@ -4084,7 +4132,7 @@ msgstr ""
 #: client/settings/general-settings/test-mode-confirm-modal.tsx:14
 #: client/settings/payment-methods-list/activation-modal.tsx:26
 #: client/settings/payment-methods-list/delete-modal.tsx:19
-#: client/settings/transactions/manual-capture-control.tsx:53
+#: client/settings/transactions/manual-capture-control.tsx:55
 #: includes/multi-currency/client/settings/multi-currency/enabled-currencies-list/delete-button.js:77
 #: includes/multi-currency/client/settings/multi-currency/enabled-currencies-list/modal.js:149
 msgid "Cancel"
@@ -4246,21 +4294,24 @@ msgstr ""
 
 #: includes/woopay/class-woopay-session.php:881
 #: includes/woopay/class-woopay-session.php:882
-#: includes/woopay/class-woopay-session.php:1008
-#: includes/woopay/class-woopay-session.php:1009
+#: includes/woopay/class-woopay-session.php:1011
 #: dist/woopay.js:1
 #: client/components/woopay/save-user/agreement.js:43
 msgid "Privacy Policy"
 msgstr ""
 
-#: includes/woopay/class-woopay-session.php:1018
 #: includes/woopay/class-woopay-session.php:1019
 msgid "Terms and Conditions"
 msgstr ""
 
-#: includes/woopay/class-woopay-session.php:1023
+#: includes/woopay/class-woopay-session.php:1024
 #. translators: %1$s terms page link, %2$s privacy page link.
 msgid "You must accept our %1$s and %2$s to continue with your purchase."
+msgstr ""
+
+#: includes/woopay/class-woopay-session.php:1032
+#. translators: %1$s terms page link, %2$s privacy page link.
+msgid "By proceeding with your purchase you agree to our %1$s and %2$s"
 msgstr ""
 
 #: includes/woopay/class-woopay-utilities.php:279
@@ -4554,10 +4605,10 @@ msgid "Disbursed"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/capital/index.tsx:35
 #: client/card-readers/list/index.tsx:31
 #: client/components/deposits-overview/recent-deposits-list.tsx:38
@@ -4589,8 +4640,9 @@ msgid "First paydown"
 msgstr ""
 
 #: dist/index.js:1
-#: client/capital/index.tsx:74
-msgid "Paid off"
+#: client/capital/index.tsx:76
+#. %s: date when the loan was paid off
+msgid "Paid off: %s"
 msgstr ""
 
 #: dist/index.js:1
@@ -4634,6 +4686,12 @@ msgid "Inactive"
 msgstr ""
 
 #: dist/blocks-checkout.js:1
+#: dist/settings.js:1
+#: client/checkout/blocks/payment-methods-logos/logo-popover.tsx:77
+msgid "Supported Credit Card Brands"
+msgstr ""
+
+#: dist/blocks-checkout.js:1
 #: client/checkout/blocks/payment-processor.js:180
 msgid "This payment method cannot be saved for future use."
 msgstr ""
@@ -4650,11 +4708,11 @@ msgstr ""
 msgid "Test number copied to your clipboard!"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/blocks-checkout.js:1
 #: dist/cart.js:1
-#: dist/woopay-express-button.js:1
 #: dist/woopay-direct-checkout.js:1
+#: dist/woopay-express-button.js:1
+#: dist/settings.js:1
 #: client/checkout/woopay/connect/woopay-connect-iframe.js:89
 msgid "WooPay Connect Direct Checkout"
 msgstr ""
@@ -4681,76 +4739,76 @@ msgstr ""
 
 #: dist/blocks-checkout.js:1
 #: dist/checkout.js:1
-#: dist/settings.js:1
 #: dist/woopay-express-button.js:1
+#: dist/settings.js:1
 #: client/checkout/woopay/email-input-iframe.js:53
 #: client/checkout/woopay/express-button/express-checkout-iframe.js:49
 msgid "WooPay SMS code verification"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/blocks-checkout.js:1
 #: dist/woopay-express-button.js:1
+#: dist/settings.js:1
 #: client/checkout/woopay/express-button/express-checkout-iframe.js:254
 msgid "WooPay is unavailable at this time. Sorry for the inconvenience."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/blocks-checkout.js:1
 #: dist/woopay-express-button.js:1
+#: dist/settings.js:1
 #: client/checkout/woopay/express-button/use-express-checkout-product-handler.js:39
 msgid "Please fill out all required fields"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/blocks-checkout.js:1
 #: dist/woopay-express-button.js:1
+#: dist/settings.js:1
 #: client/checkout/woopay/express-button/use-express-checkout-product-handler.js:67
 msgid "Please type only valid emails"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/blocks-checkout.js:1
 #: dist/woopay-express-button.js:1
+#: dist/settings.js:1
 #: dist/express-checkout.js:1
 #: client/checkout/woopay/express-button/woopay-express-checkout-button.js:132
 #: client/express-checkout/index.js:255
 msgid "Sorry, this product is unavailable. Please choose a different combination."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/blocks-checkout.js:1
 #: dist/woopay-express-button.js:1
+#: dist/settings.js:1
 #: dist/express-checkout.js:1
 #: client/checkout/woopay/express-button/woopay-express-checkout-button.js:139
 #: client/express-checkout/index.js:262
 msgid "Please select your product options before proceeding."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/blocks-checkout.js:1
 #: dist/woopay-express-button.js:1
+#: dist/settings.js:1
 #: client/checkout/woopay/express-button/woopay-express-checkout-button.js:32
 msgid "Buy with WooPay"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/blocks-checkout.js:1
 #: dist/woopay-express-button.js:1
+#: dist/settings.js:1
 #: client/checkout/woopay/express-button/woopay-express-checkout-button.js:321
 msgid "Something went wrong. Please try again."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/blocks-checkout.js:1
 #: dist/woopay-express-button.js:1
+#: dist/settings.js:1
 #: client/checkout/woopay/express-button/woopay-express-checkout-button.js:33
 msgid "Donate with WooPay"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/blocks-checkout.js:1
 #: dist/woopay-express-button.js:1
+#: dist/settings.js:1
 #: client/checkout/woopay/express-button/woopay-express-checkout-button.js:34
 msgid "Book with WooPay"
 msgstr ""
@@ -4788,6 +4846,11 @@ msgstr ""
 msgid ""
 "Negative account balance? {{discoverWhyLink}}Discover "
 "why.{{/discoverWhyLink}}"
+msgstr ""
+
+#: dist/index.js:1
+#: client/components/account-balances/index.tsx:74
+msgid "Balance"
 msgstr ""
 
 #: dist/index.js:1
@@ -4902,7 +4965,7 @@ msgstr ""
 #: dist/index.js:1
 #: client/components/account-status/status-chip.js:17
 #: client/components/deposits-status/index.tsx:25
-#: client/deposits/details/index.tsx:86
+#: client/deposits/details/index.tsx:85
 msgid "Unknown"
 msgstr ""
 
@@ -4934,15 +4997,15 @@ msgstr ""
 #: dist/index.js:1
 #: dist/settings.js:1
 #: client/components/account-status/status-chip.js:44
-#: client/settings/payment-methods-list/use-payment-method-availability.tsx:88
+#: client/settings/payment-methods-list/use-payment-method-availability.tsx:90
 msgid "Rejected"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/components/account-status/status-chip.js:47
 #: client/components/dispute-status-chip/mappings.ts:25
 #: client/disputes/strings.ts:176
@@ -5005,7 +5068,7 @@ msgid "Loan amount"
 msgstr ""
 
 #: dist/index.js:1
-#: client/components/banner-notice/index.tsx:56
+#: client/components/banner-notice/index.tsx:58
 msgid "Dismiss this notice"
 msgstr ""
 
@@ -5027,22 +5090,22 @@ msgstr ""
 msgid "Currently selected: %s"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/components/deposits-overview/deposit-notices.tsx:21
 msgid ""
 "Your payouts are {{strong}}temporarily suspended{{/strong}}. "
 "{{suspendLink}}Learn more{{/suspendLink}}"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/components/deposits-overview/deposit-notices.tsx:32
 msgid "Your first payout is held for 7-14 days. {{whyLink}}Why?{{/whyLink}}"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/components/deposits-overview/deposit-notices.tsx:46
 #. %s: WooPayments
 msgid ""
@@ -5050,8 +5113,8 @@ msgid ""
 "{{whyLink}}Why?{{/whyLink}}"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/components/deposits-overview/deposit-notices.tsx:61
 #. %s: a formatted currency amount, e.g. $5.00 USD
 msgid ""
@@ -5059,16 +5122,15 @@ msgid ""
 "{{learnMoreLink}}Learn more{{/learnMoreLink}}"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/components/deposits-overview/deposit-notices.tsx:74
 msgid "You have no funds available. {{whyLink}}Why?{{/whyLink}}"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/components/deposits-overview/deposit-notices.tsx:93
-#: client/deposits/index.tsx:73
 msgid ""
 "Payouts are currently paused because a recent payout failed. Please "
 "{{updateLink}}update your bank account details{{/updateLink}}."
@@ -5135,7 +5197,7 @@ msgstr ""
 
 #: dist/index.js:1
 #: client/components/deposits-status/index.tsx:23
-#: includes/multi-currency/client/settings/single-currency/index.js:251
+#: includes/multi-currency/client/settings/single-currency/index.js:249
 msgid "Manual"
 msgstr ""
 
@@ -5162,7 +5224,7 @@ msgstr ""
 #: dist/settings.js:1
 #: client/components/deposits-status/index.tsx:64
 #: client/components/payments-status/index.tsx:26
-#: client/settings/payment-methods-list/use-payment-method-availability.tsx:77
+#: client/settings/payment-methods-list/use-payment-method-availability.tsx:79
 msgid "Pending verification"
 msgstr ""
 
@@ -5173,70 +5235,70 @@ msgid "Disputed: %s"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/components/dispute-status-chip/mappings.ts:13
 #: client/disputes/strings.ts:173
 msgid "Inquiry: Under review"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/components/dispute-status-chip/mappings.ts:17
 #: client/disputes/strings.ts:174
 msgid "Inquiry: Closed"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/components/dispute-status-chip/mappings.ts:21
 #: client/disputes/strings.ts:175
 msgid "Response needed"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/components/dispute-status-chip/mappings.ts:29
 #: client/disputes/strings.ts:177
 msgid "Charge refunded"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/components/dispute-status-chip/mappings.ts:33
 #: client/disputes/strings.ts:178
 msgid "Won"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/components/dispute-status-chip/mappings.ts:37
 #: client/disputes/strings.ts:179
 msgid "Lost"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/components/dispute-status-chip/mappings.ts:9
 #: client/disputes/strings.ts:172
 msgid "Inquiry: Response needed"
@@ -5324,9 +5386,9 @@ msgid ""
 "shopper experience."
 msgstr ""
 
+#: dist/index.js:1
 #: dist/settings.js:1
 #: dist/multi-currency.js:1
-#: dist/index.js:1
 #: client/components/error-boundary/index.tsx:30
 msgid ""
 "There was an error rendering this view. Please contact support for "
@@ -5335,16 +5397,16 @@ msgstr ""
 
 #: dist/settings.js:1
 #: dist/index.js:1
-#: client/components/file-upload/index.tsx:37
+#: client/components/file-upload/index.tsx:40
 #: client/disputes/new-evidence/file-upload-control.tsx:41
 msgid "Upload file"
 msgstr ""
 
 #: dist/settings.js:1
 #: dist/index.js:1
-#: client/components/file-upload/index.tsx:39
+#: client/components/file-upload/index.tsx:42
 #: client/disputes/new-evidence/file-upload-control.tsx:26
-#: client/settings/express-checkout-settings/file-upload.tsx:104
+#: client/settings/express-checkout-settings/file-upload.tsx:101
 msgid "Remove file"
 msgstr ""
 
@@ -5445,35 +5507,35 @@ msgid ""
 "transactions are simulated. {{learnMoreLink}}Learn more{{/learnMoreLink}}"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/components/sandbox-mode-switch-to-live-notice/modal/index.tsx:40
 msgid "Activate payments on your store"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/components/sandbox-mode-switch-to-live-notice/modal/index.tsx:43
 msgid "Before continuing, please make sure that you're aware of the following:"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/components/sandbox-mode-switch-to-live-notice/modal/index.tsx:47
 msgid ""
 "Your test account will be deactivated, but your transactions can be found "
 "in your order history."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/components/sandbox-mode-switch-to-live-notice/modal/index.tsx:53
 #. %s: WooPayments
 msgid "To use %s, you will need to verify your business details."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/components/sandbox-mode-switch-to-live-notice/modal/index.tsx:57
 msgid "In order to receive payouts, you will need to provide your bank details."
 msgstr ""
@@ -5531,7 +5593,7 @@ msgid ""
 msgstr ""
 
 #: dist/index.js:1
-#: client/components/test-mode-notice/index.tsx:60
+#: client/components/test-mode-notice/index.tsx:61
 #. %1$s: WooPayments
 msgid ""
 "%1$s was in test mode when this %2$s was %3$s. To view live %2$ss, disable "
@@ -5543,7 +5605,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: dist/index.js:1
-#: client/components/test-mode-notice/index.tsx:70
+#: client/components/test-mode-notice/index.tsx:71
 #. %1$s: WooPayments
 msgid ""
 "Viewing test %1$s. To view live %1s, disable test mode in "
@@ -5553,6 +5615,12 @@ msgstr ""
 #: dist/index.js:1
 #: client/components/transaction-status-pill/mappings.ts:9
 msgid "Succeeded"
+msgstr ""
+
+#: dist/index.js:1
+#: client/components/welcome/currency-select.tsx:65
+#: client/disputes/index.tsx:79
+msgid "Currency"
 msgstr ""
 
 #: dist/index.js:1
@@ -5615,7 +5683,7 @@ msgid "Save my info"
 msgstr ""
 
 #: dist/index.js:1
-#: client/connect-account-page/index.tsx:318
+#: client/connect-account-page/index.tsx:319
 msgid "An error occurred while setting up your sandbox account. Please try again!"
 msgstr ""
 
@@ -5649,7 +5717,7 @@ msgstr ""
 
 #: dist/index.js:1
 #: dist/settings.js:1
-#: client/connect-account-page/modal/index.js:79
+#: client/connect-account-page/modal/index.js:80
 #: client/onboarding/strings.tsx:83
 #: client/settings/payment-methods-list/activation-modal.tsx:27
 #: client/vat/form/tasks/vat-number-task.tsx:170
@@ -5704,8 +5772,8 @@ msgid "Home address"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/woopay.js:1
+#: dist/settings.js:1
 #: client/connect-account-page/strings.tsx:114
 #: client/settings/phone-input/index.tsx:140
 msgid "Mobile phone number"
@@ -6041,70 +6109,90 @@ msgid ""
 "partnership with Stripe to store your data in a safe and secure manner."
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: client/constants/payment-method.ts:44
 msgid "ACH Credit Transfer"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: client/constants/payment-method.ts:45
 msgid "ACH Debit"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: client/constants/payment-method.ts:46
 msgid "ACSS Debit"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: dist/multi-currency.js:1
 #: client/constants/payment-method.ts:47
 #: client/payment-methods-icons.tsx:39
 msgid "American Express"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: client/constants/payment-method.ts:48
 msgid "Card Payment"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: client/constants/payment-method.ts:49
 msgid "In-Person Card Payment"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: dist/multi-currency.js:1
 #: client/constants/payment-method.ts:50
 #: client/payment-methods-icons.tsx:41
 msgid "Cartes Bancaires"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: dist/multi-currency.js:1
 #: client/constants/payment-method.ts:51
 #: client/payment-methods-icons.tsx:42
 msgid "Diners Club"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: dist/multi-currency.js:1
 #: client/constants/payment-method.ts:52
 #: client/payment-methods-icons.tsx:43
 msgid "Discover"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: dist/multi-currency.js:1
 #: client/constants/payment-method.ts:53
 #: client/payment-methods-icons.tsx:45
@@ -6112,511 +6200,519 @@ msgstr ""
 msgid "JCB"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: dist/multi-currency.js:1
 #: client/constants/payment-method.ts:54
 #: client/payment-methods-icons.tsx:47
 msgid "Mastercard"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: client/constants/payment-method.ts:55
 msgid "Stripe Account"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: client/constants/payment-method.ts:56
 msgid "Union Pay"
 msgstr ""
 
-#: dist/settings.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
+#: dist/checkout.js:1
+#: dist/settings.js:1
 #: dist/multi-currency.js:1
 #: client/constants/payment-method.ts:57
 #: client/payment-methods-icons.tsx:49
 msgid "Visa"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:106
 #. %s Order id
 msgid "Payment for order #%s captured successfully."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:111
 #. %s Order id
 msgid "There has been an error capturing the payment for order #%s."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:148
 #. %s Order id
 msgid "Payment for order #%s canceled successfully."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:153
 #. %s Order id
 msgid "There has been an error canceling the payment for order #%s."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:17
 msgid "The payment amount is too small to be processed."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:23
 #. %1$s: minimum amount, %2$s: currency code
 msgid "The minimum amount that can be processed is %1$s %2$s."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:26
 msgid "The order could not be found."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:27
 msgid "Payment cannot be processed for partially or fully refunded orders."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:28
 msgid "The payment cannot be processed due to a mismatch with order details."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:29
 msgid "This payment cannot be processed in its current state."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:36
 msgid "The payment capture failed to complete."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:38
 msgid "The payment cancellation failed to complete."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:39
 msgid "An unexpected error occurred. Please try again later."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/actions.ts:45
 msgid "Unable to process the payment. Please try again later."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/resolvers.ts:54
 msgid "Error retrieving authorization."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/authorizations/resolvers.ts:70
 msgid "Error retrieving uncaptured transactions."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/capital/resolvers.ts:37
 msgid "Error retrieving the active loan summary."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/charges/resolvers.js:42
 #: client/data/payment-intents/resolvers.ts:21
 msgid "Error retrieving transaction."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/deposits/actions.js:114
 msgid "Instant payout for %s in transit."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/deposits/actions.js:123
 msgid "View details"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/deposits/actions.js:135
 msgid "Error creating instant payout."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/deposits/resolvers.js:133
 msgid "Error retrieving payouts."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/deposits/resolvers.js:48
 msgid "Error retrieving payout."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/deposits/resolvers.js:66
 msgid "Error retrieving all payouts' overviews."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/disputes/actions.js:75
 #. #%s is an order number, e.g. 15
 msgid "You have accepted the dispute for order #%s."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/disputes/actions.js:81
 msgid "You have accepted the dispute."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/disputes/actions.js:88
 msgid "There has been an error accepting the dispute. Please try again later."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/disputes/resolvers.js:115
 msgid "Error retrieving the summary of disputes."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/disputes/resolvers.js:69
 msgid "Error retrieving dispute."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/disputes/resolvers.js:96
 msgid "Error retrieving disputes."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/documents/resolvers.js:57
 msgid "Error retrieving documents."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/files/resolvers.ts:26
 msgid "Error retrieving file."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/payment-intents/actions.ts:42
 #. %s payment intent id
 msgid "Refunded payment #%s."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/payment-intents/actions.ts:47
 #. %s payment intent id
 msgid "There has been an error refunding the payment #%s. Please try again later."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
-#: dist/index.js:1
-#: dist/order.js:1
 #: dist/plugins-page.js:1
+#: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
+#: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/settings/actions.js:194
 msgid "Settings saved."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
-#: dist/index.js:1
-#: dist/order.js:1
 #: dist/plugins-page.js:1
+#: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
+#: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/settings/actions.js:199
 msgid "Error saving settings."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
-#: dist/index.js:1
-#: dist/order.js:1
 #: dist/plugins-page.js:1
+#: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
+#: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/settings/actions.js:274
 msgid "Error starting the Stripe Billing migration."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
-#: dist/index.js:1
-#: dist/order.js:1
 #: dist/plugins-page.js:1
+#: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
+#: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/settings/actions.js:293
 #: includes/multi-currency/client/data/actions.js:157
 msgid "Error saving option"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/settings/resolvers.js:27
 msgid "Error retrieving settings."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/transactions/resolvers.js:153
 msgid "Error retrieving transactions."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/data/transactions/resolvers.js:199
 msgid "Error retrieving on review transactions."
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:101
+#: client/deposits/details/index.tsx:100
 msgid "Copy bank reference ID to clipboard"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:101
+#: client/deposits/details/index.tsx:100
 msgid "Not available"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:115
+#: client/deposits/details/index.tsx:114
 msgid "Payout transactions"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:48
+#: client/deposits/details/index.tsx:47
 #: client/transactions/list/index.tsx:212
 msgid "Payout date"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:50
+#: client/deposits/details/index.tsx:49
 msgid "Instant payout date"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:53
+#: client/deposits/details/index.tsx:52
 msgid "Withdrawal date"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:69
+#: client/deposits/details/index.tsx:68
 msgid "Withdrawal overview"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:70
+#: client/deposits/details/index.tsx:69
 msgid "Payout overview"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:73
+#: client/deposits/details/index.tsx:72
 msgid "Withdrawal amount"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:74
+#: client/deposits/details/index.tsx:73
 msgid "Payout amount"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:77
+#: client/deposits/details/index.tsx:76
 #. %s - amount representing the fee percentage
 msgid "%s service fee"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:79
+#: client/deposits/details/index.tsx:78
 msgid "Net withdrawal amount"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:80
+#: client/deposits/details/index.tsx:79
 msgid "Net payout amount"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:83
+#: client/deposits/details/index.tsx:82
 msgid "Failure reason: "
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:90
+#: client/deposits/details/index.tsx:89
 msgid "Withdrawal details"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:95
+#: client/deposits/details/index.tsx:94
 #: client/deposits/list/index.tsx:81
 msgid "Bank account"
 msgstr ""
 
 #: dist/index.js:1
-#: client/deposits/details/index.tsx:98
+#: client/deposits/details/index.tsx:97
 #: client/deposits/list/index.tsx:87
 msgid "Bank reference ID"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/deposits/filters/config.js:103
 #: client/disputes/filters/config.ts:97
 #: client/documents/filters/config.ts:52
@@ -6625,10 +6721,10 @@ msgid "{{title}}Date{{/title}} {{rule /}} {{filter /}}"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/deposits/filters/config.js:107
 #: client/disputes/filters/config.ts:98
 #: client/documents/filters/config.ts:53
@@ -6642,10 +6738,10 @@ msgid "Select a payout date"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/deposits/filters/config.js:116
 #: client/disputes/filters/config.ts:104
 #: client/documents/filters/config.ts:59
@@ -6654,10 +6750,10 @@ msgid "Before"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/deposits/filters/config.js:120
 #: client/disputes/filters/config.ts:108
 #: client/documents/filters/config.ts:63
@@ -6666,10 +6762,10 @@ msgid "After"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/deposits/filters/config.js:124
 #: client/disputes/filters/config.ts:112
 #: client/documents/filters/config.ts:67
@@ -6688,20 +6784,20 @@ msgid "Select a payout status filter match"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/deposits/filters/config.js:145
 #: client/disputes/filters/config.ts:126
 msgid "{{title}}Status{{/title}} {{rule /}} {{filter /}}"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/deposits/filters/config.js:149
 #: client/disputes/filters/config.ts:127
 msgid "<title>Status</title> <rule /> <filter />"
@@ -6728,10 +6824,10 @@ msgid "All"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/deposits/filters/config.js:53
 #: client/disputes/filters/config.ts:53
 #: client/documents/filters/config.ts:19
@@ -6745,10 +6841,10 @@ msgid "All payouts"
 msgstr ""
 
 #: dist/index.js:1
-#: dist/settings.js:1
 #: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/deposits/filters/config.js:69
 #: client/disputes/filters/config.ts:74
 #: client/documents/filters/config.ts:29
@@ -6786,6 +6882,18 @@ msgstr ""
 #: dist/index.js:1
 #: client/deposits/filters/config.js:96
 msgid "Select a payout date filter match"
+msgstr ""
+
+#: dist/index.js:1
+#: client/deposits/index.tsx:73
+msgid ""
+"Payouts are currently paused because a recent payout failed. Please "
+"{{updateLink/}}."
+msgstr ""
+
+#: dist/index.js:1
+#: client/deposits/index.tsx:78
+msgid "update your bank account details"
 msgstr ""
 
 #: dist/index.js:1
@@ -7073,8 +7181,8 @@ msgstr ""
 msgid "Withdrawal"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/deposits/utils/index.ts:21
 msgid "Last day of the month"
 msgstr ""
@@ -7113,7 +7221,7 @@ msgstr ""
 #: dist/settings.js:1
 #: dist/tos.js:1
 #: client/disable-confirmation-modal/index.js:42
-#: client/tos/modal/index.tsx:47
+#: client/tos/modal/index.tsx:50
 #. %s: WooPayments
 msgid "Disable %s"
 msgstr ""
@@ -7133,123 +7241,123 @@ msgstr ""
 msgid "Payment methods that need %s:"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:122
 msgid "Remove dispute status filter"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:123
 msgid "Select a dispute status filter match"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:128
 msgid "Select a dispute status"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:27
 msgid "Dispute currency"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:45
 #: client/transactions/filters/config.ts:69
-#: includes/multi-currency/client/analytics/index.js:137
+#: includes/multi-currency/client/analytics/index.js:129
 #: includes/multi-currency/client/settings/multi-currency/enabled-currencies-list/modal.js:185
 #: includes/multi-currency/client/setup/tasks/add-currencies-task/index.js:306
 msgid "All currencies"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:66
 msgid "Needs response"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:70
 msgid "All disputes"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:87
 msgid "Disputes match {{select /}} filters"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:88
 msgid "Disputes match <select /> filters"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:92
 msgid "Disputed on date"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:93
 msgid "Remove dispute date filter"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:94
 msgid "Select a dispute date filter match"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/filters/config.ts:99
 msgid "Select a dispute date"
 msgstr ""
@@ -7325,11 +7433,6 @@ msgstr ""
 msgid ""
 "You are about to export %d disputes. If you'd like to reduce the size of "
 "your export, you can use one or more filters. Would you like to continue?"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/index.tsx:79
-msgid "Currency"
 msgstr ""
 
 #: dist/index.js:1
@@ -7422,51 +7525,43 @@ msgid "View submitted dispute"
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:104
-msgid "To:"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:105
-msgid "Subject:"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:105
-msgid "Chargeback Dispute"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:105
-msgid "Case"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:110
-msgid "Our records indicate that the customer and legitimate cardholder,"
+#: client/disputes/new-evidence/cover-letter-generator.ts:112
+#. %s: acquiring bank name
+msgid "To: %s"
 msgstr ""
 
 #: dist/index.js:1
 #: client/disputes/new-evidence/cover-letter-generator.ts:115
+#. %s: case number
+msgid "Subject: Chargeback Dispute – Case #%s"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:124
+#. %1$s: customer name, %2$s: product, %3$s: order date
+msgid ""
+"Our records indicate that the customer and legitimate cardholder, %1$s, "
+"ordered %2$s on %3$s."
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:129
 msgid ""
 "Based on this information, we respectfully request that the chargeback be "
 "reversed. Please let me know if any further details are required."
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:122
-msgid "was refunded on"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:124
+#: client/disputes/new-evidence/cover-letter-generator.ts:140
+#. %1$s: customer name, %2$s: order date, %3$s: refund amount
 msgid ""
-"The refund was processed through our payment provider and should be visible "
-"on the customer's statement within 7 - 10 business days."
+"Our records indicate that the customer, %1$s, was refunded on %2$s for the "
+"amount of %3$s. The refund was processed through our payment provider and "
+"should be visible on the customer's statement within 7 - 10 business days."
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:133
+#: client/disputes/new-evidence/cover-letter-generator.ts:153
 msgid ""
 "The customer requested a refund outside of the eligible window outlined in "
 "our refund policy, which was clearly presented on the website and on the "
@@ -7474,168 +7569,135 @@ msgid ""
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:153
-msgid "and received it on"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:163
-msgid "ordered"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:163
+#: client/disputes/new-evidence/cover-letter-generator.ts:181
+#. %1$s: customer name, %2$s: product, %3$s: order date, %4$s: delivery date
 msgid ""
-"The product matched the description provided at the time of sale, and we "
-"did not receive any indication from the customer that it was defective or "
-"not as described."
+"Our records indicate that the customer, %1$s, ordered %2$s on %3$s and "
+"received it on %4$s."
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:173
-msgid "Our records indicate that the customer,"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:173
-msgid "subscribed to"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:173
+#: client/disputes/new-evidence/cover-letter-generator.ts:195
+#. %1$s: customer name, %2$s: product, %3$s: order date
 msgid ""
-"and was billed according to the terms accepted at the time of signup. The "
+"Our records indicate that the customer, %1$s, ordered %2$s on %3$s. The "
+"product matched the description provided at the time of sale, and we did "
+"not receive any indication from the customer that it was defective or not "
+"as described."
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:209
+#. %1$s: customer name, %2$s: product
+msgid ""
+"Our records indicate that the customer, %1$s, subscribed to %2$s and was "
+"billed according to the terms accepted at the time of signup. The "
 "customer's account remained active and no cancellation was recorded prior "
 "to the billing date."
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:184
-msgid "for the amount of"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:184
+#: client/disputes/new-evidence/cover-letter-generator.ts:224
+#. %1$s: order date, %2$s: refund amount
 msgid ""
 "Our records indicate that this charge was a duplicate of a previous "
-"transaction. A refund has already been issued to the customer on"
+"transaction. A refund has already been issued to the customer on %1$s for "
+"the amount of %2$s. This refund should be visible on the customer's "
+"statement within 7 - 10 business days."
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:186
+#: client/disputes/new-evidence/cover-letter-generator.ts:226
 msgid "[Refund Amount]"
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:186
+#: client/disputes/new-evidence/cover-letter-generator.ts:236
+#. %1$s: case number, %2$s: transaction ID, %3$s: transaction date
 msgid ""
-"This refund should be visible on the customer's statement within 7 - 10 "
-"business days."
+"We are submitting evidence in response to chargeback #%1$s for transaction "
+"#%2$s on %3$s."
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:194
-msgid "We are submitting evidence in response to chargeback"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:194
-msgid "for transaction"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:194
-msgid "on"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:195
-msgid "Our records show that the customer placed two distinct orders:"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:195
-#: includes/multi-currency/client/setup/tasks/add-currencies-task/utils.js:40
-msgid "and"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:195
+#: client/disputes/new-evidence/cover-letter-generator.ts:239
+#. %1$s: case number, %2$s: transaction ID
 msgid ""
-"Both transactions were legitimate, fulfilled independently, and are not "
-"duplicates."
+"Our records show that the customer placed two distinct orders: %1$s and "
+"%2$s. Both transactions were legitimate, fulfilled independently, and are "
+"not duplicates."
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:197
+#: client/disputes/new-evidence/cover-letter-generator.ts:241
 msgid "To support our case, we are providing the following documentation:"
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:200
+#: client/disputes/new-evidence/cover-letter-generator.ts:244
 msgid ""
 "Based on this information, we respectfully request that the chargeback be "
 "reversed. Please let us know if any further details are required."
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:216
+#: client/disputes/new-evidence/cover-letter-generator.ts:260
 msgid "Thank you,"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:231
-msgid "<business@email.com>"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:233
-msgid "<Business Phone Number>"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:235
-msgid "<Bank Name>"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:236
-msgid "<Case Number>"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:238
-msgid "<Transaction ID>"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:244
-msgid "<Transaction Date>"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:246
-msgid "<Customer Name>"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:251
-msgid "<Product>"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:257
-msgid "<Order Date>"
-msgstr ""
-
-#: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:268
-msgid "Dear Dispute Resolution Team,"
 msgstr ""
 
 #: dist/index.js:1
 #: client/disputes/new-evidence/cover-letter-generator.ts:27
 msgid "<Delivery/Service Date>"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:275
+msgid "<business@email.com>"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:277
+msgid "<Business Phone Number>"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:279
+msgid "<Bank Name>"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:280
+msgid "<Case Number>"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:282
+msgid "<Transaction ID>"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:288
+msgid "<Transaction Date>"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:290
+msgid "<Customer Name>"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:295
+msgid "<Product>"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:301
+msgid "<Order Date>"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/new-evidence/cover-letter-generator.ts:312
+msgid "Dear Dispute Resolution Team,"
 msgstr ""
 
 #: dist/index.js:1
@@ -7692,13 +7754,15 @@ msgid "Other documents"
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:91
-msgid "Attachment"
+#: client/disputes/new-evidence/cover-letter-generator.ts:87
+#. %1$s: label, %2$s: attachment letter
+msgid "• %1$s (Attachment %2$s)"
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/cover-letter-generator.ts:91
-msgid "<Attachment description>"
+#: client/disputes/new-evidence/cover-letter-generator.ts:97
+#. %s: attachment letter
+msgid "• <Attachment description> (Attachment %s)"
 msgstr ""
 
 #: dist/index.js:1
@@ -7850,7 +7914,7 @@ msgstr ""
 #: dist/tos.js:1
 #: client/disputes/new-evidence/index.tsx:591
 #: client/onboarding/strings.tsx:84
-#: client/tos/modal/index.tsx:61
+#: client/tos/modal/index.tsx:67
 msgid "Back"
 msgstr ""
 
@@ -7882,32 +7946,32 @@ msgid "Please ensure the product type and description have been entered accurate
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/product-details.tsx:17
+#: client/disputes/new-evidence/product-details.tsx:15
 msgid "PRODUCT TYPE"
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/product-details.tsx:19
+#: client/disputes/new-evidence/product-details.tsx:17
 msgid "Physical products"
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/product-details.tsx:23
+#: client/disputes/new-evidence/product-details.tsx:21
 msgid "Digital products"
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/product-details.tsx:27
+#: client/disputes/new-evidence/product-details.tsx:25
 msgid "Offline service"
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/product-details.tsx:31
+#: client/disputes/new-evidence/product-details.tsx:29
 msgid "Multiple product types"
 msgstr ""
 
 #: dist/index.js:1
-#: client/disputes/new-evidence/product-details.tsx:36
+#: client/disputes/new-evidence/product-details.tsx:34
 msgid "PRODUCT DESCRIPTION"
 msgstr ""
 
@@ -8036,20 +8100,40 @@ msgstr ""
 msgid "SHIPPING ADDRESS"
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: client/disputes/redirect-to-transaction-details/index.tsx:39
+msgid "Error retrieving dispute"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/redirect-to-transaction-details/index.tsx:40
+msgid "Please check your network and try again."
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/redirect-to-transaction-details/index.tsx:45
+msgid "One moment please"
+msgstr ""
+
+#: dist/index.js:1
+#: client/disputes/redirect-to-transaction-details/index.tsx:46
+msgid "Redirecting to payment details…"
+msgstr ""
+
+#: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:101
 msgid "The customer claims they did not receive the products or services purchased."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:104
 msgid ""
 "Prove that the customer received a physical product or offline service, or "
@@ -8057,11 +8141,11 @@ msgid ""
 "prior to the date the dispute was initiated."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:107
 msgid ""
 "First, get in touch with your customer. Understanding why they filed the "
@@ -8070,20 +8154,20 @@ msgid ""
 "happening to others."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:110
 msgid "The cardholder claims they did not receive the product."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:116
 msgid ""
 "If you can not prove the customer received their product or service as "
@@ -8092,33 +8176,33 @@ msgid ""
 "accepting disputed payments with you, the business."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:119
 msgid ""
 "The product or service was received but was defective, damaged, or not as "
 "described."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:122
 msgid ""
 "Demonstrate that the product or service was delivered as described at the "
 "time of purchase."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:125
 msgid ""
 "If the product or service is as described, provide specific information "
@@ -8132,11 +8216,11 @@ msgid ""
 "address each point that the cardholder has made."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:126
 msgid ""
 "If the customer has not yet returned the product or canceled the service, "
@@ -8147,11 +8231,11 @@ msgid ""
 "processed."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:127
 msgid ""
 "For products that have been repaired or replaced, provide evidence that the "
@@ -8159,11 +8243,11 @@ msgid ""
 "customer, and the repair or replacement has not since been disputed."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:128
 msgid ""
 "If your customer made no attempt to return the product or cancel the "
@@ -8171,11 +8255,11 @@ msgid ""
 "note that as well."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:129
 msgid ""
 "If the customer withdraws their dispute you should still submit evidence "
@@ -8183,42 +8267,42 @@ msgid ""
 "from the cardholder stating that they are no longer in dispute."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:131
 msgid "The cardholder claims the product was unacceptable."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:140
 msgid ""
 "The customer claims that you continued to charge them after a subscription "
 "was canceled."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:143
 msgid ""
 "Prove that the subscription was still active and that the customer was "
 "aware of, and did not follow, your cancellation procedure."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:146
 msgid ""
 "First, get in touch with your customer. If you understand what they believe "
@@ -8226,11 +8310,11 @@ msgid ""
 "make it right. "
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:147
 msgid ""
 "Even if your customer agrees to withdraw the dispute, you must still submit "
@@ -8238,11 +8322,11 @@ msgid ""
 "your customer is going to withdraw the dispute is not sufficient evidence."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:148
 msgid ""
 "Otherwise, use the forms on the next screen to submit evidence that the "
@@ -8250,31 +8334,31 @@ msgid ""
 "not follow, your cancellation procedure."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:150
 msgid "The cardholder claims a subscription was canceled."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:155
 msgid ""
 "If you believe the dispute is invalid, you can challenge it by submitting "
 "the appropriate evidence using the response forms on the next screen."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:156
 msgid ""
 "If you can not prove the customer’s subscription was canceled, and or they "
@@ -8284,22 +8368,22 @@ msgid ""
 "business."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:159
 msgid ""
 "The customer doesn’t recognize the payment appearing on their card "
 "statement."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:162
 msgid ""
 "Get your customer to withdraw the dispute by helping them identify the "
@@ -8307,11 +8391,11 @@ msgid ""
 "proves the purchase was legitimate. "
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:165
 msgid ""
 "First, try to get in touch with your customer. Sometimes people forget "
@@ -8323,11 +8407,11 @@ msgid ""
 "is not sufficient evidence."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:166
 msgid ""
 "It may be more efficient—and provide a better customer experience—to accept "
@@ -8338,11 +8422,11 @@ msgid ""
 "regardless of how many disputes are won."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:20
 msgid ""
 "If your customer was not refunded appropriately, you will need to accept "
@@ -8351,11 +8435,11 @@ msgid ""
 "business."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:23
 msgid ""
 "The customer claims that the purchased product was returned or the "
@@ -8363,11 +8447,11 @@ msgid ""
 "or credit."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:26
 msgid ""
 "Demonstrate that you have refunded your customer through other means or "
@@ -8376,11 +8460,11 @@ msgid ""
 "entitled a refund that you did not provide, you can accept the dispute."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:29
 msgid ""
 "You should first get in touch with your customer. If you understand what "
@@ -8389,11 +8473,11 @@ msgid ""
 "with your customer, you can ask that they withdraw the dispute."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:30
 msgid ""
 "If the cardholder agrees to withdraw the dispute, you should still submit "
@@ -8404,20 +8488,20 @@ msgid ""
 "withdrawn."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:32
 msgid "The cardholder claims a credit was not processed."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:44
 msgid ""
 "If there were duplicate payments, you should accept the dispute. You cannot "
@@ -8425,40 +8509,40 @@ msgid ""
 "place liability for accepting disputed payments with you, the business."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:47
 msgid ""
 "The customer claims they were charged multiple times for the same product "
 "or service."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:50
 msgid "Demonstrate that each payment was for a separate product or service."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:53
 msgid "Determine if your customer was incorrectly charged multiple times."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:54
 msgid ""
 "If they were not, collect any and all information documenting that each "
@@ -8470,11 +8554,11 @@ msgid ""
 "evidence."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:55
 msgid ""
 "If there have been two or more separate payments, you should get in touch "
@@ -8484,20 +8568,20 @@ msgid ""
 "withdraw the dispute."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:58
 msgid "The cardholder claims this is a duplicate transaction."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:64
 msgid ""
 "If you believe the payment was actually made using a stolen credit card, "
@@ -8505,11 +8589,11 @@ msgid ""
 "liability for accepting unauthorized transactions with you, the business."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:67
 msgid ""
 "This is the most common reason for a dispute, and happens when a cardholder "
@@ -8519,11 +8603,11 @@ msgid ""
 "on the billing statement from their card issuer."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:70
 msgid ""
 "Provide adequate payment and order details so that a legitimate customer "
@@ -8531,11 +8615,11 @@ msgid ""
 "authorized the transaction."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:73
 msgid ""
 "Try to get in touch with your customer. Sometimes people forget about "
@@ -8544,31 +8628,31 @@ msgid ""
 "let them know they no longer dispute the transaction."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:77
 msgid "The cardholder claims this is an unauthorized transaction."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:85
 msgid ""
 "This is an uncategorized dispute, so you should contact the customer for "
 "additional details to find out why the payment was disputed."
 msgstr ""
 
-#: dist/settings.js:1
-#: dist/multi-currency-switcher-block.js:1
-#: dist/multi-currency.js:1
 #: dist/index.js:1
+#: dist/multi-currency-switcher-block.js:1
 #: dist/order.js:1
+#: dist/settings.js:1
+#: dist/multi-currency.js:1
 #: client/disputes/strings.ts:98
 msgid ""
 "If you can not prove the customer received their product or service, you "
@@ -8696,8 +8780,8 @@ msgstr ""
 msgid "Simplify checkout with fewer steps to pay."
 msgstr ""
 
-#: dist/blocks-checkout.js:1
 #: dist/express-checkout.js:1
+#: dist/blocks-checkout.js:1
 #: client/express-checkout/event-handlers.js:177
 msgid "There was a problem processing the order."
 msgstr ""
@@ -8709,8 +8793,8 @@ msgid ""
 "add the product to the cart, instead."
 msgstr ""
 
-#: dist/blocks-checkout.js:1
 #: dist/express-checkout.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
 #: client/express-checkout/transformers/wc-to-stripe.js:142
 #: client/payment-details/summary/index.tsx:215
@@ -8718,8 +8802,8 @@ msgstr ""
 msgid "Fees"
 msgstr ""
 
-#: dist/blocks-checkout.js:1
 #: dist/express-checkout.js:1
+#: dist/blocks-checkout.js:1
 #: dist/index.js:1
 #: client/express-checkout/transformers/wc-to-stripe.js:158
 #: client/payment-details/summary/missing-order-notice/index.tsx:17
@@ -8745,17 +8829,17 @@ msgid "Connect"
 msgstr ""
 
 #: dist/index.js:1
-#: client/merchant-feedback-prompt/index.tsx:70
+#: client/merchant-feedback-prompt/index.tsx:71
 msgid "Are you satisfied with WooPayments?"
 msgstr ""
 
 #: dist/index.js:1
-#: client/merchant-feedback-prompt/index.tsx:77
+#: client/merchant-feedback-prompt/index.tsx:78
 msgid "\"Yes\" icon"
 msgstr ""
 
 #: dist/index.js:1
-#: client/merchant-feedback-prompt/index.tsx:85
+#: client/merchant-feedback-prompt/index.tsx:86
 msgid "\"No\" icon"
 msgstr ""
 
@@ -8783,31 +8867,37 @@ msgid "Share your feedback here…"
 msgstr ""
 
 #: dist/index.js:1
-#: client/merchant-feedback-prompt/negative-modal.tsx:29
+#: client/merchant-feedback-prompt/negative-modal.tsx:30
+#. {{a}}: placeholders are opening and closing anchor tags.
 msgid ""
 "Your feedback will be sent to the WooCommerce team. Your personal "
 "information is secure and will not be shared with third parties. For more "
-"details, please see our "
+"details, please see our {{a/}}."
 msgstr ""
 
 #: dist/index.js:1
-#: client/merchant-feedback-prompt/negative-modal.tsx:30
+#: client/merchant-feedback-prompt/negative-modal.tsx:32
 msgid "privacy policy"
 msgstr ""
 
 #: dist/index.js:1
-#: client/merchant-feedback-prompt/negative-modal.tsx:49
+#: client/merchant-feedback-prompt/negative-modal.tsx:45
+msgid "Contact our support team"
+msgstr ""
+
+#: dist/index.js:1
+#: client/merchant-feedback-prompt/negative-modal.tsx:52
 #: client/merchant-feedback-prompt/positive-modal.tsx:53
 msgid "Close"
 msgstr ""
 
 #: dist/index.js:1
-#: client/merchant-feedback-prompt/negative-modal.tsx:53
+#: client/merchant-feedback-prompt/negative-modal.tsx:56
 msgid "Thank you for your feedback!"
 msgstr ""
 
 #: dist/index.js:1
-#: client/merchant-feedback-prompt/negative-modal.tsx:55
+#: client/merchant-feedback-prompt/negative-modal.tsx:58
 msgid "Send"
 msgstr ""
 
@@ -9382,7 +9472,7 @@ msgstr ""
 
 #: dist/index.js:1
 #: client/overview/modal/update-business-details/strings.tsx:10
-#: client/overview/task-list/tasks/update-business-details-task.tsx:112
+#: client/overview/task-list/tasks/update-business-details-task.tsx:114
 #. %s: WooPayments
 msgid "Update %s business details"
 msgstr ""
@@ -9411,7 +9501,7 @@ msgstr ""
 #: dist/subscription-product-onboarding-modal.js:1
 #: dist/subscriptions-empty-state.js:1
 #: client/overview/modal/update-business-details/strings.tsx:7
-#: client/overview/task-list/tasks/update-business-details-task.tsx:98
+#: client/overview/task-list/tasks/update-business-details-task.tsx:100
 #: client/subscription-product-onboarding/modal.js:41
 #: client/subscriptions-empty-state/index.js:74
 msgid "Finish setup"
@@ -9799,12 +9889,12 @@ msgid "Reconnect"
 msgstr ""
 
 #: dist/index.js:1
-#: client/overview/task-list/tasks/update-business-details-task.tsx:101
+#: client/overview/task-list/tasks/update-business-details-task.tsx:103
 msgid "Update"
 msgstr ""
 
 #: dist/index.js:1
-#: client/overview/task-list/tasks/update-business-details-task.tsx:109
+#: client/overview/task-list/tasks/update-business-details-task.tsx:111
 #. %s: WooPayments
 msgid "Finish setting up %s"
 msgstr ""
@@ -9830,7 +9920,7 @@ msgid ""
 msgstr ""
 
 #: dist/index.js:1
-#: client/overview/task-list/tasks/update-business-details-task.tsx:95
+#: client/overview/task-list/tasks/update-business-details-task.tsx:97
 msgid "More details"
 msgstr ""
 
@@ -10115,6 +10205,16 @@ msgstr ""
 msgid ""
 "Disagree with the claim? You can challenge it by submitting evidence to the "
 "customer's bank. Otherwise, you can settle the inquiry by issuing a refund."
+msgstr ""
+
+#: dist/index.js:1
+#: client/payment-details/dispute-details/dispute-steps.tsx:134
+msgid "Steps you can take"
+msgstr ""
+
+#: dist/index.js:1
+#: client/payment-details/dispute-details/dispute-steps.tsx:134
+msgid "We recommend reviewing your options before responding by the deadline. "
 msgstr ""
 
 #: dist/index.js:1
@@ -10688,7 +10788,7 @@ msgid "You must <a>capture</a> this charge within the next"
 msgstr ""
 
 #: dist/index.js:1
-#: client/payment-details/summary/index.tsx:324
+#: client/payment-details/summary/index.tsx:326
 msgid "Approving this transaction will capture the charge."
 msgstr ""
 
@@ -11164,6 +11264,10 @@ msgstr ""
 msgid "The payment was declined"
 msgstr ""
 
+#: client/payment-details/transaction-breakdown/fees-breakdown/index.tsx:77
+msgid "Transaction fees breakdown"
+msgstr ""
+
 #: dist/index.js:1
 #: client/payment-details/transaction-breakdown/index.tsx:56
 msgid "Transaction breakdown"
@@ -11196,8 +11300,8 @@ msgstr ""
 msgid "International payment fee"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/payment-details/transaction-breakdown/utils.ts:16
 #: client/utils/account-fees.tsx:108
 msgid "Currency conversion fee"
@@ -11243,22 +11347,22 @@ msgid "Business Number"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/advanced-settings/debug-mode.js:19
+#: client/settings/advanced-settings/debug-mode.js:18
 msgid "Debug mode"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/advanced-settings/debug-mode.js:24
+#: client/settings/advanced-settings/debug-mode.js:22
 msgid "Log error messages (defaulted on for test accounts)"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/advanced-settings/debug-mode.js:28
+#: client/settings/advanced-settings/debug-mode.js:26
 msgid "Log error messages"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/advanced-settings/debug-mode.js:30
+#: client/settings/advanced-settings/debug-mode.js:28
 msgid ""
 "When enabled, payment error logs will be saved to WooCommerce > Status > "
 "Logs."
@@ -11447,17 +11551,17 @@ msgid "Payout schedule"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/deposits/index.js:235
+#: client/settings/deposits/index.js:233
 msgid "Payout bank account"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/deposits/index.js:243
+#: client/settings/deposits/index.js:238
 msgid "Manage and update your bank account information to receive payouts."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/deposits/index.js:260
+#: client/settings/deposits/index.js:255
 msgid "Manage in Stripe"
 msgstr ""
 
@@ -11502,7 +11606,7 @@ msgid "Monthly"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/file-upload.tsx:103
+#: client/settings/express-checkout-settings/file-upload.tsx:100
 msgid "Replace"
 msgstr ""
 
@@ -11512,99 +11616,100 @@ msgid "The file you have attached is exceeding the maximum limit."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/file-upload.tsx:98
+#: client/settings/express-checkout-settings/file-upload.tsx:95
 msgid "Upload custom logo"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:109
-msgid ""
-"Dark {{br/}}{{helpText}}Recommended for white or light-colored backgrounds "
-"with high contrast.{{/helpText}}"
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:100
+msgid "Recommended for white or light-colored backgrounds with high contrast."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:118
-msgid ""
-"Light {{br/}}{{helpText}}Recommended for dark or colored backgrounds with "
-"high contrast.{{/helpText}}"
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:108
+msgid "Recommended for dark or colored backgrounds with high contrast."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:127
-msgid ""
-"Outline {{br/}}{{helpText}}Recommended for white or light-colored "
-"backgrounds with insufficient contrast.{{/helpText}}"
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:114
+msgid "Outline"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:157
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:116
+msgid ""
+"Recommended for white or light-colored backgrounds with insufficient "
+"contrast."
+msgstr ""
+
+#: dist/settings.js:1
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:144
 msgid "Apple Pay / Google Pay buttons"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:158
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:145
 msgid "WooPay button"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:176
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:163
 #. %s type of button to which the settings will be applied
 msgid "These settings will also apply to the %s on your store."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:188
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:175
 msgid ""
 "Some appearance settings may be overridden in the express payment section "
 "of the Cart & Checkout blocks."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:197
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:183
 msgid "Call to action"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:198
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:184
 msgid ""
 "Select a button label that fits best with the flow of purchase or payment "
 "experience on your store."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:209
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:195
 msgid "Button size"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:215
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:201
 msgid "Theme"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:221
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:208
 #: includes/multi-currency/client/blocks/currency-switcher.js:255
 msgid "Border radius"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:224
-msgid "Border radius, number input"
-msgstr ""
-
-#: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:249
-msgid "Border radius, slider"
-msgstr ""
-
-#: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:266
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:209
 msgid "Controls the corner roundness of express payment buttons."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:271
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:218
+msgid "Border radius, number input"
+msgstr ""
+
+#: dist/settings.js:1
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:245
+msgid "Border radius, slider"
+msgstr ""
+
+#: dist/settings.js:1
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:264
 #: includes/multi-currency/client/components/preview-modal/index.js:35
 #: includes/multi-currency/client/settings/single-currency/index.js:139
 #: includes/multi-currency/client/setup/tasks/store-settings-task/index.js:188
@@ -11612,37 +11717,37 @@ msgid "Preview"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:273
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:269
 msgid "See the preview of enabled express payment buttons."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:49
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:50
 msgid "Small {{helpText}}(40 px){{/helpText}}"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:58
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:59
 msgid "Medium {{helpText}}(48 px){{/helpText}}"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:67
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:68
 msgid "Large {{helpText}}(55 px){{/helpText}}"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:82
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:83
 msgid "Buy with"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:86
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:87
 msgid "Donate with"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:90
+#: client/settings/express-checkout-settings/general-payment-request-button-settings.js:91
 msgid "Book with"
 msgstr ""
 
@@ -11693,52 +11798,43 @@ msgid ""
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/payment-request-settings.js:101
-#: client/settings/express-checkout-settings/woopay-settings.js:169
-msgid "Product Page"
+#: client/settings/express-checkout-settings/payment-request-settings.js:102
+#: client/settings/express-checkout-settings/woopay-settings.js:175
+msgid "Show on cart page"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/payment-request-settings.js:116
-#: client/settings/express-checkout-settings/woopay-settings.js:184
-msgid "Cart Page"
+#: client/settings/express-checkout-settings/payment-request-settings.js:121
+#: client/settings/express-checkout-settings/woopay-settings.js:194
+msgid "Show on checkout page"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/payment-request-settings.js:52
-msgid "Enable Apple Pay / Google Pay"
+#: client/settings/express-checkout-settings/payment-request-settings.js:54
+msgid "Enable Apple Pay / Google Pay as express payment buttons"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/payment-request-settings.js:56
+#: client/settings/express-checkout-settings/payment-request-settings.js:58
 msgid ""
-"When enabled, customers who have configured Apple Pay or Google Pay enabled "
-"devices will be able to pay with their respective choice of Wallet."
+"Show express payment buttons on store pages for faster purchases. Customers "
+"with Apple Pay or Google Pay enabled will be able to pay with their "
+"preferred wallet."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/payment-request-settings.js:64
-msgid "Enable Apple Pay and Google Pay on selected pages"
+#: client/settings/express-checkout-settings/payment-request-settings.js:83
+#: client/settings/express-checkout-settings/woopay-settings.js:158
+msgid "Show on product page"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/payment-request-settings.js:82
-#: client/settings/express-checkout-settings/woopay-settings.js:152
-msgid "Checkout Page"
-msgstr ""
-
-#: dist/settings.js:1
-#: client/settings/express-checkout-settings/woopay-settings.js:136
-msgid "Enable WooPay button on selected pages"
-msgstr ""
-
-#: dist/settings.js:1
-#: client/settings/express-checkout-settings/woopay-settings.js:199
+#: client/settings/express-checkout-settings/woopay-settings.js:211
 msgid "Checkout logo"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/woopay-settings.js:205
+#: client/settings/express-checkout-settings/woopay-settings.js:214
 msgid ""
 "Upload a custom logo. Upload a horizontal image with a white or transparent "
 "background for best results. Use a PNG or JPG image format. Recommended "
@@ -11746,29 +11842,29 @@ msgid ""
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/woopay-settings.js:219
+#: client/settings/express-checkout-settings/woopay-settings.js:227
 msgid "Checkout theme"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/woopay-settings.js:235
+#: client/settings/express-checkout-settings/woopay-settings.js:243
 msgid "Enable global theme support"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/woopay-settings.js:245
+#: client/settings/express-checkout-settings/woopay-settings.js:253
 msgid ""
 "When enabled, WooPay checkout will be themed with your store’s brand colors "
 "and fonts. {{docs}}Learn more {{/docs}}"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/woopay-settings.js:269
+#: client/settings/express-checkout-settings/woopay-settings.js:276
 msgid "Checkout policies"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/woopay-settings.js:276
+#: client/settings/express-checkout-settings/woopay-settings.js:281
 msgid ""
 "Override the default {{privacyLink}}privacy policy{{/privacyLink}} and "
 "{{termsLink}}terms of service{{/termsLink}}, or add custom text to WooPay "
@@ -11776,22 +11872,22 @@ msgid ""
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/woopay-settings.js:310
+#: client/settings/express-checkout-settings/woopay-settings.js:311
 msgid "Preview of checkout"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/woopay-settings.js:81
+#: client/settings/express-checkout-settings/woopay-settings.js:83
 msgid "Enable WooPay"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/woopay-settings.js:85
+#: client/settings/express-checkout-settings/woopay-settings.js:90
 msgid "When enabled, customers will be able to checkout using WooPay."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/express-checkout-settings/woopay-settings.js:90
+#: client/settings/express-checkout-settings/woopay-settings.js:95
 msgid ""
 "When enabled, customers will be able to checkout using WooPay. In order to "
 "use {{wooPayLink}}WooPay{{/wooPayLink}}, you must agree to our "
@@ -11971,12 +12067,12 @@ msgid ""
 msgstr ""
 
 #: dist/index.js:1
-#: client/settings/fraud-protection/advanced-settings/cards/cvc-verification.tsx:30
+#: client/settings/fraud-protection/advanced-settings/cards/cvc-verification.tsx:32
 msgid "This filter is disabled, and cannot be modified."
 msgstr ""
 
 #: dist/index.js:1
-#: client/settings/fraud-protection/advanced-settings/cards/cvc-verification.tsx:31
+#: client/settings/fraud-protection/advanced-settings/cards/cvc-verification.tsx:33
 msgid ""
 "Because the card security code appears only on the card and not on receipts "
 "or statements, the card security code provides some assurance that the "
@@ -12008,7 +12104,7 @@ msgid ""
 msgstr ""
 
 #: dist/index.js:1
-#: client/settings/fraud-protection/advanced-settings/cards/international-ip-address.tsx:35
+#: client/settings/fraud-protection/advanced-settings/cards/international-ip-address.tsx:37
 msgid ""
 "You should be especially wary when a customer has an international IP "
 "address but uses domestic billing and shipping information. Fraudsters "
@@ -12035,7 +12131,7 @@ msgid ""
 msgstr ""
 
 #: dist/index.js:1
-#: client/settings/fraud-protection/advanced-settings/cards/ip-address-mismatch.tsx:22
+#: client/settings/fraud-protection/advanced-settings/cards/ip-address-mismatch.tsx:24
 msgid ""
 "Fraudulent transactions often use fake addresses to place orders. If the IP "
 "address seems to be in one country, but the billing address is in another, "
@@ -12185,7 +12281,7 @@ msgstr ""
 #: dist/settings.js:1
 #: client/settings/fraud-protection/advanced-settings/index.tsx:215
 #: client/settings/save-settings-section/index.js:117
-#: includes/multi-currency/client/settings/multi-currency/store-settings/index.js:188
+#: includes/multi-currency/client/settings/multi-currency/store-settings/index.js:189
 #: includes/multi-currency/client/settings/single-currency/index.js:416
 msgid "Save changes"
 msgstr ""
@@ -12293,17 +12389,17 @@ msgid "Basic level help icon"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/fraud-protection/protection-levels/index.tsx:111
+#: client/settings/fraud-protection/protection-levels/index.tsx:110
 msgid "Advanced"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/fraud-protection/protection-levels/index.tsx:118
+#: client/settings/fraud-protection/protection-levels/index.tsx:121
 msgid "Edit"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/fraud-protection/protection-levels/index.tsx:119
+#: client/settings/fraud-protection/protection-levels/index.tsx:122
 msgid "Configure"
 msgstr ""
 
@@ -12469,7 +12565,7 @@ msgid "Base transaction fees: %s"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/payment-methods-list/use-payment-method-availability.tsx:105
+#: client/settings/payment-methods-list/use-payment-method-availability.tsx:109
 #. %s: a payment method name.
 msgid ""
 "%s is not available to your customers when the \"manual capture\" setting "
@@ -12490,17 +12586,17 @@ msgid ""
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/payment-methods-list/use-payment-method-availability.tsx:56
+#: client/settings/payment-methods-list/use-payment-method-availability.tsx:58
 msgid "Learn more about enabling payment methods"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/payment-methods-list/use-payment-method-availability.tsx:68
+#: client/settings/payment-methods-list/use-payment-method-availability.tsx:70
 msgid "Approval pending"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/payment-methods-list/use-payment-method-availability.tsx:70
+#: client/settings/payment-methods-list/use-payment-method-availability.tsx:72
 msgid ""
 "%s requires your store to be live and fully functional before it can be "
 "reviewed for use with their service. This approval process usually takes "
@@ -12508,21 +12604,21 @@ msgid ""
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/payment-methods-list/use-payment-method-availability.tsx:71
+#: client/settings/payment-methods-list/use-payment-method-availability.tsx:73
 msgid ""
 "This payment method is pending approval. Once approved, you will be able to "
 "use it."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/payment-methods-list/use-payment-method-availability.tsx:79
+#: client/settings/payment-methods-list/use-payment-method-availability.tsx:81
 msgid ""
 "%s won't be visible to your customers until you provide the required "
 "information. Follow the instructions sent by our partner Stripe to %s."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/payment-methods-list/use-payment-method-availability.tsx:81
+#: client/settings/payment-methods-list/use-payment-method-availability.tsx:83
 msgid ""
 "%s won't be visible to your customers until you provide the required "
 "information. Follow the instructions sent by our partner Stripe to your "
@@ -12530,7 +12626,7 @@ msgid ""
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/payment-methods-list/use-payment-method-availability.tsx:92
+#: client/settings/payment-methods-list/use-payment-method-availability.tsx:94
 #. {{learnMoreLink}}: placeholders are opening and closing anchor tags.
 msgid ""
 "Your application to use %s has been rejected, please check your email for "
@@ -12539,7 +12635,7 @@ msgid ""
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/payment-methods-list/use-payment-method-availability.tsx:94
+#: client/settings/payment-methods-list/use-payment-method-availability.tsx:98
 msgid "Contact Support"
 msgstr ""
 
@@ -12551,8 +12647,8 @@ msgid ""
 "the most relevant payment methods."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/woopay.js:1
+#: dist/settings.js:1
 #: client/settings/phone-input/index.tsx:139
 msgid "Mobile number"
 msgstr ""
@@ -12585,12 +12681,17 @@ msgid "View our documentation"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/settings-manager/index.js:199
+#: client/settings/settings-manager/index.js:197
+msgid "Tax details collection is not available for your account."
+msgstr ""
+
+#: dist/settings.js:1
+#: client/settings/settings-manager/index.js:206
 msgid "Tax details are already submitted."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/settings-manager/index.js:216
+#: client/settings/settings-manager/index.js:223
 msgid "Tax details updated"
 msgstr ""
 
@@ -12645,7 +12746,7 @@ msgstr ""
 
 #: dist/settings.js:1
 #: client/settings/support-email-input/index.js:43
-#: client/settings/support-phone-input/index.js:73
+#: client/settings/support-phone-input/index.js:71
 msgid ""
 "This may be visible on receipts, invoices, and automated emails from your "
 "store."
@@ -12657,30 +12758,30 @@ msgid "Support email"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/support-phone-input/index.js:32
+#: client/settings/support-phone-input/index.js:34
 msgid "Support phone number cannot be empty."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/support-phone-input/index.js:38
+#: client/settings/support-phone-input/index.js:40
 msgid "Please enter a valid phone number."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/support-phone-input/index.js:45
+#: client/settings/support-phone-input/index.js:47
 msgid ""
 "Support phone number cannot be empty once it has been set before, please "
 "specify."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/support-phone-input/index.js:57
+#: client/settings/support-phone-input/index.js:59
 msgid "Support phone number"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/support-phone-input/index.js:59
-msgid " (+1 0000000000 can be used for test accounts)"
+#: client/settings/support-phone-input/index.js:78
+msgid "(+1 0000000000 can be used for test accounts)"
 msgstr ""
 
 #: dist/settings.js:1
@@ -12714,7 +12815,7 @@ msgid "Customer support"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/transactions/index.js:195
+#: client/settings/transactions/index.js:194
 msgid "Provide contact information where customers can reach you for support."
 msgstr ""
 
@@ -12760,31 +12861,31 @@ msgid ""
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/transactions/manual-capture-control.tsx:51
+#: client/settings/transactions/manual-capture-control.tsx:53
 msgid "Manual capture is not available when Stripe Billing is active."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/transactions/manual-capture-control.tsx:54
+#: client/settings/transactions/manual-capture-control.tsx:56
 msgid "Enable manual capture"
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/transactions/manual-capture-control.tsx:55
+#: client/settings/transactions/manual-capture-control.tsx:57
 msgid ""
 "Payments must be captured within 7 days or the authorization will expire "
 "and money will be returned to the shopper."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/transactions/manual-capture-control.tsx:56
+#: client/settings/transactions/manual-capture-control.tsx:58
 msgid ""
 "Additionally, only card payments support manual capture. Non-card payments "
 "will be hidden from checkout."
 msgstr ""
 
 #: dist/settings.js:1
-#: client/settings/transactions/manual-capture-control.tsx:57
+#: client/settings/transactions/manual-capture-control.tsx:59
 msgid "Do you want to continue?"
 msgstr ""
 
@@ -12819,7 +12920,7 @@ msgid "By clicking \"Finish setup\", you agree to the <a>Terms of Service</a>"
 msgstr ""
 
 #: dist/subscription-product-onboarding-modal.js:1
-#: client/subscription-product-onboarding/modal.js:97
+#: client/subscription-product-onboarding/modal.js:98
 msgid "We’ve saved your product as a draft."
 msgstr ""
 
@@ -12865,22 +12966,22 @@ msgid ""
 msgstr ""
 
 #: dist/tos.js:1
-#: client/tos/modal/index.tsx:37
+#: client/tos/modal/index.tsx:40
 msgid "Something went wrong. Please try accepting the Terms of Service again!"
 msgstr ""
 
 #: dist/tos.js:1
-#: client/tos/modal/index.tsx:41
+#: client/tos/modal/index.tsx:44
 msgid "Decline"
 msgstr ""
 
 #: dist/tos.js:1
-#: client/tos/modal/index.tsx:42
+#: client/tos/modal/index.tsx:45
 msgid "Accept"
 msgstr ""
 
 #: dist/tos.js:1
-#: client/tos/modal/index.tsx:51
+#: client/tos/modal/index.tsx:54
 #. %s: WooPayments
 msgid ""
 "By declining our {{link}}Terms of Service{{/link}}, you’ll no longer be "
@@ -12889,12 +12990,12 @@ msgid ""
 msgstr ""
 
 #: dist/tos.js:1
-#: client/tos/modal/index.tsx:57
+#: client/tos/modal/index.tsx:63
 msgid "Something went wrong. Please try again!"
 msgstr ""
 
 #: dist/tos.js:1
-#: client/tos/modal/index.tsx:62
+#: client/tos/modal/index.tsx:68
 msgid "Disable"
 msgstr ""
 
@@ -12958,7 +13059,7 @@ msgstr ""
 
 #: dist/index.js:1
 #: client/transactions/filters/config.ts:146
-#: includes/multi-currency/client/analytics/index.js:131
+#: includes/multi-currency/client/analytics/index.js:123
 msgid "Customer currency"
 msgstr ""
 
@@ -13407,87 +13508,87 @@ msgstr ""
 msgid "Risk level of transaction"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:105
 msgid "International payment method fee"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:111
 msgid "Total per transaction"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:120
 #. %s: WooPayments
 msgid "{{linkToStripePage /}} about %s Fees in your country"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:129
 #. %s: WooPayments
 msgid "{{linkToStripePage /}} about %s Fees"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:141
 #. %1: Percentage part of the fee. %2: Fixed part of the fee
 msgid "%1$f%% + %2$s per transaction"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:143
 #. %f percentage discount to apply
 msgid "(%f%% discount)"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:167
 #. %1 Base fee (that don't apply to this account at this moment), %2: Current fee (e.g: "2.9% + $.30 per transaction")
 msgid "<s>%1$s</s> %2$s"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:183
 msgid "missing fees"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:186
 #. %1: Percentage part of the fee. %2: Fixed part of the fee
 msgid "From %1$f%% + %2$s"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:198
 msgid "Card transactions"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:200
 msgid "In-person transactions"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:207
 #. %s: Payment method title
 msgid "%s transactions"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/utils/account-fees.tsx:210
 msgid "Unknown transactions"
 msgstr ""
@@ -13504,148 +13605,148 @@ msgstr ""
 msgid "%s, and %s"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form-modal/index.tsx:13
 msgid "Set your tax details"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/company-data-task.tsx:60
 msgid "Confirm your business details"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/company-data-task.tsx:62
 msgid "Business name"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/company-data-task.tsx:64
 msgid "Confirm"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:148
 msgid "Set your %1$s"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:151
 msgid ""
 "The information you provide here will be used for all of your account's tax "
 "documents."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:153
 msgid "I have a valid %1$s"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:50
 msgid "ABN"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:52
 msgid "Corporate Number"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:54
 msgid "IRD Number"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:56
 msgid "UEN or GST Registration Number"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:58
 msgid "VAT Number"
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:64
 msgid ""
 "By inputting your ABN number you confirm that you are going to account for "
 "the GST."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:70
 msgid ""
 "By inputting your VAT number you confirm you are a Norway VAT registered "
 "business and that you are going to account for the VAT."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:72
 msgid ""
 "By inputting your IRD number you confirm that you are going to account for "
 "the GST."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:74
 msgid ""
 "By providing your UEN or GST number you confirm you are a Singapore GST "
 "registered business and you are going to account for the GST."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:78
 msgid ""
 "If your sales exceed the VAT threshold for your country, you're required to "
 "register for a VAT Number."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:85
 msgid "11-digit number, for example 12 345 678 901."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:87
 msgid "13-digit number, for example 1234567890123."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:89
 msgid "8-digit or 9-digit number, for example 99-999-999 or 999-999-999."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:91
 msgid ""
 "Enter your UEN (e.g., 200312345A) or GST Registration Number (e.g., "
 "M91234567X)."
 msgstr ""
 
-#: dist/settings.js:1
 #: dist/index.js:1
+#: dist/settings.js:1
 #: client/vat/form/tasks/vat-number-task.tsx:93
 msgid "8 to 12 digits with your country code prefix, for example DE 123456789."
 msgstr ""
@@ -13669,7 +13770,7 @@ msgctxt "Risk Level"
 msgid "Is"
 msgstr ""
 
-#: includes/multi-currency/client/analytics/index.js:55
+#: includes/multi-currency/client/analytics/index.js:51
 #. Sentence fragment, logical, "Is Not" refers to searching for orders not matching a chosen currency.
 msgid "Is Not"
 msgstr ""
@@ -13787,11 +13888,11 @@ msgid ""
 "exchange rates and rounding rules. <learnMoreLink>Learn more</learnMoreLink>"
 msgstr ""
 
-#: includes/multi-currency/client/settings/multi-currency/enabled-currencies-list/index.js:74
+#: includes/multi-currency/client/settings/multi-currency/enabled-currencies-list/index.js:75
 msgid "Name"
 msgstr ""
 
-#: includes/multi-currency/client/settings/multi-currency/enabled-currencies-list/index.js:75
+#: includes/multi-currency/client/settings/multi-currency/enabled-currencies-list/index.js:76
 #: includes/multi-currency/client/settings/single-currency/index.js:198
 msgid "Exchange rate"
 msgstr ""
@@ -13826,25 +13927,25 @@ msgstr ""
 msgid "Add/remove currencies"
 msgstr ""
 
-#: includes/multi-currency/client/settings/multi-currency/store-settings/index.js:115
+#: includes/multi-currency/client/settings/multi-currency/store-settings/index.js:116
 #: includes/multi-currency/client/setup/tasks/store-settings-task/index.js:133
 msgid ""
 "Automatically switch customers to their local currency if it has been "
 "enabled"
 msgstr ""
 
-#: includes/multi-currency/client/settings/multi-currency/store-settings/index.js:120
+#: includes/multi-currency/client/settings/multi-currency/store-settings/index.js:121
 msgid ""
 "Customers will be notified via store alert banner. "
 "<previewLink>Preview</previewLink>"
 msgstr ""
 
-#: includes/multi-currency/client/settings/multi-currency/store-settings/index.js:146
+#: includes/multi-currency/client/settings/multi-currency/store-settings/index.js:147
 #: includes/multi-currency/client/setup/tasks/store-settings-task/index.js:156
 msgid "Add a currency switcher to the Storefront theme on breadcrumb section."
 msgstr ""
 
-#: includes/multi-currency/client/settings/multi-currency/store-settings/index.js:153
+#: includes/multi-currency/client/settings/multi-currency/store-settings/index.js:154
 #. %s: url to the widgets page
 msgid ""
 "A currency switcher is also available in your widgets. "
@@ -13876,49 +13977,49 @@ msgid ""
 "the exchange rate and formatting rules above."
 msgstr ""
 
-#: includes/multi-currency/client/settings/single-currency/index.js:226
+#: includes/multi-currency/client/settings/single-currency/index.js:225
 msgid "Current rate: 1 %s = %s %s (Last updated: %s)"
 msgstr ""
 
-#: includes/multi-currency/client/settings/single-currency/index.js:235
+#: includes/multi-currency/client/settings/single-currency/index.js:234
 msgid "Error - Unable to fetch automatic rate for this currency"
 msgstr ""
 
-#: includes/multi-currency/client/settings/single-currency/index.js:240
+#: includes/multi-currency/client/settings/single-currency/index.js:238
 msgid "Fetch rates automatically"
 msgstr ""
 
-#: includes/multi-currency/client/settings/single-currency/index.js:247
+#: includes/multi-currency/client/settings/single-currency/index.js:245
 msgid "Enter your fixed rate of exchange"
 msgstr ""
 
-#: includes/multi-currency/client/settings/single-currency/index.js:265
+#: includes/multi-currency/client/settings/single-currency/index.js:263
 msgid "Manual Rate"
 msgstr ""
 
-#: includes/multi-currency/client/settings/single-currency/index.js:269
+#: includes/multi-currency/client/settings/single-currency/index.js:267
 msgid "Enter the manual rate you would like to use. Must be a positive number."
 msgstr ""
 
-#: includes/multi-currency/client/settings/single-currency/index.js:295
+#: includes/multi-currency/client/settings/single-currency/index.js:293
 msgid "Formatting rules"
 msgstr ""
 
-#: includes/multi-currency/client/settings/single-currency/index.js:305
+#: includes/multi-currency/client/settings/single-currency/index.js:303
 msgid "Price rounding"
 msgstr ""
 
-#: includes/multi-currency/client/settings/single-currency/index.js:311
+#: includes/multi-currency/client/settings/single-currency/index.js:309
 msgid ""
 "Make your %s prices consistent by rounding them up after they're converted. "
 "{{learnMoreLink}}Learn more{{/learnMoreLink}}"
 msgstr ""
 
-#: includes/multi-currency/client/settings/single-currency/index.js:348
+#: includes/multi-currency/client/settings/single-currency/index.js:347
 msgid "Charm pricing"
 msgstr ""
 
-#: includes/multi-currency/client/settings/single-currency/index.js:354
+#: includes/multi-currency/client/settings/single-currency/index.js:353
 msgid ""
 "Reduce the converted price for a specific amount. {{learnMoreLink}}Learn "
 "more{{/learnMoreLink}}"
@@ -14001,6 +14102,13 @@ msgstr ""
 #: includes/multi-currency/client/setup/tasks/add-currencies-task/index.js:78
 msgid "Add %s currency"
 msgid_plural "Add %s currencies"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/multi-currency/client/setup/tasks/add-currencies-task/utils.js:59
+#. %1$s: comma-separated list of currencies, %2$s: last currency
+msgid "%1$s and %2$s"
+msgid_plural "%1$s, and %2$s"
 msgstr[0] ""
 msgstr[1] ""
 

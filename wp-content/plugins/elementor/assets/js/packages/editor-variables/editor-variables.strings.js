@@ -68,6 +68,6 @@ __( 'Delete', 'elementor' );
 __( 'Name', 'elementor' );
 __( 'Value', 'elementor' );
 __( 'Value', 'elementor' );
-__( 'Missing variable', 'elementor' );
 __( 'deleted', 'elementor' );
 __( 'Unlink', 'elementor' );
+__( 'Missing variable', 'elementor' );

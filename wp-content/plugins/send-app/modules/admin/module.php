@@ -22,6 +22,7 @@ class Module extends Module_Base {
 			'Admin_Page',
 			'Activation',
 			'Notificator',
+			'Feedback',
 		];
 	}
 

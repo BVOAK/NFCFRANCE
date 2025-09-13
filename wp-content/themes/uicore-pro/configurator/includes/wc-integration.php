@@ -116,7 +116,7 @@ class NFC_WooCommerce_Integration
             if (!$config)
                 continue;
 
-            echo '<div class="nfc-admin-order-display" style="background: #f8f9fa; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #0040C1;">';
+            echo '<div class="nfc-admin-order-display" style="background: #f8f9fa; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #0040C1; display: flex; flex-direction: column; position: relative; top: 20px;">';
             echo '<h3 style="margin-top: 0; color: #0040C1;">🎨 Configuration NFC - ' . esc_html($item->get_name()) . '</h3>';
 
             // Grid à 2 colonnes
@@ -139,14 +139,14 @@ class NFC_WooCommerce_Integration
             if (isset($config['image']['name'])) {
                 echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Logo recto:</td><td>' . esc_html($config['image']['name']) . '</td></tr>';
 
-                if (isset($config['image']['scale'])) {
+                /* if (isset($config['image']['scale'])) {
                     echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Taille:</td><td>' . $config['image']['scale'] . '%</td></tr>';
-                }
+                } */
             }
 
             // Logo verso (si présent)
             if (isset($config['logoVerso']['name'])) {
-                echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600; color: #e74c3c;">Logo verso:</td><td>' . esc_html($config['logoVerso']['name']) . '</td></tr>';
+                echo '<tr><td style="padding: 5px 10px 5px 0; font-weight: 600;">Logo verso:</td><td>' . esc_html($config['logoVerso']['name']) . '</td></tr>';
             }
 
             echo '</table>';
@@ -178,14 +178,14 @@ class NFC_WooCommerce_Integration
             echo '<div class="nfc-admin-actions">';
 
             // Bouton screenshot principal
-            if ($screenshot_data) {
+            /* if ($screenshot_data) {
                 echo '<a href="#" ';
                 echo 'class="button button-primary nfc-download-screenshot" ';
                 echo 'data-order-id="' . esc_attr($order->get_id()) . '" ';
                 echo 'data-item-id="' . esc_attr($item_id) . '" ';
                 echo 'style="display: block; margin-bottom: 8px; text-align: center;">';
                 echo '🖼️ Télécharger Screenshot</a>';
-            }
+            } */
 
             // Bouton logos (si présents)
             if (isset($config['image']['name'])) {
@@ -207,7 +207,7 @@ class NFC_WooCommerce_Integration
             }
 
             // Infos techniques
-            if ($screenshot_data) {
+            /* if ($screenshot_data) {
                 $screenshots = json_decode($screenshot_data, true);
                 echo '<div style="margin-top: 15px; padding: 10px; background: #fff; border-radius: 4px; font-size: 11px; color: #666;">';
                 echo '<strong>Infos techniques :</strong><br>';
@@ -215,7 +215,7 @@ class NFC_WooCommerce_Integration
                 echo '• Généré: ' . ($screenshots['generated_at'] ?? 'Inconnu') . '<br>';
                 echo '• Version: ' . ($screenshots['version'] ?? '1.0');
                 echo '</div>';
-            }
+            } */
 
             echo '</div>'; // .nfc-admin-actions
             echo '</div>'; // colonne 2
@@ -242,104 +242,153 @@ class NFC_WooCommerce_Integration
     }
 
 
-    public function ajax_download_screenshot()
-    {
-        error_log('NFC: ajax_download_screenshot appelé');
-
-        // Vérifications sécurité
-        if (!current_user_can('edit_shop_orders')) {
-            error_log('NFC: User cannot edit_shop_orders');
-            wp_die('Accès non autorisé', 'Erreur', ['response' => 403]);
-        }
-
-        // ✨ FIX: Vérifier le nonce correct
-        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'nfc_admin_downloads')) {
-            error_log('NFC: Nonce invalide: ' . ($_GET['_wpnonce'] ?? 'manquant'));
-            wp_die('Nonce invalide', 'Erreur', ['response' => 403]);
-        }
-
-        $order_id = intval($_GET['order_id'] ?? 0);
-        $item_id = intval($_GET['item_id'] ?? 0);
-
-        error_log("NFC: Tentative téléchargement screenshot - Order: {$order_id}, Item: {$item_id}");
-
-        if (!$order_id || !$item_id) {
-            error_log('NFC: Paramètres manquants');
-            wp_die('Paramètres manquants', 'Erreur', ['response' => 400]);
-        }
-
-        // Récupérer la commande
-        $order = wc_get_order($order_id);
-        if (!$order) {
-            error_log("NFC: Commande {$order_id} non trouvée");
-            wp_die('Commande non trouvée', 'Erreur', ['response' => 404]);
-        }
-
-        // Récupérer l'item
-        $item = null;
-        foreach ($order->get_items() as $order_item_id => $order_item) {
-            if ($order_item_id == $item_id) {
-                $item = $order_item;
-                break;
-            }
-        }
-
-        if (!$item) {
-            error_log("NFC: Item {$item_id} non trouvé dans commande {$order_id}");
-            wp_die('Article non trouvé', 'Erreur', ['response' => 404]);
-        }
-
-        // Récupérer les données screenshot
-        $screenshot_data = $item->get_meta('_nfc_screenshot_data');
-        if (!$screenshot_data) {
-            error_log("NFC: Pas de screenshot_data pour item {$item_id}");
-            wp_die('Aucun screenshot disponible', 'Erreur', ['response' => 404]);
-        }
-
-        $screenshots = json_decode($screenshot_data, true);
-        $screenshot_base64 = $screenshots['full'] ?? '';
-
-        if (empty($screenshot_base64)) {
-            error_log('NFC: Screenshot base64 vide');
-            wp_die('Données screenshot corrompues', 'Erreur', ['response' => 500]);
-        }
-
-        // Extraire les données base64
-        if (strpos($screenshot_base64, 'data:image/png;base64,') === 0) {
-            $screenshot_base64 = substr($screenshot_base64, strlen('data:image/png;base64,'));
-        }
-
-        $image_data = base64_decode($screenshot_base64);
-        if (!$image_data) {
-            error_log('NFC: Impossible de décoder base64');
-            wp_die('Impossible de décoder l\'image', 'Erreur', ['response' => 500]);
-        }
-
-        // Générer nom de fichier
-        $config_data = $item->get_meta('_nfc_config_complete');
-        $config = $config_data ? json_decode($config_data, true) : [];
-
-        $filename = 'nfc-screenshot-commande-' . $order_id . '-item-' . $item_id;
-        if (isset($config['user']['firstName'], $config['user']['lastName'])) {
-            $name = sanitize_file_name($config['user']['firstName'] . '-' . $config['user']['lastName']);
-            $filename = 'nfc-screenshot-' . $name . '-commande-' . $order_id;
-        }
-        $filename .= '.png';
-
-        error_log("NFC: Téléchargement {$filename} - " . strlen($image_data) . ' bytes');
-
-        // Headers de téléchargement
-        header('Content-Type: image/png');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Content-Length: ' . strlen($image_data));
-        header('Cache-Control: no-cache, no-store, must-revalidate');
-        header('Pragma: no-cache');
-        header('Expires: 0');
-
-        // Servir l'image
-        echo $image_data;
-        exit;
+public function ajax_download_screenshot()
+{
+    error_log('=== NFC DEBUG SCREENSHOT START ===');
+    error_log('NFC: $_GET = ' . print_r($_GET, true));
+    error_log('NFC: $_POST = ' . print_r($_POST, true));
+    error_log('NFC: current_user_can(edit_shop_orders) = ' . (current_user_can('edit_shop_orders') ? 'YES' : 'NO'));
+    
+    // Vérifications sécurité
+    if (!current_user_can('edit_shop_orders')) {
+        error_log('NFC: ERREUR - User cannot edit_shop_orders');
+        wp_die('Accès non autorisé', 'Erreur', ['response' => 403]);
     }
+    
+    // Vérifier nonce
+    $nonce = $_GET['_wpnonce'] ?? '';
+    error_log('NFC: Nonce reçu = ' . $nonce);
+    error_log('NFC: Nonce attendu = nfc_admin_downloads');
+    
+    if (!$nonce || !wp_verify_nonce($nonce, 'nfc_admin_downloads')) {
+        error_log('NFC: ERREUR - Nonce invalide');
+        error_log('NFC: wp_verify_nonce result = ' . (wp_verify_nonce($nonce, 'nfc_admin_downloads') ? 'VALID' : 'INVALID'));
+        wp_die('Nonce invalide', 'Erreur', ['response' => 403]);
+    }
+    
+    error_log('NFC: Nonce validé avec succès');
+    
+    $order_id = intval($_GET['order_id'] ?? 0);
+    $item_id = intval($_GET['item_id'] ?? 0);
+    
+    error_log("NFC: order_id = {$order_id}, item_id = {$item_id}");
+    
+    if (!$order_id || !$item_id) {
+        error_log('NFC: ERREUR - Paramètres manquants');
+        wp_die('Paramètres manquants', 'Erreur', ['response' => 400]);
+    }
+    
+    // Récupérer la commande
+    $order = wc_get_order($order_id);
+    if (!$order) {
+        error_log("NFC: ERREUR - Commande {$order_id} non trouvée");
+        wp_die('Commande non trouvée', 'Erreur', ['response' => 404]);
+    }
+    
+    error_log("NFC: Commande {$order_id} trouvée");
+    
+    // Récupérer l'item
+    $item = null;
+    $all_items = $order->get_items();
+    error_log('NFC: Items disponibles dans commande = ' . implode(', ', array_keys($all_items)));
+    
+    foreach ($all_items as $order_item_id => $order_item) {
+        error_log("NFC: Comparaison item_id {$order_item_id} avec {$item_id}");
+        if ($order_item_id == $item_id) {
+            $item = $order_item;
+            break;
+        }
+    }
+    
+    if (!$item) {
+        error_log("NFC: ERREUR - Item {$item_id} non trouvé dans commande {$order_id}");
+        wp_die('Article non trouvé', 'Erreur', ['response' => 404]);
+    }
+    
+    error_log("NFC: Item {$item_id} trouvé");
+    
+    // Récupérer les données screenshot
+    $screenshot_data = $item->get_meta('_nfc_screenshot_data');
+    error_log('NFC: screenshot_data existe = ' . ($screenshot_data ? 'YES' : 'NO'));
+    
+    if ($screenshot_data) {
+        error_log('NFC: screenshot_data length = ' . strlen($screenshot_data));
+        error_log('NFC: screenshot_data preview = ' . substr($screenshot_data, 0, 200) . '...');
+    }
+    
+    if (!$screenshot_data) {
+        error_log("NFC: ERREUR - Pas de screenshot_data pour item {$item_id}");
+        
+        // Debug: regarder toutes les métadonnées disponibles
+        $all_meta = $item->get_meta_data();
+        error_log('NFC: Toutes les métadonnées disponibles:');
+        foreach ($all_meta as $meta) {
+            error_log('  - ' . $meta->get_data()['key']);
+        }
+        
+        wp_die('Aucun screenshot disponible', 'Erreur', ['response' => 404]);
+    }
+    
+    $screenshots = json_decode($screenshot_data, true);
+    error_log('NFC: JSON decode success = ' . ($screenshots ? 'YES' : 'NO'));
+    
+    if ($screenshots) {
+        error_log('NFC: Screenshots keys = ' . implode(', ', array_keys($screenshots)));
+    }
+    
+    $screenshot_base64 = $screenshots['full'] ?? '';
+    error_log('NFC: full screenshot exists = ' . (empty($screenshot_base64) ? 'NO' : 'YES'));
+    error_log('NFC: full screenshot length = ' . strlen($screenshot_base64));
+    
+    if (empty($screenshot_base64)) {
+        error_log('NFC: ERREUR - Screenshot base64 vide');
+        wp_die('Données screenshot corrompues', 'Erreur', ['response' => 500]);
+    }
+    
+    // Extraire les données base64
+    if (strpos($screenshot_base64, 'data:image/png;base64,') === 0) {
+        $screenshot_base64 = substr($screenshot_base64, strlen('data:image/png;base64,'));
+        error_log('NFC: Prefix data:image supprimé');
+    }
+    
+    $image_data = base64_decode($screenshot_base64);
+    error_log('NFC: base64_decode success = ' . ($image_data ? 'YES' : 'NO'));
+    error_log('NFC: image_data length = ' . strlen($image_data));
+    
+    if (!$image_data) {
+        error_log('NFC: ERREUR - Impossible de décoder base64');
+        wp_die('Impossible de décoder l\'image', 'Erreur', ['response' => 500]);
+    }
+    
+    // Générer nom de fichier
+    $config_data = $item->get_meta('_nfc_config_complete');
+    $config = $config_data ? json_decode($config_data, true) : [];
+    
+    $filename = 'nfc-screenshot-commande-' . $order_id . '-item-' . $item_id;
+    if (isset($config['user']['firstName'], $config['user']['lastName'])) {
+        $name = sanitize_file_name($config['user']['firstName'] . '-' . $config['user']['lastName']);
+        $filename = 'nfc-screenshot-' . $name . '-commande-' . $order_id;
+    }
+    $filename .= '.png';
+    
+    error_log("NFC: Filename = {$filename}");
+    error_log("NFC: About to serve image - " . strlen($image_data) . ' bytes');
+    
+    // Headers de téléchargement
+    header('Content-Type: image/png');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Content-Length: ' . strlen($image_data));
+    header('Cache-Control: no-cache, no-store, must-revalidate');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+    
+    error_log('NFC: Headers sent, serving image...');
+    
+    // Servir l'image
+    echo $image_data;
+    error_log('=== NFC DEBUG SCREENSHOT END ===');
+    exit;
+}
 
     /**
      * ✨ NOUVEAU: Handler téléchargement logo recto
@@ -414,47 +463,50 @@ class NFC_WooCommerce_Integration
      * Enqueue admin styles
      */
     public function enqueue_admin_styles($hook)
-    {
-        // ✅ FIX: Hook correct pour WooCommerce HPOS
-        global $pagenow, $post_type;
-
-        // Vérifier la nouvelle page des commandes (HPOS)
-        $is_orders_page = (
-            $pagenow === 'admin.php' && isset($_GET['page']) && $_GET['page'] === 'wc-orders'
-        ) || (
-            $pagenow === 'post.php' && $post_type === 'shop_order'
-        ) || (
-            $pagenow === 'edit.php' && $post_type === 'shop_order'
-        );
-
-        if (!$is_orders_page) {
-            return;
-        }
-
-        error_log('🔧 NFC Admin styles chargés sur: ' . $hook . ' - Page: ' . $pagenow);
-
+{
+    // ✅ TEMPORAIRE: Forcer le chargement sur toutes les pages admin pour debug
+    if (!is_admin()) {
+        return;
+    }
+    
+    error_log('🔧 NFC Admin styles - Hook: ' . $hook . ' - GET: ' . print_r($_GET, true));
+    
+    // ✅ TEMPORAIRE: Charger sur toutes les pages admin
+    $force_load = true;
+    
+    if ($force_load) {
+        error_log('🔧 NFC Admin styles FORCÉS sur: ' . $hook);
+        
         // CSS admin
         wp_enqueue_style(
             'nfc-admin-orders',
             get_template_directory_uri() . '/configurator/assets/css/admin-orders.css',
             [],
-            '1.3'
+            '1.4'
         );
-
-        // ✅ FIX: Nom de fichier correct (underscore, pas tiret)
+        
+        // JavaScript avec logs de debug
         wp_enqueue_script(
             'nfc-admin-downloads',
-            get_template_directory_uri() . '/configurator/assets/js/admin-downloads.js', // ← Underscore !
+            get_template_directory_uri() . '/configurator/assets/js/admin-downloads.js',
             ['jquery'],
-            '1.1',
+            '1.2', // Incrémenter la version pour forcer le rechargement
             true
         );
-
+        
+        // Configuration JavaScript avec logs
+        $nonce = wp_create_nonce('nfc_admin_downloads');
+        error_log('🔧 Nonce généré pour JavaScript: ' . $nonce);
+        
         wp_localize_script('nfc-admin-downloads', 'nfcAdminAjax', [
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('nfc_admin_downloads')
+            'nonce' => $nonce,
+            'debug' => true // Flag de debug
         ]);
+        
+        error_log('✅ Scripts et nonce configurés');
     }
+}
 
     /**
      * API REST pour variations

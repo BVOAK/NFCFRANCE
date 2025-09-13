@@ -2,20 +2,21 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Google for WooCommerce 3.4.1\n"
+"Project-Id-Version: Google for WooCommerce 3.4.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/google-listings-and-ads\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-26T03:21:05+00:00\n"
+"POT-Creation-Date: 2025-09-02T04:11:54+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.9.0\n"
 "X-Domain: google-listings-and-ads\n"
 
 #. Plugin Name of the plugin
 #: src/Admin/ProductBlocksService.php:148
+#: src/Admin/SystemStatusService.php:62
 #: src/Internal/DependencyManagement/ThirdPartyServiceProvider.php:82
 #: src/Menu/Dashboard.php:39
 #: src/Menu/GetStarted.php:37
@@ -247,6 +248,19 @@ msgstr ""
 #: src/Admin/ProductBlocksService.php:204
 #: views/attributes/tab-panel.php:20
 msgid "Product attributes"
+msgstr ""
+
+#: src/Admin/SystemStatusService.php:82
+#: src/Admin/SystemStatusService.php:98
+msgid "Sync Mode Status:"
+msgstr ""
+
+#: src/Admin/SystemStatusService.php:87
+msgid "Error retrieving sync mode configuration"
+msgstr ""
+
+#: src/Admin/SystemStatusService.php:103
+msgid "No sync mode configuration found"
 msgstr ""
 
 #. translators: 1: is a numeric account ID

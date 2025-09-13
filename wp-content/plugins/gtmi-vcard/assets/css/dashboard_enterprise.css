@@ -1,0 +1,569 @@
+/**
+ * Styles spécifiques Dashboard Enterprise
+ * Fichier: wp-content/plugins/gtmi-vcard/assets/css/dashboard-enterprise.css
+ * 
+ * Étend les styles de base dashboard.css
+ */
+
+/* ==========================================================================
+   Enterprise Overview - Page d'accueil
+   ========================================================================== */
+
+.nfc-enterprise-overview {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.nfc-enterprise-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--nfc-primary), #4c6ef5);
+    color: white;
+    border-radius: 12px;
+}
+
+.nfc-company-info h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.nfc-company-meta {
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+
+.nfc-quick-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.nfc-quick-actions .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    transition: all var(--transition-normal);
+}
+
+.nfc-quick-actions .btn:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.6);
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Stats globales enterprise
+   ========================================================================== */
+
+.nfc-global-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.nfc-stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.nfc-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.nfc-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--nfc-primary);
+}
+
+.nfc-stat-card.stat-success::before { background: var(--nfc-success); }
+.nfc-stat-card.stat-warning::before { background: var(--nfc-warning); }
+.nfc-stat-card.stat-info::before { background: #3b82f6; }
+
+.nfc-stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--nfc-primary);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.nfc-stat-card.stat-success .nfc-stat-value { color: var(--nfc-success); }
+.nfc-stat-card.stat-warning .nfc-stat-value { color: var(--nfc-warning); }
+.nfc-stat-card.stat-info .nfc-stat-value { color: #3b82f6; }
+
+.nfc-stat-label {
+    font-size: 0.9rem;
+    color: var(--nfc-text-light);
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+}
+
+.nfc-stat-trend {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.nfc-stat-trend.trend-up {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--nfc-success);
+}
+
+.nfc-stat-trend.trend-down {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--nfc-danger);
+}
+
+/* ==========================================================================
+   Liste des cartes enterprise
+   ========================================================================== */
+
+.nfc-cards-table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.nfc-cards-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.nfc-cards-table th {
+    background: #f8fafc;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--nfc-text);
+    border-bottom: 2px solid #e2e8f0;
+    font-size: 0.9rem;
+}
+
+.nfc-cards-table td {
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.nfc-cards-table tbody tr {
+    transition: background-color var(--transition-fast);
+}
+
+.nfc-cards-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.nfc-card-identifier {
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--nfc-primary);
+    font-size: 0.9rem;
+    background: rgba(28, 62, 143, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.nfc-card-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nfc-profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--nfc-primary), var(--nfc-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.nfc-profile-details h6 {
+    margin: 0 0 0.25rem 0;
+    font-weight: 600;
+    color: var(--nfc-text);
+    font-size: 0.95rem;
+}
+
+.nfc-profile-details small {
+    color: var(--nfc-text-light);
+    font-size: 0.85rem;
+}
+
+.nfc-card-stats {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.nfc-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--nfc-text-light);
+}
+
+.nfc-stat-item i {
+    color: var(--nfc-primary);
+    width: 16px;
+    text-align: center;
+}
+
+.nfc-card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.nfc-card-status.status-pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.nfc-card-status.status-configured {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.nfc-card-status.status-active {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.nfc-card-status.status-inactive {
+    background: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+    border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+.nfc-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.nfc-card-action-btn {
+    padding: 0.4rem 0.75rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.nfc-card-action-btn.btn-edit {
+    background: #e0f2fe;
+    color: #0277bd;
+    border: 1px solid #b3e5fc;
+}
+
+.nfc-card-action-btn.btn-edit:hover {
+    background: #b3e5fc;
+    color: #01579b;
+}
+
+.nfc-card-action-btn.btn-stats {
+    background: #f3e8ff;
+    color: #7c3aed;
+    border: 1px solid #e9d5ff;
+}
+
+.nfc-card-action-btn.btn-stats:hover {
+    background: #e9d5ff;
+    color: #5b21b6;
+}
+
+.nfc-card-action-btn.btn-contacts {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #bbf7d0;
+}
+
+.nfc-card-action-btn.btn-contacts:hover {
+    background: #bbf7d0;
+    color: #047857;
+}
+
+.nfc-card-action-btn.btn-renew {
+    background: #fef7f0;
+    color: #ea580c;
+    border: 1px solid #fed7aa;
+}
+
+.nfc-card-action-btn.btn-renew:hover {
+    background: #fed7aa;
+    color: #c2410c;
+}
+
+/* ==========================================================================
+   Configuration progress
+   ========================================================================== */
+
+.nfc-config-progress {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.nfc-progress-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.nfc-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.nfc-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--nfc-success), #22c55e);
+    border-radius: 4px;
+    transition: width var(--transition-normal);
+}
+
+.nfc-progress-text {
+    font-size: 0.9rem;
+    color: var(--nfc-text-light);
+    text-align: center;
+}
+
+/* ==========================================================================
+   Grille cartes pour édition
+   ========================================================================== */
+
+.nfc-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.nfc-card-preview {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: all var(--transition-normal);
+    border: 2px solid transparent;
+}
+
+.nfc-card-preview:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: var(--nfc-primary);
+}
+
+.nfc-card-preview-header {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.nfc-card-preview-body {
+    padding: 1.5rem;
+}
+
+.nfc-card-preview-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--nfc-text);
+}
+
+.nfc-card-preview-subtitle {
+    color: var(--nfc-text-light);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.nfc-card-preview-stats {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.nfc-card-preview-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.nfc-card-preview-actions .btn {
+    flex: 1;
+    padding: 0.75rem;
+    font-size: 0.85rem;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media (max-width: 1200px) {
+    .nfc-enterprise-overview {
+        grid-template-columns: 1fr;
+    }
+    
+    .nfc-global-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .nfc-enterprise-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .nfc-global-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .nfc-cards-table-container {
+        overflow-x: auto;
+    }
+    
+    .nfc-cards-table {
+        min-width: 800px;
+    }
+    
+    .nfc-cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .nfc-card-actions {
+        flex-wrap: wrap;
+    }
+    
+    .nfc-card-action-btn {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .nfc-card-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+    
+    .nfc-card-profile {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .nfc-profile-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+    }
+}
+
+/* ==========================================================================
+   Animations et transitions
+   ========================================================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nfc-card-preview,
+.nfc-stat-card,
+.nfc-cards-table tbody tr {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.nfc-card-preview:nth-child(2) { animation-delay: 0.1s; }
+.nfc-card-preview:nth-child(3) { animation-delay: 0.2s; }
+.nfc-card-preview:nth-child(4) { animation-delay: 0.3s; }
+
+/* ==========================================================================
+   Mode sombre (futur)
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --nfc-background: #1a202c;
+        --nfc-text: #f7fafc;
+        --nfc-text-light: #a0aec0;
+    }
+    
+    .dashboard-card,
+    .nfc-stat-card,
+    .nfc-cards-table-container,
+    .nfc-card-preview {
+        background: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .nfc-cards-table th {
+        background: #1a202c;
+        color: var(--nfc-text);
+    }
+    
+    .nfc-cards-table tbody tr:hover {
+        background: #374151;
+    }
+}

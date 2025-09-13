@@ -24,7 +24,7 @@ class Tiktokforbusiness {
 	 *
 	 * @var string[]
 	 */
-	private static $current_tiktok_for_woocommerce_version = '1.3.4';
+	private static $current_tiktok_for_woocommerce_version = '1.3.6';
 
 	/**
 	 * Whether WooCommerce has been loaded.
