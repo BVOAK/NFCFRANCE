@@ -32,7 +32,7 @@ class NFC_Enterprise_Core
     }
 
     /**
-     * ✅ NOUVELLE MÉTHODE: Initialise le système au bon moment
+     * ✅ AJOUT: Initialise le système au bon moment
      */
     public static function initialize_system() 
     {
@@ -87,10 +87,23 @@ class NFC_Enterprise_Core
             return;
         }
 
-        // Éviter duplication
+        // ✅ CORRECTION: Vérifier duplication dans notre table enterprise
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'nfc_enterprise_cards';
+        $existing_enterprise_cards = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $table_name WHERE order_id = %d", $order_id
+        ));
+        
+        if ($existing_enterprise_cards > 0) {
+            error_log("NFC Enterprise: Order $order_id already processed in enterprise system ($existing_enterprise_cards cards)");
+            return;
+        }
+
+        // ✅ Si l'ancien système a déjà traité, migrer vers le nouveau
         $existing_vcard = $order->get_meta('_gtmi_vcard_vcard_id');
         if ($existing_vcard) {
-            error_log("NFC Enterprise: Order $order_id already processed");
+            error_log("NFC Enterprise: Order $order_id processed by old system, migrating vCard $existing_vcard");
+            self::migrate_legacy_vcard_to_enterprise($order, $existing_vcard);
             return;
         }
 
@@ -112,6 +125,49 @@ class NFC_Enterprise_Core
         } else {
             // Commande multiple - nouveau système enterprise
             self::create_enterprise_vcards($order, $nfc_items);
+        }
+    }
+
+    /**
+     * ✅ NOUVELLE MÉTHODE: Migre une vCard legacy vers le système enterprise
+     */
+    private static function migrate_legacy_vcard_to_enterprise($order, $vcard_id) 
+    {
+        $order_id = $order->get_id();
+        
+        // Vérifier que la vCard existe
+        $vcard = get_post($vcard_id);
+        if (!$vcard || $vcard->post_type !== 'virtual_card') {
+            error_log("NFC Enterprise: vCard $vcard_id not found for migration");
+            return;
+        }
+
+        // Générer identifiant enterprise
+        $identifier = self::generate_card_identifier($order_id, 1);
+        
+        // Ajouter à la table enterprise
+        $result = self::save_enterprise_card_record([
+            'order_id' => $order_id,
+            'vcard_id' => $vcard_id,
+            'card_position' => 1,
+            'card_identifier' => $identifier,
+            'card_status' => 'configured', // Legacy est toujours configurée
+            'company_name' => $order->get_billing_company(),
+            'main_user_id' => $order->get_customer_id() ?: 1
+        ]);
+
+        if ($result) {
+            // Ajouter métadonnées enterprise
+            self::update_vcard_enterprise_meta($vcard_id, [
+                'enterprise_order_id' => $order_id,
+                'enterprise_position' => 1,
+                'card_identifier' => $identifier,
+                'is_enterprise_card' => 'yes'
+            ]);
+
+            error_log("NFC Enterprise: Legacy vCard $vcard_id migrated successfully with identifier $identifier");
+        } else {
+            error_log("NFC Enterprise: Failed to migrate legacy vCard $vcard_id");
         }
     }
 
@@ -303,12 +359,17 @@ class NFC_Enterprise_Core
     }
 
     /**
-     * Met à jour métadonnées ACF enterprise sur vCard
+     * Met à jour métadonnées enterprise sur vCard
      */
     private static function update_vcard_enterprise_meta($vcard_id, $meta_data) 
     {
         foreach ($meta_data as $key => $value) {
-            update_field($key, $value, $vcard_id);
+            // Utiliser post_meta classique ET ACF si disponible
+            update_post_meta($vcard_id, $key, $value);
+            
+            if (function_exists('update_field')) {
+                update_field($key, $value, $vcard_id);
+            }
         }
     }
 
@@ -371,7 +432,7 @@ class NFC_Enterprise_Core
     /**
      * Récupère stats basiques d'une vCard
      */
-    public static function get_vcard_basic_stats($vcard_id) 
+    private static function get_vcard_basic_stats($vcard_id) 
     {
         // Utiliser système existant si disponible
         if (function_exists('gtmi_vcard_get_statistics')) {
