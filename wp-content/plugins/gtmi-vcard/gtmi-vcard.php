@@ -32,21 +32,23 @@ require_once plugin_dir_path( __FILE__) . 'api/virtual-card/index.php';
 require_once plugin_dir_path( __FILE__) . 'api/statistics/index.php';
 require_once plugin_dir_path( __FILE__) . 'includes/dashboard/class-dashboard-manager.php';
 require_once plugin_dir_path( __FILE__) . 'includes/dashboard/ajax-handlers.php';
-
 require_once plugin_dir_path( __FILE__) . 'includes/admin/virtual_card/update.php';
-register_activation_hook( __FILE__,  'gtmi_vcard_activation_plugin');
-register_deactivation_hook( __FILE__,  'gtmi_vcard_deactivation_plugin');
 
-// Includes Enterprise
+// 🆕 Chargement du système Enterprise Multi-cartes
 require_once plugin_dir_path(__FILE__) . 'includes/enterprise/enterprise-core.php';
 require_once plugin_dir_path(__FILE__) . 'includes/enterprise/enterprise-functions.php';
 
-// Hook d'activation pour créer tables BDD
+// Hooks d'activation/désactivation
+register_activation_hook( __FILE__,  'gtmi_vcard_activation_plugin');
+register_deactivation_hook( __FILE__,  'gtmi_vcard_deactivation_plugin');
+
+// 🆕 Hook d'activation pour créer tables BDD enterprise
 register_activation_hook(__FILE__, 'nfc_enterprise_activate');
 
 if (!defined( 'GTMI_VCARD_EMAIL_SENDER')) {
   define( 'GTMI_VCARD_EMAIL_SENDER',  'contact@nfcfrance.com');
 }
+
 function gtmi_vcard_activation_plugin(): bool
 {
   if (!function_exists('is_plugin_active')) {
@@ -73,6 +75,79 @@ function gtmi_vcard_check_required_plugin($path, $name): bool
   return true;
 }
 
+// 🆕 FONCTION MANQUANTE - Désactivation du plugin
+function gtmi_vcard_deactivation_plugin(): void
+{
+    // Nettoyage lors de la désactivation
+    error_log('GTMI_VCard: Plugin désactivé');
+    
+    // Flush rewrite rules
+    flush_rewrite_rules();
+    
+    // Tu peux ajouter ici d'autres actions de nettoyage si nécessaire
+}
+
+// 🆕 Scripts et styles pour dashboard enterprise
+add_action('init', 'nfc_enterprise_dashboard_routing');
+
+function nfc_enterprise_dashboard_routing() {
+    if (isset($_GET['dashboard']) || is_page('mon-compte')) {
+        add_action('wp_enqueue_scripts', 'nfc_enterprise_dashboard_scripts');
+    }
+}
+
+function nfc_enterprise_dashboard_scripts() {
+    wp_enqueue_style(
+        'nfc-dashboard-enterprise',
+        plugin_dir_url(__FILE__) . 'assets/css/dashboard-enterprise.css',
+        [],
+        '1.0.0'
+    );
+    
+    wp_localize_script('jquery', 'nfcEnterprise', [
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('nfc_enterprise_action'),
+        'userId' => get_current_user_id(),
+        'dashboardType' => function_exists('nfc_get_dashboard_type') ? 
+            nfc_get_dashboard_type(get_current_user_id()) : 'simple'
+    ]);
+}
+
+// 🆕 AJAX Handlers enterprise
+add_action('wp_ajax_nfc_get_card_data', 'nfc_ajax_get_card_data');
+add_action('wp_ajax_nfc_update_card_status', 'nfc_ajax_update_card_status');
+
+function nfc_ajax_get_card_data() {
+    check_ajax_referer('nfc_enterprise_action', 'nonce');
+    $card_identifier = sanitize_text_field($_POST['card_identifier']);
+    $card = NFC_Enterprise_Core::get_vcard_by_identifier($card_identifier);
+    
+    if ($card) {
+        wp_send_json_success($card);
+    } else {
+        wp_send_json_error('Carte non trouvée');
+    }
+}
+
+function nfc_ajax_update_card_status() {
+    check_ajax_referer('nfc_enterprise_action', 'nonce');
+    $card_identifier = sanitize_text_field($_POST['card_identifier']);
+    $new_status = sanitize_text_field($_POST['status']);
+    $result = NFC_Enterprise_Core::update_card_status($card_identifier, $new_status);
+    
+    if ($result) {
+        wp_send_json_success(['status' => $new_status]);
+    } else {
+        wp_send_json_error('Erreur lors de la mise à jour');
+    }
+}
+
+// 🆕 Tests en mode développement
+if (defined('WP_DEBUG') && WP_DEBUG) {
+    require_once plugin_dir_path(__FILE__) . 'tests/enterprise-test.php';
+}
+
+// Routes API REST vCard (existant)
 add_action('rest_api_init', function() {
     error_log('GTMI_VCard: Enregistrement routes REST API vCard');
     
@@ -134,7 +209,8 @@ function gtmi_vcard_api_get_single($request) {
     foreach ($meta as $key => $value) {
         // Enlever les underscores des clés privées WordPress
         if (strpos($key, '_') !== 0) {
-            $fields[$key] = is_array($value) && count($value) === 1 ? $value[0] : $value;
+            $fields[$key] = is_array($value) && count($value) === 1 ?
+                $value[0] : $value;
         }
     }
     
@@ -228,16 +304,14 @@ function gtmi_vcard_debug_vcards() {
         echo "<p>Nombre de vCards trouvées : " . count($vcards) . "</p>";
         
         foreach ($vcards as $vcard) {
-            echo "<div style='border: 1px solid #ccc; margin: 10px 0; padding: 10px;'>";
-            echo "<h3>vCard #{$vcard->ID} : {$vcard->post_title}</h3>";
-            echo "<p><strong>Statut:</strong> {$vcard->post_status}</p>";
-            echo "<p><strong>Date:</strong> {$vcard->post_date}</p>";
+            echo "<div style='border: 1px solid #ccc; padding: 10px; margin: 10px;'>";
+            echo "<h3>vCard #{$vcard->ID}</h3>";
+            echo "<p>Titre: {$vcard->post_title}</p>";
+            echo "<p>Status: {$vcard->post_status}</p>";
             
-            // Métadonnées
-            $meta = get_post_meta($vcard->ID);
-            echo "<h4>Métadonnées :</h4>";
-            echo "<ul>";
-            foreach ($meta as $key => $value) {
+            $fields = get_post_meta($vcard->ID);
+            echo "<h4>Métadonnées:</h4><ul>";
+            foreach ($fields as $key => $value) {
                 $val = is_array($value) ? implode(', ', $value) : $value;
                 echo "<li><strong>$key:</strong> $val</li>";
             }
@@ -254,65 +328,3 @@ function gtmi_vcard_debug_vcards() {
     }
 }
 add_action('init', 'gtmi_vcard_debug_vcards');
-
-// 🆕 Scripts et styles pour dashboard enterprise
-add_action('init', 'nfc_enterprise_dashboard_routing');
-
-function nfc_enterprise_dashboard_routing() {
-    if (isset($_GET['dashboard']) || is_page('mon-compte')) {
-        add_action('wp_enqueue_scripts', 'nfc_enterprise_dashboard_scripts');
-    }
-}
-
-function nfc_enterprise_dashboard_scripts() {
-    wp_enqueue_style(
-        'nfc-dashboard-enterprise',
-        plugin_dir_url(__FILE__) . 'assets/css/dashboard-enterprise.css',
-        [], // Pas de dépendance pour l'instant car le CSS dashboard existant est dans un layout
-        '1.0.0'
-    );
-    
-    wp_localize_script('jquery', 'nfcEnterprise', [
-        'ajaxUrl' => admin_url('admin-ajax.php'),
-        'nonce' => wp_create_nonce('nfc_enterprise_action'),
-        'userId' => get_current_user_id(),
-        'dashboardType' => function_exists('nfc_get_dashboard_type') ? 
-            nfc_get_dashboard_type(get_current_user_id()) : 'simple'
-    ]);
-}
-
-// 🆕 AJAX Handlers enterprise
-add_action('wp_ajax_nfc_get_card_data', 'nfc_ajax_get_card_data');
-add_action('wp_ajax_nfc_update_card_status', 'nfc_ajax_update_card_status');
-
-function nfc_ajax_get_card_data() {
-    check_ajax_referer('nfc_enterprise_action', 'nonce');
-    $card_identifier = sanitize_text_field($_POST['card_identifier']);
-    $card = NFC_Enterprise_Core::get_vcard_by_identifier($card_identifier);
-    
-    if ($card) {
-        wp_send_json_success($card);
-    } else {
-        wp_send_json_error('Carte non trouvée');
-    }
-}
-
-function nfc_ajax_update_card_status() {
-    check_ajax_referer('nfc_enterprise_action', 'nonce');
-    $card_identifier = sanitize_text_field($_POST['card_identifier']);
-    $new_status = sanitize_text_field($_POST['status']);
-    $result = NFC_Enterprise_Core::update_card_status($card_identifier, $new_status);
-    
-    if ($result) {
-        wp_send_json_success(['status' => $new_status]);
-    } else {
-        wp_send_json_error('Erreur lors de la mise à jour');
-    }
-}
-
-// 🆕 Tests en mode développement
-if (defined('WP_DEBUG') && WP_DEBUG) {
-    require_once plugin_dir_path(__FILE__) . 'tests/enterprise-test.php';
-}
-
-
