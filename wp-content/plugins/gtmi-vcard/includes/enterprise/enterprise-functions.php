@@ -333,3 +333,102 @@ function nfc_get_user_products_summary($user_id) {
         'total_products' => count($vcard_profiles) + count($google_reviews_profiles)
     ];
 }
+
+function nfc_get_dashboard_type($user_id = null) {
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+    
+    // Récupérer le résumé des produits
+    $products_summary = nfc_get_user_products_summary($user_id);
+    
+    $vcard_count = count($products_summary['vcard_profiles'] ?? []);
+    $google_reviews_count = count($products_summary['google_reviews_profiles'] ?? []);
+    
+    // Logique de détermination du type
+    if ($vcard_count == 0 && $google_reviews_count == 0) {
+        return 'empty';
+    } elseif ($vcard_count == 1 && $google_reviews_count == 0) {
+        return 'simple';
+    } elseif ($vcard_count > 1 && $google_reviews_count == 0) {
+        return 'enterprise';
+    } elseif ($vcard_count == 0 && $google_reviews_count > 0) {
+        return 'google_reviews';
+    } else {
+        return 'mixed'; // vCard + Avis Google
+    }
+}
+
+/**
+ * Détermine si un utilisateur a un dashboard entreprise
+ * (plus de 1 vCard ou des profils Avis Google)
+ * 
+ * @param int $user_id
+ * @return bool
+ */
+function nfc_user_has_enterprise_dashboard($user_id = null) {
+    $dashboard_type = nfc_get_dashboard_type($user_id);
+    return in_array($dashboard_type, ['enterprise', 'mixed', 'google_reviews']);
+}
+
+/**
+ * Récupère le titre principal du dashboard selon le type
+ * 
+ * @param int $user_id
+ * @return string
+ */
+function nfc_get_dashboard_title($user_id = null) {
+    $dashboard_type = nfc_get_dashboard_type($user_id);
+    
+    switch ($dashboard_type) {
+        case 'empty':
+            return 'Aucun produit NFC configuré';
+            
+        case 'simple':
+            return 'Ma vCard NFC';
+            
+        case 'enterprise':
+            return 'Mes vCards Entreprise';
+            
+        case 'google_reviews':
+            return 'Mes Profils Avis Google';
+            
+        case 'mixed':
+            return 'Mes Produits NFC';
+            
+        default:
+            return 'Dashboard NFC';
+    }
+}
+
+/**
+ * Génère un message d'aide selon le type de dashboard
+ * 
+ * @param int $user_id
+ * @return string
+ */
+function nfc_get_dashboard_help_message($user_id = null) {
+    $dashboard_type = nfc_get_dashboard_type($user_id);
+    
+    switch ($dashboard_type) {
+        case 'empty':
+            return 'Commandez vos premiers produits NFC pour commencer.';
+            
+        case 'simple':
+            return 'Configurez votre profil et suivez vos performances.';
+            
+        case 'enterprise':
+            $products_summary = nfc_get_user_products_summary($user_id);
+            $count = count($products_summary['vcard_profiles'] ?? []);
+            return "Gérez vos $count profils vCard et suivez leurs performances.";
+            
+        case 'google_reviews':
+            return 'Configurez vos profils Avis Google et optimisez vos emplacements.';
+            
+        case 'mixed':
+            return 'Gérez tous vos produits NFC depuis cette interface.';
+            
+        default:
+            return 'Bienvenue sur votre dashboard NFC.';
+    }
+}
