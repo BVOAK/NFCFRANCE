@@ -60,6 +60,12 @@
         init: function() {
             console.log('📧 NFCContacts - Initialisation');
             console.log('📧 Configuration reçue:', this.config);
+
+            // 🛑 VÉRIFIER SI ON DOIT EMPÊCHER LE CHARGEMENT AUTO
+    if (window.nfcContactsPreventAutoLoad) {
+        console.log('🛑 Chargement automatique empêché par leads.php');
+        return; // Ne pas s'initialiser
+    }
             
             // CORRECTION: Vérifier si on a bien la config
             if (!this.config || !this.config.vcard_id) {

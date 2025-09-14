@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+
 // ================================================================================
 // FONCTIONS UTILITAIRES
 // ================================================================================
@@ -111,7 +112,7 @@ if (!function_exists('nfc_get_contacts_trend')) {
 
 $user_id = get_current_user_id();
 $user_vcards = nfc_get_user_vcard_profiles($user_id);
-$selected_vcard_id = isset($_GET['vcard_id']) ? (int)$_GET['vcard_id'] : null;
+$selected_vcard_id = null;
 
 if (empty($user_vcards)) {
     include plugin_dir_path(__FILE__) . 'partials/no-products-state.php';
@@ -241,6 +242,12 @@ error_log("✅ Configuration finale validée pour JavaScript");
 <!-- STRUCTURE DOM IDENTIQUE À contacts.php -->
 
 <!-- HEADER SECTION - IDENTIQUE À contacts.php -->
+
+<?php 
+debug_linked_vcard_format(3738); 
+?>
+
+
 <div class="row mb-4">
     <div class="col-12">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
@@ -596,233 +603,128 @@ error_log("✅ Configuration finale validée pour JavaScript");
     </div>
 </div>
 
+<?php
+$js_config = [
+    'vcard_id' => $selected_vcard_id ?: 0, // 🎯 CORRECTION: 0 au lieu de la vcard_id individuelle
+    'user_id' => $user_id,
+    'api_url' => home_url('/wp-json/gtmi_vcard/v1/'),
+    'ajax_url' => admin_url('admin-ajax.php'),
+    'nonce' => wp_create_nonce('nfc_dashboard_nonce'),
+    'is_multi_profile' => $is_multi_profile,
+    
+    // 🎯 CLÉS DE LA CORRECTION
+    'selected_vcard_id' => $selected_vcard_id,
+    'force_mode' => $selected_vcard_id ? 'single_vcard' : 'multi_global',
+    'stable_endpoint' => $selected_vcard_id ? false : true,
+    
+    'current_page' => $nfc_current_page ?? 'contacts',
+    'contacts_count' => count($contacts),
+    'vcards_count' => count($user_vcards),
+    'debug_mode' => defined('WP_DEBUG') && WP_DEBUG,
+    
+    // 🚨 NOUVEAU : Empêcher le chargement automatique
+    'prevent_auto_load' => true // 🎯 Empêcher contacts-manager.js de charger automatiquement
+];
+
+// Debug pour identifier le problème
+error_log("🔧 LEADS CONFIG - selected_vcard_id: " . ($selected_vcard_id ?? 'NULL'));
+error_log("🔧 LEADS CONFIG - is_multi_profile: " . ($is_multi_profile ? 'TRUE' : 'FALSE'));
+error_log("🔧 LEADS CONFIG - force_mode: " . $js_config['force_mode']);
+error_log("🔧 LEADS CONFIG - contacts_count: " . count($contacts));
+?>
+
+
 <!-- CONFIGURATION JAVASCRIPT -->
 <script>
+window.nfcContactsPreventAutoLoad = true;
+
 // Configuration globale pour contacts-manager.js
-window.nfcContactsConfig = <?php echo json_encode($contacts_config, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES); ?>;
+window.nfcContactsConfig = <?php echo wp_json_encode($js_config); ?>;
+console.log('🔧 Configuration stabilisée:', window.nfcContactsConfig);
 
-console.log('📧 Configuration NFCContacts injectée:', window.nfcContactsConfig);
 
-// Validation de configuration
-function isValidConfig() {
-    const config = window.nfcContactsConfig;
-    
-    if (!config || !config.api_url) {
-        return false;
-    }
-    
-    // Mode multi-profils sans filtre: vcard_id peut être null
-    if (config.is_multi_profile && !config.selected_vcard_id) {
-        return !!config.user_id;
-    }
-    
-    // Mode simple ou avec filtre: vcard_id obligatoire
-    return !!config.vcard_id;
-}
-
-if (isValidConfig()) {
-    console.log('✅ Configuration NFCContacts valide');
-} else {
-    console.error('❌ Configuration NFCContacts invalide:', window.nfcContactsConfig);
-}
-
-// 🔧 OVERRIDE COMPLET pour utiliser le nouvel endpoint multi-profils
+// OVERRIDE COMPLET pour utiliser le nouvel endpoint multi-profils
+// 🔧 OVERRIDE DOMContentLoaded pour empêcher le double chargement
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔧 Override loadContacts() pour nouvel endpoint multi-profils...');
+    console.log('🔧 DOMContentLoaded leads.php - Empêche double chargement');
     
-    // Attendre que contacts-manager.js soit chargé
+    // Attendre que NFCContacts soit disponible mais ne pas le laisser s'initialiser
     const waitForNFCContacts = setInterval(() => {
         if (window.NFCContacts && window.NFCContacts.loadContacts) {
             clearInterval(waitForNFCContacts);
             
-            console.log('📧 NFCContacts détecté, override en cours...');
+            console.log('📧 NFCContacts détecté, override IMMÉDIAT...');
             
-            // OVERRIDE COMPLET de loadContacts pour utiliser le nouvel endpoint
+            // 🚨 EMPÊCHER L'INITIALISATION AUTOMATIQUE
+            if (window.NFCContacts.isLoading) {
+                console.log('🛑 Arrêt du chargement automatique en cours...');
+                window.NFCContacts.isLoading = false;
+            }
+            
+            // 🔧 OVERRIDE IMMÉDIAT DE LA CONFIGURATION
+            window.NFCContacts.config = window.nfcContactsConfig;
+            
+            console.log('🔧 Configuration NFCContacts overridée:', window.NFCContacts.config);
+            
+            // 🔧 OVERRIDE COMPLET de loadContacts
             window.NFCContacts.loadContacts = function() {
-                console.log('🔧 loadContacts() overridé - utilisation endpoint adaptatif');
+                console.log('🔧 loadContacts() OVERRIDÉ - Multi-global forcé');
                 
-                // Re-valider la configuration
-                if (!isValidConfig()) {
-                    this.showError('Configuration invalide');
-                    return;
-                }
-                
-                // Sauvegarder le contexte 'this' AVANT les appels asynchrones
+                const config = window.nfcContactsConfig;
                 const self = this;
                 
                 self.isLoading = true;
                 self.showLoadingState();
                 
-                // Déterminer l'URL selon le mode
-                let apiUrl;
-                const config = window.nfcContactsConfig;
+                // 🎯 URL FORCÉE EN MODE GLOBAL
+                let apiUrl = `${config.api_url}leads/user/${config.user_id}`;
+                console.log('🌐 URL FORCÉE (mode global):', apiUrl);
                 
-                console.log('🔧 Détermination URL - mode:', {
-                    is_multi_profile: config.is_multi_profile,
-                    selected_vcard_id: config.selected_vcard_id,
-                    user_id: config.user_id,
-                    vcard_id: config.vcard_id
-                });
-                
-                if (config.is_multi_profile && !config.selected_vcard_id) {
-                    // Mode multi-profils global: endpoint user
-                    apiUrl = `${config.api_url}leads/user/${config.user_id}`;
-                    console.log('🌐 Mode multi_global - URL:', apiUrl);
-                } else {
-                    // Mode simple ou avec filtre: endpoint vcard
-                    const vcardId = config.selected_vcard_id || config.vcard_id;
-                    apiUrl = `${config.api_url}leads/vcard/${vcardId}`;
-                    console.log('🌐 Mode vcard spécifique - URL:', apiUrl);
-                }
-                
-                // Appel API SANS .bind() - utiliser 'self' dans les callbacks
-                fetch(apiUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-WP-Nonce': config.nonce
-                    }
-                })
-                .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(function(data) {
-                    console.log('✅ Données reçues:', data);
-                    
-                    if (data.success && Array.isArray(data.data)) {
-                        self.contacts = data.data;
+                // Appel API
+                fetch(apiUrl)
+                    .then(response => {
+                        console.log('📡 Response:', response.status);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('📦 Données reçues (mode global):', data.data ? data.data.length : 0, 'contacts');
+                        
+                        // Traiter les données
+                        const leads = data.data || data || [];
+                        self.contacts = Array.isArray(leads) ? leads : [];
                         self.filteredContacts = [...self.contacts];
-                        self.renderTable();
+                        
+                        self.renderContacts();
                         self.updateStats();
-                        console.log('✅ ' + self.contacts.length + ' contacts chargés');
-                    } else {
-                        throw new Error(data.message || 'Format de données invalide');
-                    }
-                })
-                .catch(function(error) {
-                    console.error('❌ Erreur chargement contacts:', error);
-                    self.showError('Erreur: ' + error.message);
-                })
-                .finally(function() {
-                    self.isLoading = false;
-                    self.hideLoadingState();
-                });
+                        self.updatePagination();
+                        
+                        console.log('✅ Contacts chargés en MODE GLOBAL:', self.contacts.length);
+                    })
+                    .catch(error => {
+                        console.error('❌ Erreur chargement contacts:', error);
+                        self.showError('Erreur lors du chargement des contacts');
+                    })
+                    .finally(() => {
+                        self.isLoading = false;
+                        self.hideLoadingState();
+                    });
             };
             
-            // Override complet pour la colonne profil en mode multi
-            <?php if ($show_profile_filter): ?>
-            // AJOUT: Override renderTable pour afficher la colonne profil
-            window.NFCContacts.originalRenderTable = window.NFCContacts.renderTable;
-window.NFCContacts.renderTable = function() {
-    console.log('🔧 renderTable() overridé pour colonne profil');
-    
-    // Appel de la méthode originale
-    this.originalRenderTable();
-    
-    // Ajouter colonne profil si mode multi-profils
-    const table = document.getElementById('contactsTable');
-    if (table && window.nfcContactsConfig.is_multi_profile) {
-        console.log('📊 Ajout colonne profil - contacts:', this.filteredContacts.length);
-        
-        // Ajouter header s'il n'existe pas
-        const headerRow = table.querySelector('thead tr');
-        if (headerRow && !headerRow.querySelector('.profile-header')) {
-            const profileHeader = document.createElement('th');
-            profileHeader.className = 'profile-header';
-            profileHeader.textContent = 'Profil Source';
-            // Insérer avant la colonne Actions (dernière)
-            const actionHeader = headerRow.querySelector('th:last-child');
-            if (actionHeader) {
-                headerRow.insertBefore(profileHeader, actionHeader);
-                console.log('✅ Header "Profil Source" ajouté');
-            }
-        }
-        
-        // Ajouter cellules profil pour chaque ligne
-        const bodyRows = table.querySelectorAll('tbody tr');
-        bodyRows.forEach((row, index) => {
-            if (!row.querySelector('.profile-cell')) {
-                const contact = this.filteredContacts[index];
-                if (contact) {
-                    const profileCell = document.createElement('td');
-                    profileCell.className = 'profile-cell';
-                    
-                    console.log(`📧 Contact ${index}:`, {
-                        vcard_id: contact.vcard_id,
-                        vcard_source_name: contact.vcard_source_name,
-                        id: contact.id || contact.ID
-                    });
-                    
-                    // MÉTHODE 1: Utiliser vcard_source_name si disponible (depuis API)
-                    if (contact.vcard_source_name) {
-                        profileCell.textContent = contact.vcard_source_name;
-                        console.log(`✅ Contact ${index}: nom depuis API: ${contact.vcard_source_name}`);
-                    }
-                    // MÉTHODE 2: Chercher dans user_vcards par vcard_id
-                    else if (contact.vcard_id) {
-                        const vcard = window.nfcContactsConfig.user_vcards.find(v => 
-                            parseInt(v.vcard_id) === parseInt(contact.vcard_id)
-                        );
-                        
-                        if (vcard && vcard.vcard_data) {
-                            const firstName = vcard.vcard_data.firstname || '';
-                            const lastName = vcard.vcard_data.lastname || '';
-                            const fullName = (firstName + ' ' + lastName).trim();
-                            profileCell.textContent = fullName || `Profil #${contact.vcard_id}`;
-                            console.log(`✅ Contact ${index}: nom depuis config: ${fullName}`);
-                        } else {
-                            profileCell.textContent = `Profil #${contact.vcard_id}`;
-                            console.warn(`⚠️ Contact ${index}: vCard ${contact.vcard_id} non trouvée dans config`);
-                        }
-                    }
-                    // MÉTHODE 3: Analyser linked_vcard pour trouver le vcard_id
-                    else if (contact.linked_vcard && Array.isArray(contact.linked_vcard) && contact.linked_vcard.length > 0) {
-                        const linkedVcardId = contact.linked_vcard[0];
-                        const vcard = window.nfcContactsConfig.user_vcards.find(v => 
-                            parseInt(v.vcard_id) === parseInt(linkedVcardId)
-                        );
-                        
-                        if (vcard && vcard.vcard_data) {
-                            const firstName = vcard.vcard_data.firstname || '';
-                            const lastName = vcard.vcard_data.lastname || '';
-                            const fullName = (firstName + ' ' + lastName).trim();
-                            profileCell.textContent = fullName || `Profil #${linkedVcardId}`;
-                            console.log(`✅ Contact ${index}: nom depuis linked_vcard: ${fullName}`);
-                        } else {
-                            profileCell.textContent = `Profil #${linkedVcardId}`;
-                            console.warn(`⚠️ Contact ${index}: linked vCard ${linkedVcardId} non trouvée`);
-                        }
-                    }
-                    // FALLBACK: Impossible de déterminer
-                    else {
-                        profileCell.textContent = 'Profil inconnu';
-                        console.warn(`⚠️ Contact ${index}: impossible de déterminer le profil source`, contact);
-                    }
-                    
-                    // Insérer avant la colonne Actions (dernière)
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length > 0) {
-                        row.insertBefore(profileCell, cells[cells.length - 1]);
-                    }
-                }
-            }
-        });
-        
-        console.log('✅ Colonnes profil ajoutées à toutes les lignes');
-    }
-};
-            <?php endif; ?>
+            // 🔧 DÉMARRER L'INITIALISATION AVEC LA NOUVELLE CONFIG
+            console.log('🚀 Initialisation NFCContacts avec config corrigée...');
             
-            console.log('✅ Override terminé, initialisation NFCContacts...');
+            // Reset de l'état s'il était déjà initialisé
+            window.NFCContacts.contacts = [];
+            window.NFCContacts.filteredContacts = [];
+            window.NFCContacts.isLoading = false;
             
-            // Forcer l'initialisation avec la nouvelle configuration
+            // Forcer l'init avec la nouvelle config
             window.NFCContacts.config = window.nfcContactsConfig;
             window.NFCContacts.init();
+            
+            console.log('✅ Override complet terminé');
         }
-    }, 100);
+    }, 50); // Vérification plus fréquente
     
     // Timeout de sécurité
     setTimeout(() => {
@@ -833,26 +735,24 @@ window.NFCContacts.renderTable = function() {
     }, 10000);
 });
 
-// 🆕 FONCTION PERSONNALISÉE pour le filtre par profil
+// 🔧 FONCTION FILTRE PAR PROFIL CORRIGÉE
 function filterByProfile() {
     const profileFilter = document.getElementById('profileFilter');
-    if (!profileFilter) {
-        console.log('⚠️ Élément profileFilter non trouvé');
-        return;
-    }
+    if (!profileFilter) return;
     
     const selectedVcardId = profileFilter.value;
-    console.log('🔧 Filtre par profil:', selectedVcardId);
+    console.log('🔧 Filtre par profil demandé:', selectedVcardId);
     
+    // Redirection avec paramètre stable
+    const url = new URL(window.location);
     if (selectedVcardId) {
-        const url = new URL(window.location);
         url.searchParams.set('vcard_id', selectedVcardId);
-        window.location.href = url.toString();
     } else {
-        const url = new URL(window.location);
         url.searchParams.delete('vcard_id');
-        window.location.href = url.toString();
     }
+    
+    console.log('🔧 Redirection vers:', url.toString());
+    window.location.href = url.toString();
 }
 
 console.log('✅ Script leads.php avec configuration corrigée chargé');
