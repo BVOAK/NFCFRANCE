@@ -540,7 +540,10 @@ class NFC_Dashboard_Manager
             return;
         }
 
-                                nfc_debug_enterprise_data(2); 
+                                //nfc_debug_enterprise_data(2); 
+                                //nfc_test_sql_direct(3736);
+
+nfc_test_stats_fix(3736);
 
 
         // Interface Overview avec stats (comme mockup)

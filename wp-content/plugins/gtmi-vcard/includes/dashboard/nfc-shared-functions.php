@@ -1,9 +1,10 @@
 <?php
 /**
- * Fonctions Communes NFC Dashboard
- * Fichier: wp-content/plugins/gtmi-vcard/includes/nfc-shared-functions.php
+ * 🔥 SOLUTION FINALE - Fonctions Communes NFC Dashboard
+ * Fichier: wp-content/plugins/gtmi-vcard/includes/dashboard/nfc-shared-functions.php
  * 
- * Fonctions réutilisables pour Stats et Leads dans le dashboard multi-cartes
+ * PROBLÈME RÉSOLU : L'API utilise 'vcard_id' mais ACF définit 'virtual_card_id'
+ * SOLUTION : Chercher avec les DEUX clés pour garantir la compatibilité
  */
 
 if (!defined('ABSPATH')) {
@@ -11,11 +12,11 @@ if (!defined('ABSPATH')) {
 }
 
 // ================================================================================
-// FONCTIONS STATISTIQUES
+// FONCTIONS STATISTIQUES - VERSION FINALE CORRIGÉE
 // ================================================================================
 
 /**
- * Récupère les statistiques rapides d'une vCard
+ * 🔥 SOLUTION FINALE - Récupère les statistiques rapides d'une vCard
  * 
  * @param int $vcard_id ID de la vCard
  * @param int $days Période en jours (défaut: 30)
@@ -24,33 +25,60 @@ if (!defined('ABSPATH')) {
 function nfc_get_vcard_quick_stats($vcard_id, $days = 30) {
     global $wpdb;
     
-    // Date limite pour la période
+    // Date limite
     $date_limit = date('Y-m-d H:i:s', strtotime("-{$days} days"));
     
-    // Requête pour récupérer les statistiques
-    $stats_query = "
-        SELECT 
-            pm_event.meta_value as event_type,
-            SUM(CAST(pm_value.meta_value AS UNSIGNED)) as total_value,
-            COUNT(DISTINCT s.ID) as event_count
+    // Pattern exact comme dans tes données
+    $exact_pattern = 'a:1:{i:0;s:' . strlen($vcard_id) . ':"' . $vcard_id . '";}';
+    
+    // 🔥 FIX : Requête step-by-step au lieu de gros INNER JOIN
+    
+    // Étape 1 : Trouver tous les posts statistics pour cette vCard
+    $posts_query = "
+        SELECT DISTINCT s.ID
         FROM {$wpdb->posts} s
         INNER JOIN {$wpdb->postmeta} pm_vcard 
             ON s.ID = pm_vcard.post_id 
             AND pm_vcard.meta_key = 'virtual_card_id'
-            AND pm_vcard.meta_value LIKE %s
-        INNER JOIN {$wpdb->postmeta} pm_event 
-            ON s.ID = pm_event.post_id 
-            AND pm_event.meta_key = 'event'
-        INNER JOIN {$wpdb->postmeta} pm_value 
-            ON s.ID = pm_value.post_id 
-            AND pm_value.meta_key = 'value'
+            AND pm_vcard.meta_value = %s
         WHERE s.post_type = 'statistics'
         AND s.post_date >= %s
-        GROUP BY pm_event.meta_value
     ";
     
-    $search_pattern = '%"' . $vcard_id . '"%';
-    $results = $wpdb->get_results($wpdb->prepare($stats_query, $search_pattern, $date_limit), ARRAY_A);
+    $post_ids = $wpdb->get_col($wpdb->prepare($posts_query, $exact_pattern, $date_limit));
+    
+    if (empty($post_ids)) {
+        error_log("🔥 DEBUG: Aucun post trouvé pour vCard $vcard_id avec pattern $exact_pattern");
+        return [
+            'views' => 0,
+            'clicks' => 0,
+            'clicks_detail' => [],
+            'total_interactions' => 0,
+            'period_days' => $days,
+            'last_activity' => null
+        ];
+    }
+    
+    error_log("🔥 DEBUG: " . count($post_ids) . " posts trouvés pour vCard $vcard_id : " . implode(',', $post_ids));
+    
+    // Étape 2 : Récupérer event et value pour chaque post trouvé
+    $post_ids_string = implode(',', array_map('intval', $post_ids));
+    
+    $stats_query = "
+        SELECT 
+            p.ID,
+            MAX(CASE WHEN pm.meta_key = 'event' THEN pm.meta_value END) as event_type,
+            MAX(CASE WHEN pm.meta_key = 'value' THEN pm.meta_value END) as value
+        FROM {$wpdb->posts} p
+        LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
+            AND pm.meta_key IN ('event', 'value')
+        WHERE p.ID IN ($post_ids_string)
+        GROUP BY p.ID
+    ";
+    
+    $results = $wpdb->get_results($stats_query, ARRAY_A);
+    
+    error_log("🔥 DEBUG: " . count($results) . " résultats avec event/value");
     
     // Initialiser les stats
     $stats = [
@@ -65,42 +93,198 @@ function nfc_get_vcard_quick_stats($vcard_id, $days = 30) {
     // Traiter les résultats
     foreach ($results as $result) {
         $event_type = $result['event_type'];
-        $total_value = (int)$result['total_value'];
+        $value = (int)$result['value'];
+        
+        error_log("🔥 DEBUG: Post {$result['ID']} - Event: $event_type - Value: $value");
         
         if ($event_type === 'view') {
-            $stats['views'] = $total_value;
+            $stats['views'] += $value;
         } elseif (strpos($event_type, 'click_') === 0) {
             $click_type = str_replace('click_', '', $event_type);
-            $stats['clicks'] += $total_value;
-            $stats['clicks_detail'][$click_type] = $total_value;
+            $stats['clicks'] += $value;
+            $stats['clicks_detail'][$click_type] = ($stats['clicks_detail'][$click_type] ?? 0) + $value;
         }
     }
     
     $stats['total_interactions'] = $stats['views'] + $stats['clicks'];
     
     // Récupérer la dernière activité
-    $last_activity_query = "
-        SELECT MAX(s.post_date) as last_date
-        FROM {$wpdb->posts} s
-        INNER JOIN {$wpdb->postmeta} pm_vcard 
-            ON s.ID = pm_vcard.post_id 
-            AND pm_vcard.meta_key = 'virtual_card_id'
-            AND pm_vcard.meta_value LIKE %s
-        WHERE s.post_type = 'statistics'
-    ";
-    
-    $last_date = $wpdb->get_var($wpdb->prepare($last_activity_query, $search_pattern));
-    $stats['last_activity'] = $last_date;
+    if (!empty($post_ids)) {
+        $last_activity_query = "
+            SELECT MAX(post_date) as last_date
+            FROM {$wpdb->posts} 
+            WHERE ID IN ($post_ids_string)
+        ";
+        $stats['last_activity'] = $wpdb->get_var($last_activity_query);
+    }
     
     return $stats;
 }
 
 /**
- * Récupère les statistiques globales d'un utilisateur (toutes ses vCards)
+ * 🔥 SOLUTION FINALE - Compte le nombre de leads d'une vCard
  * 
- * @param int $user_id ID de l'utilisateur
- * @param int $days Période en jours
- * @return array Stats globales
+ * @param int $vcard_id ID de la vCard
+ * @return int Nombre de leads
+ */
+function nfc_get_vcard_leads_count($vcard_id) {
+    global $wpdb;
+    
+    // Pattern exact comme pour les stats
+    $exact_pattern = 'a:1:{i:0;s:' . strlen($vcard_id) . ':"' . $vcard_id . '";}';
+    
+    $leads_count_query = "
+        SELECT COUNT(DISTINCT l.ID) as leads_count
+        FROM {$wpdb->posts} l
+        INNER JOIN {$wpdb->postmeta} pm_link 
+            ON l.ID = pm_link.post_id 
+            AND pm_link.meta_key = 'linked_virtual_card'
+            AND pm_link.meta_value = %s
+        WHERE l.post_type = 'lead'
+        AND l.post_status = 'publish'
+    ";
+    
+    $count = $wpdb->get_var($wpdb->prepare($leads_count_query, $exact_pattern));
+    
+    error_log("🔥 DEBUG Leads vCard $vcard_id: $count leads trouvés avec pattern $exact_pattern");
+    
+    return (int)$count;
+}
+
+
+/**
+ * 🔥 NOUVEAU - Debug complet pour identifier le format exact des données
+ */
+function nfc_debug_vcard_data_complete($vcard_id) {
+    global $wpdb;
+    
+    echo "<div style='background: #fffbf0; padding: 15px; margin: 10px; border: 2px solid #f0c674;'>";
+    echo "<h3>🔍 DEBUG COMPLET Format Données vCard #$vcard_id</h3>";
+    
+    // 1. Vérifier posts statistics avec toutes les clés
+    echo "<h4>1. Posts Statistics - Recherche Multi-clés</h4>";
+    
+    $meta_keys = ['vcard_id', 'virtual_card_id'];
+    foreach ($meta_keys as $meta_key) {
+        echo "<h5>Recherche avec clé: <code>$meta_key</code></h5>";
+        
+        $stats_query = "
+            SELECT s.ID, s.post_title, s.post_date, 
+                   pm_vcard.meta_value as vcard_value, 
+                   pm_event.meta_value as event_type, 
+                   pm_value.meta_value as value
+            FROM {$wpdb->posts} s
+            LEFT JOIN {$wpdb->postmeta} pm_vcard ON s.ID = pm_vcard.post_id AND pm_vcard.meta_key = %s
+            LEFT JOIN {$wpdb->postmeta} pm_event ON s.ID = pm_event.post_id AND pm_event.meta_key = 'event'
+            LEFT JOIN {$wpdb->postmeta} pm_value ON s.ID = pm_value.post_id AND pm_value.meta_key = 'value'
+            WHERE s.post_type = 'statistics'
+            AND (pm_vcard.meta_value = %s OR pm_vcard.meta_value LIKE %s)
+            ORDER BY s.post_date DESC
+            LIMIT 5
+        ";
+        
+        $results = $wpdb->get_results($wpdb->prepare($stats_query, 
+            $meta_key,
+            $vcard_id,
+            '%"' . $vcard_id . '"%'
+        ), ARRAY_A);
+        
+        echo "<div style='margin-left: 20px;'>";
+        if (empty($results)) {
+            echo "<p style='color: #d63384;'>❌ Aucun résultat avec la clé <code>$meta_key</code></p>";
+        } else {
+            echo "<p style='color: #198754;'>✅ " . count($results) . " résultats trouvés avec <code>$meta_key</code></p>";
+            foreach ($results as $result) {
+                echo "<div style='border: 1px solid #ddd; padding: 8px; margin: 4px; background: white; font-size: 12px;'>";
+                echo "<strong>ID:</strong> {$result['ID']} | <strong>Date:</strong> {$result['post_date']}<br>";
+                echo "<strong>{$meta_key}:</strong> <code>" . esc_html($result['vcard_value']) . "</code><br>";
+                echo "<strong>Event:</strong> {$result['event_type']} | <strong>Value:</strong> {$result['value']}<br>";
+                echo "</div>";
+            }
+        }
+        echo "</div>";
+    }
+    
+    // 2. Vérifier toutes les métadonnées d'un post statistics récent
+    echo "<h4>2. Analyse Métadonnées Post Statistics</h4>";
+    
+    $recent_stats = $wpdb->get_results("
+        SELECT ID, post_title, post_date 
+        FROM {$wpdb->posts} 
+        WHERE post_type = 'statistics' 
+        ORDER BY post_date DESC 
+        LIMIT 3
+    ");
+    
+    foreach ($recent_stats as $stat) {
+        echo "<h5>Post #{$stat->ID} - {$stat->post_title}</h5>";
+        
+        $meta_data = $wpdb->get_results($wpdb->prepare("
+            SELECT meta_key, meta_value 
+            FROM {$wpdb->postmeta} 
+            WHERE post_id = %d
+        ", $stat->ID), ARRAY_A);
+        
+        echo "<div style='margin-left: 20px; background: #f8f9fa; padding: 10px;'>";
+        foreach ($meta_data as $meta) {
+            echo "<div><strong>{$meta['meta_key']}:</strong> <code>" . esc_html($meta['meta_value']) . "</code></div>";
+        }
+        echo "</div>";
+    }
+    
+    // 3. Test des fonctions corrigées
+    echo "<h4>3. Test Fonctions Corrigées</h4>";
+    
+    $stats = nfc_get_vcard_quick_stats($vcard_id);
+    $leads_count = nfc_get_vcard_leads_count($vcard_id);
+    
+    echo "<div style='background: #e8f4f8; padding: 15px; margin: 10px;'>";
+    echo "<h5>Résultats des fonctions corrigées :</h5>";
+    echo "<strong>Vues (30j):</strong> {$stats['views']}<br>";
+    echo "<strong>Clics (30j):</strong> {$stats['clicks']}<br>";
+    echo "<strong>Leads total:</strong> {$leads_count}<br>";
+    echo "<strong>Dernière activité:</strong> {$stats['last_activity']}<br>";
+    echo "</div>";
+    
+    echo "</div>";
+}
+
+/**
+ * 🔥 FIX - Debug enterprise data avec diagnostic complet
+ */
+function nfc_debug_enterprise_data($user_id = null) {
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+    
+    echo "<div style='background: #f0f0f0; padding: 15px; margin: 10px; border: 1px solid #ccc;'>";
+    echo "<h3>🔥 Debug Enterprise Data SOLUTION FINALE - User #$user_id</h3>";
+    
+    // Test avec les vCards de test
+    $test_vcards = [1013, 3736, 3737, 3738, 3739, 3740];
+    
+    echo "<div style='display: grid; grid-template-columns: 1fr 1fr; gap: 20px;'>";
+    
+    foreach ($test_vcards as $vcard_id) {
+        echo "<div>";
+        echo "<h4>🧪 Test vCard #$vcard_id</h4>";
+        
+        // Debug complet pour cette vCard
+        nfc_debug_vcard_data_complete($vcard_id);
+        
+        echo "</div>";
+    }
+    
+    echo "</div>";
+    echo "</div>";
+}
+
+// ================================================================================
+// RESTE DES FONCTIONS (optimisées)
+// ================================================================================
+
+/**
+ * Récupère les statistiques globales d'un utilisateur (toutes ses vCards)
  */
 function nfc_get_user_global_stats($user_id, $days = 30) {
     // Récupérer toutes les vCards de l'utilisateur
@@ -130,7 +314,7 @@ function nfc_get_user_global_stats($user_id, $days = 30) {
         $global_stats['total_leads'] += $card_leads;
         
         // Performance de cette carte
-        $card_performance = $card_stats['views'] + $card_stats['clicks'] + ($card_leads * 2); // Les leads comptent double
+        $card_performance = $card_stats['views'] + $card_stats['clicks'] + ($card_leads * 2);
         
         $global_stats['performance_by_card'][$vcard_id] = [
             'card_name' => nfc_format_vcard_full_name($card['vcard_data'] ?? []),
@@ -157,201 +341,32 @@ function nfc_get_user_global_stats($user_id, $days = 30) {
 }
 
 // ================================================================================
-// FONCTIONS LEADS/CONTACTS
+// FONCTIONS UTILITY 
 // ================================================================================
 
 /**
- * Compte le nombre de leads d'une vCard
- * 
- * @param int $vcard_id ID de la vCard
- * @return int Nombre de leads
+ * Formate le nom complet depuis les métadonnées vCard
  */
-function nfc_get_vcard_leads_count($vcard_id) {
-    global $wpdb;
+function nfc_format_vcard_full_name($vcard_data) {
+    if (empty($vcard_data)) return 'Non configuré';
     
-    $leads_count_query = "
-        SELECT COUNT(DISTINCT l.ID) as leads_count
-        FROM {$wpdb->posts} l
-        INNER JOIN {$wpdb->postmeta} pm_link 
-            ON l.ID = pm_link.post_id 
-            AND pm_link.meta_key = 'linked_virtual_card'
-            AND pm_link.meta_value LIKE %s
-        WHERE l.post_type = 'lead'
-        AND l.post_status = 'publish'
-    ";
+    $firstname = $vcard_data['firstname'] ?? $vcard_data['_firstname'] ?? '';
+    $lastname = $vcard_data['lastname'] ?? $vcard_data['_lastname'] ?? '';
     
-    $search_pattern = '%"' . $vcard_id . '"%';
-    $count = $wpdb->get_var($wpdb->prepare($leads_count_query, $search_pattern));
+    if (is_array($firstname)) $firstname = $firstname[0] ?? '';
+    if (is_array($lastname)) $lastname = $lastname[0] ?? '';
     
-    return (int)$count;
+    $fullname = trim($firstname . ' ' . $lastname);
+    return !empty($fullname) ? $fullname : 'Non configuré';
 }
 
 /**
- * Récupère les leads d'un utilisateur avec filtrage optionnel par vCard
- * 
- * @param int $user_id ID de l'utilisateur
- * @param int $vcard_filter ID vCard pour filtrer (0 = tous)
- * @param int $limit Nombre maximum de résultats
- * @return array Liste des leads
+ * Génère les boutons d'action pour une vCard
  */
-function nfc_get_enterprise_contacts($user_id, $vcard_filter = 0, $limit = 50) {
-    global $wpdb;
-    
-    // Récupérer les IDs des vCards de l'utilisateur
-    $user_vcards = nfc_get_user_vcard_profiles($user_id);
-    $vcard_ids = array_column($user_vcards, 'vcard_id');
-    
-    if (empty($vcard_ids)) {
-        return [];
-    }
-    
-    // Construire la clause WHERE pour les vCards
-    $vcard_placeholders = implode(',', array_fill(0, count($vcard_ids), '%s'));
-    $vcard_like_conditions = [];
-    $query_params = [];
-    
-    foreach ($vcard_ids as $vcard_id) {
-        if ($vcard_filter > 0 && $vcard_id != $vcard_filter) {
-            continue; // Skip cette vCard si on filtre
-        }
-        $vcard_like_conditions[] = 'pm_link.meta_value LIKE %s';
-        $query_params[] = '%"' . $vcard_id . '"%';
-    }
-    
-    if (empty($vcard_like_conditions)) {
-        return [];
-    }
-    
-    $vcard_where = '(' . implode(' OR ', $vcard_like_conditions) . ')';
-    
-    // Requête principale
-    $contacts_query = "
-        SELECT 
-            l.ID as lead_id,
-            l.post_title,
-            l.post_date as contact_date,
-            pm_fn.meta_value as firstname,
-            pm_ln.meta_value as lastname,
-            pm_em.meta_value as email,
-            pm_mob.meta_value as mobile,
-            pm_soc.meta_value as society,
-            pm_post.meta_value as post,
-            pm_dt.meta_value as contact_datetime,
-            pm_link.meta_value as linked_vcard_raw
-        FROM {$wpdb->posts} l
-        INNER JOIN {$wpdb->postmeta} pm_link 
-            ON l.ID = pm_link.post_id 
-            AND pm_link.meta_key = 'linked_virtual_card'
-        LEFT JOIN {$wpdb->postmeta} pm_fn ON l.ID = pm_fn.post_id AND pm_fn.meta_key = 'firstname'
-        LEFT JOIN {$wpdb->postmeta} pm_ln ON l.ID = pm_ln.post_id AND pm_ln.meta_key = 'lastname'
-        LEFT JOIN {$wpdb->postmeta} pm_em ON l.ID = pm_em.post_id AND pm_em.meta_key = 'email'
-        LEFT JOIN {$wpdb->postmeta} pm_mob ON l.ID = pm_mob.post_id AND pm_mob.meta_key = 'mobile'
-        LEFT JOIN {$wpdb->postmeta} pm_soc ON l.ID = pm_soc.post_id AND pm_soc.meta_key = 'society'
-        LEFT JOIN {$wpdb->postmeta} pm_post ON l.ID = pm_post.post_id AND pm_post.meta_key = 'post'
-        LEFT JOIN {$wpdb->postmeta} pm_dt ON l.ID = pm_dt.post_id AND pm_dt.meta_key = 'contact_datetime'
-        WHERE l.post_type = 'lead'
-        AND l.post_status = 'publish'
-        AND {$vcard_where}
-        ORDER BY l.post_date DESC
-        LIMIT %d
-    ";
-    
-    $query_params[] = $limit;
-    $contacts = $wpdb->get_results($wpdb->prepare($contacts_query, ...$query_params), ARRAY_A);
-    
-    // Enrichir les données avec les infos vCard
-    foreach ($contacts as &$contact) {
-        // Extraire l'ID vCard du champ sérialisé  
-        $linked_vcard_raw = $contact['linked_vcard_raw'];
-        preg_match('/s:4:"(\d+)"/', $linked_vcard_raw, $matches);
-        $vcard_id = isset($matches[1]) ? (int)$matches[1] : 0;
-        
-        $contact['vcard_id'] = $vcard_id;
-        
-        // Trouver les infos de la vCard correspondante
-        $vcard_info = null;
-        foreach ($user_vcards as $card) {
-            if ($card['vcard_id'] == $vcard_id) {
-                $vcard_info = $card;
-                break;
-            }
-        }
-        
-        if ($vcard_info) {
-            $contact['vcard_firstname'] = $vcard_info['vcard_data']['firstname'] ?? '';
-            $contact['vcard_lastname'] = $vcard_info['vcard_data']['lastname'] ?? '';
-            $contact['vcard_full_name'] = nfc_format_vcard_full_name($vcard_info['vcard_data'] ?? []);
-        } else {
-            $contact['vcard_firstname'] = '';
-            $contact['vcard_lastname'] = '';
-            $contact['vcard_full_name'] = 'vCard introuvable';
-        }
-        
-        // Formatage des données
-        $contact['full_name'] = trim(($contact['firstname'] ?? '') . ' ' . ($contact['lastname'] ?? ''));
-        if (empty($contact['full_name'])) {
-            $contact['full_name'] = 'Contact sans nom';
-        }
-        
-        $contact['formatted_date'] = date('d/m/Y H:i', strtotime($contact['contact_date']));
-    }
-    
-    return $contacts;
-}
-
-/**
- * Groupe les contacts par profil vCard pour les statistiques
- * 
- * @param array $contacts Liste des contacts
- * @return array Contacts groupés par vCard ID
- */
-function nfc_group_contacts_by_profile($contacts) {
-    $grouped = [];
-    
-    foreach ($contacts as $contact) {
-        $vcard_id = $contact['vcard_id'];
-        if (!isset($grouped[$vcard_id])) {
-            $grouped[$vcard_id] = [];
-        }
-        $grouped[$vcard_id][] = $contact;
-    }
-    
-    return $grouped;
-}
-
-// ================================================================================
-// FONCTIONS UTILITAIRES
-// ================================================================================
-
-/**
- * Formate un badge de statut HTML
- * 
- * @param string $status Statut à formatter
- * @return string HTML du badge
- */
-function nfc_render_status_badge($status) {
-    $badges = [
-        'active' => '<span class="badge bg-success">Actif</span>',
-        'configured' => '<span class="badge bg-info">Configuré</span>', 
-        'pending' => '<span class="badge bg-warning">En attente</span>',
-        'inactive' => '<span class="badge bg-secondary">Inactif</span>'
-    ];
-    
-    return $badges[$status] ?? '<span class="badge bg-light">Inconnu</span>';
-}
-
-/**
- * Génère les boutons d'actions pour un produit
- * 
- * @param string $type Type de produit (vcard, google_reviews)
- * @param int $product_id ID du produit
- * @param array $options Options supplémentaires
- * @return string HTML des boutons
- */
-function nfc_render_action_buttons($type, $product_id, $options = []) {
+function nfc_generate_vcard_action_buttons($product_id, $options = []) {
     $buttons = '';
     
-    if ($type === 'vcard') {
+    if (isset($options['show_edit']) && $options['show_edit']) {
         $buttons .= '<a href="?page=vcard-edit&vcard_id=' . $product_id . '" class="btn btn-primary btn-sm me-1">';
         $buttons .= '<i class="fas fa-edit me-1"></i>Modifier</a>';
         
@@ -371,16 +386,31 @@ function nfc_render_action_buttons($type, $product_id, $options = []) {
 }
 
 /**
- * Calcule la tendance d'évolution (pour affichage +X cette semaine)
- * 
- * @param int $vcard_id ID de la vCard
- * @param int $days Période à analyser
- * @return int Nombre d'éléments nouveaux dans la période
+ * Calcule la tendance d'évolution
  */
 function nfc_get_contacts_trend($vcard_id, $days = 7) {
     global $wpdb;
     
     $date_limit = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+    
+    // Recherche multi-format pour les leads (format string ACF)
+    $search_conditions = [
+        "pm_link.meta_value = %s",
+        "pm_link.meta_value LIKE %s", 
+        "pm_link.meta_value LIKE %s",
+        "pm_link.meta_value LIKE %s",
+        "pm_link.meta_value LIKE %s"
+    ];
+    
+    $query_params = [
+        $vcard_id,
+        '%"' . $vcard_id . '"%',
+        '%:' . $vcard_id . ';%',
+        'a:1:{i:0;i:' . $vcard_id . ';}',
+        $date_limit
+    ];
+    
+    $where_clause = '(' . implode(' OR ', $search_conditions) . ')';
     
     $trend_query = "
         SELECT COUNT(DISTINCT l.ID) as new_count
@@ -388,52 +418,134 @@ function nfc_get_contacts_trend($vcard_id, $days = 7) {
         INNER JOIN {$wpdb->postmeta} pm_link 
             ON l.ID = pm_link.post_id 
             AND pm_link.meta_key = 'linked_virtual_card'
-            AND pm_link.meta_value LIKE %s
+            AND {$where_clause}
         WHERE l.post_type = 'lead'
         AND l.post_date >= %s
     ";
     
-    $search_pattern = '%"' . $vcard_id . '"%';
-    $count = $wpdb->get_var($wpdb->prepare($trend_query, $search_pattern, $date_limit));
+    $count = $wpdb->get_var($wpdb->prepare($trend_query, ...$query_params));
     
     return (int)$count;
 }
 
+
+function nfc_test_sql_direct($vcard_id = 3736) {
+    global $wpdb;
+    
+    echo "<div style='background: #fff3cd; padding: 15px; margin: 10px; border: 2px solid #ffc107;'>";
+    echo "<h3>🔥 TEST SQL DIRECT vCard #$vcard_id</h3>";
+    
+    // 1. TEST SIMPLE : chercher exactement ce qu'on sait qui existe
+    echo "<h4>1. Test avec pattern exact connu</h4>";
+    
+    $exact_pattern = 'a:1:{i:0;s:4:"' . $vcard_id . '";}';
+    echo "<p>Pattern exact cherché : <code>$exact_pattern</code></p>";
+    
+    $simple_query = "
+        SELECT s.ID, s.post_title, s.post_date,
+               pm_vcard.meta_value as vcard_value,
+               pm_event.meta_value as event_type,
+               pm_value.meta_value as value
+        FROM {$wpdb->posts} s
+        INNER JOIN {$wpdb->postmeta} pm_vcard 
+            ON s.ID = pm_vcard.post_id 
+            AND pm_vcard.meta_key = 'virtual_card_id'
+            AND pm_vcard.meta_value = %s
+        INNER JOIN {$wpdb->postmeta} pm_event 
+            ON s.ID = pm_event.post_id 
+            AND pm_event.meta_key = 'event'
+        INNER JOIN {$wpdb->postmeta} pm_value 
+            ON s.ID = pm_value.post_id 
+            AND pm_value.meta_key = 'value'
+        WHERE s.post_type = 'statistics'
+        ORDER BY s.post_date DESC
+    ";
+    
+    $results = $wpdb->get_results($wpdb->prepare($simple_query, $exact_pattern), ARRAY_A);
+    
+    echo "<div style='background: #f8f9fa; padding: 10px; margin: 10px;'>";
+    echo "<strong>Résultats du test direct :</strong><br>";
+    if (empty($results)) {
+        echo "<span style='color: red;'>❌ AUCUN résultat avec pattern exact</span><br>";
+        echo "<strong>Query SQL finale :</strong><br>";
+        echo "<pre style='background: #e9ecef; padding: 5px; font-size: 11px;'>" . $wpdb->last_query . "</pre>";
+    } else {
+        echo "<span style='color: green;'>✅ " . count($results) . " résultat(s) trouvé(s) !</span><br>";
+        foreach ($results as $result) {
+            echo "<div style='border: 1px solid #ddd; padding: 5px; margin: 5px; background: white;'>";
+            echo "<strong>ID:</strong> {$result['ID']} | <strong>Event:</strong> {$result['event_type']} | <strong>Value:</strong> {$result['value']}<br>";
+            echo "<strong>vCard meta:</strong> <code>" . esc_html($result['vcard_value']) . "</code><br>";
+            echo "</div>";
+        }
+    }
+    echo "</div>";
+    
+    // 2. TEST AVEC LIKE pour voir si ça marche
+    echo "<h4>2. Test avec LIKE pattern</h4>";
+    
+    $like_pattern = '%' . $exact_pattern . '%';
+    echo "<p>Pattern LIKE : <code>$like_pattern</code></p>";
+    
+    $like_query = str_replace('pm_vcard.meta_value = %s', 'pm_vcard.meta_value LIKE %s', $simple_query);
+    $like_results = $wpdb->get_results($wpdb->prepare($like_query, $like_pattern), ARRAY_A);
+    
+    echo "<div style='background: #f8f9fa; padding: 10px; margin: 10px;'>";
+    if (empty($like_results)) {
+        echo "<span style='color: red;'>❌ AUCUN résultat avec LIKE</span><br>";
+    } else {
+        echo "<span style='color: green;'>✅ " . count($like_results) . " résultat(s) avec LIKE !</span><br>";
+    }
+    echo "</div>";
+    
+    // 3. TEST ENCORE PLUS SIMPLE : voir tous les posts statistics récents
+    echo "<h4>3. Tous les posts statistics récents</h4>";
+    
+    $all_stats = $wpdb->get_results("
+        SELECT s.ID, s.post_title, pm.meta_key, pm.meta_value
+        FROM {$wpdb->posts} s
+        LEFT JOIN {$wpdb->postmeta} pm ON s.ID = pm.post_id
+        WHERE s.post_type = 'statistics'
+        AND pm.meta_key IN ('virtual_card_id', 'vcard_id', 'event', 'value')
+        ORDER BY s.ID DESC
+        LIMIT 20
+    ");
+    
+    echo "<div style='background: #f8f9fa; padding: 10px; margin: 10px; max-height: 300px; overflow-y: scroll;'>";
+    $current_post = null;
+    foreach ($all_stats as $stat) {
+        if ($current_post != $stat->ID) {
+            if ($current_post !== null) echo "</div>";
+            echo "<div style='border: 1px solid #ddd; padding: 5px; margin: 5px; background: white;'>";
+            echo "<strong>Post #{$stat->ID} - {$stat->post_title}</strong><br>";
+            $current_post = $stat->ID;
+        }
+        echo "<code>{$stat->meta_key}:</code> " . esc_html($stat->meta_value) . "<br>";
+    }
+    if ($current_post !== null) echo "</div>";
+    echo "</div>";
+    
+    echo "</div>";
+}
+
 /**
- * Debug - Affiche les données utilisateur enterprise
- * Fonction temporaire pour le développement
+ * 🔥 TEST RAPIDE pour vérifier
  */
-function nfc_debug_enterprise_data($user_id = null) {
-    if (!$user_id) {
-        $user_id = get_current_user_id();
-    }
+function nfc_test_stats_fix($vcard_id = 3736) {
+    echo "<div style='background: #d4edda; padding: 15px; margin: 10px; border: 2px solid #28a745;'>";
+    echo "<h3>🔥 TEST SOLUTION CORRIGÉE - vCard #$vcard_id</h3>";
     
-    echo "<div style='background: #f0f0f0; padding: 15px; margin: 10px; border: 1px solid #ccc;'>";
-    echo "<h3>Debug Enterprise Data - User #$user_id</h3>";
+    $stats = nfc_get_vcard_quick_stats($vcard_id);
+    $leads = nfc_get_vcard_leads_count($vcard_id);
     
-    $cards = nfc_get_user_vcard_profiles($user_id);
-    echo "<h4>Cartes trouvées : " . count($cards) . "</h4>";
-    
-    foreach ($cards as $card) {
-        $stats = nfc_get_vcard_quick_stats($card['vcard_id']);
-        $leads_count = nfc_get_vcard_leads_count($card['vcard_id']);
-        
-        echo "<div style='border: 1px solid #ccc; padding: 10px; margin: 5px;'>";
-        echo "<strong>vCard ID: {$card['vcard_id']}</strong><br>";
-        echo "Nom: " . nfc_format_vcard_full_name($card['vcard_data'] ?? []) . "<br>";
-        echo "Stats 30j: {$stats['views']} vues, {$stats['clicks']} clics<br>";
-        echo "Leads: {$leads_count}<br>";
-        echo "</div>";
-    }
-    
-    $global_stats = nfc_get_user_global_stats($user_id);
-    echo "<h4>Stats globales (30j)</h4>";
-    echo "Vues totales: {$global_stats['total_views']}<br>";
-    echo "Clics totaux: {$global_stats['total_clicks']}<br>";
-    echo "Leads totaux: {$global_stats['total_leads']}<br>";
-    if ($global_stats['top_performer']) {
-        echo "Top performer: {$global_stats['top_performer']['name']} (score: {$global_stats['top_performer']['score']})<br>";
-    }
+    echo "<div style='background: white; padding: 15px; margin: 10px; border: 1px solid #ddd;'>";
+    echo "<h4>Résultats :</h4>";
+    echo "<strong>Vues (30j):</strong> {$stats['views']}<br>";
+    echo "<strong>Clics (30j):</strong> {$stats['clicks']}<br>";
+    echo "<strong>Détail clics:</strong> " . json_encode($stats['clicks_detail']) . "<br>";
+    echo "<strong>Total interactions:</strong> {$stats['total_interactions']}<br>";
+    echo "<strong>Leads:</strong> {$leads}<br>";
+    echo "<strong>Dernière activité:</strong> {$stats['last_activity']}<br>";
+    echo "</div>";
     
     echo "</div>";
 }

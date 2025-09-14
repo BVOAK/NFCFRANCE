@@ -41,21 +41,6 @@ function nfc_generate_additional_cards_url($user_id) {
     return add_query_arg($params, $base_url);
 }
 
-/**
- * Formate nom complet d'une vCard
- */
-function nfc_format_vcard_full_name($vcard_data) {
-    $firstname = $vcard_data['firstname'] ?? '';
-    $lastname = $vcard_data['lastname'] ?? '';
-    
-    $full_name = trim($firstname . ' ' . $lastname);
-    
-    if (empty($full_name)) {
-        return 'Profil à configurer';
-    }
-    
-    return $full_name;
-}
 
 /**
  * Formate poste/service d'une vCard
