@@ -130,14 +130,18 @@ error_log("📊 DEBUG Leads - Contacts récupérés: " . count($contacts));
 
 // Configuration JavaScript identique à contacts.php
 $contacts_config = [
-    'vcard_id' => $current_vcard['vcard_id'],
+    'vcard_id' => $current_vcard ? $current_vcard['vcard_id'] : null, // ✅ FIX: Gérer null
+    'user_id' => $user_id, // ✅ AJOUT: Nécessaire pour multi-profils
+    'selected_vcard_id' => $selected_vcard_id, // ✅ AJOUT: Pour filtre
     'is_multi_profile' => $is_multi_profile,
     'user_vcards' => $user_vcards,
     'ajax_url' => admin_url('admin-ajax.php'),
+    'api_url' => home_url('/wp-json/gtmi_vcard/v1/'), // ✅ AJOUT: Manquait
     'nonce' => wp_create_nonce('nfc_dashboard_nonce'),
     'user_name' => $user_display_name,
     'initial_contacts' => $contacts
 ];
+
 
 // Ne PAS charger d'assets CSS/JS car contacts-manager.js se charge automatiquement
 ?>
@@ -593,7 +597,23 @@ console.log('🔧 DEBUG - is_multi_profile:', window.nfcContactsConfig.is_multi_
 console.log('🔧 DEBUG - selected_vcard_id:', window.nfcContactsConfig.selected_vcard_id);
 
 // Vérification que tout est là
-if (window.nfcContactsConfig.vcard_id && window.nfcContactsConfig.api_url) {
+function isValidConfig() {
+    const config = window.nfcContactsConfig;
+    
+    if (!config || !config.api_url) {
+        return false;
+    }
+    
+    // Mode multi-profils sans filtre: vcard_id peut être null
+    if (config.is_multi_profile && !config.selected_vcard_id) {
+        return !!config.user_id;
+    }
+    
+    // Mode simple ou avec filtre: vcard_id obligatoire
+    return !!config.vcard_id;
+}
+
+if (isValidConfig()) {
     console.log('✅ Configuration NFCContacts valide');
 } else {
     console.error('❌ Configuration NFCContacts invalide:', window.nfcContactsConfig);
