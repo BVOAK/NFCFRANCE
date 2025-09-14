@@ -586,7 +586,6 @@ $contacts_config = [
 <script>
 // Configuration globale pour contacts-manager.js (EXACTEMENT comme dans class-dashboard-manager.php)
 window.nfcContactsConfig = <?php echo json_encode($contacts_config); ?>;
-console.log('🔧 KEYS de config reçues:', Object.keys(window.nfcContactsConfig));
 
 console.log('📧 Configuration NFCContacts injectée AVANT script:', window.nfcContactsConfig);
 console.log('🔧 DEBUG - user_id reçu:', window.nfcContactsConfig.user_id);
@@ -655,7 +654,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }.bind(this))
+                }).bind(this)
                 .then(response => {
                     console.log('📡 Réponse API Status:', response.status);
                     
@@ -708,7 +707,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.warn('⚠️ Format de données API inattendu:', data);
                         this.showEmptyState(); // Plutôt qu'erreur pour données vides
                     }
-                }.bind(this))
+                }).bind(this)
                 .catch(error => {
                     console.error('❌ Erreur API:', error);
                     this.isLoading = false;
