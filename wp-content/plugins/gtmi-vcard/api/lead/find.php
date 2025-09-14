@@ -33,27 +33,42 @@ function gtmi_vcard_register_rest_routes_find_leads(): void
 
   // 🆕 NOUVEAU: Endpoint pour tous les leads d'un utilisateur multi-profils
   register_rest_route('gtmi_vcard/v1', '/leads/user/(?P<user_id>\d+)', [
-    'methods' => 'GET',
-    'callback' => 'gtmi_vcard_leads_of_user',
-    'permission_callback' => function ($request) {
-      // Vérifier que l'utilisateur connecté peut accéder à ces données
-      $requested_user_id = (int) $request->get_param('user_id');
-      $current_user_id = get_current_user_id();
-
-      if ($current_user_id !== $requested_user_id) {
-        return new WP_Error('forbidden', 'Accès interdit', ['status' => 403]);
-      }
-
-      return true;
-    },
-    'args' => [
-      'user_id' => [
-        'description' => 'ID of the user to retrieve all leads for.',
-        'type' => 'integer',
-        'required' => true,
-        'sanitize_callback' => 'absint',
+      'methods' => 'GET',
+      'callback' => 'gtmi_vcard_leads_of_user',
+      'permission_callback' => function ($request) {
+          error_log('🔍 DEBUG Permission API - Début vérification');
+          
+          // Récupérer les IDs
+          $requested_user_id = (int) $request->get_param('user_id');
+          $current_user_id = get_current_user_id();
+          
+          error_log("🔍 DEBUG Permission - requested_user_id: {$requested_user_id}");
+          error_log("🔍 DEBUG Permission - current_user_id: {$current_user_id}");
+          error_log("🔍 DEBUG Permission - is_user_logged_in: " . (is_user_logged_in() ? 'YES' : 'NO'));
+          
+          // Vérifier si l'utilisateur est connecté
+          if (!is_user_logged_in()) {
+              error_log('❌ DEBUG Permission - Utilisateur non connecté');
+              return new WP_Error('unauthorized', 'Utilisateur non connecté', ['status' => 401]);
+          }
+          
+          // Vérifier que c'est bien le même utilisateur
+          if ($current_user_id !== $requested_user_id) {
+              error_log("❌ DEBUG Permission - IDs différents: current={$current_user_id}, requested={$requested_user_id}");
+              return new WP_Error('forbidden', 'Accès interdit - IDs différents', ['status' => 403]);
+          }
+          
+          error_log('✅ DEBUG Permission - Autorisation accordée');
+          return true;
+      },
+      'args' => [
+          'user_id' => [
+              'description' => 'ID of the user to retrieve all leads for.',
+              'type' => 'integer',
+              'required' => true,
+              'sanitize_callback' => 'absint',
+          ],
       ],
-    ],
   ]);
 }
 add_action('rest_api_init', 'gtmi_vcard_register_rest_routes_find_leads');
