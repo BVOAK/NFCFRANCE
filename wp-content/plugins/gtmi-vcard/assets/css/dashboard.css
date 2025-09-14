@@ -566,3 +566,23 @@ body.nfc-dashboard-body .woocommerce {
 .empty-state i {
     opacity: 0.5;
 }
+
+
+* Navigation count et badge */
+.nfc-nav-count {
+    background: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.9);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
+    margin-left: 0.5rem;
+}
+
+.nfc-nav-badge {
+    background: var(--nfc-success);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 10px;
+    margin-left: auto;
+}

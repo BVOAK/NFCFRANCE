@@ -204,6 +204,12 @@ class NFC_Dashboard_Manager
             <?php } ?>
         </head>
 
+        <?php
+            // NOUVEAU : Récupérer produits utilisateur pour menu adaptatif
+            $user_vcards = $this->get_user_vcards($current_user->ID);
+            $vcard_count = count($user_vcards);
+        ?>
+
         <body class="nfc-dashboard-body">
             <div class="nfc-dashboard-app">
 
@@ -215,42 +221,46 @@ class NFC_Dashboard_Manager
                     </div>
 
                     <div class="nfc-sidebar-nav">
+
                         <div class="nfc-nav-section">
                             <div class="nfc-nav-section-title">Dashboard</div>
                             <div class="nfc-nav-item">
-                                <a href="?page=overview"
-                                    class="nfc-nav-link <?php echo $current_page === 'overview' ? 'active' : ''; ?>">
+                                <a href="?page=overview" class="nfc-nav-link <?php echo $current_page === 'overview' ? 'active' : ''; ?>">
                                     <i class="fas fa-home"></i>
                                     Vue d'ensemble
                                 </a>
                             </div>
                         </div>
 
-                        <div class="nfc-nav-section">
-                            <div class="nfc-nav-section-title">Ma vCard</div>
-                            <div class="nfc-nav-item">
-                                <a href="?page=vcard-edit"
-                                    class="nfc-nav-link <?php echo $current_page === 'vcard-edit' ? 'active' : ''; ?>">
-                                    <i class="fas fa-id-card"></i>
-                                    Modifier ma vCard
-                                </a>
+                        <?php if ($vcard_count > 0): ?>
+                            <div class="nfc-nav-section">
+                                <div class="nfc-nav-section-title">
+                                    Mes cartes vCard
+                                    <?php if ($vcard_count > 1): ?>
+                                        <span class="nfc-nav-count"><?php echo $vcard_count; ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                
+                                <?php if ($vcard_count === 1): ?>
+                                    <!-- Interface simple : 1 seule vCard -->
+                                    <div class="nfc-nav-item">
+                                        <a href="?page=qr-codes" class="nfc-nav-link <?php echo $current_page === 'qr-codes' ? 'active' : ''; ?>">
+                                            <i class="fas fa-qrcode"></i>
+                                            QR Codes
+                                        </a>
+                                    </div>
+                                <?php else: ?>
+                                    <!-- Interface multi-cartes : plusieurs vCards -->
+                                    <div class="nfc-nav-item">
+                                        <a href="?page=cards-list" class="nfc-nav-link <?php echo $current_page === 'cards-list' ? 'active' : ''; ?>">
+                                            <i class="fas fa-id-card-alt"></i>
+                                            Mes cartes
+                                            <span class="nfc-nav-badge"><?php echo $vcard_count; ?></span>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                            <!-- <div class="nfc-nav-item">
-                                <a href="?page=qr-codes"
-                                    class="nfc-nav-link <?php echo $current_page === 'qr-codes' ? 'active' : ''; ?>">
-                                    <i class="fas fa-qrcode"></i>
-                                    QR Codes
-                                    <span class="nfc-nav-badge">2</span>
-                                </a>
-                            </div> -->
-                            <div class="nfc-nav-item">
-                                <a href="?page=preview"
-                                    class="nfc-nav-link <?php echo $current_page === 'preview' ? 'active' : ''; ?>">
-                                    <i class="fas fa-eye"></i>
-                                    Aperçu public
-                                </a>
-                            </div>
-                        </div>
+                        <?php endif; ?>
 
                         <div class="nfc-nav-section">
                             <div class="nfc-nav-section-title">Contacts & Stats</div>
@@ -477,7 +487,7 @@ class NFC_Dashboard_Manager
                 break;
 
             case 'cards-list':
-                $this->render_cards_list_page();        // NOUVEAU - Liste des vCards
+                $this->render_cards_list_page($vcard);  // NOUVEAU - Liste des vCards
                 break;
 
             case 'vcard-edit':
@@ -608,7 +618,7 @@ class NFC_Dashboard_Manager
     </script>';
     }
 
-    private function render_cards_list_page()
+    private function render_cards_list_page($vcard)
     {
         $user_id = get_current_user_id();
         $user_vcards = $this->get_user_vcards($user_id);
@@ -1118,14 +1128,18 @@ class NFC_Dashboard_Manager
     }
 
     private function render_contacts_page($vcard)
-    {
-        $template_path = $this->plugin_path . 'templates/dashboard/simple/contacts.php';
-        if (file_exists($template_path)) {
-            include $template_path;
-        } else {
-            $this->render_test_page('contacts', 'Contacts', $vcard);
-        }
+{
+    // Passer référence du dashboard manager pour accès aux fonctions
+    global $nfc_dashboard_manager;
+    $nfc_dashboard_manager = $this;
+    
+    $template_path = $this->plugin_path . 'templates/dashboard/simple/contacts.php';
+    if (file_exists($template_path)) {
+        include $template_path;
+    } else {
+        $this->render_test_page('contacts', 'Contacts', $vcard);
     }
+}
 
     private function render_statistics_page($vcard)
     {
