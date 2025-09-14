@@ -875,4 +875,4 @@ function filterByProfile() {
 }
 
 console.log('✅ Script d\'override leads.php avec endpoint multi-profils chargé');
-</script>
+</script> 
