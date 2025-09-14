@@ -1,9 +1,9 @@
 <?php
 /**
- * Template: Gestion des leads/contacts - Version simple qui FONCTIONNE
+ * Template: Gestion des contacts - Dashboard NFC
  * 
  * Fichier: templates/dashboard/leads.php
- * Basé directement sur le système de contacts.php qui marche
+ * COPIE EXACTE de contacts.php qui fonctionne + adaptations multi-profils
  */
 
 if (!defined('ABSPATH')) {
@@ -11,93 +11,125 @@ if (!defined('ABSPATH')) {
 }
 
 // ================================================================================
-// FONCTIONS HELPER SIMPLES
-// ================================================================================
-
-if (!function_exists('nfc_get_user_vcard_profiles')) {
-    function nfc_get_user_vcard_profiles($user_id) {
-        if (class_exists('NFC_Enterprise_Core')) {
-            return NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
-        }
-        return [];
-    }
-}
-
-// ================================================================================
-// LOGIQUE SIMPLE
+// LOGIQUE MULTI-PROFILS SIMPLE
 // ================================================================================
 
 $user_id = get_current_user_id();
-$user_vcards = nfc_get_user_vcard_profiles($user_id);
 
-if (empty($user_vcards)) {
-    echo '<div class="alert alert-info">Aucune vCard trouvée. <a href="/boutique-nfc/">Commandez votre première carte</a></div>';
-    return;
-}
-
-$is_multi_profile = count($user_vcards) > 1;
-
-// SIMPLE : Toujours récupérer les contacts via l'API existante
-if ($is_multi_profile) {
-    $page_title = "Tous mes contacts (" . count($user_vcards) . " profils)";
-    // Utiliser le endpoint USER qui fonctionne
-    $api_endpoint = home_url("/wp-json/gtmi_vcard/v1/leads/user/{$user_id}");
-    $primary_vcard_id = $user_vcards[0]['vcard_id']; // Pour la config JS
+// Déterminer le mode et la vCard à utiliser
+if (class_exists('NFC_Enterprise_Core')) {
+    $user_vcards = NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
+    $is_multi_profile = count($user_vcards) > 1;
+    
+    if ($is_multi_profile) {
+        // Mode multi : utiliser la première vCard pour l'API (temporaire)
+        $vcard_id = $user_vcards[0]['vcard_id'];
+        $page_title = "Tous mes contacts (" . count($user_vcards) . " profils)";
+        error_log("🔧 Mode multi-profils détecté: " . count($user_vcards) . " vCards");
+    } else if (!empty($user_vcards)) {
+        // Mode simple
+        $vcard_id = $user_vcards[0]['vcard_id'];
+        $page_title = "Mes contacts";
+        error_log("🔧 Mode simple: 1 vCard");
+    } else {
+        echo '<div class="alert alert-info">Aucune vCard trouvée. <a href="/boutique-nfc/">Commandez votre première carte</a></div>';
+        return;
+    }
 } else {
+    // Fallback ancien système
+    global $nfc_vcard, $nfc_current_page;
+    $vcard = $nfc_vcard;
+    $vcard_id = $vcard->ID;
+    $is_multi_profile = false;
     $page_title = "Mes contacts";
-    $primary_vcard_id = $user_vcards[0]['vcard_id'];
-    $api_endpoint = home_url("/wp-json/gtmi_vcard/v1/leads/{$primary_vcard_id}");
 }
 
-// Variables globales pour compatibilité
-global $nfc_vcard, $nfc_current_page;
-$nfc_vcard = (object)['ID' => $primary_vcard_id];
-$nfc_current_page = 'contacts';
+// ================================================================================
+// SYSTÈME IDENTIQUE À CONTACTS.PHP
+// ================================================================================
 
-// Configuration JavaScript SIMPLE comme contacts.php
+// Variables globales disponibles depuis le routing
+global $nfc_vcard, $nfc_current_page;
+$vcard = $nfc_vcard ?? (object)['ID' => $vcard_id];
+$vcard_id = $vcard->ID;
+
+// Données utilisateur pour le contexte
+$current_user = wp_get_current_user();
+$first_name = get_post_meta($vcard_id, 'first_name', true) ?: $current_user->first_name;
+$last_name = get_post_meta($vcard_id, 'last_name', true) ?: $current_user->last_name;
+$full_name = trim($first_name . ' ' . $last_name);
+
+// URL publique de la vCard pour contexte
+$public_url = get_permalink($vcard_id);
+
+// Enqueue des assets spécifiques à cette page
+$plugin_url = plugin_dir_url(dirname(dirname(dirname(__FILE__))));
+
+// Configuration JavaScript IDENTIQUE à contacts.php
 $contacts_config = [
-    'vcard_id' => $primary_vcard_id,
+    'vcard_id' => $vcard_id,
     'api_url' => home_url('/wp-json/gtmi_vcard/v1/'),
     'ajax_url' => admin_url('admin-ajax.php'),
     'nonce' => wp_create_nonce('nfc_dashboard_nonce'),
-    'api_endpoint' => $api_endpoint, // 🎯 ENDPOINT DIRECT
-    'is_multi_profile' => $is_multi_profile,
-    'user_id' => $user_id
+    'public_url' => $public_url,
+    'user_name' => $full_name,
+    'is_multi_profile' => $is_multi_profile ?? false, // 🆕 SEULE ADDITION
+    'i18n' => [
+        'loading' => __('Chargement...', 'gtmi_vcard'),
+        'error' => __('Une erreur est survenue', 'gtmi_vcard'),
+        'success' => __('Action réalisée avec succès', 'gtmi_vcard'),
+        'confirm_delete' => __('Êtes-vous sûr de vouloir supprimer ce contact ?', 'gtmi_vcard'),
+        'confirm_delete_multiple' => __('Êtes-vous sûr de vouloir supprimer ces contacts ?', 'gtmi_vcard'),
+        'no_contacts' => __('Aucun contact trouvé', 'gtmi_vcard'),
+        'export_success' => __('Export réalisé avec succès', 'gtmi_vcard'),
+        'import_success' => __('Import réalisé avec succès', 'gtmi_vcard')
+    ]
 ];
 
-$current_user = wp_get_current_user();
-$full_name = trim($current_user->first_name . ' ' . $current_user->last_name);
-
-error_log("🔧 LEADS SIMPLE - Endpoint: " . $api_endpoint);
-error_log("🔧 LEADS SIMPLE - Multi-profile: " . ($is_multi_profile ? 'YES' : 'NO'));
+error_log("🔧 LEADS CONFIG - vcard_id: " . $vcard_id);
+error_log("🔧 LEADS CONFIG - is_multi_profile: " . ($is_multi_profile ? 'YES' : 'NO'));
 ?>
 
-<!-- PAGE HEADER -->
+<!-- PAGE HEADER - IDENTIQUE à contacts.php -->
 <div class="contacts-header mb-4">
     <div class="row align-items-center">
         <div class="col">
             <h2 class="h3 mb-1">
                 <i class="fas fa-users me-2 text-primary"></i>
-                <?php echo esc_html($page_title); ?>
+                <?php echo esc_html($page_title ?? 'Mes contacts'); ?>
             </h2>
             <p class="text-muted mb-0">Gestion de vos contacts professionnels</p>
         </div>
         <div class="col-auto">
             <div class="d-flex gap-2">
-                <button class="btn btn-outline-primary" onclick="showAddModal()">
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addContactModal">
                     <i class="fas fa-plus me-1"></i>
                     Ajouter contact
                 </button>
-                <button class="btn btn-primary" onclick="exportContacts()">
-                    <i class="fas fa-download me-1"></i>
-                    Exporter
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-download me-1"></i>
+                        Export
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="exportContacts('csv')">
+                            <i class="fas fa-file-csv me-2"></i>CSV
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportContacts('pdf')">
+                            <i class="fas fa-file-pdf me-2"></i>PDF
+                        </a></li>
+                    </ul>
+                </div>
+                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#importModal">
+                    <i class="fas fa-upload me-1"></i>
+                    Import
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- STATS CARDS - SIMPLE -->
+<!-- STATS CARDS - IDENTIQUE à contacts.php -->
 <div class="row mb-4">
     <div class="col-md-3">
         <div class="card border-0 shadow-sm h-100">
@@ -145,35 +177,38 @@ error_log("🔧 LEADS SIMPLE - Multi-profile: " . ($is_multi_profile ? 'YES' : '
     </div>
 </div>
 
-<!-- CONTROLS SECTION -->
+<!-- CONTROLS SECTION - IDENTIQUE à contacts.php -->
 <div class="row mb-4">
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-body">
                 <div class="row g-3 align-items-center">
-                    <!-- Search -->
                     <div class="col-md-4">
                         <div class="input-group">
                             <span class="input-group-text bg-white border-end-0">
                                 <i class="fas fa-search text-muted"></i>
                             </span>
-                            <input type="text" class="form-control border-start-0" id="searchContacts" 
-                                   placeholder="Rechercher un contact..." onkeyup="applyFilters()">
+                            <input type="text" class="form-control border-start-0" id="contactsSearch" 
+                                   placeholder="Rechercher un contact...">
                         </div>
                     </div>
-                    
-                    <!-- Filtre source -->
                     <div class="col-md-2">
-                        <select class="form-select" id="sourceFilter" onchange="applyFilters()">
+                        <select class="form-select" id="sourceFilter">
                             <option value="">Toutes sources</option>
                             <option value="web">Site web</option>
                             <option value="qr">QR Code</option>
                             <option value="manual">Manuel</option>
                         </select>
                     </div>
-                    
-                    <!-- Actions -->
-                    <div class="col-md-6 text-end">
+                    <div class="col-md-2">
+                        <select class="form-select" id="dateFilter">
+                            <option value="">Toutes dates</option>
+                            <option value="today">Aujourd'hui</option>
+                            <option value="week">Cette semaine</option>
+                            <option value="month">Ce mois</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 text-end">
                         <div class="btn-group" role="group">
                             <input type="radio" class="btn-check" name="viewMode" id="viewList" checked>
                             <label class="btn btn-outline-secondary" for="viewList">
@@ -196,7 +231,7 @@ error_log("🔧 LEADS SIMPLE - Multi-profile: " . ($is_multi_profile ? 'YES' : '
     </div>
 </div>
 
-<!-- LOADING STATE -->
+<!-- LOADING STATE - IDENTIQUE -->
 <div id="contactsLoading" class="text-center py-5">
     <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Chargement...</span>
@@ -204,14 +239,18 @@ error_log("🔧 LEADS SIMPLE - Multi-profile: " . ($is_multi_profile ? 'YES' : '
     <p class="text-muted mt-2">Chargement des contacts...</p>
 </div>
 
-<!-- EMPTY STATE -->
+<!-- EMPTY STATE - IDENTIQUE -->
 <div id="contactsEmpty" class="text-center py-5 d-none">
     <i class="fas fa-users fa-4x text-muted mb-3"></i>
     <h5 class="text-muted">Aucun contact trouvé</h5>
     <p class="text-muted">Vos contacts apparaîtront ici après les premières interactions</p>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addContactModal">
+        <i class="fas fa-plus me-2"></i>
+        Ajouter votre premier contact
+    </button>
 </div>
 
-<!-- CONTENU PRINCIPAL -->
+<!-- CONTENU PRINCIPAL - IDENTIQUE -->
 <div class="row">
     <div class="col-12">
         <!-- Table View -->
@@ -222,16 +261,13 @@ error_log("🔧 LEADS SIMPLE - Multi-profile: " . ($is_multi_profile ? 'YES' : '
                         <thead class="table-light">
                             <tr>
                                 <th style="width: 50px;">
-                                    <input type="checkbox" class="form-check-input" id="selectAll" onchange="toggleSelectAll(this.checked)">
+                                    <input type="checkbox" class="form-check-input" id="selectAll">
                                 </th>
                                 <th>Contact</th>
                                 <th>Email</th>
                                 <th>Téléphone</th>
                                 <th>Entreprise</th>
                                 <th>Source</th>
-                                <?php if ($is_multi_profile): ?>
-                                <th>Profil Source</th>
-                                <?php endif; ?>
                                 <th>Date</th>
                                 <th class="text-center" style="width: 120px;">Actions</th>
                             </tr>
@@ -263,7 +299,7 @@ error_log("🔧 LEADS SIMPLE - Multi-profile: " . ($is_multi_profile ? 'YES' : '
             </div>
         </div>
         
-        <!-- Grid View -->
+        <!-- Grid View - IDENTIQUE -->
         <div id="contactsGridView" class="d-none">
             <div id="contactsGrid" class="row">
                 <!-- Rempli par JavaScript -->
@@ -272,7 +308,9 @@ error_log("🔧 LEADS SIMPLE - Multi-profile: " . ($is_multi_profile ? 'YES' : '
     </div>
 </div>
 
-<!-- MODALS - Simplifié pour le test -->
+<!-- MODALS - Modals complètes de contacts.php -->
+
+<!-- Modal Ajout Contact -->
 <div class="modal fade" id="addContactModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -280,112 +318,209 @@ error_log("🔧 LEADS SIMPLE - Multi-profile: " . ($is_multi_profile ? 'YES' : '
                 <h5 class="modal-title">Ajouter un contact</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <p>Fonctionnalité à implémenter</p>
+            <form id="addContactForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prénom *</label>
+                            <input type="text" class="form-control" name="firstname" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nom *</label>
+                            <input type="text" class="form-control" name="lastname" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Téléphone</label>
+                        <input type="tel" class="form-control" name="mobile">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Entreprise</label>
+                        <input type="text" class="form-control" name="society">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Poste</label>
+                        <input type="text" class="form-control" name="post">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Import CSV -->
+<div class="modal fade" id="importModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importer des contacts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="importForm" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Fichier CSV</label>
+                        <input type="file" class="form-control" name="csv_file" accept=".csv" required>
+                        <div class="form-text">
+                            Format requis: prénom, nom, email, téléphone, entreprise, poste
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Importer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Détails Contact -->
+<div class="modal fade" id="contactDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Détails du contact</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="contactDetailsContent">
+                <!-- Rempli par JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary" id="editContactFromDetails" onclick="editContactFromDetails()">
+                    <i class="fas fa-edit me-2"></i>
+                    Modifier
+                </button>
+                <button type="button" class="btn btn-danger" id="deleteContactFromDetails" onclick="deleteContactFromDetails()">
+                    <i class="fas fa-trash me-2"></i>
+                    Supprimer
+                </button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- JAVASCRIPT EXACT DE CONTACTS.PHP -->
 <script type="text/javascript">
-// ================================================================================
-// SYSTÈME SIMPLE BASÉ SUR CONTACTS.PHP QUI FONCTIONNE
-// ================================================================================
-
-// Configuration (comme contacts.php)
+// Configuration et état - IDENTIQUE à contacts.php
 const contactsConfig = <?php echo wp_json_encode($contacts_config); ?>;
 
 let contacts = [];
 let filteredContacts = [];
 let currentPage = 1;
 let selectedContacts = [];
+let csvData = [];
+let currentContactId = null;
 const itemsPerPage = 10;
 
-console.log('🔧 Configuration leads simple:', contactsConfig);
+console.log('🔄 Configuration contacts (leads):', contactsConfig);
 
-// Initialisation
+// Initialisation - IDENTIQUE
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔄 DOMContentLoaded - Init leads simple');
+    console.log('🔄 DOMContentLoaded - Init contacts avec config:', contactsConfig);
     loadContacts();
     initEventListeners();
 });
 
-// Charger les contacts - SIMPLE
+// Charger les contacts - IDENTIQUE à contacts.php
 function loadContacts() {
     console.log('📡 loadContacts() appelée');
+    const url = `${contactsConfig.api_url}leads/${contactsConfig.vcard_id}`;
+    console.log('🌐 URL construite:', url);
     
-    // 🔧 FIX TEMPORAIRE : Utiliser toujours l'endpoint vCard simple pour éviter le 403
-    // URL selon le mode
-    let url;
-    if (contactsConfig.is_multi_profile) {
-        // TEMPORAIRE : utiliser la première vCard pour éviter l'erreur 403
-        url = `${contactsConfig.api_url}leads/${contactsConfig.vcard_id}`;
-        console.log('⚠️ Mode temporaire: utilisation vCard simple pour éviter 403');
-    } else {
-        url = `${contactsConfig.api_url}leads/${contactsConfig.vcard_id}`;
-    }
-    
-    console.log('🌐 URL API (temporaire):', url);
+    document.getElementById('contactsLoading').classList.remove('d-none');
     
     fetch(url)
         .then(response => {
-            console.log('📡 Response:', response.status, response.statusText);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
+            console.log('📡 Response reçue:', response.status, response.statusText);
             return response.json();
         })
         .then(data => {
-            console.log('📦 Données reçues:', data);
+            console.log('📦 Données contacts reçues:', data);
+            console.log('📦 Type de data:', typeof data);
+            console.log('📦 data.data:', data.data);
+            console.log('📦 Array.isArray(data):', Array.isArray(data));
+            console.log('📦 Array.isArray(data.data):', Array.isArray(data.data));
             
-            // Traiter les données selon le format de l'API
-            if (data.data) {
-                contacts = Array.isArray(data.data) ? data.data : [];
+            // Traitement des données avec debug détaillé
+            if (Array.isArray(data)) {
+                contacts = data;
+                console.log('📦 Cas 1: data est un array direct');
+            } else if (data.data && Array.isArray(data.data)) {
+                contacts = data.data;
+                console.log('📦 Cas 2: data.data est un array');
+            } else if (data.success && data.data && Array.isArray(data.data)) {
+                contacts = data.data;
+                console.log('📦 Cas 3: structure API avec success');
             } else {
-                contacts = Array.isArray(data) ? data : [];
+                contacts = [];
+                console.log('📦 Cas 4: aucun format reconnu, array vide');
+                console.log('📦 Structure complète de data:', JSON.stringify(data, null, 2));
             }
             
-            console.log('✅ Contacts traités:', contacts.length);
+            console.log('📦 Contacts finalement traités:', contacts.length, contacts);
             
-            filteredContacts = [...contacts];
-            updateStats();
             applyFilters();
+            updateStats();
+            
+            document.getElementById('contactsLoading').classList.add('d-none');
+            console.log('✅ Chargement terminé');
         })
         .catch(error => {
-            console.error('❌ Erreur chargement:', error);
+            console.error('❌ Erreur chargement contacts:', error);
             document.getElementById('contactsLoading').classList.add('d-none');
-            alert('Erreur lors du chargement des contacts: ' + error.message);
+            document.getElementById('contactsEmpty').classList.remove('d-none');
         });
 }
 
-// Mettre à jour les stats
-function updateStats() {
-    document.getElementById('totalContacts').textContent = contacts.length;
+// Initialiser les event listeners - IDENTIQUE
+function initEventListeners() {
+    console.log('🎯 Init event listeners');
     
-    // Calculer stats simples
-    const thisWeek = contacts.filter(contact => {
-        const contactDate = new Date(contact.contact_datetime || contact.created_at);
-        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-        return contactDate >= weekAgo;
-    }).length;
+    // Recherche
+    const searchInput = document.getElementById('contactsSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            console.log('🔍 Recherche:', e.target.value);
+            applyFilters();
+        });
+    }
     
-    document.getElementById('newContacts').textContent = thisWeek;
+    // Filtres
+    document.getElementById('sourceFilter')?.addEventListener('change', applyFilters);
+    document.getElementById('dateFilter')?.addEventListener('change', applyFilters);
     
-    const companies = new Set(contacts.map(c => c.society).filter(Boolean));
-    document.getElementById('totalCompanies').textContent = companies.size;
+    // Toggle views
+    document.querySelectorAll('input[name="viewMode"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            console.log('👁️ Vue changée:', this.id);
+            renderContacts();
+        });
+    });
     
-    const qrContacts = contacts.filter(c => c.source === 'qr').length;
-    document.getElementById('qrContacts').textContent = qrContacts;
+    // Select all
+    document.getElementById('selectAll')?.addEventListener('change', function() {
+        toggleSelectAll(this.checked);
+    });
 }
 
-// Appliquer les filtres - SIMPLE
+// Appliquer les filtres - IDENTIQUE
 function applyFilters() {
-    console.log('🔍 Filtres appliqués');
+    console.log('🔍 applyFilters() appelée');
     
     filteredContacts = [...contacts];
     
-    // Filtre recherche
-    const searchValue = document.getElementById('searchContacts').value.toLowerCase();
+    // Recherche
+    const searchValue = document.getElementById('contactsSearch')?.value?.toLowerCase() || '';
     if (searchValue) {
         filteredContacts = filteredContacts.filter(contact => {
             const searchText = [
@@ -401,10 +536,32 @@ function applyFilters() {
     }
     
     // Filtre source
-    const sourceValue = document.getElementById('sourceFilter').value;
+    const sourceValue = document.getElementById('sourceFilter')?.value || '';
     if (sourceValue) {
         filteredContacts = filteredContacts.filter(contact => {
             return (contact.source || 'web') === sourceValue;
+        });
+    }
+    
+    // Filtre date
+    const dateValue = document.getElementById('dateFilter')?.value || '';
+    if (dateValue) {
+        const now = new Date();
+        filteredContacts = filteredContacts.filter(contact => {
+            const contactDate = new Date(contact.contact_datetime || contact.created_at);
+            
+            switch (dateValue) {
+                case 'today':
+                    return contactDate.toDateString() === now.toDateString();
+                case 'week':
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    return contactDate >= weekAgo;
+                case 'month':
+                    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    return contactDate >= monthAgo;
+                default:
+                    return true;
+            }
         });
     }
     
@@ -413,11 +570,9 @@ function applyFilters() {
     renderContacts();
 }
 
-// Afficher les contacts - SIMPLE
+// Afficher les contacts - IDENTIQUE
 function renderContacts() {
     console.log('🎨 renderContacts() appelée');
-    
-    document.getElementById('contactsLoading').classList.add('d-none');
     
     if (filteredContacts.length === 0) {
         document.getElementById('contactsTableView').classList.add('d-none');
@@ -429,7 +584,8 @@ function renderContacts() {
     
     document.getElementById('contactsEmpty').classList.add('d-none');
     
-    const viewMode = document.querySelector('input[name="viewMode"]:checked').id;
+    const viewMode = document.querySelector('input[name="viewMode"]:checked')?.id;
+    console.log('👁️ Vue actuelle:', viewMode);
     
     if (viewMode === 'viewList') {
         renderTableView();
@@ -440,7 +596,7 @@ function renderContacts() {
     renderPagination();
 }
 
-// Vue tableau - SIMPLE
+// Vue tableau - IDENTIQUE
 function renderTableView() {
     console.log('📊 renderTableView()');
     
@@ -451,55 +607,53 @@ function renderTableView() {
     const start = (currentPage - 1) * itemsPerPage;
     const pageContacts = filteredContacts.slice(start, start + itemsPerPage);
     
-    tbody.innerHTML = pageContacts.map(contact => {
-        const fullName = `${contact.firstname || ''} ${contact.lastname || ''}`.trim();
-        const formattedDate = formatDate(contact.contact_datetime || contact.created_at);
-        
-        return `
-            <tr>
-                <td>
-                    <input type="checkbox" class="form-check-input contact-checkbox" 
-                           value="${contact.id}" onchange="toggleContactSelection(${contact.id})">
-                </td>
-                <td>
-                    <div class="d-flex align-items-center">
-                        <div class="me-2">
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
-                                 style="width: 32px; height: 32px; font-size: 12px;">
-                                ${getInitials(contact.firstname, contact.lastname)}
-                            </div>
-                        </div>
-                        <div>
-                            <div class="fw-medium">${fullName}</div>
-                            ${contact.post ? `<small class="text-muted">${contact.post}</small>` : ''}
+    tbody.innerHTML = pageContacts.map(contact => `
+        <tr>
+            <td>
+                <input type="checkbox" class="form-check-input contact-checkbox" 
+                       value="${contact.id}" onchange="toggleContactSelection(${contact.id})">
+            </td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <div class="me-2">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                             style="width: 32px; height: 32px; font-size: 12px;">
+                            ${getInitials(contact.firstname, contact.lastname)}
                         </div>
                     </div>
-                </td>
-                <td>${contact.email || 'N/A'}</td>
-                <td>${contact.mobile || 'N/A'}</td>
-                <td>${contact.society || 'N/A'}</td>
-                <td>
-                    <span class="badge bg-secondary">${getSourceLabel(contact.source || 'web')}</span>
-                </td>
-                ${contactsConfig.is_multi_profile ? `<td>${getProfileName(contact)}</td>` : ''}
-                <td>${formattedDate}</td>
-                <td>
-                    <div class="btn-group">
-                        <button class="btn btn-sm btn-outline-primary" onclick="viewContact(${contact.id})" title="Voir">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteContact(${contact.id})" title="Supprimer">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                    <div>
+                        <div class="fw-medium">${contact.firstname || ''} ${contact.lastname || ''}</div>
+                        ${contact.post ? `<small class="text-muted">${contact.post}</small>` : ''}
                     </div>
-                </td>
-            </tr>
-        `;
-    }).join('');
+                </div>
+            </td>
+            <td>${contact.email || 'N/A'}</td>
+            <td>${contact.mobile || 'N/A'}</td>
+            <td>${contact.society || 'N/A'}</td>
+            <td>
+                <span class="badge bg-secondary">${getSourceLabel(contact.source || 'web')}</span>
+            </td>
+            <td>${formatDate(contact.contact_datetime || contact.created_at)}</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewContactDetails(${contact.id})" title="Voir">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteContact(${contact.id})" title="Supprimer">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    
+    console.log('📊 Table rendue avec', pageContacts.length, 'contacts');
 }
 
-// Vue grille - SIMPLE
+// Vue grille - IDENTIQUE
 function renderGridView() {
+    console.log('🎛️ renderGridView()');
+    
     document.getElementById('contactsTableView').classList.add('d-none');
     document.getElementById('contactsGridView').classList.remove('d-none');
     
@@ -507,32 +661,76 @@ function renderGridView() {
     const start = (currentPage - 1) * itemsPerPage;
     const pageContacts = filteredContacts.slice(start, start + itemsPerPage);
     
-    container.innerHTML = pageContacts.map(contact => {
-        const fullName = `${contact.firstname || ''} ${contact.lastname || ''}`.trim();
-        return `
-            <div class="col-md-6 col-lg-4 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h6 class="card-title">${fullName}</h6>
-                        <p class="card-text">${contact.email || 'N/A'}</p>
-                        <p class="card-text"><small class="text-muted">${contact.society || 'N/A'}</small></p>
+    container.innerHTML = pageContacts.map(contact => `
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <input type="checkbox" class="form-check-input me-2 contact-checkbox" 
+                               value="${contact.id}" onchange="toggleContactSelection(${contact.id})">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                             style="width: 40px; height: 40px;">
+                            ${getInitials(contact.firstname, contact.lastname)}
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="card-title mb-0">${contact.firstname || ''} ${contact.lastname || ''}</h6>
+                            ${contact.society ? `<small class="text-muted d-block">${contact.society}</small>` : ''}
+                            <span class="badge bg-secondary mt-1">${getSourceLabel(contact.source || 'web')}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-info small">
+                        ${contact.email ? `
+                            <div class="mb-2">
+                                <i class="fas fa-envelope text-muted me-2"></i>
+                                <a href="mailto:${contact.email}" class="text-decoration-none">${contact.email}</a>
+                            </div>
+                        ` : ''}
+                        
+                        ${contact.mobile ? `
+                            <div class="mb-2">
+                                <i class="fas fa-phone text-muted me-2"></i>
+                                <a href="tel:${contact.mobile}" class="text-decoration-none">${contact.mobile}</a>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="text-muted">
+                            <i class="fas fa-clock me-1"></i>
+                            ${formatDate(contact.contact_datetime || contact.created_at)}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 d-flex gap-1">
+                        <button class="btn btn-sm btn-outline-primary flex-grow-1" onclick="viewContactDetails(${contact.id})">
+                            <i class="fas fa-eye me-1"></i> Détails
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="editContact(${contact.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteContact(${contact.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-        `;
-    }).join('');
+        </div>
+    `).join('');
+    
+    console.log('🎛️ Grid rendue avec', pageContacts.length, 'contacts');
 }
 
-// Pagination - SIMPLE
+// Pagination - IDENTIQUE
 function renderPagination() {
     const totalPages = Math.ceil(filteredContacts.length / itemsPerPage);
+    const pagination = document.getElementById('contactsPagination');
+    const wrapper = document.getElementById('contactsPaginationWrapper');
     
     if (totalPages <= 1) {
-        document.getElementById('contactsPaginationWrapper').style.display = 'none';
+        wrapper.style.display = 'none';
         return;
     }
     
-    document.getElementById('contactsPaginationWrapper').style.display = 'block';
+    wrapper.style.display = 'block';
     
     // Update counters
     const start = Math.min((currentPage - 1) * itemsPerPage + 1, filteredContacts.length);
@@ -542,8 +740,6 @@ function renderPagination() {
     document.getElementById('contactsEnd').textContent = end;
     document.getElementById('contactsTotal').textContent = filteredContacts.length;
     
-    // Generate pagination
-    const pagination = document.getElementById('contactsPagination');
     let html = '';
     
     // Previous
@@ -576,7 +772,35 @@ function renderPagination() {
     pagination.innerHTML = html;
 }
 
-// FONCTIONS UTILITAIRES
+// Mettre à jour les stats - IDENTIQUE
+function updateStats() {
+    document.getElementById('totalContacts').textContent = contacts.length;
+    
+    // Cette semaine
+    const thisWeek = contacts.filter(contact => {
+        const contactDate = new Date(contact.contact_datetime || contact.created_at);
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        return contactDate >= weekAgo;
+    }).length;
+    
+    document.getElementById('newContacts').textContent = thisWeek;
+    
+    // Entreprises uniques
+    const companies = new Set();
+    contacts.forEach(contact => {
+        if (contact.society) {
+            companies.add(contact.society);
+        }
+    });
+    
+    document.getElementById('totalCompanies').textContent = companies.size;
+    
+    // QR Code
+    const qrContacts = contacts.filter(contact => contact.source === 'qr').length;
+    document.getElementById('qrContacts').textContent = qrContacts;
+}
+
+// FONCTIONS UTILITAIRES - IDENTIQUES
 function changePage(page) {
     if (page >= 1 && page <= Math.ceil(filteredContacts.length / itemsPerPage)) {
         currentPage = page;
@@ -598,54 +822,53 @@ function getSourceLabel(source) {
     }
 }
 
-function getProfileName(contact) {
-    // Pour l'instant, retourner le nom du profil depuis les données
-    return contact.vcard_source_name || 'Profil inconnu';
-}
-
 function formatDate(dateString) {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleDateString('fr-FR');
 }
 
-// Event listeners
-function initEventListeners() {
-    document.querySelectorAll('input[name="viewMode"]').forEach(radio => {
-        radio.addEventListener('change', renderContacts);
-    });
-}
-
-// Fonctions d'action (stub pour l'instant)
-function showAddModal() {
-    console.log('Ajouter contact');
-    document.getElementById('addContactModal')?.classList.add('show');
-}
-
-function exportContacts() {
-    console.log('Exporter contacts');
-    alert('Export en cours de développement');
-}
-
-function viewContact(id) {
-    console.log('Voir contact:', id);
-    alert('Détails du contact ' + id);
-}
-
-function deleteContact(id) {
-    if (confirm('Supprimer ce contact ?')) {
-        console.log('Supprimer contact:', id);
-        alert('Suppression en cours de développement');
-    }
-}
-
 function toggleContactSelection(id) {
     console.log('Toggle selection:', id);
+    // TODO: Implémenter
 }
 
 function toggleSelectAll(checked) {
     console.log('Toggle select all:', checked);
+    // TODO: Implémenter
 }
 
-console.log('✅ Script leads simple chargé et prêt');
+function viewContactDetails(id) {
+    console.log('Voir détails contact:', id);
+    // TODO: Implémenter modal détails
+}
+
+function editContact(id) {
+    console.log('Éditer contact:', id);
+    // TODO: Implémenter édition
+}
+
+function deleteContact(id) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce contact ?')) {
+        console.log('Supprimer contact:', id);
+        // TODO: Implémenter suppression
+    }
+}
+
+function exportContacts(type) {
+    console.log('Export contacts type:', type);
+    // TODO: Implémenter export
+}
+
+function editContactFromDetails() {
+    console.log('Éditer depuis détails');
+    // TODO: Implémenter
+}
+
+function deleteContactFromDetails() {
+    console.log('Supprimer depuis détails');
+    // TODO: Implémenter
+}
+
+console.log('✅ Script contacts (leads) chargé et prêt');
 </script>

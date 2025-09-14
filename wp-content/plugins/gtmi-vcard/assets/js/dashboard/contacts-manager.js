@@ -10,6 +10,12 @@
 (function($) {
     'use strict';
 
+    // 🚫 EMPÊCHER LE CHARGEMENT SI leads.php EST ACTIF
+    if (window.nfcContactsManagerPreventLoad) {
+        console.log('🚫 contacts-manager.js: Chargement empêché par leads.php');
+        return; // Sortir complètement du script
+    }
+
     /**
      * Objet principal NFCContacts
      */
