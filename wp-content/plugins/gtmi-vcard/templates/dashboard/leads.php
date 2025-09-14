@@ -589,7 +589,7 @@ $contacts_config = [
 <!-- CONFIGURATION JAVASCRIPT POUR contacts-manager.js -->
 <script>
 // Configuration globale pour contacts-manager.js (EXACTEMENT comme dans class-dashboard-manager.php)
-window.nfcContactsConfig = <?php echo json_encode($contacts_config); ?>;
+window.nfcContactsConfig = <?php echo json_encode($contacts_config, JSON_HEX_QUOT | JSON_HEX_APOS); ?>;
 
 console.log('📧 Configuration NFCContacts injectée AVANT script:', window.nfcContactsConfig);
 console.log('🔧 DEBUG - user_id reçu:', window.nfcContactsConfig.user_id);

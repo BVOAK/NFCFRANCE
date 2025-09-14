@@ -637,16 +637,17 @@ loadContacts: function() {
         },
 
         formatDate: function(dateString) {
-            try {
-                const date = new Date(dateString);
-                return date.toLocaleDateString('fr-FR', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                });
-            } catch (e) {
-                return 'Date invalide';
-            }
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+            
+            return new Intl.DateTimeFormat('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
         },
 
         debounce: function(func, wait) {
@@ -784,11 +785,13 @@ loadContacts: function() {
     /**
      * Initialisation automatique au chargement du DOM
      */
-    $(document).ready(function() {
-        // CORRECTION: Attendre un peu pour s'assurer que toutes les configs sont chargées
-        setTimeout(() => {
+     $(document).ready(function() {
+        if (typeof window.nfcContactsConfig !== 'undefined') {
+            window.NFCContacts.config = window.nfcContactsConfig;
             window.NFCContacts.init();
-        }, 100);
+        } else {
+            console.log('📧 nfcContactsConfig non disponible, attente override...');
+        }
     });
 
 })(jQuery);
