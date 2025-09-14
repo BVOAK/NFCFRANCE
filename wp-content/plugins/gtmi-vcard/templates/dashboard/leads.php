@@ -1,63 +1,27 @@
 <?php
 /**
- * Template Dashboard NFC - Page Leads Multi-Profils
+ * Template: Gestion des leads/contacts - Dashboard NFC Multi-profils
  * 
  * Fichier: templates/dashboard/leads.php
- * Template adaptatif pour contacts simple/multi-profils
+ * Version adaptative basée sur contacts.php avec support multi-vCards
  */
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-
 // ================================================================================
-// FONCTIONS UTILITAIRES
+// FONCTIONS HELPER (si manquantes)
 // ================================================================================
 
 if (!function_exists('nfc_get_user_vcard_profiles')) {
     function nfc_get_user_vcard_profiles($user_id) {
-        global $wpdb;
-        
-        $results = $wpdb->get_results($wpdb->prepare("
-            SELECT ec.*, p.post_title, p.post_date
-            FROM {$wpdb->prefix}nfc_enterprise_cards ec
-            INNER JOIN {$wpdb->posts} p ON ec.vcard_id = p.ID
-            WHERE ec.main_user_id = %d
-            AND p.post_status = 'publish'
-            ORDER BY ec.created_at DESC
-        ", $user_id));
-        
-        $profiles = [];
-        foreach ($results as $result) {
-            $vcard_data = [];
-            $meta_keys = ['firstname', 'lastname', 'position', 'company', 'email', 'mobile', 'society', 'service'];
-            foreach ($meta_keys as $key) {
-                $vcard_data[$key] = get_post_meta($result->vcard_id, $key, true);
-            }
-            $vcard_data['is_configured'] = !empty($vcard_data['firstname']) && !empty($vcard_data['lastname']);
-            
-            $profiles[] = [
-                'id' => (int)$result->id,
-                'order_id' => (int)$result->order_id,
-                'vcard_id' => (int)$result->vcard_id,
-                'card_position' => (int)$result->card_position,
-                'card_identifier' => $result->card_identifier,
-                'card_status' => $result->card_status,
-                'company_name' => $result->company_name,
-                'main_user_id' => (int)$result->main_user_id,
-                'created_at' => $result->created_at,
-                'updated_at' => $result->updated_at,
-                'post_title' => $result->post_title,
-                'post_date' => $result->post_date,
-                'vcard_data' => $vcard_data,
-                'vcard_url' => get_permalink($result->vcard_id),
-                'stats' => ['views' => 0, 'contacts' => 0]
-            ];
+        if (class_exists('NFC_Enterprise_Core')) {
+            $profiles = NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
+            error_log("📊 DEBUG nfc_get_user_vcard_profiles - Trouvé " . count($profiles) . " profils pour user " . $user_id);
+            return $profiles;
         }
-        
-        error_log("📊 DEBUG nfc_get_user_vcard_profiles - Trouvé " . count($profiles) . " profils pour user " . $user_id);
-        return $profiles;
+        return [];
     }
 }
 
@@ -86,8 +50,6 @@ if (!function_exists('nfc_get_vcard_contacts')) {
             ORDER BY p.post_date DESC
         ", '%"' . $vcard_id . '"%'));
         
-        error_log("📊 DEBUG nfc_get_vcard_contacts - Trouvé " . count($results) . " pour vCard " . $vcard_id);
-        
         return $results;
     }
 }
@@ -112,6 +74,8 @@ if (!function_exists('nfc_get_contacts_trend')) {
 
 $user_id = get_current_user_id();
 $user_vcards = nfc_get_user_vcard_profiles($user_id);
+
+// 🎯 FORCER selected_vcard_id à NULL pour toujours afficher tous les contacts en mode multi
 $selected_vcard_id = null;
 
 if (empty($user_vcards)) {
@@ -128,21 +92,14 @@ if ($is_multi_profile) {
     $page_title = "Contacts Multi-Profils";
     $page_subtitle = count($user_vcards) . " profils vCard configurés";
     
-    if ($selected_vcard_id) {
-        $contacts = nfc_get_vcard_contacts($selected_vcard_id);
-        $current_vcard = array_filter($user_vcards, function($card) use ($selected_vcard_id) {
-            return $card['vcard_id'] == $selected_vcard_id;
-        });
-        $current_vcard = reset($current_vcard) ?: null;
-    } else {
-        $contacts = nfc_get_enterprise_contacts($user_id, null, 1000);
-    }
+    // Toujours afficher TOUS les contacts en mode multi-profils
+    $contacts = nfc_get_enterprise_contacts($user_id, null, 1000);
 } else {
     $page_title = "Mes contacts"; 
     $page_subtitle = "Gérez les contacts reçus via votre vCard";
     $current_vcard = $user_vcards[0];
-    $selected_vcard_id = $current_vcard['vcard_id'];
-    $contacts = nfc_get_vcard_contacts($selected_vcard_id);
+    $single_vcard_id = $current_vcard['vcard_id'];
+    $contacts = nfc_get_vcard_contacts($single_vcard_id);
 }
 
 if (empty($contacts)) {
@@ -171,165 +128,187 @@ if (empty($user_display_name)) {
 
 error_log("📊 DEBUG Leads - Contacts récupérés: " . count($contacts));
 
-// ================================================================================
-// NETTOYAGE DES DONNÉES POUR JAVASCRIPT
-// ================================================================================
-
-if (!empty($contacts)) {
-    foreach ($contacts as &$contact) {
-        // Nettoyer linked_vcard qui contient des données sérialisées PHP
-        if (isset($contact->linked_vcard) && is_string($contact->linked_vcard)) {
-            // Si c'est du PHP sérialisé, le désérialiser et le convertir
-            if (strpos($contact->linked_vcard, 'a:') === 0) {
-                $unserialized = @unserialize($contact->linked_vcard);
-                
-                if ($unserialized !== false && is_array($unserialized)) {
-                    // Convertir en array simple pour JavaScript
-                    $contact->linked_vcard = array_values($unserialized);
-                } else {
-                    // Si échec de désérialisation, mettre un array vide
-                    $contact->linked_vcard = [];
-                }
-            }
-        }
-        
-        // Convertir l'objet en array pour JSON
-        $contact = (array)$contact;
-        
-        // Nettoyer autres champs potentiellement problématiques
-        $string_fields = ['post_title', 'firstname', 'lastname', 'email', 'mobile', 'society'];
-        foreach ($string_fields as $field) {
-            if (isset($contact[$field]) && is_string($contact[$field])) {
-                $contact[$field] = wp_kses_post($contact[$field]);
-            }
-        }
-    }
-    unset($contact); // Libérer la référence
-    
-    error_log("✅ " . count($contacts) . " contacts nettoyés pour JavaScript");
+// Nettoyer les contacts pour le JavaScript
+$contacts_cleaned = [];
+foreach ($contacts as $contact) {
+    $contacts_cleaned[] = [
+        'id' => $contact->ID ?? $contact['ID'],
+        'ID' => $contact->ID ?? $contact['ID'],
+        'post_title' => $contact->post_title ?? $contact['post_title'] ?? 'Contact sans nom',
+        'firstname' => $contact->firstname ?? $contact['firstname'] ?? '',
+        'lastname' => $contact->lastname ?? $contact['lastname'] ?? '',
+        'email' => $contact->email ?? $contact['email'] ?? '',
+        'mobile' => $contact->mobile ?? $contact['mobile'] ?? '',
+        'society' => $contact->society ?? $contact['society'] ?? '',
+        'source' => $contact->source ?? $contact['source'] ?? 'web',
+        'contact_datetime' => $contact->contact_datetime ?? $contact['contact_datetime'] ?? '',
+        'created_at' => $contact->post_date ?? $contact['created_at'] ?? date('Y-m-d H:i:s'),
+        'linked_vcard' => $contact->linked_vcard ?? $contact['linked_vcard'] ?? []
+    ];
 }
 
+error_log("✅ " . count($contacts_cleaned) . " contacts nettoyés pour JavaScript");
+
+// Variables globales disponibles depuis le routing
+global $nfc_vcard, $nfc_current_page;
+$vcard = $nfc_vcard ?? (object)['ID' => $current_vcard['vcard_id'] ?? 0];
+$vcard_id = $vcard->ID;
+
+// URL publique de la vCard pour contexte
+$public_url = $current_vcard ? get_permalink($current_vcard['vcard_id']) : '';
+
+// Enqueue des assets spécifiques à cette page
+$plugin_url = plugin_dir_url(dirname(dirname(dirname(__FILE__))));
+
 // ================================================================================
-// CONFIGURATION JAVASCRIPT SÉCURISÉE
+// CONFIGURATION JAVASCRIPT UNIFIÉE
 // ================================================================================
 
-$contacts_config = [
-    'vcard_id' => $current_vcard ? $current_vcard['vcard_id'] : null,
+$unified_config = [
+    // Données de base
+    'vcard_id' => $selected_vcard_id ?: ($current_vcard ? $current_vcard['vcard_id'] : 0),
     'user_id' => $user_id,
-    'selected_vcard_id' => $selected_vcard_id,
-    'is_multi_profile' => $is_multi_profile,
-    'user_vcards' => $user_vcards,
-    'ajax_url' => admin_url('admin-ajax.php'),
-    'api_url' => home_url('/wp-json/gtmi_vcard/v1/'),
-    'nonce' => wp_create_nonce('nfc_dashboard_nonce'),
-    'user_name' => $user_display_name,
-    'initial_contacts' => $contacts
-];
-
-// Vérification finale du JSON
-$json_test = json_encode($contacts_config, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES);
-if (json_last_error() !== JSON_ERROR_NONE) {
-    error_log("❌ ERREUR JSON finale: " . json_last_error_msg());
+    'current_page' => $nfc_current_page ?? 'contacts',
     
-    // Fallback: enlever les contacts si problème
-    $contacts_config['initial_contacts'] = [];
-    error_log("🔄 Contacts supprimés de la config à cause d'erreur JSON");
-}
+    // URLs et sécurité
+    'api_url' => home_url('/wp-json/gtmi_vcard/v1/'),
+    'ajax_url' => admin_url('admin-ajax.php'),
+    'nonce' => wp_create_nonce('nfc_dashboard_nonce'),
+    'public_url' => $public_url,
+    
+    // Contexte multi-profils
+    'is_multi_profile' => $is_multi_profile,
+    'selected_vcard_id' => $selected_vcard_id,
+    'show_profile_filter' => $show_profile_filter,
+    'user_vcards' => $user_vcards,
+    'vcards_count' => count($user_vcards),
+    
+    // Mode de fonctionnement
+    'force_mode' => $selected_vcard_id ? 'single_vcard' : 'multi_global',
+    'stable_endpoint' => $selected_vcard_id ? false : true,
+    'prevent_auto_load' => true,
+    
+    // Données et stats
+    'contacts_count' => count($contacts),
+    'initial_contacts' => $contacts_cleaned, // 🎯 Passer les contacts PHP au JavaScript
+    'user_name' => $user_display_name,
+    
+    // Debug et config
+    'debug_mode' => defined('WP_DEBUG') && WP_DEBUG,
+    
+    // Textes i18n pour compatibilité
+    'i18n' => [
+        'loading' => 'Chargement...',
+        'error' => 'Une erreur est survenue',
+        'success' => 'Action réalisée avec succès',
+        'confirm_delete' => 'Êtes-vous sûr de vouloir supprimer ce contact ?',
+        'confirm_delete_multiple' => 'Êtes-vous sûr de vouloir supprimer ces contacts ?',
+        'no_contacts' => 'Aucun contact trouvé',
+        'export_success' => 'Export réalisé avec succès',
+        'import_success' => 'Import réalisé avec succès'
+    ]
+];
 
 error_log("✅ Configuration finale validée pour JavaScript");
 ?>
 
-<!-- STRUCTURE DOM IDENTIQUE À contacts.php -->
-
-<!-- HEADER SECTION - IDENTIQUE À contacts.php -->
-
-<?php 
-debug_linked_vcard_format(3738); 
-?>
-
-
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <div>
-                <h1 class="h3 mb-1 text-primary">
-                    <i class="fas fa-users me-2"></i>
-                    <?php echo esc_html($page_title); ?>
-                </h1>
-                <p class="text-muted mb-0">
-                    <?php echo esc_html($page_subtitle); ?>
-                    <?php if (!$is_multi_profile && $user_display_name): ?>
-                        : <strong><?php echo esc_html($user_display_name); ?></strong>
-                    <?php endif; ?>
-                </p>
-            </div>
-            <div class="d-flex gap-2 flex-wrap">
-                <button class="btn btn-outline-secondary btn-sm" onclick="exportContacts()" title="Exporter les contacts">
-                    <i class="fas fa-download me-1"></i>
-                    Exporter CSV
-                </button>
-                <button class="btn btn-outline-primary btn-sm" onclick="importContacts()" title="Importer des contacts">
-                    <i class="fas fa-upload me-1"></i>
-                    Importer
-                </button>
-                <button class="btn btn-primary btn-sm" onclick="showAddContactModal()" title="Ajouter un contact">
+<!-- PAGE HEADER - Structure identique à contacts.php -->
+<div class="contacts-header mb-4">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="h3 mb-1">
+                <i class="fas fa-users me-2 text-primary"></i>
+                <?php echo esc_html($page_title); ?>
+            </h2>
+            <p class="text-muted mb-0"><?php echo esc_html($page_subtitle); ?></p>
+        </div>
+        <div class="col-auto">
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addContactModal">
                     <i class="fas fa-plus me-1"></i>
-                    Nouveau Contact
+                    Ajouter contact
                 </button>
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-download me-1"></i>
+                        Export
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="exportContacts('current')">
+                            <i class="fas fa-filter me-2"></i>Filtres actuels
+                        </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="exportContacts('all')">
+                            <i class="fas fa-users me-2"></i>Tous les contacts
+                        </a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- STATS CARDS - IDENTIQUES À contacts.php -->
-<div class="row mb-4">
+<!-- STATS CARDS - Structure identique à contacts.php -->
+<div class="row mb-4" id="contactsStatsRow">
     <div class="col-md-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
-                <div class="h4 text-primary mb-1" id="totalContactsStat"><?php echo count($contacts); ?></div>
-                <small class="text-muted">Total Contacts</small>
+                <div class="text-primary mb-2">
+                    <i class="fas fa-users fa-2x"></i>
+                </div>
+                <h3 class="h4 mb-1" id="totalContacts"><?php echo count($contacts); ?></h3>
+                <p class="text-muted small mb-0">Total contacts</p>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
-                <div class="h4 text-success mb-1" id="newContactsStat">0</div>
-                <small class="text-muted">Cette semaine</small>
+                <div class="text-success mb-2">
+                    <i class="fas fa-calendar-plus fa-2x"></i>
+                </div>
+                <h3 class="h4 mb-1" id="newContacts">0</h3>
+                <p class="text-muted small mb-0">Cette semaine</p>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
-                <div class="h4 text-info mb-1" id="companiesStat">0</div>
-                <small class="text-muted">Entreprises</small>
+                <div class="text-info mb-2">
+                    <i class="fas fa-building fa-2x"></i>
+                </div>
+                <h3 class="h4 mb-1" id="totalCompanies">0</h3>
+                <p class="text-muted small mb-0">Entreprises</p>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
-                <div class="h4 text-warning mb-1" id="qrSourceStat">0</div>
-                <small class="text-muted">Via QR Code</small>
+                <div class="text-warning mb-2">
+                    <i class="fas fa-qrcode fa-2x"></i>
+                </div>
+                <h3 class="h4 mb-1" id="qrContacts">0</h3>
+                <p class="text-muted small mb-0">Via QR Code</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- FILTRES ET CONTRÔLES -->
+<!-- CONTROLS SECTION - Structure identique à contacts.php -->
 <div class="row mb-4">
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                <div class="row align-items-center g-3">
-                    <!-- Recherche -->
+                <div class="row g-3 align-items-center">
+                    <!-- Search -->
                     <div class="col-md-4">
                         <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fas fa-search"></i>
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="fas fa-search text-muted"></i>
                             </span>
-                            <input type="text" class="form-control" id="contactsSearch" placeholder="Rechercher un contact...">
+                            <input type="text" class="form-control border-start-0" id="searchContacts" 
+                                   placeholder="Rechercher un contact...">
                         </div>
                     </div>
                     
@@ -339,15 +318,18 @@ debug_linked_vcard_format(3738);
                         <select class="form-select" id="profileFilter" onchange="filterByProfile()">
                             <option value="">Tous les profils (<?php echo count($contacts); ?>)</option>
                             <?php foreach ($user_vcards as $vcard): ?>
-                                <option value="<?php echo $vcard['vcard_id']; ?>" <?php echo $selected_vcard_id == $vcard['vcard_id'] ? 'selected' : ''; ?>>
-                                    <?php echo esc_html(nfc_format_vcard_full_name($vcard['vcard_data'])); ?>
+                                <option value="<?php echo $vcard['vcard_id']; ?>">
+                                    <?php echo esc_html(nfc_format_vcard_full_name($vcard['vcard_data'] ?? [])); ?>
+                                    (<?php echo count(array_filter($contacts, function($c) use ($vcard) {
+                                        return strpos($c->linked_vcard ?? '', '"' . $vcard['vcard_id'] . '"') !== false;
+                                    })); ?>)
                                 </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <?php endif; ?>
                     
-                    <!-- Filtres -->
+                    <!-- Filters -->
                     <div class="col-md-2">
                         <select class="form-select" id="sourceFilter">
                             <option value="">Toutes sources</option>
@@ -357,26 +339,21 @@ debug_linked_vcard_format(3738);
                         </select>
                     </div>
                     
-                    <!-- Tri -->
-                    <div class="col-md-2">
-                        <select class="form-select" id="sortFilter">
-                            <option value="date_desc">Plus récent</option>
-                            <option value="date_asc">Plus ancien</option>
-                            <option value="name_asc">Nom A-Z</option>
-                            <option value="name_desc">Nom Z-A</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Vue -->
-                    <div class="col-md-1">
+                    <!-- Actions -->
+                    <div class="col-md-3 text-end">
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-outline-secondary btn-sm active" id="tableViewBtn">
-                                <i class="fas fa-list"></i>
+                            <button type="button" class="btn btn-outline-secondary" id="viewToggleTable">
+                                <i class="fas fa-table"></i>
                             </button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" id="gridViewBtn">
+                            <button type="button" class="btn btn-outline-secondary" id="viewToggleGrid">
                                 <i class="fas fa-th"></i>
                             </button>
                         </div>
+                        
+                        <button class="btn btn-outline-danger ms-2" id="deleteSelectedBtn" style="display: none;">
+                            <i class="fas fa-trash me-1"></i>
+                            Supprimer
+                        </button>
                     </div>
                 </div>
             </div>
@@ -384,23 +361,25 @@ debug_linked_vcard_format(3738);
     </div>
 </div>
 
-<!-- ÉTATS D'AFFICHAGE -->
+<!-- LOADING STATE -->
 <div id="contactsLoading" class="text-center py-5 d-none">
     <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Chargement...</span>
     </div>
-    <p class="mt-3 text-muted">Chargement des contacts...</p>
+    <p class="text-muted mt-2">Chargement des contacts...</p>
 </div>
 
+<!-- EMPTY STATE -->
 <div id="contactsEmpty" class="text-center py-5 d-none">
-    <i class="fas fa-users fa-3x text-muted mb-3"></i>
-    <h4>Aucun contact trouvé</h4>
-    <p class="text-muted">Aucun contact ne correspond à vos critères de recherche.</p>
+    <i class="fas fa-users fa-4x text-muted mb-3"></i>
+    <h5 class="text-muted">Aucun contact trouvé</h5>
+    <p class="text-muted">Vos contacts apparaîtront ici après les premières interactions</p>
 </div>
 
+<!-- ERROR STATE -->
 <div id="contactsError" class="alert alert-danger d-none" role="alert">
     <i class="fas fa-exclamation-triangle me-2"></i>
-    Une erreur est survenue lors du chargement des contacts.
+    <span id="contactsErrorMessage">Une erreur est survenue lors du chargement des contacts.</span>
 </div>
 
 <!-- CONTENU PRINCIPAL -->
@@ -432,7 +411,7 @@ debug_linked_vcard_format(3738);
                             </tr>
                         </thead>
                         <tbody id="contactsTableBody">
-                            <!-- Rempli par JavaScript contacts-manager.js -->
+                            <!-- Rempli par JavaScript -->
                         </tbody>
                     </table>
                 </div>
@@ -442,142 +421,122 @@ debug_linked_vcard_format(3738);
             <div class="card-footer bg-white" id="contactsPaginationWrapper">
                 <div class="row align-items-center">
                     <div class="col">
-                        <small class="text-muted" id="contactsCounter">
-                            Affichage des résultats
+                        <small class="text-muted" id="contactsCount">
+                            Affichage de <span id="contactsStart">0</span> à <span id="contactsEnd">0</span> 
+                            sur <span id="contactsTotal">0</span> contacts
                         </small>
                     </div>
                     <div class="col-auto">
                         <nav>
                             <ul class="pagination pagination-sm mb-0" id="contactsPagination">
-                                <!-- Pagination générée par JavaScript -->
+                                <!-- Généré par JavaScript -->
                             </ul>
                         </nav>
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <!-- Grid View - ID IDENTIQUE À contacts.php -->
-        <div id="contactsGridView" class="row" style="display: none;">
-            <!-- Rempli par JavaScript contacts-manager.js -->
-        </div>
-
-        <!-- Actions en Lot - ID IDENTIQUE -->
-        <div class="bulk-actions mt-3" id="bulkActions" style="display: none;">
-            <div class="alert alert-info d-flex align-items-center">
-                <div class="me-3">
-                    <span id="selectedCount">0</span> contact(s) sélectionné(s)
-                </div>
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteBulk()">
-                        <i class="fas fa-trash me-1"></i>Supprimer
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-info" onclick="exportSelected()">
-                        <i class="fas fa-download me-1"></i>Exporter
-                    </button>
-                </div>
-                <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" onclick="clearSelection()">
-                    Désélectionner
-                </button>
+        <div id="contactsGridView" class="d-none">
+            <div id="contactsGrid" class="row">
+                <!-- Rempli par JavaScript -->
             </div>
         </div>
     </div>
 </div>
 
-<!-- MODALS IDENTIQUES À contacts.php -->
-<!-- Modal Ajouter Contact -->
+<!-- MODALS - Structure identique à contacts.php -->
+
+<!-- Modal Ajout Contact -->
 <div class="modal fade" id="addContactModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-user-plus me-2"></i>Ajouter un Contact
-                </h5>
+                <h5 class="modal-title">Ajouter un contact</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form id="addContactForm">
                 <div class="modal-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label">Prénom *</label>
                             <input type="text" class="form-control" name="firstname" required>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label">Nom *</label>
                             <input type="text" class="form-control" name="lastname" required>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Téléphone</label>
-                            <input type="tel" class="form-control" name="mobile">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Entreprise</label>
-                            <input type="text" class="form-control" name="society">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Poste</label>
-                            <input type="text" class="form-control" name="post">
-                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Téléphone</label>
+                        <input type="tel" class="form-control" name="mobile">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Entreprise</label>
+                        <input type="text" class="form-control" name="society">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Poste</label>
+                        <input type="text" class="form-control" name="post">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Enregistrer
-                    </button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Modal Import CSV -->
-<div class="modal fade" id="importModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+<!-- Modal Édition Contact -->
+<div class="modal fade" id="editContactModal" tabindex="-1">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-upload me-2"></i>Importer des contacts
-                </h5>
+                <h5 class="modal-title">Modifier le contact</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Fichier CSV</label>
-                    <input type="file" class="form-control" id="csvFile" accept=".csv" onchange="previewCSV()">
-                    <div class="form-text">
-                        Format attendu: Prénom, Nom, Email, Téléphone, Entreprise
+            <form id="editContactForm">
+                <input type="hidden" id="editContactId" name="contact_id">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prénom *</label>
+                            <input type="text" class="form-control" id="editFirstname" name="firstname" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nom *</label>
+                            <input type="text" class="form-control" id="editLastname" name="lastname" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Téléphone</label>
+                        <input type="tel" class="form-control" id="editMobile" name="mobile">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Entreprise</label>
+                        <input type="text" class="form-control" id="editSociety" name="society">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Poste</label>
+                        <input type="text" class="form-control" id="editPost" name="post">
                     </div>
                 </div>
-                <div id="csvPreview" class="d-none">
-                    <h6>Aperçu</h6>
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Prénom</th>
-                                    <th>Nom</th>
-                                    <th>Email</th>
-                                    <th>Téléphone</th>
-                                </tr>
-                            </thead>
-                            <tbody id="csvPreviewBody">
-                            </tbody>
-                        </table>
-                    </div>
-                    <p class="text-muted small" id="csvStats"></p>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Sauvegarder</button>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" id="importBtn" onclick="importCSV()" disabled>
-                    <i class="fas fa-upload me-2"></i>Importer
-                </button>
-            </div>
+            </form>
         </div>
     </div>
 </div>
@@ -591,144 +550,121 @@ debug_linked_vcard_format(3738);
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="contactDetailsContent">
-                <!-- Contact details will be loaded here -->
+                <!-- Rempli par JavaScript -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="button" class="btn btn-primary" onclick="editContactFromModal()">
-                    <i class="fas fa-edit me-1"></i>Modifier
+                <button type="button" class="btn btn-primary" id="editContactFromDetails" onclick="editContactFromDetails()">
+                    <i class="fas fa-edit me-2"></i>Modifier
+                </button>
+                <button type="button" class="btn btn-danger" id="deleteContactFromDetails" onclick="deleteContactFromDetails()">
+                    <i class="fas fa-trash me-2"></i>Supprimer
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<?php
-$js_config = [
-    'vcard_id' => $selected_vcard_id ?: 0,
-    'user_id' => $user_id,
-    'api_url' => home_url('/wp-json/gtmi_vcard/v1/'),
-    'ajax_url' => admin_url('admin-ajax.php'),
-    'nonce' => wp_create_nonce('nfc_dashboard_nonce'),
-    'is_multi_profile' => $is_multi_profile,
-    
-    // 🎯 CLÉS DE LA CORRECTION
-    'selected_vcard_id' => $selected_vcard_id,
-    'force_mode' => $selected_vcard_id ? 'single_vcard' : 'multi_global',
-    'stable_endpoint' => $selected_vcard_id ? false : true,
-    
-    'current_page' => $nfc_current_page ?? 'contacts',
-    'contacts_count' => count($contacts),
-    'vcards_count' => count($user_vcards),
-    'debug_mode' => defined('WP_DEBUG') && WP_DEBUG,
-    
-    // 🚨 NOUVEAU : Empêcher le chargement automatique
-    'prevent_auto_load' => true // 🎯 Empêcher contacts-manager.js de charger automatiquement
-];
+<!-- Modal Import CSV -->
+<div class="modal fade" id="importModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importer des contacts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="importForm" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Fichier CSV</label>
+                        <input type="file" class="form-control" name="csv_file" accept=".csv" required>
+                        <div class="form-text">
+                            Format requis: prénom, nom, email, téléphone, entreprise, poste
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Importer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-// Debug pour identifier le problème
-error_log("🔧 LEADS CONFIG - selected_vcard_id: " . ($selected_vcard_id ?? 'NULL'));
-error_log("🔧 LEADS CONFIG - is_multi_profile: " . ($is_multi_profile ? 'TRUE' : 'FALSE'));
-error_log("🔧 LEADS CONFIG - force_mode: " . $js_config['force_mode']);
-error_log("🔧 LEADS CONFIG - contacts_count: " . count($contacts));
-?>
+<!-- JAVASCRIPT UNIFIÉ -->
+<script type="text/javascript">
+// 🎯 CONFIGURATION UNIFIÉE
+window.nfcContactsConfig = <?php echo wp_json_encode($unified_config); ?>;
 
+// Compatibilité
+window.contactsConfig = window.nfcContactsConfig;
 
-<!-- CONFIGURATION JAVASCRIPT -->
-<script>
+console.log('🔧 Configuration unifiée chargée:', window.nfcContactsConfig);
+
+// Empêcher le chargement automatique de contacts-manager.js
 window.nfcContactsPreventAutoLoad = true;
 
-// Configuration globale pour contacts-manager.js
-window.nfcContactsConfig = <?php echo wp_json_encode($js_config); ?>;
-console.log('🔧 Configuration stabilisée AVANT contacts-manager.js:', window.nfcContactsConfig);
-
-
-// 🔧 OVERRIDE DOMContentLoaded pour empêcher le double chargement
+// Override DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔧 DOMContentLoaded leads.php - Empêche double chargement');
+    console.log('🔧 DOMContentLoaded leads.php avec configuration unifiée');
     
-    // Attendre que NFCContacts soit disponible mais ne pas le laisser s'initialiser
     const waitForNFCContacts = setInterval(() => {
         if (window.NFCContacts && window.NFCContacts.loadContacts) {
             clearInterval(waitForNFCContacts);
             
-            console.log('📧 NFCContacts détecté, override IMMÉDIAT...');
+            console.log('📧 NFCContacts détecté, application configuration unifiée...');
             
-            // 🚨 EMPÊCHER L'INITIALISATION AUTOMATIQUE
-            if (window.NFCContacts.isLoading) {
-                console.log('🛑 Arrêt du chargement automatique en cours...');
-                window.NFCContacts.isLoading = false;
-            }
-            
-            // 🔧 OVERRIDE IMMÉDIAT DE LA CONFIGURATION
+            // Appliquer configuration
             window.NFCContacts.config = window.nfcContactsConfig;
             
-            console.log('🔧 Configuration NFCContacts overridée:', window.NFCContacts.config);
-            
-            // 🔧 OVERRIDE COMPLET de loadContacts
+            // Override loadContacts pour utiliser les données PHP
             window.NFCContacts.loadContacts = function() {
-                console.log('🔧 loadContacts() OVERRIDÉ - Multi-global forcé');
+                console.log('🔧 loadContacts() avec données PHP directes');
                 
                 const config = window.nfcContactsConfig;
                 const self = this;
                 
-                self.isLoading = true;
-                self.showLoadingState();
-                
-                // 🎯 URL FORCÉE EN MODE GLOBAL
-                let apiUrl = `${config.api_url}leads/user/${config.user_id}`;
-                console.log('🌐 URL FORCÉE (mode global):', apiUrl);
-                
-                // Appel API
-                fetch(apiUrl)
-                    .then(response => {
-                        console.log('📡 Response:', response.status);
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('📦 Données reçues (mode global):', data.data ? data.data.length : 0, 'contacts');
-                        
-                        // Traiter les données
-                        const leads = data.data || data || [];
-                        self.contacts = Array.isArray(leads) ? leads : [];
-                        self.filteredContacts = [...self.contacts];
-                        
+                // Utiliser les données PHP directement
+                if (config.initial_contacts && config.initial_contacts.length > 0) {
+                    console.log('📦 Utilisation des contacts PHP:', config.initial_contacts.length);
+                    
+                    self.contacts = config.initial_contacts;
+                    self.filteredContacts = [...self.contacts];
+                    
+                    // Rendu immédiat
+                    if (typeof self.renderContacts === 'function') {
                         self.renderContacts();
+                    }
+                    if (typeof self.updateStats === 'function') {
                         self.updateStats();
+                    }
+                    if (typeof self.updatePagination === 'function') {
                         self.updatePagination();
-                        
-                        console.log('✅ Contacts chargés en MODE GLOBAL:', self.contacts.length);
-                    })
-                    .catch(error => {
-                        console.error('❌ Erreur chargement contacts:', error);
-                        self.showError('Erreur lors du chargement des contacts');
-                    })
-                    .finally(() => {
-                        self.isLoading = false;
-                        self.hideLoadingState();
-                    });
+                    }
+                    
+                    console.log('✅ Contacts affichés depuis PHP:', self.contacts.length);
+                    return;
+                }
+                
+                // Fallback vide si pas de données
+                console.log('⚠️ Aucun contact dans les données PHP');
+                self.contacts = [];
+                self.filteredContacts = [];
+                
+                if (typeof self.renderContacts === 'function') {
+                    self.renderContacts();
+                }
             };
             
-            // 🔧 DÉMARRER L'INITIALISATION AVEC LA NOUVELLE CONFIG
-            console.log('🚀 Initialisation NFCContacts avec config corrigée...');
-            
-            // Reset de l'état s'il était déjà initialisé
-            window.NFCContacts.contacts = [];
-            window.NFCContacts.filteredContacts = [];
-            window.NFCContacts.isLoading = false;
-            
-            // Forcer l'init avec la nouvelle config
-            window.NFCContacts.config = window.nfcContactsConfig;
-            
-            // 🚀 DÉCLENCHER LE CHARGEMENT IMMÉDIATEMENT APRÈS L'OVERRIDE
-            console.log('🚀 Déclenchement loadContacts() après override...');
+            // Démarrer le chargement
+            console.log('🚀 Démarrage avec données PHP...');
             window.NFCContacts.loadContacts();
             
-            console.log('✅ Override complet terminé');
+            console.log('✅ Configuration unifiée appliquée');
         }
-    }, 50); // Vérification plus fréquente
+    }, 50);
     
-    // Timeout de sécurité
     setTimeout(() => {
         clearInterval(waitForNFCContacts);
         if (!window.NFCContacts) {
@@ -737,26 +673,60 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 10000);
 });
 
-
-// 🔧 FONCTION FILTRE PAR PROFIL CORRIGÉE
+// Fonction de filtrage par profil (pour compatibilité)
 function filterByProfile() {
     const profileFilter = document.getElementById('profileFilter');
     if (!profileFilter) return;
     
     const selectedVcardId = profileFilter.value;
-    console.log('🔧 Filtre par profil demandé:', selectedVcardId);
+    console.log('🔧 Filtre par profil:', selectedVcardId);
     
-    // Redirection avec paramètre stable
-    const url = new URL(window.location);
     if (selectedVcardId) {
+        const url = new URL(window.location);
+        url.searchParams.set('filter', 'vcard');
         url.searchParams.set('vcard_id', selectedVcardId);
+        window.location.href = url.toString();
     } else {
+        const url = new URL(window.location);
+        url.searchParams.delete('filter');
         url.searchParams.delete('vcard_id');
+        window.location.href = url.toString();
     }
-    
-    console.log('🔧 Redirection vers:', url.toString());
-    window.location.href = url.toString();
 }
 
-console.log('✅ Script leads.php avec configuration corrigée chargé');
+// Fonctions de compatibilité avec l'interface
+function exportContacts(scope) {
+    console.log('📤 Export contacts:', scope);
+    // Sera implémenté par contacts-manager.js
+    if (window.NFCContacts && typeof window.NFCContacts.exportCSV === 'function') {
+        window.NFCContacts.exportCSV();
+    }
+}
+
+function viewContact(id) {
+    console.log('👁️ Voir contact:', id);
+    // Sera implémenté par contacts-manager.js
+}
+
+function editContact(id) {
+    console.log('✏️ Éditer contact:', id);
+    // Sera implémenté par contacts-manager.js
+}
+
+function deleteContact(id) {
+    console.log('🗑️ Supprimer contact:', id);
+    // Sera implémenté par contacts-manager.js
+}
+
+function editContactFromDetails() {
+    console.log('✏️ Éditer depuis détails');
+    // Sera implémenté par contacts-manager.js
+}
+
+function deleteContactFromDetails() {
+    console.log('🗑️ Supprimer depuis détails');
+    // Sera implémenté par contacts-manager.js
+}
+
+console.log('✅ Script leads.php avec configuration unifiée chargé');
 </script>
