@@ -1,9 +1,9 @@
 <?php
 /**
- * Template Dashboard Leads - Version Compatible contacts.php
- * Fichier: wp-content/plugins/gtmi-vcard/templates/dashboard/leads.php
+ * Template Dashboard NFC - Page Leads Multi-Profils
  * 
- * Structure DOM IDENTIQUE à contacts.php pour éviter les conflits
+ * Fichier: templates/dashboard/leads.php
+ * Template adaptatif pour contacts simple/multi-profils
  */
 
 if (!defined('ABSPATH')) {
@@ -11,49 +11,122 @@ if (!defined('ABSPATH')) {
 }
 
 // ================================================================================
-// FONCTIONS MANQUANTES - Créées pour éviter les erreurs
+// FONCTIONS UTILITAIRES
 // ================================================================================
 
-if (!function_exists('nfc_get_vcard_contacts')) {
-    function nfc_get_vcard_contacts($vcard_id, $limit = 1000) {
+if (!function_exists('nfc_get_user_vcard_profiles')) {
+    function nfc_get_user_vcard_profiles($user_id) {
         global $wpdb;
         
-        error_log("🔍 nfc_get_vcard_contacts() appelée pour vCard ID: " . $vcard_id);
+        $results = $wpdb->get_results($wpdb->prepare("
+            SELECT ec.*, p.post_title, p.post_date
+            FROM {$wpdb->prefix}nfc_enterprise_cards ec
+            INNER JOIN {$wpdb->posts} p ON ec.vcard_id = p.ID
+            WHERE ec.main_user_id = %d
+            AND p.post_status = 'publish'
+            ORDER BY ec.created_at DESC
+        ", $user_id));
         
-        $exact_pattern = 'a:1:{i:0;s:' . strlen($vcard_id) . ':"' . $vcard_id . '";}';
+        $profiles = [];
+        foreach ($results as $result) {
+            $vcard_data = [];
+            $meta_keys = ['firstname', 'lastname', 'position', 'company', 'email', 'mobile', 'society', 'service'];
+            foreach ($meta_keys as $key) {
+                $vcard_data[$key] = get_post_meta($result->vcard_id, $key, true);
+            }
+            $vcard_data['is_configured'] = !empty($vcard_data['firstname']) && !empty($vcard_data['lastname']);
+            
+            $profiles[] = [
+                'id' => (int)$result->id,
+                'order_id' => (int)$result->order_id,
+                'vcard_id' => (int)$result->vcard_id,
+                'card_position' => (int)$result->card_position,
+                'card_identifier' => $result->card_identifier,
+                'card_status' => $result->card_status,
+                'company_name' => $result->company_name,
+                'main_user_id' => (int)$result->main_user_id,
+                'created_at' => $result->created_at,
+                'updated_at' => $result->updated_at,
+                'post_title' => $result->post_title,
+                'post_date' => $result->post_date,
+                'vcard_data' => $vcard_data,
+                'vcard_url' => get_permalink($result->vcard_id),
+                'stats' => ['views' => 0, 'contacts' => 0]
+            ];
+        }
         
-        $query = "
-            SELECT 
-                l.ID,
-                l.post_date as created_at,
-                pm_firstname.meta_value as firstname,
-                pm_lastname.meta_value as lastname, 
-                pm_email.meta_value as email,
-                pm_mobile.meta_value as mobile,
-                pm_society.meta_value as society,
-                pm_source.meta_value as source,
-                pm_contact_datetime.meta_value as contact_datetime,
-                %d as vcard_id
-            FROM {$wpdb->posts} l
-            LEFT JOIN {$wpdb->postmeta} pm_link ON l.ID = pm_link.post_id AND pm_link.meta_key = 'linked_virtual_card'
-            LEFT JOIN {$wpdb->postmeta} pm_firstname ON l.ID = pm_firstname.post_id AND pm_firstname.meta_key = 'firstname'
-            LEFT JOIN {$wpdb->postmeta} pm_lastname ON l.ID = pm_lastname.post_id AND pm_lastname.meta_key = 'lastname'
-            LEFT JOIN {$wpdb->postmeta} pm_email ON l.ID = pm_email.post_id AND pm_email.meta_key = 'email'
-            LEFT JOIN {$wpdb->postmeta} pm_mobile ON l.ID = pm_mobile.post_id AND pm_mobile.meta_key = 'mobile'
-            LEFT JOIN {$wpdb->postmeta} pm_society ON l.ID = pm_society.post_id AND pm_society.meta_key = 'society'
-            LEFT JOIN {$wpdb->postmeta} pm_source ON l.ID = pm_source.post_id AND pm_source.meta_key = 'source'
-            LEFT JOIN {$wpdb->postmeta} pm_contact_datetime ON l.ID = pm_contact_datetime.post_id AND pm_contact_datetime.meta_key = 'contact_datetime'
-            WHERE l.post_type = 'lead'
-            AND l.post_status = 'publish'
-            AND pm_link.meta_value = %s
-            ORDER BY l.post_date DESC
-        ";
+        error_log("📊 DEBUG nfc_get_user_vcard_profiles - Trouvé " . count($profiles) . " profils pour user " . $user_id);
+        return $profiles;
+    }
+}
+
+if (!function_exists('nfc_get_vcard_contacts')) {
+    function nfc_get_vcard_contacts($vcard_id) {
+        global $wpdb;
         
-        $results = $wpdb->get_results($wpdb->prepare($query, $vcard_id, $exact_pattern), ARRAY_A);
+        $results = $wpdb->get_results($wpdb->prepare("
+            SELECT p.ID, p.post_title, p.post_date,
+                   pm1.meta_value as firstname,
+                   pm2.meta_value as lastname, 
+                   pm3.meta_value as email,
+                   pm4.meta_value as mobile,
+                   pm5.meta_value as society,
+                   pm6.meta_value as linked_vcard
+            FROM {$wpdb->posts} p
+            LEFT JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id AND pm1.meta_key = 'firstname'
+            LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = 'lastname'
+            LEFT JOIN {$wpdb->postmeta} pm3 ON p.ID = pm3.post_id AND pm3.meta_key = 'email'
+            LEFT JOIN {$wpdb->postmeta} pm4 ON p.ID = pm4.post_id AND pm4.meta_key = 'mobile'
+            LEFT JOIN {$wpdb->postmeta} pm5 ON p.ID = pm5.post_id AND pm5.meta_key = 'society'
+            LEFT JOIN {$wpdb->postmeta} pm6 ON p.ID = pm6.post_id AND pm6.meta_key = 'linked_virtual_card'
+            WHERE p.post_type = 'lead'
+            AND p.post_status = 'publish'
+            AND pm6.meta_value LIKE %s
+            ORDER BY p.post_date DESC
+        ", '%"' . $vcard_id . '"%'));
         
-        error_log("📊 Contacts trouvés: " . count($results) . " pour vCard " . $vcard_id);
+        error_log("📊 DEBUG nfc_get_vcard_contacts - Trouvé " . count($results) . " pour vCard " . $vcard_id);
         
         return $results;
+    }
+}
+
+if (!function_exists('nfc_get_enterprise_contacts')) {
+    function nfc_get_enterprise_contacts($user_id, $vcard_id = null, $limit = 100) {
+        global $wpdb;
+        
+        if ($vcard_id) {
+            return nfc_get_vcard_contacts($vcard_id);
+        }
+        
+        // Récupérer TOUS les contacts de l'utilisateur multi-profils
+        $user_vcards = nfc_get_user_vcard_profiles($user_id);
+        $all_contacts = [];
+        
+        foreach ($user_vcards as $vcard) {
+            $vcard_contacts = nfc_get_vcard_contacts($vcard['vcard_id']);
+            $all_contacts = array_merge($all_contacts, $vcard_contacts);
+        }
+        
+        // Trier par date décroissante
+        usort($all_contacts, function($a, $b) {
+            return strtotime($b->post_date) - strtotime($a->post_date);
+        });
+        
+        // Limiter les résultats
+        $all_contacts = array_slice($all_contacts, 0, $limit);
+        
+        error_log("📊 DEBUG nfc_get_enterprise_contacts - Trouvé " . count($all_contacts) . " pour user " . $user_id);
+        
+        return $all_contacts;
+    }
+}
+
+if (!function_exists('nfc_format_vcard_full_name')) {
+    function nfc_format_vcard_full_name($vcard_data) {
+        $firstname = $vcard_data['firstname'] ?? '';
+        $lastname = $vcard_data['lastname'] ?? '';
+        return trim($firstname . ' ' . $lastname) ?: 'Profil sans nom';
     }
 }
 
@@ -64,7 +137,7 @@ if (!function_exists('nfc_get_contacts_trend')) {
 }
 
 // ================================================================================
-// LOGIQUE D'ADAPTATION - Identique à la version précédente
+// LOGIQUE D'ADAPTATION
 // ================================================================================
 
 $user_id = get_current_user_id();
@@ -128,37 +201,33 @@ if (empty($user_display_name)) {
 
 error_log("📊 DEBUG Leads - Contacts récupérés: " . count($contacts));
 
+// ================================================================================
+// NETTOYAGE DES DONNÉES POUR JAVASCRIPT
+// ================================================================================
+
 if (!empty($contacts)) {
     foreach ($contacts as &$contact) {
         // Nettoyer linked_vcard qui contient des données sérialisées PHP
-        if (isset($contact['linked_vcard']) && is_string($contact['linked_vcard'])) {
-            
+        if (isset($contact->linked_vcard) && is_string($contact->linked_vcard)) {
             // Si c'est du PHP sérialisé, le désérialiser et le convertir
-            if (strpos($contact['linked_vcard'], 'a:') === 0) {
-                $unserialized = @unserialize($contact['linked_vcard']);
+            if (strpos($contact->linked_vcard, 'a:') === 0) {
+                $unserialized = @unserialize($contact->linked_vcard);
                 
                 if ($unserialized !== false && is_array($unserialized)) {
                     // Convertir en array simple pour JavaScript
-                    $contact['linked_vcard'] = array_values($unserialized);
-                    $contact['linked_vcard_ids'] = array_values($unserialized); // Backup
+                    $contact->linked_vcard = array_values($unserialized);
                 } else {
                     // Si échec de désérialisation, mettre un array vide
-                    $contact['linked_vcard'] = [];
-                    $contact['linked_vcard_ids'] = [];
+                    $contact->linked_vcard = [];
                 }
             }
-            
-            // Ajouter info debugging
-            error_log("📧 Contact {$contact['ID']} linked_vcard nettoyé: " . json_encode($contact['linked_vcard']));
         }
+        
+        // Convertir l'objet en array pour JSON
+        $contact = (array)$contact;
         
         // Nettoyer autres champs potentiellement problématiques
-        if (isset($contact['post_title'])) {
-            $contact['post_title'] = wp_kses_post($contact['post_title']);
-        }
-        
-        // S'assurer que tous les champs string sont safe
-        $string_fields = ['firstname', 'lastname', 'email', 'mobile', 'society'];
+        $string_fields = ['post_title', 'firstname', 'lastname', 'email', 'mobile', 'society'];
         foreach ($string_fields as $field) {
             if (isset($contact[$field]) && is_string($contact[$field])) {
                 $contact[$field] = wp_kses_post($contact[$field]);
@@ -170,7 +239,10 @@ if (!empty($contacts)) {
     error_log("✅ " . count($contacts) . " contacts nettoyés pour JavaScript");
 }
 
-// Configuration JavaScript - VERSION SÉCURISÉE
+// ================================================================================
+// CONFIGURATION JAVASCRIPT SÉCURISÉE
+// ================================================================================
+
 $contacts_config = [
     'vcard_id' => $current_vcard ? $current_vcard['vcard_id'] : null,
     'user_id' => $user_id,
@@ -181,7 +253,7 @@ $contacts_config = [
     'api_url' => home_url('/wp-json/gtmi_vcard/v1/'),
     'nonce' => wp_create_nonce('nfc_dashboard_nonce'),
     'user_name' => $user_display_name,
-    'initial_contacts' => $contacts // ✅ Maintenant nettoyé
+    'initial_contacts' => $contacts
 ];
 
 // Vérification finale du JSON
@@ -195,7 +267,6 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 }
 
 error_log("✅ Configuration finale validée pour JavaScript");
-?>
 ?>
 
 <!-- STRUCTURE DOM IDENTIQUE À contacts.php -->
@@ -227,126 +298,106 @@ error_log("✅ Configuration finale validée pour JavaScript");
                 </button>
                 <button class="btn btn-primary btn-sm" onclick="showAddContactModal()" title="Ajouter un contact">
                     <i class="fas fa-plus me-1"></i>
-                    Ajouter contact
+                    Nouveau Contact
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- STATS CARDS - IDENTIQUE À contacts.php -->
-<div class="row g-3 mb-4">
+<!-- STATS CARDS - IDENTIQUES À contacts.php -->
+<div class="row mb-4">
     <div class="col-md-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
-                <div class="text-primary mb-2">
-                    <i class="fas fa-users fa-2x"></i>
-                </div>
-                <h3 class="h4 mb-1" id="totalContactsStat">0</h3>
-                <p class="text-muted small mb-0">Total contacts</p>
+                <div class="h4 text-primary mb-1" id="totalContactsStat"><?php echo count($contacts); ?></div>
+                <small class="text-muted">Total Contacts</small>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
-                <div class="text-success mb-2">
-                    <i class="fas fa-calendar-plus fa-2x"></i>
-                </div>
-                <h3 class="h4 mb-1" id="newContactsStat">0</h3>
-                <p class="text-muted small mb-0">Cette semaine</p>
+                <div class="h4 text-success mb-1" id="newContactsStat">0</div>
+                <small class="text-muted">Cette semaine</small>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
-                <div class="text-info mb-2">
-                    <i class="fas fa-building fa-2x"></i>
-                </div>
-                <h3 class="h4 mb-1" id="companiesStat">0</h3>
-                <p class="text-muted small mb-0">Entreprises</p>
+                <div class="h4 text-info mb-1" id="companiesStat">0</div>
+                <small class="text-muted">Entreprises</small>
             </div>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
-                <div class="text-warning mb-2">
-                    <i class="fas fa-qrcode fa-2x"></i>
-                </div>
-                <h3 class="h4 mb-1" id="qrSourceStat">0</h3>
-                <p class="text-muted small mb-0">Via QR Code</p>
+                <div class="h4 text-warning mb-1" id="qrSourceStat">0</div>
+                <small class="text-muted">Via QR Code</small>
             </div>
         </div>
     </div>
 </div>
 
-<!-- CONTROLS SECTION - IDENTIQUE À contacts.php + AJOUT FILTRE PROFIL -->
+<!-- FILTRES ET CONTRÔLES -->
 <div class="row mb-4">
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                <div class="row g-3 align-items-center">
-                    
-                    <!-- RECHERCHE - ID IDENTIQUE À contacts.php -->
+                <div class="row align-items-center g-3">
+                    <!-- Recherche -->
                     <div class="col-md-4">
-                        <div class="position-relative">
-                            <i class="fas fa-search position-absolute top-50 translate-middle-y ms-3 text-muted"></i>
-                            <input type="text" class="form-control ps-5" id="contactsSearch" 
-                                   placeholder="Rechercher un contact..." autocomplete="off">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="contactsSearch" placeholder="Rechercher un contact...">
                         </div>
                     </div>
                     
-                    <!-- 🆕 FILTRE PAR PROFIL (si multi-profils) -->
+                    <!-- 🆕 Filtre par profil (si multi-profils) -->
                     <?php if ($show_profile_filter): ?>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <select class="form-select" id="profileFilter" onchange="filterByProfile()">
                             <option value="">Tous les profils (<?php echo count($contacts); ?>)</option>
                             <?php foreach ($user_vcards as $vcard): ?>
-                                <option value="<?php echo esc_attr($vcard['vcard_id']); ?>" 
-                                        <?php selected($selected_vcard_id, $vcard['vcard_id']); ?>>
-                                    <?php 
-                                    echo esc_html(nfc_format_vcard_full_name($vcard['vcard_data'])); 
-                                    $vcard_contacts = nfc_get_vcard_contacts($vcard['vcard_id']);
-                                    echo ' (' . count($vcard_contacts) . ')';
-                                    ?>
+                                <option value="<?php echo $vcard['vcard_id']; ?>" <?php echo $selected_vcard_id == $vcard['vcard_id'] ? 'selected' : ''; ?>>
+                                    <?php echo esc_html(nfc_format_vcard_full_name($vcard['vcard_data'])); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <?php endif; ?>
                     
-                    <!-- FILTRES - IDS IDENTIQUES À contacts.php -->
-                    <div class="<?php echo $show_profile_filter ? 'col-md-2' : 'col-md-3'; ?>">
+                    <!-- Filtres -->
+                    <div class="col-md-2">
                         <select class="form-select" id="sourceFilter">
                             <option value="">Toutes sources</option>
-                            <option value="web">Site Web</option>
+                            <option value="web">Site web</option>
                             <option value="qr">QR Code</option>
-                            <option value="nfc">NFC</option>
                             <option value="manual">Manuel</option>
                         </select>
                     </div>
                     
-                    <div class="<?php echo $show_profile_filter ? 'col-md-2' : 'col-md-3'; ?>">
-                        <select class="form-select" id="dateFilter">
-                            <option value="">Toute période</option>
-                            <option value="today">Aujourd'hui</option>
-                            <option value="week">Cette semaine</option>
-                            <option value="month">Ce mois</option>
-                            <option value="quarter">Ce trimestre</option>
+                    <!-- Tri -->
+                    <div class="col-md-2">
+                        <select class="form-select" id="sortFilter">
+                            <option value="date_desc">Plus récent</option>
+                            <option value="date_asc">Plus ancien</option>
+                            <option value="name_asc">Nom A-Z</option>
+                            <option value="name_desc">Nom Z-A</option>
                         </select>
                     </div>
                     
-                    <!-- BOUTONS VUE - IDS IDENTIQUES À contacts.php -->
-                    <div class="<?php echo $show_profile_filter ? 'col-md-2' : 'col-md-2'; ?>">
-                        <div class="btn-group w-100" role="group">
-                            <button type="button" class="btn btn-outline-secondary active" id="tableViewBtn" 
-                                    title="Vue tableau">
+                    <!-- Vue -->
+                    <div class="col-md-1">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-secondary btn-sm active" id="tableViewBtn">
                                 <i class="fas fa-list"></i>
                             </button>
-                            <button type="button" class="btn btn-outline-secondary" id="gridViewBtn" 
-                                    title="Vue grille">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="gridViewBtn">
                                 <i class="fas fa-th"></i>
                             </button>
                         </div>
@@ -357,41 +408,28 @@ error_log("✅ Configuration finale validée pour JavaScript");
     </div>
 </div>
 
-<!-- CONTENEUR PRINCIPAL - IDS IDENTIQUES À contacts.php -->
+<!-- ÉTATS D'AFFICHAGE -->
+<div id="contactsLoading" class="text-center py-5 d-none">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-3 text-muted">Chargement des contacts...</p>
+</div>
+
+<div id="contactsEmpty" class="text-center py-5 d-none">
+    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+    <h4>Aucun contact trouvé</h4>
+    <p class="text-muted">Aucun contact ne correspond à vos critères de recherche.</p>
+</div>
+
+<div id="contactsError" class="alert alert-danger d-none" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    Une erreur est survenue lors du chargement des contacts.
+</div>
+
+<!-- CONTENU PRINCIPAL -->
 <div class="row">
     <div class="col-12">
-        
-        <!-- Loading State - ID IDENTIQUE -->
-        <div id="contactsLoading" class="card border-0 shadow-sm">
-            <div class="card-body text-center py-4">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Chargement...</span>
-                </div>
-                <p class="text-muted mt-2 mb-0">Chargement des contacts...</p>
-            </div>
-        </div>
-
-        <!-- Empty State - ID IDENTIQUE -->
-        <div id="contactsEmpty" class="card border-0 shadow-sm" style="display: none;">
-            <div class="card-body text-center py-5">
-                <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                <h4 class="text-muted">Aucun contact trouvé</h4>
-                <p class="text-muted">Essayez de modifier vos critères de recherche</p>
-                <button class="btn btn-outline-primary" onclick="clearAllFilters()">
-                    <i class="fas fa-refresh me-1"></i>Réinitialiser les filtres
-                </button>
-            </div>
-        </div>
-
-        <!-- Error State - ID IDENTIQUE -->
-        <div id="contactsError" class="card border-0 shadow-sm" style="display: none;">
-            <div class="card-body text-center py-5">
-                <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
-                <h4 class="text-danger">Erreur de chargement</h4>
-                <p class="text-muted">Une erreur est survenue lors du chargement des contacts</p>
-            </div>
-        </div>
-
         <!-- Table View - ID IDENTIQUE À contacts.php -->
         <div id="contactsTableView" class="card border-0 shadow-sm">
             <div class="card-body p-0">
@@ -483,69 +521,37 @@ error_log("✅ Configuration finale validée pour JavaScript");
             </div>
             <form id="addContactForm">
                 <div class="modal-body">
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Prénom <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="firstname" required>
-                            </div>
+                            <label class="form-label">Prénom *</label>
+                            <input type="text" class="form-control" name="firstname" required>
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Nom <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="lastname" required>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label class="form-label">Email <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" name="email" required>
-                            </div>
+                            <label class="form-label">Nom *</label>
+                            <input type="text" class="form-control" name="lastname" required>
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Téléphone</label>
-                                <input type="tel" class="form-control" name="mobile">
-                            </div>
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email">
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Entreprise</label>
-                                <input type="text" class="form-control" name="society">
-                            </div>
+                            <label class="form-label">Téléphone</label>
+                            <input type="tel" class="form-control" name="mobile">
                         </div>
-                        
-                        <?php if ($show_profile_filter): ?>
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label class="form-label">Associer au profil <span class="text-danger">*</span></label>
-                                <select class="form-select" name="vcard_id" required>
-                                    <option value="">Choisir un profil...</option>
-                                    <?php foreach ($user_vcards as $vcard): ?>
-                                        <option value="<?php echo esc_attr($vcard['vcard_id']); ?>"
-                                                <?php selected($selected_vcard_id, $vcard['vcard_id']); ?>>
-                                            <?php echo esc_html(nfc_format_vcard_full_name($vcard['vcard_data'])); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Entreprise</label>
+                            <input type="text" class="form-control" name="society">
                         </div>
-                        <?php else: ?>
-                        <input type="hidden" name="vcard_id" value="<?php echo esc_attr($selected_vcard_id); ?>">
-                        <?php endif; ?>
-                        
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label class="form-label">Notes (optionnel)</label>
-                                <textarea class="form-control" name="notes" rows="3" placeholder="Informations supplémentaires..."></textarea>
-                            </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Poste</label>
+                            <input type="text" class="form-control" name="post">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i>Ajouter le Contact
+                        <i class="fas fa-save me-2"></i>Enregistrer
                     </button>
                 </div>
             </form>
@@ -554,42 +560,25 @@ error_log("✅ Configuration finale validée pour JavaScript");
 </div>
 
 <!-- Modal Import CSV -->
-<div class="modal fade" id="importContactModal" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="importModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fas fa-upload me-2"></i>Importer des Contacts
+                    <i class="fas fa-upload me-2"></i>Importer des contacts
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
                     <label class="form-label">Fichier CSV</label>
-                    <input type="file" class="form-control" id="csvFile" accept=".csv">
+                    <input type="file" class="form-control" id="csvFile" accept=".csv" onchange="previewCSV()">
                     <div class="form-text">
-                        Format attendu: Prénom,Nom,Email,Téléphone,Entreprise<br>
-                        <small class="text-muted">Assurez-vous de définir les en-têtes.</small>
+                        Format attendu: Prénom, Nom, Email, Téléphone, Entreprise
                     </div>
                 </div>
-                
-                <?php if ($show_profile_filter): ?>
-                <div class="mb-3">
-                    <label class="form-label">Associer tous les contacts au profil</label>
-                    <select class="form-select" id="importVcardId" required>
-                        <option value="">Choisir un profil...</option>
-                        <?php foreach ($user_vcards as $vcard): ?>
-                            <option value="<?php echo esc_attr($vcard['vcard_id']); ?>"
-                                    <?php selected($selected_vcard_id, $vcard['vcard_id']); ?>>
-                                <?php echo esc_html(nfc_format_vcard_full_name($vcard['vcard_data'])); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <?php endif; ?>
-                
-                <div id="csvPreview" class="mt-3 d-none">
-                    <h6>Aperçu (5 premiers contacts) :</h6>
+                <div id="csvPreview" class="d-none">
+                    <h6>Aperçu</h6>
                     <div class="table-responsive">
                         <table class="table table-sm">
                             <thead>
@@ -638,131 +627,14 @@ error_log("✅ Configuration finale validée pour JavaScript");
     </div>
 </div>
 
+<!-- CONFIGURATION JAVASCRIPT -->
 <script>
-console.log('🔧 === DIAGNOSTIC JAVASCRIPT COMPLET ===');
+// Configuration globale pour contacts-manager.js
+window.nfcContactsConfig = <?php echo json_encode($contacts_config, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES); ?>;
 
-// Capturer TOUTES les erreurs JavaScript
-window.addEventListener('error', function(e) {
-    console.error('❌ ERREUR JS CAPTURÉE:', {
-        message: e.message,
-        filename: e.filename,
-        lineno: e.lineno,
-        colno: e.colno,
-        error: e.error
-    });
-    
-    // Identifier spécifiquement notre erreur
-    if (e.message.includes('missing ) after argument list')) {
-        console.error('🎯 ERREUR TROUVÉE - missing ) after argument list');
-        console.error('📍 Fichier:', e.filename);
-        console.error('📍 Ligne:', e.lineno);
-        console.error('📍 Colonne:', e.colno);
-    }
-});
+console.log('📧 Configuration NFCContacts injectée:', window.nfcContactsConfig);
 
-// Test de la configuration générée
-console.log('🧪 Test configuration avant chargement scripts...');
-
-try {
-    // TEST 1: Configuration JSON brute
-    const configTest = <?php echo json_encode($contacts_config, JSON_HEX_QUOT | JSON_HEX_APOS); ?>;
-    console.log('✅ Configuration JSON valide:', typeof configTest);
-    
-    // TEST 2: Assignation à window
-    window.nfcContactsConfig = configTest;
-    console.log('✅ Assignation window.nfcContactsConfig réussie');
-    
-    // TEST 3: Validation structure
-    if (configTest.user_vcards && Array.isArray(configTest.user_vcards)) {
-        console.log('✅ user_vcards valide, length:', configTest.user_vcards.length);
-        
-        // Vérifier linked_vcard problématique
-        if (configTest.initial_contacts && configTest.initial_contacts.length > 0) {
-            console.log('⚠️ Vérification linked_vcard...');
-            configTest.initial_contacts.forEach((contact, index) => {
-                if (contact.linked_vcard && typeof contact.linked_vcard === 'string') {
-                    console.log(`Contact ${index} linked_vcard:`, contact.linked_vcard);
-                    
-                    // Vérifier si ça contient des caractères problématiques
-                    if (contact.linked_vcard.includes('{') || contact.linked_vcard.includes('"')) {
-                        console.warn(`⚠️ Contact ${index} contient des caractères potentiellement problématiques`);
-                    }
-                }
-            });
-        }
-    }
-    
-} catch (error) {
-    console.error('💥 ERREUR lors du test configuration:', error);
-    console.error('💥 Stack:', error.stack);
-}
-
-console.log('🔧 === FIN DIAGNOSTIC ===');
-</script>
-
-<!-- CHARGEMENT SÉCURISÉ des scripts existants -->
-<script>
-console.log('📦 Début chargement scripts...');
-
-// Surveiller le chargement de contacts-manager.js
-const originalLog = console.log;
-const originalError = console.error;
-
-console.log = function(...args) {
-    if (args[0] && args[0].includes('NFCContacts')) {
-        originalLog('📧 [TRACED]', ...args);
-    } else {
-        originalLog(...args);
-    }
-};
-
-console.error = function(...args) {
-    originalError('🚨 [ERROR TRACED]', ...args);
-    
-    // Si c'est notre erreur, ajouter plus d'infos
-    if (args[0] && args[0].includes('missing') && args[0].includes('argument')) {
-        originalError('🎯 ERREUR SYNTAX DÉTECTÉE DANS LE TRACE CI-DESSUS');
-    }
-};
-</script>
-<!-- CONFIGURATION JAVASCRIPT POUR contacts-manager.js -->
-<script>
-// Configuration globale pour contacts-manager.js (EXACTEMENT comme dans class-dashboard-manager.php)
-window.nfcContactsConfig = <?php echo json_encode($contacts_config, JSON_HEX_QUOT | JSON_HEX_APOS); ?>;
-
-<?php // 1. DÉBUG COMPLET des données
-error_log("=== DEBUG SYNTAX ERROR ===");
-error_log("contacts_config content: " . print_r($contacts_config, true));
-
-// 2. TESTER le JSON séparément  
-$json_output = json_encode($contacts_config, JSON_HEX_QUOT | JSON_HEX_APOS);
-error_log("JSON output: " . $json_output);
-error_log("JSON last error: " . json_last_error_msg());
-
-// 3. VÉRIFIER si des caractères problématiques
-if (json_last_error() !== JSON_ERROR_NONE) {
-    error_log("❌ ERREUR JSON: " . json_last_error_msg());
-    
-    // Nettoyer les données
-    $clean_config = array_map(function($value) {
-        if (is_string($value)) {
-            return preg_replace('/[^\x20-\x7E]/', '', $value); // Caractères ASCII seulement
-        }
-        return $value;
-    }, $contacts_config);
-    
-    $json_output = json_encode($clean_config, JSON_HEX_QUOT | JSON_HEX_APOS);
-    error_log("JSON nettoyé: " . $json_output);
-}
-
-error_log("=== END DEBUG ==="); ?>
-
-console.log('📧 Configuration NFCContacts injectée AVANT script:', window.nfcContactsConfig);
-console.log('🔧 DEBUG - user_id reçu:', window.nfcContactsConfig.user_id);
-console.log('🔧 DEBUG - is_multi_profile:', window.nfcContactsConfig.is_multi_profile);
-console.log('🔧 DEBUG - selected_vcard_id:', window.nfcContactsConfig.selected_vcard_id);
-
-// Vérification que tout est là
+// Validation de configuration
 function isValidConfig() {
     const config = window.nfcContactsConfig;
     
@@ -798,89 +670,25 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // OVERRIDE COMPLET de loadContacts pour utiliser le nouvel endpoint
             window.NFCContacts.loadContacts = function() {
-                    console.log('🔧 loadContacts() overridé - utilisation endpoint adaptatif');
-                    
-                    // Re-valider la configuration
-                    if (!isValidConfig()) {
-                        this.showError('Configuration invalide');
-                        return;
-                    }
-                    
-                    // ✅ SAUVEGARDER le contexte 'this' AVANT les appels asynchrones
-                    const self = this;
-                    
-                    self.isLoading = true;
-                    self.showLoadingState();
-                    
-                    // Déterminer l'URL selon le mode
-                    let apiUrl;
-                    const config = window.nfcContactsConfig;
-                    
-                    console.log('🔧 Détermination URL - mode:', {
-                        is_multi_profile: config.is_multi_profile,
-                        selected_vcard_id: config.selected_vcard_id,
-                        user_id: config.user_id,
-                        vcard_id: config.vcard_id
-                    });
-                    
-                    if (config.is_multi_profile && !config.selected_vcard_id) {
-                        // Mode multi-profils global: endpoint user
-                        apiUrl = `${config.api_url}leads/user/${config.user_id}`;
-                        console.log('🌐 Mode multi_global - URL:', apiUrl);
-                    } else {
-                        // Mode simple ou avec filtre: endpoint vcard
-                        const vcardId = config.selected_vcard_id || config.vcard_id;
-                        apiUrl = `${config.api_url}leads/vcard/${vcardId}`;
-                        console.log('🌐 Mode vcard spécifique - URL:', apiUrl);
-                    }
-                    
-                    // ✅ Appel API SANS .bind() - utiliser 'self' dans les callbacks
-                    fetch(apiUrl, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-WP-Nonce': config.nonce
-                        }
-                    })
-                    .then(function(response) {
-                        if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                        }
-                        return response.json();
-                    })
-                    .then(function(data) {
-                        console.log('✅ Données reçues:', data);
-                        
-                        if (data.success && Array.isArray(data.data)) {
-                            self.contacts = data.data;
-                            self.filteredContacts = [...self.contacts];
-                            self.renderTable();
-                            self.updateStats();
-                            console.log('✅ ' + self.contacts.length + ' contacts chargés');
-                        } else {
-                            throw new Error(data.message || 'Format de données invalide');
-                        }
-                    })
-                    .catch(function(error) {
-                        console.error('❌ Erreur chargement contacts:', error);
-                        self.showError('Erreur: ' + error.message);
-                    })
-                    .finally(function() {
-                        self.isLoading = false;
-                        self.hideLoadingState();
-                    });
-                };
-
-                console.log('🔧 loadContacts() overridé - utilisation endpoint multi-profils');
+                console.log('🔧 loadContacts() overridé - utilisation endpoint adaptatif');
                 
-                this.isLoading = true;
-                this.showLoadingState();
+                // Re-valider la configuration
+                if (!isValidConfig()) {
+                    this.showError('Configuration invalide');
+                    return;
+                }
                 
-                // 🆕 Déterminer l'URL selon le contexte avec vérifications
+                // Sauvegarder le contexte 'this' AVANT les appels asynchrones
+                const self = this;
+                
+                self.isLoading = true;
+                self.showLoadingState();
+                
+                // Déterminer l'URL selon le mode
                 let apiUrl;
                 const config = window.nfcContactsConfig;
                 
-                console.log('🔧 Détermination URL - config:', {
+                console.log('🔧 Détermination URL - mode:', {
                     is_multi_profile: config.is_multi_profile,
                     selected_vcard_id: config.selected_vcard_id,
                     user_id: config.user_id,
@@ -888,128 +696,161 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 if (config.is_multi_profile && !config.selected_vcard_id) {
-                    // Mode multi-profils global : utiliser endpoint user
-                    if (!config.user_id) {
-                        console.error('❌ user_id manquant pour endpoint multi-profils');
-                        this.showError('Configuration user_id manquante');
-                        return;
-                    }
+                    // Mode multi-profils global: endpoint user
                     apiUrl = `${config.api_url}leads/user/${config.user_id}`;
-                    console.log('🌐 Mode multi-profils global - URL:', apiUrl);
+                    console.log('🌐 Mode multi_global - URL:', apiUrl);
                 } else {
-                    // Mode profil unique ou filtré : utiliser endpoint classique
+                    // Mode simple ou avec filtre: endpoint vcard
                     const vcardId = config.selected_vcard_id || config.vcard_id;
-                    if (!vcardId) {
-                        console.error('❌ vcard_id manquant pour endpoint classique');
-                        this.showError('Configuration vcard_id manquante');
-                        return;
-                    }
-                    apiUrl = `${config.api_url}leads/${vcardId}`;
-                    console.log('🌐 Mode profil unique/filtré - URL:', apiUrl);
+                    apiUrl = `${config.api_url}leads/vcard/${vcardId}`;
+                    console.log('🌐 Mode vcard spécifique - URL:', apiUrl);
                 }
                 
+                // Appel API SANS .bind() - utiliser 'self' dans les callbacks
                 fetch(apiUrl, {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-WP-Nonce': config.nonce
                     }
-                }).bind(this)
-                .then(response => {
-                    console.log('📡 Réponse API Status:', response.status);
-                    
+                })
+                .then(function(response) {
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
-                    
                     return response.json();
                 })
-                .then(data => {
-                    console.log('📦 Données brutes API:', data);
+                .then(function(data) {
+                    console.log('✅ Données reçues:', data);
                     
-                    this.isLoading = false;
-                    this.hideLoadingState();
-                    
-                    if (data && Array.isArray(data.data)) {
-                        // Traitement des contacts reçus
-                        this.contacts = data.data.map(contact => ({
-                            id: parseInt(contact.ID || contact.id),
-                            firstname: contact.firstname || '',
-                            lastname: contact.lastname || '',
-                            email: contact.email || '',
-                            mobile: contact.mobile || '',
-                            society: contact.society || '',
-                            source: contact.source || 'web',
-                            contact_datetime: contact.contact_datetime || contact.created_at,
-                            created_at: contact.created_at,
-                            vcard_id: contact.vcard_id || 0,
-                            vcard_source_name: contact.vcard_source_name || ''
-                        }));
-                        
-                        this.filteredContacts = [...this.contacts];
-                        
-                        console.log('✅', this.contacts.length, 'contacts chargés depuis l\'API !');
-                        
-                        if (this.contacts.length > 0) {
-                            if (this.renderTable) {
-                                this.renderTable();
-                            }
-                            if (this.updateStats) {
-                                this.updateStats();
-                            }
-                            if (this.renderPagination) {
-                                this.renderPagination();
-                            }
-                        } else {
-                            this.showEmptyState();
-                        }
+                    if (data.success && Array.isArray(data.data)) {
+                        self.contacts = data.data;
+                        self.filteredContacts = [...self.contacts];
+                        self.renderTable();
+                        self.updateStats();
+                        console.log('✅ ' + self.contacts.length + ' contacts chargés');
                     } else {
-                        console.warn('⚠️ Format de données API inattendu:', data);
-                        this.showEmptyState(); // Plutôt qu'erreur pour données vides
+                        throw new Error(data.message || 'Format de données invalide');
                     }
-                }).bind(this)
-                .catch(error => {
-                    console.error('❌ Erreur API:', error); 
-                    this.isLoading = false;
-                    this.showError('Erreur de chargement: ' + error.message);
+                })
+                .catch(function(error) {
+                    console.error('❌ Erreur chargement contacts:', error);
+                    self.showError('Erreur: ' + error.message);
+                })
+                .finally(function() {
+                    self.isLoading = false;
+                    self.hideLoadingState();
                 });
             };
             
-            // OVERRIDE du renderTable pour ajouter colonne profil source
-            <?php if ($is_multi_profile): ?>
-            const originalRenderTable = window.NFCContacts.renderTable;
-            window.NFCContacts.renderTable = function() {
-                console.log('🔧 renderTable() overridé pour multi-profils');
-                
-                // D'abord appeler le rendu original
-                if (originalRenderTable) {
-                    originalRenderTable.call(this);
-                }
-                
-                // Puis ajouter nos colonnes personnalisées
-                const tbody = document.getElementById('contactsTableBody');
-                if (tbody && this.filteredContacts) {
-                    const rows = tbody.querySelectorAll('tr');
-                    rows.forEach((row, index) => {
-                        const pageIndex = (this.currentPage - 1) * this.itemsPerPage + index;
-                        const contact = this.filteredContacts[pageIndex];
-                        
-                        if (contact && contact.vcard_source_name) {
-                            // Insérer la cellule profil source avant la dernière cellule (actions)
-                            const cells = row.querySelectorAll('td');
-                            if (cells.length > 0) {
-                                const profileCell = document.createElement('td');
-                                profileCell.innerHTML = `<small class="text-muted">${contact.vcard_source_name}</small>`;
-                                row.insertBefore(profileCell, cells[cells.length - 1]);
-                            }
-                        }
+            // Override complet pour la colonne profil en mode multi
+            <?php if ($show_profile_filter): ?>
+            // AJOUT: Override renderTable pour afficher la colonne profil
+            window.NFCContacts.originalRenderTable = window.NFCContacts.renderTable;
+window.NFCContacts.renderTable = function() {
+    console.log('🔧 renderTable() overridé pour colonne profil');
+    
+    // Appel de la méthode originale
+    this.originalRenderTable();
+    
+    // Ajouter colonne profil si mode multi-profils
+    const table = document.getElementById('contactsTable');
+    if (table && window.nfcContactsConfig.is_multi_profile) {
+        console.log('📊 Ajout colonne profil - contacts:', this.filteredContacts.length);
+        
+        // Ajouter header s'il n'existe pas
+        const headerRow = table.querySelector('thead tr');
+        if (headerRow && !headerRow.querySelector('.profile-header')) {
+            const profileHeader = document.createElement('th');
+            profileHeader.className = 'profile-header';
+            profileHeader.textContent = 'Profil Source';
+            // Insérer avant la colonne Actions (dernière)
+            const actionHeader = headerRow.querySelector('th:last-child');
+            if (actionHeader) {
+                headerRow.insertBefore(profileHeader, actionHeader);
+                console.log('✅ Header "Profil Source" ajouté');
+            }
+        }
+        
+        // Ajouter cellules profil pour chaque ligne
+        const bodyRows = table.querySelectorAll('tbody tr');
+        bodyRows.forEach((row, index) => {
+            if (!row.querySelector('.profile-cell')) {
+                const contact = this.filteredContacts[index];
+                if (contact) {
+                    const profileCell = document.createElement('td');
+                    profileCell.className = 'profile-cell';
+                    
+                    console.log(`📧 Contact ${index}:`, {
+                        vcard_id: contact.vcard_id,
+                        vcard_source_name: contact.vcard_source_name,
+                        id: contact.id || contact.ID
                     });
+                    
+                    // MÉTHODE 1: Utiliser vcard_source_name si disponible (depuis API)
+                    if (contact.vcard_source_name) {
+                        profileCell.textContent = contact.vcard_source_name;
+                        console.log(`✅ Contact ${index}: nom depuis API: ${contact.vcard_source_name}`);
+                    }
+                    // MÉTHODE 2: Chercher dans user_vcards par vcard_id
+                    else if (contact.vcard_id) {
+                        const vcard = window.nfcContactsConfig.user_vcards.find(v => 
+                            parseInt(v.vcard_id) === parseInt(contact.vcard_id)
+                        );
+                        
+                        if (vcard && vcard.vcard_data) {
+                            const firstName = vcard.vcard_data.firstname || '';
+                            const lastName = vcard.vcard_data.lastname || '';
+                            const fullName = (firstName + ' ' + lastName).trim();
+                            profileCell.textContent = fullName || `Profil #${contact.vcard_id}`;
+                            console.log(`✅ Contact ${index}: nom depuis config: ${fullName}`);
+                        } else {
+                            profileCell.textContent = `Profil #${contact.vcard_id}`;
+                            console.warn(`⚠️ Contact ${index}: vCard ${contact.vcard_id} non trouvée dans config`);
+                        }
+                    }
+                    // MÉTHODE 3: Analyser linked_vcard pour trouver le vcard_id
+                    else if (contact.linked_vcard && Array.isArray(contact.linked_vcard) && contact.linked_vcard.length > 0) {
+                        const linkedVcardId = contact.linked_vcard[0];
+                        const vcard = window.nfcContactsConfig.user_vcards.find(v => 
+                            parseInt(v.vcard_id) === parseInt(linkedVcardId)
+                        );
+                        
+                        if (vcard && vcard.vcard_data) {
+                            const firstName = vcard.vcard_data.firstname || '';
+                            const lastName = vcard.vcard_data.lastname || '';
+                            const fullName = (firstName + ' ' + lastName).trim();
+                            profileCell.textContent = fullName || `Profil #${linkedVcardId}`;
+                            console.log(`✅ Contact ${index}: nom depuis linked_vcard: ${fullName}`);
+                        } else {
+                            profileCell.textContent = `Profil #${linkedVcardId}`;
+                            console.warn(`⚠️ Contact ${index}: linked vCard ${linkedVcardId} non trouvée`);
+                        }
+                    }
+                    // FALLBACK: Impossible de déterminer
+                    else {
+                        profileCell.textContent = 'Profil inconnu';
+                        console.warn(`⚠️ Contact ${index}: impossible de déterminer le profil source`, contact);
+                    }
+                    
+                    // Insérer avant la colonne Actions (dernière)
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length > 0) {
+                        row.insertBefore(profileCell, cells[cells.length - 1]);
+                    }
                 }
-            };
+            }
+        });
+        
+        console.log('✅ Colonnes profil ajoutées à toutes les lignes');
+    }
+};
             <?php endif; ?>
             
             console.log('✅ Override terminé, initialisation NFCContacts...');
             
-            // Forcer l'initialisation
+            // Forcer l'initialisation avec la nouvelle configuration
+            window.NFCContacts.config = window.nfcContactsConfig;
             window.NFCContacts.init();
         }
     }, 100);
@@ -1026,9 +867,13 @@ document.addEventListener('DOMContentLoaded', function() {
 // 🆕 FONCTION PERSONNALISÉE pour le filtre par profil
 function filterByProfile() {
     const profileFilter = document.getElementById('profileFilter');
-    if (!profileFilter) return;
+    if (!profileFilter) {
+        console.log('⚠️ Élément profileFilter non trouvé');
+        return;
+    }
     
     const selectedVcardId = profileFilter.value;
+    console.log('🔧 Filtre par profil:', selectedVcardId);
     
     if (selectedVcardId) {
         const url = new URL(window.location);
@@ -1041,5 +886,5 @@ function filterByProfile() {
     }
 }
 
-console.log('✅ Script d\'override leads.php avec endpoint multi-profils chargé');
-</script> 
+console.log('✅ Script leads.php avec configuration corrigée chargé');
+</script>
