@@ -128,22 +128,74 @@ if (empty($user_display_name)) {
 
 error_log("📊 DEBUG Leads - Contacts récupérés: " . count($contacts));
 
-// Configuration JavaScript identique à contacts.php
+if (!empty($contacts)) {
+    foreach ($contacts as &$contact) {
+        // Nettoyer linked_vcard qui contient des données sérialisées PHP
+        if (isset($contact['linked_vcard']) && is_string($contact['linked_vcard'])) {
+            
+            // Si c'est du PHP sérialisé, le désérialiser et le convertir
+            if (strpos($contact['linked_vcard'], 'a:') === 0) {
+                $unserialized = @unserialize($contact['linked_vcard']);
+                
+                if ($unserialized !== false && is_array($unserialized)) {
+                    // Convertir en array simple pour JavaScript
+                    $contact['linked_vcard'] = array_values($unserialized);
+                    $contact['linked_vcard_ids'] = array_values($unserialized); // Backup
+                } else {
+                    // Si échec de désérialisation, mettre un array vide
+                    $contact['linked_vcard'] = [];
+                    $contact['linked_vcard_ids'] = [];
+                }
+            }
+            
+            // Ajouter info debugging
+            error_log("📧 Contact {$contact['ID']} linked_vcard nettoyé: " . json_encode($contact['linked_vcard']));
+        }
+        
+        // Nettoyer autres champs potentiellement problématiques
+        if (isset($contact['post_title'])) {
+            $contact['post_title'] = wp_kses_post($contact['post_title']);
+        }
+        
+        // S'assurer que tous les champs string sont safe
+        $string_fields = ['firstname', 'lastname', 'email', 'mobile', 'society'];
+        foreach ($string_fields as $field) {
+            if (isset($contact[$field]) && is_string($contact[$field])) {
+                $contact[$field] = wp_kses_post($contact[$field]);
+            }
+        }
+    }
+    unset($contact); // Libérer la référence
+    
+    error_log("✅ " . count($contacts) . " contacts nettoyés pour JavaScript");
+}
+
+// Configuration JavaScript - VERSION SÉCURISÉE
 $contacts_config = [
-    'vcard_id' => $current_vcard ? $current_vcard['vcard_id'] : null, // ✅ FIX: Gérer null
-    'user_id' => $user_id, // ✅ AJOUT: Nécessaire pour multi-profils
-    'selected_vcard_id' => $selected_vcard_id, // ✅ AJOUT: Pour filtre
+    'vcard_id' => $current_vcard ? $current_vcard['vcard_id'] : null,
+    'user_id' => $user_id,
+    'selected_vcard_id' => $selected_vcard_id,
     'is_multi_profile' => $is_multi_profile,
     'user_vcards' => $user_vcards,
     'ajax_url' => admin_url('admin-ajax.php'),
-    'api_url' => home_url('/wp-json/gtmi_vcard/v1/'), // ✅ AJOUT: Manquait
+    'api_url' => home_url('/wp-json/gtmi_vcard/v1/'),
     'nonce' => wp_create_nonce('nfc_dashboard_nonce'),
     'user_name' => $user_display_name,
-    'initial_contacts' => $contacts
+    'initial_contacts' => $contacts // ✅ Maintenant nettoyé
 ];
 
+// Vérification finale du JSON
+$json_test = json_encode($contacts_config, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES);
+if (json_last_error() !== JSON_ERROR_NONE) {
+    error_log("❌ ERREUR JSON finale: " . json_last_error_msg());
+    
+    // Fallback: enlever les contacts si problème
+    $contacts_config['initial_contacts'] = [];
+    error_log("🔄 Contacts supprimés de la config à cause d'erreur JSON");
+}
 
-// Ne PAS charger d'assets CSS/JS car contacts-manager.js se charge automatiquement
+error_log("✅ Configuration finale validée pour JavaScript");
+?>
 ?>
 
 <!-- STRUCTURE DOM IDENTIQUE À contacts.php -->
@@ -586,10 +638,124 @@ $contacts_config = [
     </div>
 </div>
 
+<script>
+console.log('🔧 === DIAGNOSTIC JAVASCRIPT COMPLET ===');
+
+// Capturer TOUTES les erreurs JavaScript
+window.addEventListener('error', function(e) {
+    console.error('❌ ERREUR JS CAPTURÉE:', {
+        message: e.message,
+        filename: e.filename,
+        lineno: e.lineno,
+        colno: e.colno,
+        error: e.error
+    });
+    
+    // Identifier spécifiquement notre erreur
+    if (e.message.includes('missing ) after argument list')) {
+        console.error('🎯 ERREUR TROUVÉE - missing ) after argument list');
+        console.error('📍 Fichier:', e.filename);
+        console.error('📍 Ligne:', e.lineno);
+        console.error('📍 Colonne:', e.colno);
+    }
+});
+
+// Test de la configuration générée
+console.log('🧪 Test configuration avant chargement scripts...');
+
+try {
+    // TEST 1: Configuration JSON brute
+    const configTest = <?php echo json_encode($contacts_config, JSON_HEX_QUOT | JSON_HEX_APOS); ?>;
+    console.log('✅ Configuration JSON valide:', typeof configTest);
+    
+    // TEST 2: Assignation à window
+    window.nfcContactsConfig = configTest;
+    console.log('✅ Assignation window.nfcContactsConfig réussie');
+    
+    // TEST 3: Validation structure
+    if (configTest.user_vcards && Array.isArray(configTest.user_vcards)) {
+        console.log('✅ user_vcards valide, length:', configTest.user_vcards.length);
+        
+        // Vérifier linked_vcard problématique
+        if (configTest.initial_contacts && configTest.initial_contacts.length > 0) {
+            console.log('⚠️ Vérification linked_vcard...');
+            configTest.initial_contacts.forEach((contact, index) => {
+                if (contact.linked_vcard && typeof contact.linked_vcard === 'string') {
+                    console.log(`Contact ${index} linked_vcard:`, contact.linked_vcard);
+                    
+                    // Vérifier si ça contient des caractères problématiques
+                    if (contact.linked_vcard.includes('{') || contact.linked_vcard.includes('"')) {
+                        console.warn(`⚠️ Contact ${index} contient des caractères potentiellement problématiques`);
+                    }
+                }
+            });
+        }
+    }
+    
+} catch (error) {
+    console.error('💥 ERREUR lors du test configuration:', error);
+    console.error('💥 Stack:', error.stack);
+}
+
+console.log('🔧 === FIN DIAGNOSTIC ===');
+</script>
+
+<!-- CHARGEMENT SÉCURISÉ des scripts existants -->
+<script>
+console.log('📦 Début chargement scripts...');
+
+// Surveiller le chargement de contacts-manager.js
+const originalLog = console.log;
+const originalError = console.error;
+
+console.log = function(...args) {
+    if (args[0] && args[0].includes('NFCContacts')) {
+        originalLog('📧 [TRACED]', ...args);
+    } else {
+        originalLog(...args);
+    }
+};
+
+console.error = function(...args) {
+    originalError('🚨 [ERROR TRACED]', ...args);
+    
+    // Si c'est notre erreur, ajouter plus d'infos
+    if (args[0] && args[0].includes('missing') && args[0].includes('argument')) {
+        originalError('🎯 ERREUR SYNTAX DÉTECTÉE DANS LE TRACE CI-DESSUS');
+    }
+};
+</script>
 <!-- CONFIGURATION JAVASCRIPT POUR contacts-manager.js -->
 <script>
 // Configuration globale pour contacts-manager.js (EXACTEMENT comme dans class-dashboard-manager.php)
 window.nfcContactsConfig = <?php echo json_encode($contacts_config, JSON_HEX_QUOT | JSON_HEX_APOS); ?>;
+
+<?php // 1. DÉBUG COMPLET des données
+error_log("=== DEBUG SYNTAX ERROR ===");
+error_log("contacts_config content: " . print_r($contacts_config, true));
+
+// 2. TESTER le JSON séparément  
+$json_output = json_encode($contacts_config, JSON_HEX_QUOT | JSON_HEX_APOS);
+error_log("JSON output: " . $json_output);
+error_log("JSON last error: " . json_last_error_msg());
+
+// 3. VÉRIFIER si des caractères problématiques
+if (json_last_error() !== JSON_ERROR_NONE) {
+    error_log("❌ ERREUR JSON: " . json_last_error_msg());
+    
+    // Nettoyer les données
+    $clean_config = array_map(function($value) {
+        if (is_string($value)) {
+            return preg_replace('/[^\x20-\x7E]/', '', $value); // Caractères ASCII seulement
+        }
+        return $value;
+    }, $contacts_config);
+    
+    $json_output = json_encode($clean_config, JSON_HEX_QUOT | JSON_HEX_APOS);
+    error_log("JSON nettoyé: " . $json_output);
+}
+
+error_log("=== END DEBUG ==="); ?>
 
 console.log('📧 Configuration NFCContacts injectée AVANT script:', window.nfcContactsConfig);
 console.log('🔧 DEBUG - user_id reçu:', window.nfcContactsConfig.user_id);
