@@ -605,7 +605,7 @@ debug_linked_vcard_format(3738);
 
 <?php
 $js_config = [
-    'vcard_id' => $selected_vcard_id ?: 0, // 🎯 CORRECTION: 0 au lieu de la vcard_id individuelle
+    'vcard_id' => $selected_vcard_id ?: 0,
     'user_id' => $user_id,
     'api_url' => home_url('/wp-json/gtmi_vcard/v1/'),
     'ajax_url' => admin_url('admin-ajax.php'),
@@ -640,10 +640,9 @@ window.nfcContactsPreventAutoLoad = true;
 
 // Configuration globale pour contacts-manager.js
 window.nfcContactsConfig = <?php echo wp_json_encode($js_config); ?>;
-console.log('🔧 Configuration stabilisée:', window.nfcContactsConfig);
+console.log('🔧 Configuration stabilisée AVANT contacts-manager.js:', window.nfcContactsConfig);
 
 
-// OVERRIDE COMPLET pour utiliser le nouvel endpoint multi-profils
 // 🔧 OVERRIDE DOMContentLoaded pour empêcher le double chargement
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🔧 DOMContentLoaded leads.php - Empêche double chargement');
@@ -720,7 +719,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Forcer l'init avec la nouvelle config
             window.NFCContacts.config = window.nfcContactsConfig;
-            window.NFCContacts.init();
+            
+            // 🚀 DÉCLENCHER LE CHARGEMENT IMMÉDIATEMENT APRÈS L'OVERRIDE
+            console.log('🚀 Déclenchement loadContacts() après override...');
+            window.NFCContacts.loadContacts();
             
             console.log('✅ Override complet terminé');
         }
@@ -734,6 +736,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 10000);
 });
+
 
 // 🔧 FONCTION FILTRE PAR PROFIL CORRIGÉE
 function filterByProfile() {
