@@ -205,9 +205,9 @@ class NFC_Dashboard_Manager
         </head>
 
         <?php
-            // NOUVEAU : Récupérer produits utilisateur pour menu adaptatif
-            $user_vcards = $this->get_user_vcards($current_user->ID);
-            $vcard_count = count($user_vcards);
+        // NOUVEAU : Récupérer produits utilisateur pour menu adaptatif
+        $user_vcards = $this->get_user_vcards($current_user->ID);
+        $vcard_count = count($user_vcards);
         ?>
 
         <body class="nfc-dashboard-body">
@@ -225,7 +225,8 @@ class NFC_Dashboard_Manager
                         <div class="nfc-nav-section">
                             <div class="nfc-nav-section-title">Dashboard</div>
                             <div class="nfc-nav-item">
-                                <a href="?page=overview" class="nfc-nav-link <?php echo $current_page === 'overview' ? 'active' : ''; ?>">
+                                <a href="?page=overview"
+                                    class="nfc-nav-link <?php echo $current_page === 'overview' ? 'active' : ''; ?>">
                                     <i class="fas fa-home"></i>
                                     Vue d'ensemble
                                 </a>
@@ -240,11 +241,12 @@ class NFC_Dashboard_Manager
                                         <span class="nfc-nav-count"><?php echo $vcard_count; ?></span>
                                     <?php endif; ?>
                                 </div>
-                                
+
                                 <?php if ($vcard_count === 1): ?>
                                     <!-- Interface simple : 1 seule vCard -->
                                     <div class="nfc-nav-item">
-                                        <a href="?page=qr-codes" class="nfc-nav-link <?php echo $current_page === 'qr-codes' ? 'active' : ''; ?>">
+                                        <a href="?page=qr-codes"
+                                            class="nfc-nav-link <?php echo $current_page === 'qr-codes' ? 'active' : ''; ?>">
                                             <i class="fas fa-qrcode"></i>
                                             QR Codes
                                         </a>
@@ -252,7 +254,8 @@ class NFC_Dashboard_Manager
                                 <?php else: ?>
                                     <!-- Interface multi-cartes : plusieurs vCards -->
                                     <div class="nfc-nav-item">
-                                        <a href="?page=cards-list" class="nfc-nav-link <?php echo $current_page === 'cards-list' ? 'active' : ''; ?>">
+                                        <a href="?page=cards-list"
+                                            class="nfc-nav-link <?php echo $current_page === 'cards-list' ? 'active' : ''; ?>">
                                             <i class="fas fa-id-card-alt"></i>
                                             Mes cartes
                                             <span class="nfc-nav-badge"><?php echo $vcard_count; ?></span>
@@ -888,7 +891,8 @@ class NFC_Dashboard_Manager
                 <div class="col-md-3">
                     <div class="dashboard-card p-3 text-center">
                         <div class="h4 text-info mb-1">
-                            <?php echo count($configured_cards); ?>/<?php echo count($vcard_profiles); ?></div>
+                            <?php echo count($configured_cards); ?>/<?php echo count($vcard_profiles); ?>
+                        </div>
                         <small class="text-muted">Configurées</small>
                     </div>
                 </div>
@@ -1128,18 +1132,26 @@ class NFC_Dashboard_Manager
     }
 
     private function render_contacts_page($vcard)
-{
-    // Passer référence du dashboard manager pour accès aux fonctions
-    global $nfc_dashboard_manager;
-    $nfc_dashboard_manager = $this;
-    
-    $template_path = $this->plugin_path . 'templates/dashboard/simple/contacts.php';
-    if (file_exists($template_path)) {
-        include $template_path;
-    } else {
-        $this->render_test_page('contacts', 'Contacts', $vcard);
+    {
+        // Passer référence du dashboard manager pour accès aux fonctions
+        global $nfc_dashboard_manager;
+        $nfc_dashboard_manager = $this;
+        
+        // 🔥 SIMPLE : Toujours utiliser le même template
+        $template_path = $this->plugin_path . 'templates/dashboard/leads.php';
+        
+        if (file_exists($template_path)) {
+            include $template_path;
+        } else {
+            // Fallback vers l'ancien si le nouveau n'existe pas
+            $fallback_path = $this->plugin_path . 'templates/dashboard/simple/contacts.php';
+            if (file_exists($fallback_path)) {
+                include $fallback_path;
+            } else {
+                $this->render_test_page('contacts', 'Contacts', $vcard);
+            }
+        }
     }
-}
 
     private function render_statistics_page($vcard)
     {
