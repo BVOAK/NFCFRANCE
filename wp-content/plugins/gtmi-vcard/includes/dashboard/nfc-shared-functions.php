@@ -212,16 +212,21 @@ function nfc_get_vcard_leads_count($vcard_id) {
  * @param int $limit Nombre maximum de résultats
  * @return array Liste des leads
  */
-function nfc_get_enterprise_contacts($user_id, $vcard_filter = 0, $limit = 50) {
+function nfc_get_enterprise_contacts($user_id, $vcard_filter = 0, $limit = 1000) {
     global $wpdb;
+    
+    error_log("📊 nfc_get_enterprise_contacts appelée - user_id: $user_id, vcard_filter: $vcard_filter, limit: $limit");
     
     // Récupérer les IDs des vCards de l'utilisateur
     $user_vcards = nfc_get_user_vcard_profiles($user_id);
     $vcard_ids = array_column($user_vcards, 'vcard_id');
     
     if (empty($vcard_ids)) {
+        error_log("📊 Aucune vCard trouvée pour user_id: $user_id");
         return [];
     }
+    
+    error_log("📊 vCards de l'utilisateur: " . implode(', ', $vcard_ids));
     
     // Construire les patterns de recherche pour chaque vCard
     $vcard_like_conditions = [];
@@ -239,42 +244,55 @@ function nfc_get_enterprise_contacts($user_id, $vcard_filter = 0, $limit = 50) {
     }
     
     if (empty($vcard_like_conditions)) {
+        error_log("📊 Aucune condition vCard après filtrage");
         return [];
     }
     
     $vcard_where = '(' . implode(' OR ', $vcard_like_conditions) . ')';
     
-    // Ajouter la limite
-    $query_params[] = (int)$limit;
-    
-    $contacts_query = "
-        SELECT DISTINCT l.ID, l.post_title, l.post_date,
-               pm_firstname.meta_value as firstname,
-               pm_lastname.meta_value as lastname,
-               pm_email.meta_value as email,
-               pm_mobile.meta_value as mobile,
-               pm_society.meta_value as society,
-               pm_post.meta_value as post_title,
-               pm_vcard.meta_value as linked_vcard
+    // Requête SQL pour récupérer TOUS les leads
+    $leads_query = "
+        SELECT 
+            l.ID,
+            l.post_title,
+            l.post_date as created_at,
+            pm_firstname.meta_value as firstname,
+            pm_lastname.meta_value as lastname, 
+            pm_email.meta_value as email,
+            pm_mobile.meta_value as mobile,
+            pm_society.meta_value as society,
+            pm_source.meta_value as source,
+            pm_contact_datetime.meta_value as contact_datetime,
+            pm_link.meta_value as linked_vcard
         FROM {$wpdb->posts} l
         INNER JOIN {$wpdb->postmeta} pm_link 
             ON l.ID = pm_link.post_id 
             AND pm_link.meta_key = 'linked_virtual_card'
-            AND {$vcard_where}
+            AND $vcard_where
         LEFT JOIN {$wpdb->postmeta} pm_firstname ON l.ID = pm_firstname.post_id AND pm_firstname.meta_key = 'firstname'
         LEFT JOIN {$wpdb->postmeta} pm_lastname ON l.ID = pm_lastname.post_id AND pm_lastname.meta_key = 'lastname'
         LEFT JOIN {$wpdb->postmeta} pm_email ON l.ID = pm_email.post_id AND pm_email.meta_key = 'email'
         LEFT JOIN {$wpdb->postmeta} pm_mobile ON l.ID = pm_mobile.post_id AND pm_mobile.meta_key = 'mobile'
         LEFT JOIN {$wpdb->postmeta} pm_society ON l.ID = pm_society.post_id AND pm_society.meta_key = 'society'
-        LEFT JOIN {$wpdb->postmeta} pm_post ON l.ID = pm_post.post_id AND pm_post.meta_key = 'post'
-        LEFT JOIN {$wpdb->postmeta} pm_vcard ON l.ID = pm_vcard.post_id AND pm_vcard.meta_key = 'linked_virtual_card'
+        LEFT JOIN {$wpdb->postmeta} pm_source ON l.ID = pm_source.post_id AND pm_source.meta_key = 'source'
+        LEFT JOIN {$wpdb->postmeta} pm_contact_datetime ON l.ID = pm_contact_datetime.post_id AND pm_contact_datetime.meta_key = 'contact_datetime'
         WHERE l.post_type = 'lead'
         AND l.post_status = 'publish'
         ORDER BY l.post_date DESC
         LIMIT %d
     ";
     
-    $results = $wpdb->get_results($wpdb->prepare($contacts_query, ...$query_params), ARRAY_A);
+    // Ajouter limit aux paramètres
+    $query_params[] = $limit;
+    
+    $results = $wpdb->get_results($wpdb->prepare($leads_query, ...$query_params), ARRAY_A);
+    
+    error_log("📊 nfc_get_enterprise_contacts résultats: " . count($results) . " leads trouvés");
+    
+    // Debug de la première ligne pour vérifier les données
+    if (!empty($results)) {
+        error_log("📊 Premier lead: " . json_encode($results[0]));
+    }
     
     return $results;
 }

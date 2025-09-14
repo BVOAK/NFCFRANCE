@@ -91,37 +91,6 @@ if (!function_exists('nfc_get_vcard_contacts')) {
     }
 }
 
-if (!function_exists('nfc_get_enterprise_contacts')) {
-    function nfc_get_enterprise_contacts($user_id, $vcard_id = null, $limit = 100) {
-        global $wpdb;
-        
-        if ($vcard_id) {
-            return nfc_get_vcard_contacts($vcard_id);
-        }
-        
-        // Récupérer TOUS les contacts de l'utilisateur multi-profils
-        $user_vcards = nfc_get_user_vcard_profiles($user_id);
-        $all_contacts = [];
-        
-        foreach ($user_vcards as $vcard) {
-            $vcard_contacts = nfc_get_vcard_contacts($vcard['vcard_id']);
-            $all_contacts = array_merge($all_contacts, $vcard_contacts);
-        }
-        
-        // Trier par date décroissante
-        usort($all_contacts, function($a, $b) {
-            return strtotime($b->post_date) - strtotime($a->post_date);
-        });
-        
-        // Limiter les résultats
-        $all_contacts = array_slice($all_contacts, 0, $limit);
-        
-        error_log("📊 DEBUG nfc_get_enterprise_contacts - Trouvé " . count($all_contacts) . " pour user " . $user_id);
-        
-        return $all_contacts;
-    }
-}
-
 if (!function_exists('nfc_format_vcard_full_name')) {
     function nfc_format_vcard_full_name($vcard_data) {
         $firstname = $vcard_data['firstname'] ?? '';
