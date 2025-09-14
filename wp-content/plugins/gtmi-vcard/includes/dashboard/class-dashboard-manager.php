@@ -540,6 +540,9 @@ class NFC_Dashboard_Manager
             return;
         }
 
+                                nfc_debug_enterprise_data(2); 
+
+
         // Interface Overview avec stats (comme mockup)
         echo '<div class="content-header">';
         echo '<div class="d-flex justify-content-between align-items-center">';

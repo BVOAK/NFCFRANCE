@@ -33,6 +33,7 @@ require_once plugin_dir_path( __FILE__) . 'api/statistics/index.php';
 require_once plugin_dir_path( __FILE__) . 'includes/dashboard/class-dashboard-manager.php';
 require_once plugin_dir_path( __FILE__) . 'includes/dashboard/ajax-handlers.php';
 require_once plugin_dir_path( __FILE__) . 'includes/admin/virtual_card/update.php';
+require_once plugin_dir_path( __FILE__) . 'includes/dashboard/nfc-shared-functions.php';
 
 // 🆕 Chargement du système Enterprise Multi-cartes
 require_once plugin_dir_path(__FILE__) . 'includes/enterprise/enterprise-core.php';

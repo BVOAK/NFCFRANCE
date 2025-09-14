@@ -276,34 +276,6 @@ function nfc_send_enterprise_notification($order_id, $created_vcards) {
 // Hook pour envoyer email après création
 add_action('nfc_enterprise_vcards_created', 'nfc_send_enterprise_notification', 10, 2);
 
-/**
- * Helper pour debug/développement
- */
-function nfc_debug_enterprise_data($user_id = null) {
-    if (!current_user_can('administrator')) return;
-    
-    $user_id = $user_id ?: get_current_user_id();
-    
-    echo "<h3>Debug Enterprise Data - User #$user_id</h3>";
-    
-    $cards = NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
-    echo "<h4>Cartes trouvées : " . count($cards) . "</h4>";
-    
-    foreach ($cards as $card) {
-        echo "<div style='border: 1px solid #ccc; padding: 10px; margin: 10px;'>";
-        echo "<strong>Carte {$card['card_identifier']}</strong><br>";
-        echo "vCard ID: {$card['vcard_id']}<br>";
-        echo "Status: {$card['card_status']}<br>";
-        echo "Nom: " . nfc_format_vcard_full_name($card['vcard_data']) . "<br>";
-        echo "Stats: {$card['stats']['views']} vues, {$card['stats']['contacts']} contacts<br>";
-        echo "</div>";
-    }
-    
-    $global_stats = NFC_Enterprise_Core::get_user_global_stats($user_id);
-    echo "<h4>Stats globales</h4>";
-    echo "<pre>" . print_r($global_stats, true) . "</pre>";
-}
-
 // Fonction d'activation du plugin (à appeler dans le main plugin file)
 function nfc_enterprise_activate() {
     NFC_Enterprise_Core::create_database_tables();
