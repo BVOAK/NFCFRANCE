@@ -22,16 +22,14 @@ if (!defined('ABSPATH')) {
  * @param int $days Période en jours (défaut: 30)
  * @return array Stats formatées
  */
-function nfc_get_vcard_quick_stats($vcard_id, $days = 30) {
+function nfc_get_vcard_quick_stats($vcard_id, $days = 365) { // 🔥 FIX: 365 jours au lieu de 30
     global $wpdb;
     
-    // Date limite
+    // Date limite étendue pour inclure tes données de test
     $date_limit = date('Y-m-d H:i:s', strtotime("-{$days} days"));
     
     // Pattern exact comme dans tes données
     $exact_pattern = 'a:1:{i:0;s:' . strlen($vcard_id) . ':"' . $vcard_id . '";}';
-    
-    // 🔥 FIX : Requête step-by-step au lieu de gros INNER JOIN
     
     // Étape 1 : Trouver tous les posts statistics pour cette vCard
     $posts_query = "
@@ -48,7 +46,7 @@ function nfc_get_vcard_quick_stats($vcard_id, $days = 30) {
     $post_ids = $wpdb->get_col($wpdb->prepare($posts_query, $exact_pattern, $date_limit));
     
     if (empty($post_ids)) {
-        error_log("🔥 DEBUG: Aucun post trouvé pour vCard $vcard_id avec pattern $exact_pattern");
+        error_log("🔥 DEBUG: Aucun post trouvé pour vCard $vcard_id avec pattern $exact_pattern et limite $date_limit");
         return [
             'views' => 0,
             'clicks' => 0,
@@ -546,6 +544,205 @@ function nfc_test_stats_fix($vcard_id = 3736) {
     echo "<strong>Leads:</strong> {$leads}<br>";
     echo "<strong>Dernière activité:</strong> {$stats['last_activity']}<br>";
     echo "</div>";
+    
+    echo "</div>";
+}
+
+/**
+ * 🔥 DEBUG ÉTAPE PAR ÉTAPE
+ * Ajoute ça dans ton nfc-shared-functions.php et lance-le
+ */
+
+function nfc_debug_step_by_step($vcard_id = 3736) {
+    global $wpdb;
+    
+    echo "<div style='background: #ffeaa7; padding: 20px; margin: 10px; border: 2px solid #fdcb6e;'>";
+    echo "<h3>🔥 DEBUG ÉTAPE PAR ÉTAPE - vCard #$vcard_id</h3>";
+    
+    // Étape 1: Vérifier la date limite
+    $days = 30;
+    $date_limit = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+    echo "<h4>1. Date limite (30j) : <code>$date_limit</code></h4>";
+    
+    // Étape 2: Pattern exact
+    $exact_pattern = 'a:1:{i:0;s:' . strlen($vcard_id) . ':"' . $vcard_id . '";}';
+    echo "<h4>2. Pattern exact : <code>$exact_pattern</code></h4>";
+    
+    // Étape 3: Tester la requête posts sans date limite
+    echo "<h4>3. Test requête SANS limite de date</h4>";
+    
+    $posts_query_no_date = "
+        SELECT DISTINCT s.ID, s.post_title, s.post_date
+        FROM {$wpdb->posts} s
+        INNER JOIN {$wpdb->postmeta} pm_vcard 
+            ON s.ID = pm_vcard.post_id 
+            AND pm_vcard.meta_key = 'virtual_card_id'
+            AND pm_vcard.meta_value = %s
+        WHERE s.post_type = 'statistics'
+        ORDER BY s.post_date DESC
+    ";
+    
+    $posts_no_date = $wpdb->get_results($wpdb->prepare($posts_query_no_date, $exact_pattern), ARRAY_A);
+    
+    if (empty($posts_no_date)) {
+        echo "<div style='background: #ff7675; color: white; padding: 10px; margin: 5px;'>";
+        echo "❌ AUCUN post trouvé SANS limite de date !<br>";
+        echo "Le problème est dans le pattern ou la requête de base.<br>";
+        echo "<strong>Query exécutée :</strong><br>";
+        echo "<pre>" . $wpdb->last_query . "</pre>";
+        echo "</div>";
+    } else {
+        echo "<div style='background: #00b894; color: white; padding: 10px; margin: 5px;'>";
+        echo "✅ " . count($posts_no_date) . " post(s) trouvé(s) SANS limite de date :<br>";
+        foreach ($posts_no_date as $post) {
+            echo "• Post #{$post['ID']} - {$post['post_title']} - {$post['post_date']}<br>";
+        }
+        echo "</div>";
+    }
+    
+    // Étape 4: Tester AVEC limite de date
+    echo "<h4>4. Test requête AVEC limite de date</h4>";
+    
+    $posts_query_with_date = "
+        SELECT DISTINCT s.ID, s.post_title, s.post_date
+        FROM {$wpdb->posts} s
+        INNER JOIN {$wpdb->postmeta} pm_vcard 
+            ON s.ID = pm_vcard.post_id 
+            AND pm_vcard.meta_key = 'virtual_card_id'
+            AND pm_vcard.meta_value = %s
+        WHERE s.post_type = 'statistics'
+        AND s.post_date >= %s
+        ORDER BY s.post_date DESC
+    ";
+    
+    $posts_with_date = $wpdb->get_results($wpdb->prepare($posts_query_with_date, $exact_pattern, $date_limit), ARRAY_A);
+    
+    if (empty($posts_with_date)) {
+        echo "<div style='background: #ff7675; color: white; padding: 10px; margin: 5px;'>";
+        echo "❌ AUCUN post trouvé AVEC limite de date !<br>";
+        echo "Le post existe mais est trop ancien (> 30 jours).<br>";
+        echo "</div>";
+        
+        // Vérifier l'âge du post
+        if (!empty($posts_no_date)) {
+            $post_date = $posts_no_date[0]['post_date'];
+            $days_old = round((time() - strtotime($post_date)) / (60 * 60 * 24));
+            echo "<div style='background: #fab1a0; padding: 10px; margin: 5px;'>";
+            echo "📅 Post le plus récent : {$post_date} (il y a {$days_old} jours)<br>";
+            if ($days_old > 30) {
+                echo "⚠️ Le post a plus de 30 jours, il est filtré par la limite de date !";
+            }
+            echo "</div>";
+        }
+    } else {
+        echo "<div style='background: #00b894; color: white; padding: 10px; margin: 5px;'>";
+        echo "✅ " . count($posts_with_date) . " post(s) trouvé(s) AVEC limite de date :<br>";
+        foreach ($posts_with_date as $post) {
+            echo "• Post #{$post['ID']} - {$post['post_title']} - {$post['post_date']}<br>";
+        }
+        echo "</div>";
+    }
+    
+    // Étape 5: Si on a des posts, tester la récupération des métadonnées
+    if (!empty($posts_no_date)) {
+        echo "<h4>5. Test récupération métadonnées</h4>";
+        
+        $post_ids = array_column($posts_no_date, 'ID');
+        $post_ids_string = implode(',', array_map('intval', $post_ids));
+        
+        echo "<div style='background: #74b9ff; color: white; padding: 10px; margin: 5px;'>";
+        echo "Posts IDs à analyser : " . $post_ids_string;
+        echo "</div>";
+        
+        $stats_query = "
+            SELECT 
+                p.ID,
+                MAX(CASE WHEN pm.meta_key = 'event' THEN pm.meta_value END) as event_type,
+                MAX(CASE WHEN pm.meta_key = 'value' THEN pm.meta_value END) as value
+            FROM {$wpdb->posts} p
+            LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
+                AND pm.meta_key IN ('event', 'value')
+            WHERE p.ID IN ($post_ids_string)
+            GROUP BY p.ID
+        ";
+        
+        $results = $wpdb->get_results($stats_query, ARRAY_A);
+        
+        echo "<div style='background: #f8f9fa; padding: 10px; margin: 5px;'>";
+        echo "<strong>Métadonnées récupérées :</strong><br>";
+        foreach ($results as $result) {
+            echo "• Post #{$result['ID']} → Event: {$result['event_type']} | Value: {$result['value']}<br>";
+        }
+        echo "</div>";
+    }
+    
+    echo "</div>";
+}
+
+
+/**
+ * 🔥 TEST FINAL - Doit maintenant marcher !
+ */
+function nfc_test_final_working($vcard_id = 3736) {
+    echo "<div style='background: #d4edda; padding: 20px; margin: 10px; border: 3px solid #28a745;'>";
+    echo "<h3>🚀 TEST FINAL - ÇA DOIT MARCHER ! - vCard #$vcard_id</h3>";
+    
+    // Test avec 365 jours pour inclure tes données de décembre 2024
+    $stats = nfc_get_vcard_quick_stats($vcard_id, 365);
+    $leads = nfc_get_vcard_leads_count($vcard_id);
+    
+    echo "<div style='background: white; padding: 20px; margin: 10px; border: 1px solid #ddd; border-radius: 5px;'>";
+    echo "<h4>🎯 RÉSULTATS ATTENDUS :</h4>";
+    echo "<div style='font-size: 16px; line-height: 1.6;'>";
+    echo "<strong>🔥 Vues (365j):</strong> {$stats['views']}<br>";
+    echo "<strong>🔥 Clics (365j):</strong> {$stats['clicks']} ";
+    if ($stats['clicks'] > 0) {
+        echo "<span style='color: green; font-weight: bold;'>✅ SUCCESS!</span>";
+    } else {
+        echo "<span style='color: red; font-weight: bold;'>❌ Still zero</span>";
+    }
+    echo "<br>";
+    echo "<strong>🔥 Détail clics:</strong> " . json_encode($stats['clicks_detail']) . "<br>";
+    echo "<strong>🔥 Total interactions:</strong> {$stats['total_interactions']}<br>";
+    echo "<strong>🔥 Leads:</strong> {$leads}<br>";
+    echo "<strong>🔥 Dernière activité:</strong> {$stats['last_activity']}<br>";
+    echo "</div>";
+    echo "</div>";
+    
+    if ($stats['clicks'] > 0) {
+        echo "<div style='background: #28a745; color: white; padding: 15px; margin: 10px; border-radius: 5px; text-align: center;'>";
+        echo "<h2>🎉 PROBLÈME RÉSOLU ! 🎉</h2>";
+        echo "<p>Tes fonctions de stats marchent enfin !</p>";
+        echo "</div>";
+    }
+    
+    echo "</div>";
+}
+
+/**
+ * 🔥 BONUS : Test sur toutes tes vCards de test
+ */
+function nfc_test_all_vcards() {
+    $test_vcards = [1013, 3736, 3737, 3738, 3739, 3740];
+    
+    echo "<div style='background: #e3f2fd; padding: 20px; margin: 10px; border: 2px solid #2196f3;'>";
+    echo "<h3>🧪 TEST COMPLET - Toutes les vCards de test</h3>";
+    
+    foreach ($test_vcards as $vcard_id) {
+        $stats = nfc_get_vcard_quick_stats($vcard_id, 365);
+        $total = $stats['views'] + $stats['clicks'];
+        
+        $status = $total > 0 ? 
+            "<span style='color: green; font-weight: bold;'>✅</span>" : 
+            "<span style='color: orange;'>⚠️</span>";
+        
+        echo "<div style='background: white; padding: 10px; margin: 5px; border-radius: 3px;'>";
+        echo "$status <strong>vCard #{$vcard_id}:</strong> {$stats['views']} vues + {$stats['clicks']} clics = $total interactions";
+        if (!empty($stats['clicks_detail'])) {
+            echo " → " . json_encode($stats['clicks_detail']);
+        }
+        echo "</div>";
+    }
     
     echo "</div>";
 }

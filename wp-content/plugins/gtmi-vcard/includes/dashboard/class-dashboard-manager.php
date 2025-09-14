@@ -543,7 +543,7 @@ class NFC_Dashboard_Manager
                                 //nfc_debug_enterprise_data(2); 
                                 //nfc_test_sql_direct(3736);
 
-nfc_test_stats_fix(3736);
+nfc_test_all_vcards();
 
 
         // Interface Overview avec stats (comme mockup)
