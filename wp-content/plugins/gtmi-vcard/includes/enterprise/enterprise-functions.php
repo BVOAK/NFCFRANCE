@@ -16,19 +16,6 @@ function nfc_get_user_vcard_profiles($user_id) {
 }
 
 /**
- * Génère URL de renouvellement pour une carte
- */
-function nfc_generate_renewal_url($card_identifier) {
-    $base_url = home_url('/boutique-nfc/');
-    $params = [
-        'context' => 'renewal',
-        'card_id' => $card_identifier
-    ];
-    
-    return add_query_arg($params, $base_url);
-}
-
-/**
  * Génère URL d'ajout de cartes pour enterprise existante
  */
 function nfc_generate_additional_cards_url($user_id) {

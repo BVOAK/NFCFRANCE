@@ -540,12 +540,6 @@ class NFC_Dashboard_Manager
             return;
         }
 
-                                //nfc_debug_enterprise_data(2); 
-                                //nfc_test_sql_direct(3736);
-
-nfc_test_all_vcards();
-
-
         // Interface Overview avec stats (comme mockup)
         echo '<div class="content-header">';
         echo '<div class="d-flex justify-content-between align-items-center">';
