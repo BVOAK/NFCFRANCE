@@ -632,6 +632,78 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // OVERRIDE COMPLET de loadContacts pour utiliser le nouvel endpoint
             window.NFCContacts.loadContacts = function() {
+    console.log('🔧 loadContacts() overridé - utilisation endpoint adaptatif');
+    
+    // Re-valider la configuration
+    if (!isValidConfig()) {
+        this.showError('Configuration invalide');
+        return;
+    }
+    
+    // ✅ SAUVEGARDER le contexte 'this' AVANT les appels asynchrones
+    const self = this;
+    
+    self.isLoading = true;
+    self.showLoadingState();
+    
+    // Déterminer l'URL selon le mode
+    let apiUrl;
+    const config = window.nfcContactsConfig;
+    
+    console.log('🔧 Détermination URL - mode:', {
+        is_multi_profile: config.is_multi_profile,
+        selected_vcard_id: config.selected_vcard_id,
+        user_id: config.user_id,
+        vcard_id: config.vcard_id
+    });
+    
+    if (config.is_multi_profile && !config.selected_vcard_id) {
+        // Mode multi-profils global: endpoint user
+        apiUrl = `${config.api_url}leads/user/${config.user_id}`;
+        console.log('🌐 Mode multi_global - URL:', apiUrl);
+    } else {
+        // Mode simple ou avec filtre: endpoint vcard
+        const vcardId = config.selected_vcard_id || config.vcard_id;
+        apiUrl = `${config.api_url}leads/vcard/${vcardId}`;
+        console.log('🌐 Mode vcard spécifique - URL:', apiUrl);
+    }
+    
+    // ✅ Appel API SANS .bind() - utiliser 'self' dans les callbacks
+    fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-WP-Nonce': config.nonce
+        }
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        console.log('✅ Données reçues:', data);
+        
+        if (data.success && Array.isArray(data.data)) {
+            self.contacts = data.data;
+            self.filteredContacts = [...self.contacts];
+            self.renderTable();
+            self.updateStats();
+            console.log('✅ ' + self.contacts.length + ' contacts chargés');
+        } else {
+            throw new Error(data.message || 'Format de données invalide');
+        }
+    })
+    .catch(function(error) {
+        console.error('❌ Erreur chargement contacts:', error);
+        self.showError('Erreur: ' + error.message);
+    })
+    .finally(function() {
+        self.isLoading = false;
+        self.hideLoadingState();
+    });
+};
                 console.log('🔧 loadContacts() overridé - utilisation endpoint multi-profils');
                 
                 this.isLoading = true;
