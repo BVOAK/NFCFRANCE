@@ -412,21 +412,31 @@ class NFCAnalytics {
     }
     
     /**
-     * Tracking d'activité (heartbeat)
+     * Monitoring de session (heartbeat)
      */
-    bindActivityTracking() {
-        let activity_timer = setInterval(() => {
+    startSessionMonitoring() {
+        // Heartbeat toutes les 15 secondes si l'utilisateur est actif
+        this.session_timer = setInterval(() => {
             if (this.is_active && Date.now() - this.last_activity < 30000) { // 30 secondes d'inactivité max
                 this.updateSessionActivity();
             }
-        }, 15000); // Toutes les 15 secondes
+        }, 15000);
         
-        // Détecter l'activité
+        this.log('⏱️ Monitoring de session démarré');
+    }
+    
+    /**
+     * Tracking d'activité (heartbeat)
+     */
+    bindActivityTracking() {
+        // Détecter l'activité utilisateur
         ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
             document.addEventListener(event, () => {
                 this.last_activity = Date.now();
             }, { passive: true });
         });
+        
+        this.log('🎯 Tracking d\'activité configuré');
     }
     
     /**

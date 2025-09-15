@@ -459,6 +459,55 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+// Désactiver temporairement l'ancien
+window.NFC_VCARD_ID = undefined;
+</script>
+
+<script src="<?= plugin_dir_url(dirname(__FILE__)) ?>assets/js/nfc-analytics.js"></script>
+<script>
+window.nfcAnalyticsConfig = {
+    vcard_id: <?= get_the_ID() ?>,
+    ajax_url: '<?= admin_url('admin-ajax.php') ?>',
+    nonce: '<?= wp_create_nonce('nfc_analytics') ?>',
+    debug: true
+};
+</script>
+
+<!-- Test AJAX Manual -->
+<script>
+console.log('🧪 Test AJAX manuel...');
+
+// Test simple de l'endpoint
+fetch('<?= admin_url('admin-ajax.php') ?>', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+        action: 'nfc_track_view',
+        vcard_id: <?= get_the_ID() ?>,
+        session_id: 'test_manual_123',
+        traffic_source: 'direct',
+        nonce: '<?= wp_create_nonce('nfc_analytics') ?>'
+    })
+})
+.then(response => {
+    console.log('📡 Réponse status:', response.status);
+    return response.text();
+})
+.then(data => {
+    console.log('📡 Réponse raw:', data);
+    try {
+        const json = JSON.parse(data);
+        console.log('📡 Réponse JSON:', json);
+    } catch(e) {
+        console.error('❌ Pas du JSON valide');
+    }
+})
+.catch(error => {
+    console.error('❌ Erreur AJAX:', error);
+});
+</script>
+
 </body>
 
 </html>

@@ -36,103 +36,72 @@ class NFC_Analytics_Handler {
     /**
      * Tracking d'une vue de page
      */
-    public function track_view() {
-        try {
-            // Vérification basique (pas de nonce pour éviter les blocages)
-            $vcard_id = intval($_POST['vcard_id'] ?? 0);
-            $session_id = sanitize_text_field($_POST['session_id'] ?? '');
-            
-            if (!$vcard_id || !$session_id) {
-                wp_send_json_error(['message' => 'Données manquantes']);
-                return;
-            }
-            
-            // Vérifier que la vCard existe
-            if (!get_post($vcard_id) || get_post_type($vcard_id) !== 'virtual_card') {
-                wp_send_json_error(['message' => 'vCard non trouvée']);
-                return;
-            }
-            
-            // Vérifier si le tracking est activé
-            if (!$this->is_tracking_enabled()) {
-                wp_send_json_success(['message' => 'Tracking désactivé']);
-                return;
-            }
-            
-            // Vérifier si l'IP est exclue
-            $visitor_ip = $this->get_client_ip();
-            if ($this->is_ip_excluded($visitor_ip)) {
-                wp_send_json_success(['message' => 'IP exclue']);
-                return;
-            }
-            
-            global $wpdb;
-            $analytics_table = $wpdb->prefix . 'nfc_analytics';
-            
-            // Parsing des données reçues
-            $traffic_source = sanitize_text_field($_POST['traffic_source'] ?? 'direct');
-            $source_detail = sanitize_text_field($_POST['source_detail'] ?? '');
-            $utm_data = $this->parse_utm_data($_POST['utm_data'] ?? []);
-            $device_info = $this->parse_device_info($_POST['device_info'] ?? []);
-            
-            // Géolocalisation
-            $geo_data = $this->get_geolocation($visitor_ip);
-            
-            // Anonymisation IP si activée
-            if ($this->should_anonymize_ip()) {
-                $visitor_ip = $this->anonymize_ip($visitor_ip);
-            }
-            
-            // Préparation des données
-            $analytics_data = [
-                'vcard_id' => $vcard_id,
-                'session_id' => $session_id,
-                'visitor_ip' => $visitor_ip,
-                'user_agent' => substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 500),
-                'referer_url' => substr($_SERVER['HTTP_REFERER'] ?? '', 0, 500),
-                'traffic_source' => $traffic_source,
-                'source_detail' => $source_detail,
-                'utm_source' => $utm_data['source'] ?? null,
-                'utm_medium' => $utm_data['medium'] ?? null,
-                'utm_campaign' => $utm_data['campaign'] ?? null,
-                'country' => $geo_data['country'] ?? null,
-                'region' => $geo_data['region'] ?? null,
-                'city' => $geo_data['city'] ?? null,
-                'latitude' => $geo_data['latitude'] ?? null,
-                'longitude' => $geo_data['longitude'] ?? null,
-                'device_type' => $device_info['device_type'] ?? 'unknown',
-                'browser' => $device_info['browser'] ?? null,
-                'os' => $device_info['os'] ?? null,
-                'screen_resolution' => $device_info['screen_resolution'] ?? null,
-                'language' => $device_info['language'] ?? null,
-                'view_datetime' => current_time('mysql'),
-                'is_mobile_app' => $this->detect_mobile_app($device_info['user_agent'] ?? ''),
-                'created_at' => current_time('mysql')
-            ];
-            
-            // Insertion en base
-            $result = $wpdb->insert($analytics_table, $analytics_data);
-            
-            if ($result === false) {
-                error_log("❌ Erreur insertion analytics: " . $wpdb->last_error);
-                wp_send_json_error(['message' => 'Erreur base de données']);
-                return;
-            }
-            
-            $analytics_id = $wpdb->insert_id;
-            
-            error_log("✅ Vue trackée - vCard: {$vcard_id}, Session: {$session_id}, Analytics: {$analytics_id}");
-            
-            wp_send_json_success([
-                'analytics_id' => $analytics_id,
-                'message' => 'Vue enregistrée'
-            ]);
-            
-        } catch (Exception $e) {
-            error_log("❌ Erreur track_view: " . $e->getMessage());
-            wp_send_json_error(['message' => 'Erreur serveur']);
+public function track_view() {
+    error_log("🧪 DEBUG 1: Début track_view");
+    
+    try {
+        // Vérification basique
+        $vcard_id = intval($_POST['vcard_id'] ?? 0);
+        $session_id = sanitize_text_field($_POST['session_id'] ?? '');
+        
+        error_log("🧪 DEBUG 2: vcard_id=$vcard_id, session_id=$session_id");
+        
+        if (!$vcard_id || !$session_id) {
+            error_log("🧪 DEBUG 3: Données manquantes");
+            wp_send_json_error(['message' => 'Données manquantes']);
+            return;
         }
+        
+        // Vérifier que la vCard existe
+        $post = get_post($vcard_id);
+        error_log("🧪 DEBUG 4: Post trouvé: " . ($post ? "OUI" : "NON"));
+        
+        if (!$post || get_post_type($vcard_id) !== 'virtual_card') {
+            error_log("🧪 DEBUG 5: vCard non trouvée ou mauvais type");
+            wp_send_json_error(['message' => 'vCard non trouvée']);
+            return;
+        }
+        
+        // Test base de données
+        global $wpdb;
+        $analytics_table = $wpdb->prefix . 'nfc_analytics';
+        error_log("🧪 DEBUG 6: Table: $analytics_table");
+        
+        // Test simple d'insertion
+        $test_data = [
+            'vcard_id' => $vcard_id,
+            'session_id' => $session_id,
+            'visitor_ip' => '127.0.0.1',
+            'traffic_source' => 'direct',
+            'device_type' => 'desktop',
+            'view_datetime' => current_time('mysql'),
+            'created_at' => current_time('mysql')
+        ];
+        
+        error_log("🧪 DEBUG 7: Tentative d'insertion avec données: " . print_r($test_data, true));
+        
+        $result = $wpdb->insert($analytics_table, $test_data);
+        
+        error_log("🧪 DEBUG 8: Résultat insertion: " . ($result ? "SUCCESS" : "FAILED"));
+        error_log("🧪 DEBUG 9: Erreur SQL éventuelle: " . $wpdb->last_error);
+        error_log("🧪 DEBUG 10: Insert ID: " . $wpdb->insert_id);
+        
+        if ($result === false) {
+            error_log("❌ Erreur insertion analytics: " . $wpdb->last_error);
+            wp_send_json_error(['message' => 'Erreur base de données: ' . $wpdb->last_error]);
+            return;
+        }
+        
+        wp_send_json_success([
+            'analytics_id' => $wpdb->insert_id,
+            'message' => 'Vue enregistrée'
+        ]);
+        
+    } catch (Exception $e) {
+        error_log("❌ Exception track_view: " . $e->getMessage());
+        wp_send_json_error(['message' => 'Erreur serveur: ' . $e->getMessage()]);
     }
+}
     
     /**
      * Tracking d'une action utilisateur
