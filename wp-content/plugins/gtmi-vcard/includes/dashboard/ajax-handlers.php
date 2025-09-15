@@ -1116,11 +1116,13 @@ class NFC_Dashboard_Ajax
     public function get_statistics_data() {
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
         
-        $user_id = get_current_user_id();
-        $period = sanitize_text_field($_POST['period'] ?? '30d');
-        $profile_id = intval($_POST['profile'] ?? 0);
-        
         try {
+            $user_id = get_current_user_id();
+            $period = sanitize_text_field($_POST['period'] ?? '30d');
+            $profile_id = intval($_POST['profile'] ?? 0);
+            
+            error_log("📊 get_statistics_data appelée - user: $user_id, period: $period, profile: $profile_id");
+            
             // Récupérer les vCards utilisateur
             $user_vcards = $this->get_user_vcards();
             $vcard_ids = wp_list_pluck($user_vcards, 'ID');
@@ -1137,17 +1139,25 @@ class NFC_Dashboard_Ajax
             $stats = $this->calculate_real_statistics($target_vcards, $period);
             $charts_data = $this->get_real_charts_data($target_vcards, $period);
             
-            wp_send_json_success([
+            // Activité récente
+            $recent_activity = $this->get_user_recent_activity($user_id);
+            
+            $response_data = [
                 'stats' => $stats,
                 'charts' => $charts_data,
+                'recent_activity' => $recent_activity,
                 'period' => $period,
                 'profile' => $profile_id,
-                'has_real_data' => true
-            ]);
+                'vcard_count' => count($target_vcards)
+            ];
+            
+            error_log("✅ Envoi données stats: " . json_encode($stats));
+            
+            wp_send_json_success($response_data);
             
         } catch (Exception $e) {
             error_log("❌ Erreur get_statistics_data: " . $e->getMessage());
-            wp_send_json_error(['message' => 'Erreur lors du calcul des statistiques']);
+            wp_send_json_error(['message' => 'Erreur: ' . $e->getMessage()]);
         }
     }
 

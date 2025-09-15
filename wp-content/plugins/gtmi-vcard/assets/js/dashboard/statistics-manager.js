@@ -1,171 +1,216 @@
 /**
- * Statistics Manager - Dashboard NFC France
- * Architecture standardisée - Gestion interface et AJAX
+ * Statistics Manager - Version corrigée
+ * Fichier: assets/js/dashboard/statistics-manager.js
  */
 
 class NFCStatisticsManager {
     constructor(config) {
         this.config = config;
-        this.currentPeriod = config.default_period;
-        this.currentProfile = '';
-        this.charts = {};
         this.data = null;
+        this.charts = {};
         
-        console.log('📊 Configuration Statistics Manager:', config);
+        console.log('📊 Statistics Manager initialisé avec config:', config);
+        
         this.init();
     }
     
-    async init() {
+    init() {
         console.log('🚀 Initialisation Statistics Manager');
-        this.bindEvents();
-        await this.loadStatistics();
+        
+        this.setupEventListeners();
+        this.showLoading(true);
+        
+        // Chargement initial avec délai
+        setTimeout(() => {
+            this.loadStatistics();
+        }, 100);
     }
     
-    bindEvents() {
-        console.log('🔗 Liaison des événements');
+    setupEventListeners() {
+        // Changement de période
+        $('#periodFilter').on('change', (e) => {
+            console.log('📅 Changement période:', e.target.value);
+            this.loadStatistics();
+        });
         
-        // Filtre période
-        const periodFilter = document.getElementById('periodFilter');
-        if (periodFilter) {
-            periodFilter.addEventListener('change', (e) => {
-                console.log('📅 Changement période:', e.target.value);
-                this.currentPeriod = e.target.value;
-                this.loadStatistics();
-            });
-        }
-        
-        // Filtre profil (si multi-vCard)
-        const profileFilter = document.getElementById('profileFilter');
-        if (profileFilter) {
-            profileFilter.addEventListener('change', (e) => {
-                console.log('👤 Changement profil:', e.target.value);
-                this.currentProfile = e.target.value;
-                this.loadStatistics();
-            });
-        }
+        // Changement de profil
+        $('#profileFilter').on('change', (e) => {
+            console.log('👤 Changement profil:', e.target.value);
+            this.loadStatistics();
+        });
         
         // Export
-        const exportBtn = document.getElementById('exportBtn');
-        if (exportBtn) {
-            exportBtn.addEventListener('click', () => {
-                console.log('📥 Export demandé');
-                this.exportStatistics();
-            });
-        }
+        $('#exportBtn').on('click', () => {
+            this.exportStatistics();
+        });
     }
     
     async loadStatistics() {
         console.log('📊 Chargement des statistiques...');
+        
         this.showLoading(true);
         
         try {
-            const data = await this.callAjax('get_statistics_data', {
-                period: this.currentPeriod,
-                profile: this.currentProfile
+            const period = $('#periodFilter').val() || this.config.default_period;
+            const profile = $('#profileFilter').val() || '';
+            
+            const response = await this.makeAjaxRequest('nfc_get_statistics_data', {
+                period: period,
+                profile: profile
             });
             
-            console.log('✅ Données statistiques reçues:', data);
-            this.data = data;
+            console.log('✅ Réponse serveur:', response);
             
-            this.renderStatsCards();
-            this.renderCharts();
-            this.renderRecentActivity();
+            if (response.success) {
+                this.data = response.data;
+                this.renderAll();
+            } else {
+                throw new Error(response.data?.message || 'Erreur inconnue');
+            }
             
         } catch (error) {
             console.error('❌ Erreur chargement statistiques:', error);
-            this.showNotification('Erreur lors du chargement des statistiques', 'error');
+            this.showError('Erreur lors du chargement des statistiques: ' + error.message);
         } finally {
             this.showLoading(false);
         }
     }
     
+    async makeAjaxRequest(action, data = {}) {
+        const requestData = {
+            action: action,
+            nonce: this.config.nonce,
+            ...data
+        };
+        
+        console.log('🔄 Requête AJAX:', action, requestData);
+        
+        try {
+            const response = await fetch(this.config.ajax_url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(requestData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            // ✅ CORRECTION: Lire la réponse comme texte d'abord pour débugger
+            const responseText = await response.text();
+            console.log('📝 Réponse brute:', responseText.substring(0, 200) + '...');
+            
+            // Essayer de parser le JSON
+            try {
+                return JSON.parse(responseText);
+            } catch (jsonError) {
+                console.error('❌ Erreur parsing JSON:', jsonError);
+                console.error('📄 Réponse complète:', responseText);
+                throw new Error('Réponse serveur invalide (pas du JSON)');
+            }
+            
+        } catch (error) {
+            console.error('❌ Erreur requête AJAX:', error);
+            throw error;
+        }
+    }
+    
+    renderAll() {
+        console.log('🎨 Rendu de tous les éléments');
+        
+        this.renderStatsCards();
+        this.renderCharts();
+        this.renderRecentActivity();
+    }
+    
     renderStatsCards() {
         console.log('📊 Rendu des cartes statistiques');
         
-        if (!this.data || !this.data.stats) {
+        if (!this.data?.stats) {
             console.warn('⚠️ Pas de données stats disponibles');
             return;
         }
         
         const { stats } = this.data;
         
-        const cardsHtml = `
-            <div class="col-md-3 mb-3">
-                <div class="stat-card bg-primary text-white">
-                    <div class="stat-value">${this.formatNumber(stats.total_views || 0)}</div>
-                    <div class="stat-label">Vues du profil</div>
-                    <div class="stat-change ${this.getChangeClass(stats.views_change)}">
-                        <i class="fas fa-arrow-${stats.views_change >= 0 ? 'up' : 'down'}"></i>
-                        ${Math.abs(stats.views_change || 0)}% vs période précédente
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-card bg-success text-white">
-                    <div class="stat-value">${this.formatNumber(stats.total_contacts || 0)}</div>
-                    <div class="stat-label">Contacts générés</div>
-                    <div class="stat-change ${this.getChangeClass(stats.contacts_change)}">
-                        <i class="fas fa-arrow-${stats.contacts_change >= 0 ? 'up' : 'down'}"></i>
-                        ${Math.abs(stats.contacts_change || 0)}% vs période précédente
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-card bg-info text-white">
-                    <div class="stat-value">${this.formatNumber(stats.total_scans || 0)}</div>
-                    <div class="stat-label">Scans NFC</div>
-                    <div class="stat-change ${this.getChangeClass(stats.scans_change)}">
-                        <i class="fas fa-arrow-${stats.scans_change >= 0 ? 'up' : 'down'}"></i>
-                        ${Math.abs(stats.scans_change || 0)}% vs période précédente
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-card bg-warning text-white">
-                    <div class="stat-value">${(stats.conversion_rate || 0).toFixed(1)}%</div>
-                    <div class="stat-label">Taux conversion</div>
-                    <div class="stat-change ${this.getChangeClass(stats.conversion_change)}">
-                        <i class="fas fa-arrow-${stats.conversion_change >= 0 ? 'up' : 'down'}"></i>
-                        ${Math.abs(stats.conversion_change || 0).toFixed(1)}% vs période précédente
-                    </div>
-                </div>
-            </div>
-        `;
+        // Carte 1 - Vues
+        this.updateStatCard('#statsCards .stat-card:eq(0)', {
+            value: this.formatNumber(stats.total_views || 0),
+            label: 'Vues du profil',
+            change: stats.views_change || 0
+        });
         
-        document.getElementById('statsCards').innerHTML = cardsHtml;
+        // Carte 2 - Contacts
+        this.updateStatCard('#statsCards .stat-card:eq(1)', {
+            value: this.formatNumber(stats.contacts_generated || 0),
+            label: 'Contacts générés',
+            change: stats.contacts_change || 0
+        });
+        
+        // Carte 3 - Scans NFC
+        this.updateStatCard('#statsCards .stat-card:eq(2)', {
+            value: this.formatNumber(stats.nfc_scans || 0),
+            label: 'Scans NFC',
+            change: stats.scans_change || 0
+        });
+        
+        // Carte 4 - Conversion
+        this.updateStatCard('#statsCards .stat-card:eq(3)', {
+            value: (stats.conversion_rate || 0).toFixed(1) + '%',
+            label: 'Taux conversion',
+            change: stats.conversion_change || 0
+        });
+    }
+    
+    updateStatCard(selector, data) {
+        const card = $(selector);
+        if (card.length === 0) return;
+        
+        card.removeClass('loading');
+        card.find('.stat-value').text(data.value);
+        card.find('.stat-label').text(data.label);
+        
+        const changeEl = card.find('.stat-change');
+        const changeClass = data.change >= 0 ? 'positive' : 'negative';
+        const changeIcon = data.change >= 0 ? 'up' : 'down';
+        
+        changeEl.removeClass('positive negative')
+               .addClass(changeClass)
+               .html(`<i class="fas fa-arrow-${changeIcon}"></i> ${Math.abs(data.change)}% vs période précédente`);
     }
     
     renderCharts() {
         console.log('📈 Rendu des graphiques');
         
-        if (!this.data || !this.data.charts) {
+        if (!this.data?.charts) {
             console.warn('⚠️ Pas de données graphiques disponibles');
             return;
         }
         
-        // Détruire les graphiques existants
-        Object.values(this.charts).forEach(chart => {
-            if (chart) chart.destroy();
-        });
-        this.charts = {};
-        
-        const { charts } = this.data;
-        
-        this.createViewsChart(charts.views_evolution || []);
-        this.createSourceChart(charts.traffic_sources || []);
-        this.createContactsChart(charts.contacts_evolution || []);
+        this.renderViewsChart();
+        this.renderSourcesChart();
     }
     
-    createViewsChart(data) {
-        const ctx = document.getElementById('viewsChart').getContext('2d');
+    renderViewsChart() {
+        const ctx = document.getElementById('viewsChart');
+        if (!ctx) return;
+        
+        // Détruire le graphique existant
+        if (this.charts.views) {
+            this.charts.views.destroy();
+        }
+        
+        const evolution = this.data.charts.views_evolution || [];
         
         this.charts.views = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: data.map(item => item.date),
+                labels: evolution.map(item => item.date),
                 datasets: [{
                     label: 'Vues',
-                    data: data.map(item => item.views),
+                    data: evolution.map(item => item.views),
                     borderColor: '#0d6efd',
                     backgroundColor: 'rgba(13, 110, 253, 0.1)',
                     tension: 0.4,
@@ -176,35 +221,42 @@ class NFCStatisticsManager {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: false
-                    }
+                    legend: { display: false }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            callback: (value) => this.formatNumber(value)
-                        }
+                        ticks: { precision: 0 }
                     }
                 }
             }
         });
     }
     
-    createSourceChart(data) {
-        const ctx = document.getElementById('sourceChart').getContext('2d');
+    renderSourcesChart() {
+        const ctx = document.getElementById('sourcesChart');
+        if (!ctx) return;
         
-        const colors = ['#0d6efd', '#198754', '#dc3545', '#ffc107', '#6f42c1'];
+        // Détruire le graphique existant
+        if (this.charts.sources) {
+            this.charts.sources.destroy();
+        }
         
-        this.charts.source = new Chart(ctx, {
+        const sources = this.data.charts.traffic_sources || [];
+        
+        this.charts.sources = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: data.map(item => item.source),
+                labels: sources.map(item => item.source),
                 datasets: [{
-                    data: data.map(item => item.count),
-                    backgroundColor: colors.slice(0, data.length),
-                    borderWidth: 0
+                    data: sources.map(item => item.count),
+                    backgroundColor: [
+                        '#0d6efd',
+                        '#198754',
+                        '#ffc107',
+                        '#dc3545',
+                        '#0dcaf0'
+                    ]
                 }]
             },
             options: {
@@ -219,176 +271,65 @@ class NFCStatisticsManager {
         });
     }
     
-    createContactsChart(data) {
-        const ctx = document.getElementById('contactsChart').getContext('2d');
-        
-        this.charts.contacts = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.map(item => item.date),
-                datasets: [{
-                    label: 'Contacts',
-                    data: data.map(item => item.contacts),
-                    backgroundColor: '#198754',
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
-                }
-            }
-        });
-    }
-    
     renderRecentActivity() {
-        console.log('🕒 Rendu activité récente');
+        console.log('📋 Rendu activité récente');
         
-        if (!this.data || !this.data.recent_activity) {
-            document.getElementById('recentActivity').innerHTML = '<p class="text-muted">Aucune activité récente</p>';
+        const container = $('#recentActivity');
+        
+        if (!this.data?.recent_activity?.length) {
+            container.html('<p class="text-muted text-center">Aucune activité récente</p>');
             return;
         }
         
-        const activities = this.data.recent_activity;
+        let activityHtml = '<div class="table-responsive"><table class="table"><tbody>';
         
-        const activityHtml = activities.map(activity => `
-            <div class="d-flex align-items-center mb-3">
-                <div class="bg-${activity.type === 'contact' ? 'primary' : 'success'} bg-opacity-10 rounded-circle p-2 me-3">
-                    <i class="fas fa-${activity.type === 'contact' ? 'envelope' : 'eye'} text-${activity.type === 'contact' ? 'primary' : 'success'}"></i>
-                </div>
-                <div class="flex-grow-1">
-                    <div class="fw-medium">${activity.description}</div>
-                    <small class="text-muted">${activity.time_ago}</small>
-                </div>
-            </div>
-        `).join('');
+        this.data.recent_activity.forEach(activity => {
+            activityHtml += `
+                <tr>
+                    <td>
+                        <strong>${activity.type}</strong><br>
+                        <small class="text-muted">${activity.date}</small>
+                    </td>
+                    <td>${activity.description}</td>
+                </tr>
+            `;
+        });
         
-        document.getElementById('recentActivity').innerHTML = activityHtml || '<p class="text-muted">Aucune activité récente</p>';
-    }
-    
-    async exportStatistics() {
-        console.log('📥 Export des statistiques');
-        
-        try {
-            const data = await this.callAjax('export_statistics', {
-                period: this.currentPeriod,
-                profile: this.currentProfile,
-                format: 'csv'
-            });
-            
-            if (data.download_url) {
-                // Télécharger le fichier
-                const link = document.createElement('a');
-                link.href = data.download_url;
-                link.download = data.filename || 'statistiques.csv';
-                link.click();
-            } else if (data.csv_content) {
-                // Créer le fichier CSV côté client
-                const blob = new Blob([data.csv_content], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `statistiques_nfc_${this.currentPeriod}_${Date.now()}.csv`;
-                link.click();
-            }
-            
-            this.showNotification('Export réussi!', 'success');
-            
-        } catch (error) {
-            console.error('❌ Erreur export:', error);
-            this.showNotification('Erreur lors de l\'export', 'error');
-        }
-    }
-    
-    // === UTILITAIRES ===
-    
-    async callAjax(action, data = {}) {
-        const ajaxData = {
-            action: `nfc_${action}`,
-            nonce: this.config.nonce,
-            ...data
-        };
-        
-        console.log(`🔗 Appel AJAX: ${action}`, ajaxData);
-        
-        try {
-            const response = await fetch(this.config.ajax_url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(ajaxData)
-            });
-            
-            const result = await response.json();
-            console.log(`✅ Réponse ${action}:`, result);
-            
-            if (!result.success) {
-                throw new Error(result.data?.message || 'Erreur AJAX');
-            }
-            
-            return result.data;
-        } catch (error) {
-            console.error(`❌ Erreur ${action}:`, error);
-            throw error;
-        }
+        activityHtml += '</tbody></table></div>';
+        container.html(activityHtml);
     }
     
     showLoading(show) {
-        const overlay = document.getElementById('loadingOverlay');
-        const chartLoadings = document.querySelectorAll('.chart-loading');
-        
         if (show) {
-            overlay?.classList.remove('d-none');
-            chartLoadings.forEach(loading => loading.classList.remove('d-none'));
+            $('#statsCards .stat-card').addClass('loading');
+            $('#statsCards .stat-value').text('...');
+            $('#statsCards .stat-change').text('Chargement...');
         } else {
-            overlay?.classList.add('d-none');
-            chartLoadings.forEach(loading => loading.classList.add('d-none'));
+            $('#statsCards .stat-card').removeClass('loading');
         }
     }
     
-    showNotification(message, type = 'info') {
-        console.log(`🔔 Notification ${type}:`, message);
+    showError(message) {
+        console.error('❌ Affichage erreur:', message);
         
-        const container = document.getElementById('notificationContainer');
-        if (!container) return;
-        
-        const notification = document.createElement('div');
-        notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
-        notification.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        const alertHtml = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         `;
         
-        container.appendChild(notification);
-        
-        // Auto-remove après 5 secondes
-        setTimeout(() => {
-            notification.remove();
-        }, 5000);
+        $('.dashboard-statistics').prepend(alertHtml);
     }
     
     formatNumber(num) {
-        if (num >= 1000000) {
-            return (num / 1000000).toFixed(1) + 'M';
-        } else if (num >= 1000) {
-            return (num / 1000).toFixed(1) + 'K';
-        }
-        return num.toLocaleString();
+        return new Intl.NumberFormat('fr-FR').format(num);
     }
     
-    getChangeClass(change) {
-        if (!change) return '';
-        return change >= 0 ? 'positive' : 'negative';
+    exportStatistics() {
+        console.log('📥 Export des statistiques');
+        // TODO: Implémenter l'export
     }
 }
 
@@ -399,14 +340,11 @@ class NFCStatisticsManager {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DOM Ready - Initialisation Statistics Manager');
     
-    if (typeof statisticsConfig !== 'undefined') {
-        window.statisticsManager = new NFCStatisticsManager(statisticsConfig);
+    // ✅ CORRECTION: Utiliser STATISTICS_CONFIG au lieu de statisticsConfig
+    if (typeof STATISTICS_CONFIG !== 'undefined') {
+        window.statisticsManager = new NFCStatisticsManager(STATISTICS_CONFIG);
     } else {
-        console.error('❌ Configuration statisticsConfig non trouvée!');
+        console.error('❌ Configuration STATISTICS_CONFIG non trouvée!');
+        console.log('Variables disponibles:', Object.keys(window));
     }
 });
-
-// Export pour utilisation externe si nécessaire
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = NFCStatisticsManager;
-}

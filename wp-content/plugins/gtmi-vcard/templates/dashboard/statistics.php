@@ -1,68 +1,20 @@
 <?php
 /**
- * Dashboard - Statistics
- * Page statistiques adaptative multi-vCard
- * Architecture standardisée NFC France
+ * Dashboard - Statistics avec scripts directs
+ * Template: templates/dashboard/statistics.php
  */
 
 // Sécurité et vérifications
-if (!defined('ABSPATH')) {
-    exit;
-}
+if (!defined('ABSPATH')) exit;
+if (!is_user_logged_in()) wp_redirect(home_url('/login'));
 
-if (!is_user_logged_in()) {
-    wp_redirect(home_url('/login'));
-    exit;
-}
-
-// Helper functions
-if (!function_exists('nfc_get_user_vcard_profiles')) {
-    function nfc_get_user_vcard_profiles($user_id) {
-        if (class_exists('NFC_Enterprise_Core')) {
-            return NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
-        }
-        return [];
-    }
-}
-
-if (!function_exists('nfc_format_vcard_full_name')) {
-    function nfc_format_vcard_full_name($vcard_data) {
-        if (empty($vcard_data)) return 'Profil non configuré';
-        
-        $firstname = $vcard_data['firstname'] ?? '';
-        $lastname = $vcard_data['lastname'] ?? '';
-        
-        if (!empty($firstname) && !empty($lastname)) {
-            return $firstname . ' ' . $lastname;
-        } elseif (!empty($firstname)) {
-            return $firstname;
-        } elseif (!empty($lastname)) {
-            return $lastname;
-        }
-        
-        return 'Profil à configurer';
-    }
-}
-
-// ================================================================================
-// LOGIQUE MÉTIER
-// ================================================================================
-
+// Logique métier
 $user_id = get_current_user_id();
 $user_vcards = nfc_get_user_vcard_profiles($user_id);
 
 // Gestion des états
 if (empty($user_vcards)) {
-    ?>
-    <div class="text-center py-5">
-        <i class="fas fa-chart-line fa-4x text-muted mb-3"></i>
-        <h3>Aucune statistique disponible</h3>
-        <p class="text-muted mb-4">Commandez votre première carte NFC pour accéder aux statistiques de performance.</p>
-        <a href="/boutique-nfc/" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i>Commander ma carte NFC
-        </a>
-    </div>
-    <?php
+    include 'partials/no-products-state.php';
     return;
 }
 
@@ -92,13 +44,17 @@ $stats_config = [
 ];
 ?>
 
+<!-- CSS Directs -->
 <link rel="stylesheet" href="<?= plugin_dir_url(__FILE__) ?>../../assets/css/statistics.css?v=<?= time() ?>">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-<script src="<?= plugin_dir_url(__FILE__) ?>../../assets/js/dashboard/statistics-manager.js?v=<?= time() ?>"></script>
 
+<!-- JavaScript Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+<!-- Configuration JavaScript -->
 <script>
-// Configuration globale
-const statisticsConfig = <?= json_encode($stats_config) ?>;
+// Configuration globale pour le Statistics Manager
+window.STATISTICS_CONFIG = <?= json_encode($stats_config, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+console.log('📊 Configuration Statistics chargée:', window.STATISTICS_CONFIG);
 </script>
 
 <!-- ================================================================================ -->
@@ -127,190 +83,119 @@ const statisticsConfig = <?= json_encode($stats_config) ?>;
                 </div>
             </div>
         </div>
-        
-        <!-- Filtre profil et actions (si plusieurs vCards) -->
+
+        <!-- Filtre profil (si plusieurs vCards) -->
         <?php if ($show_profile_filter): ?>
         <div class="row mb-4">
             <div class="col-md-6">
-                <div class="d-flex gap-2 align-items-center">
-                    <label for="profileFilter" class="form-label mb-0 me-2">Profil :</label>
-                    <select class="form-select" id="profileFilter" style="width: auto;">
-                        <option value="">Tous les profils (<?= count($user_vcards) ?>)</option>
-                        <?php foreach ($user_vcards as $vcard): ?>
-                            <option value="<?= esc_attr($vcard['vcard_id']) ?>">
-                                <?= esc_html(nfc_format_vcard_full_name($vcard['vcard_data'] ?? [])) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+                <select class="form-select" id="profileFilter">
+                    <option value="">Tous les profils</option>
+                    <?php foreach ($user_vcards as $vcard): ?>
+                        <option value="<?= esc_attr($vcard['ID']) ?>">
+                            <?= esc_html(get_post_meta($vcard['ID'], 'first_name', true) . ' ' . get_post_meta($vcard['ID'], 'last_name', true)) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
             <div class="col-md-6 text-end">
                 <button class="btn btn-outline-primary" id="exportBtn">
-                    <i class="fas fa-download me-2"></i>Exporter CSV
+                    <i class="fas fa-download me-2"></i>Exporter
                 </button>
             </div>
         </div>
         <?php endif; ?>
     </div>
 
-    <!-- Stats principales (4 cards) -->
-    <div class="statistics-cards">
-        <div class="row mb-4" id="statsCards">
-            <!-- Loading placeholders -->
-            <div class="col-md-3 mb-3">
-                <div class="stat-card bg-primary text-white">
-                    <div class="stat-value placeholder-glow">
-                        <span class="placeholder col-6"></span>
-                    </div>
-                    <div class="stat-label">Vues du profil</div>
-                    <div class="stat-change">
-                        <span class="placeholder col-8"></span>
-                    </div>
-                </div>
+    <!-- Stats principales -->
+    <div class="row" id="statsCards">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card bg-primary text-white loading">
+                <div class="stat-value">...</div>
+                <div class="stat-label">Vues du profil</div>
+                <div class="stat-change">Chargement...</div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-card bg-success text-white">
-                    <div class="stat-value placeholder-glow">
-                        <span class="placeholder col-4"></span>
-                    </div>
-                    <div class="stat-label">Contacts générés</div>
-                    <div class="stat-change">
-                        <span class="placeholder col-7"></span>
-                    </div>
-                </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card bg-success text-white loading">
+                <div class="stat-value">...</div>
+                <div class="stat-label">Contacts générés</div>
+                <div class="stat-change">Chargement...</div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-card bg-info text-white">
-                    <div class="stat-value placeholder-glow">
-                        <span class="placeholder col-5"></span>
-                    </div>
-                    <div class="stat-label">Scans NFC</div>
-                    <div class="stat-change">
-                        <span class="placeholder col-6"></span>
-                    </div>
-                </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card bg-info text-white loading">
+                <div class="stat-value">...</div>
+                <div class="stat-label">Scans NFC</div>
+                <div class="stat-change">Chargement...</div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-card bg-warning text-white">
-                    <div class="stat-value placeholder-glow">
-                        <span class="placeholder col-4"></span>
-                    </div>
-                    <div class="stat-label">Taux conversion</div>
-                    <div class="stat-change">
-                        <span class="placeholder col-8"></span>
-                    </div>
-                </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card bg-warning text-white loading">
+                <div class="stat-value">...</div>
+                <div class="stat-label">Taux conversion</div>
+                <div class="stat-change">Chargement...</div>
             </div>
         </div>
     </div>
 
     <!-- Graphiques -->
-    <div class="statistics-charts">
-        <div class="row mb-4">
-            <!-- Graphique évolution des vues -->
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Évolution des vues</h5>
-                        <div class="chart-loading d-none">
-                            <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                <span class="visually-hidden">Chargement...</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="viewsChart" height="300"></canvas>
-                    </div>
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Évolution des vues</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="viewsChart" height="100"></canvas>
                 </div>
             </div>
-            
-            <!-- Graphique sources de trafic -->
-            <div class="col-lg-4">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Sources de trafic</h5>
-                        <div class="chart-loading d-none">
-                            <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                <span class="visually-hidden">Chargement...</span>
-                            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Sources de trafic</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="sourcesChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des appareils -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Types d'appareils</h5>
+                </div>
+                <div class="card-body">
+                    <div id="deviceTypes">
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                            <span class="ms-2">Chargement...</span>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="sourceChart" height="300"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Deuxième ligne de graphiques -->
-        <div class="row">
-            <!-- Graphique contacts générés -->
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Contacts générés</h5>
-                        <div class="chart-loading d-none">
-                            <div class="spinner-border spinner-border-sm text-primary" role="status">
-                                <span class="visually-hidden">Chargement...</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="contactsChart" height="250"></canvas>
-                    </div>
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Activité récente</h5>
                 </div>
-            </div>
-            
-            <!-- Tableau activité récente -->
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Activité récente</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="recentActivity">
-                            <!-- Placeholder -->
-                            <div class="d-flex align-items-center mb-3 placeholder-glow">
-                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
-                                    <i class="fas fa-envelope text-primary"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="placeholder col-8"></div>
-                                    <div class="placeholder col-6"></div>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center mb-3 placeholder-glow">
-                                <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
-                                    <i class="fas fa-eye text-success"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <div class="placeholder col-7"></div>
-                                    <div class="placeholder col-5"></div>
-                                </div>
-                            </div>
+                <div class="card-body">
+                    <div id="recentActivity">
+                        <div class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                            <span class="ms-2">Chargement...</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Loading overlay global -->
-    <div class="loading-overlay d-none" id="loadingOverlay">
-        <div class="d-flex flex-column align-items-center">
-            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
-                <span class="visually-hidden">Chargement des statistiques...</span>
-            </div>
-            <div class="text-muted">Chargement des statistiques...</div>
-        </div>
-    </div>
-
-    <!-- Zone de notification -->
-    <div class="notification-container" id="notificationContainer"></div>
 </div>
 
-<!-- Configuration JavaScript -->
-<script>
-// Variables globales pour le manager JavaScript
-const statisticsConfig = <?= json_encode($stats_config) ?>;
-</script>
+<!-- JavaScript Statistics Manager -->
+<script src="<?= plugin_dir_url(__FILE__) ?>../../assets/js/dashboard/statistics-manager.js?v=<?= time() ?>"></script>
