@@ -287,21 +287,114 @@ $nfc_current_page = 'contacts';
     </div>
 </div>
 
-<!-- MODALS - TODO: Copier de contacts.php -->
-<div class="modal fade" id="addContactModal" tabindex="-1">
-    <div class="modal-dialog">
+<!-- REMPLACE toute la section MODALS dans leads.php par celle-ci -->
+
+<!-- Modal Ajouter/Modifier Contact -->
+<div class="modal fade" id="contactModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="contactModalTitle">Ajouter un contact</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Fonctionnalité en développement...</p>
+                <form id="contactForm">
+                    <input type="hidden" id="contactId" name="id">
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="firstname" class="form-label">Prénom <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="firstname" name="firstname" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="lastname" class="form-label">Nom <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="lastname" name="lastname" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="mobile" class="form-label">Téléphone</label>
+                            <input type="tel" class="form-control" id="mobile" name="mobile">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="society" class="form-label">Entreprise</label>
+                            <input type="text" class="form-control" id="society" name="society">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="post" class="form-label">Poste</label>
+                            <input type="text" class="form-control" id="post" name="post">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="source" class="form-label">Source</label>
+                            <select class="form-select" id="source" name="source">
+                                <option value="manual">Manuel</option>
+                                <option value="qr">QR Code</option>
+                                <option value="nfc">NFC</option>
+                                <option value="web">Site Web</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="saveContactBtn" onclick="NFCContacts.saveContact()">
+                    <i class="fas fa-save me-2"></i>Enregistrer
+                </button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Modal Import CSV -->
+<div class="modal fade" id="importModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importer des contacts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="csvFile" class="form-label">Fichier CSV</label>
+                    <input type="file" class="form-control" id="csvFile" accept=".csv">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary">Importer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Détails Contact -->
+<div class="modal fade" id="contactDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Détails du contact</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="contactDetailsContent">
+                <!-- Rempli dynamiquement -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-primary" onclick="NFCContacts.editContactFromDetails()">
+                    <i class="fas fa-edit me-2"></i>Modifier
+                </button>
+                <button type="button" class="btn btn-danger" onclick="NFCContacts.deleteContactFromDetails()">
+                    <i class="fas fa-trash me-2"></i>Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- CONFIGURATION POUR contacts-manager.js -->

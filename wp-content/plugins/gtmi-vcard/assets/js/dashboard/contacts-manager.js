@@ -21,7 +21,7 @@
         filteredContacts: [],
         selectedContacts: [],
         currentPage: 1,
-        itemsPerPage: 25,
+        itemsPerPage: 5,
         totalPages: 1,
         isLoading: false,
         currentEditId: null,
@@ -921,12 +921,12 @@
 
             // Bouton précédent
             html += `
-        <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="NFCContacts.changePage(${this.currentPage - 1}); return false;">
-                <i class="fas fa-chevron-left"></i>
-            </a>
-        </li>
-    `;
+                <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="NFCContacts.changePage(${this.currentPage - 1}); return false;">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+            `;
 
             // Pages
             for (let i = 1; i <= this.totalPages; i++) {
@@ -944,12 +944,12 @@
 
             // Bouton suivant
             html += `
-        <li class="page-item ${this.currentPage === this.totalPages ? 'disabled' : ''}">
-            <a class="page-link" href="#" onclick="NFCContacts.changePage(${this.currentPage + 1}); return false;">
-                <i class="fas fa-chevron-right"></i>
-            </a>
-        </li>
-    `;
+                <li class="page-item ${this.currentPage === this.totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="NFCContacts.changePage(${this.currentPage + 1}); return false;">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            `;
 
             this.elements.pagination.innerHTML = html;
         },
