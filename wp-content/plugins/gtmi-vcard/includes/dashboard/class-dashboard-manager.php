@@ -27,7 +27,8 @@ class NFC_Dashboard_Manager
         $this->allowed_pages = [
             'overview' => 'Vue d\'ensemble',        // Stats globales
             'cards-list' => 'Mes cartes',          // Liste des vCards
-            'vcard-edit' => 'Ma vCard',            // Édition vCard spécifique
+            'vcard-edit' => 'Ma vCard',
+            'vcard-edit-legacy' => 'Ma vCard Old',              // Édition vCard spécifique
             'qr-codes' => 'QR Codes',
             'contacts' => 'Mes contacts',
             'statistics' => 'Statistiques',
@@ -166,6 +167,7 @@ class NFC_Dashboard_Manager
         $dashboard_pages = [
             'overview' => ['title' => 'Vue d\'ensemble', 'icon' => 'fas fa-home'],
             'vcard-edit' => ['title' => 'Ma vCard', 'icon' => 'fas fa-id-card'],
+            'vcard-edit-legacy' => ['title' => 'Ma vCard', 'icon' => 'fas fa-id-card'],
             'qr-codes' => ['title' => 'Codes QR', 'icon' => 'fas fa-qrcode'],
             'contacts' => ['title' => 'Mes contacts', 'icon' => 'fas fa-users'],
             'statistics' => ['title' => 'Statistiques', 'icon' => 'fas fa-chart-line'],
@@ -251,6 +253,15 @@ class NFC_Dashboard_Manager
                                             class="nfc-nav-link <?php echo $current_page === 'cards-list' ? 'active' : ''; ?>">
                                             <i class="fas fa-id-card-alt"></i>
                                             Mes cartes
+                                            <span class="nfc-nav-badge"><?php echo $vcard_count; ?></span>
+                                        </a>
+                                    </div>
+
+                                    <div class="nfc-nav-item">
+                                        <a href="?page=vcard-edit-legacy&vcard_id=3736"
+                                            class="nfc-nav-link <?php echo $current_page === 'vcard-edit-legacy' ? 'active' : ''; ?>">
+                                            <i class="fas fa-id-card-alt"></i>
+                                            Edition cartes old
                                             <span class="nfc-nav-badge"><?php echo $vcard_count; ?></span>
                                         </a>
                                     </div>
@@ -429,8 +440,13 @@ class NFC_Dashboard_Manager
                 break;
 
             case 'vcard-edit':
+                error_log("🎯 Rendering vCard Edit page - URL params: " . json_encode($_GET));
                 $this->render_vcard_edit_page($vcard);
                 break;
+
+            case 'vcard-edit-legacy':
+                $this->render_vcard_edit_page_legacy($vcard);
+                break;    
 
             case 'qr-codes':
                 $this->render_qr_codes_page($vcard);
@@ -1008,6 +1024,33 @@ class NFC_Dashboard_Manager
 
     private function render_vcard_edit_page($vcard)
     {
+        // Passer référence du dashboard manager pour accès aux fonctions
+        global $nfc_dashboard_manager;
+        $nfc_dashboard_manager = $this;
+        
+        // 🔥 ARCHITECTURE STANDARDISÉE : Utiliser le nouveau template
+        $template_path = $this->plugin_path . 'templates/dashboard/vcard-edit.php';
+        
+        if (file_exists($template_path)) {
+            error_log("✅ Loading new vcard-edit template: {$template_path}");
+            include $template_path;
+        } else {
+            // Fallback vers l'ancien template si le nouveau n'existe pas encore
+            error_log("⚠️ New vcard-edit template not found, falling back to simple version");
+            
+            $fallback_path = $this->plugin_path . 'templates/dashboard/simple/vcard-edit.php';
+            if (file_exists($fallback_path)) {
+                // Ancienne logique pour backward compatibility
+                $this->render_vcard_edit_page_legacy($vcard);
+            } else {
+                // Template de test si aucun template disponible
+                $this->render_test_page('vcard-edit', 'Ma vCard', $vcard);
+            }
+        }
+    }
+
+    private function render_vcard_edit_page_legacy($vcard)
+    {
         // Vérifier si un vcard_id spécifique est demandé
         $requested_vcard_id = isset($_GET['vcard_id']) ? intval($_GET['vcard_id']) : null;
 
@@ -1157,6 +1200,7 @@ class NFC_Dashboard_Manager
                         <div class="d-flex gap-2 flex-wrap">
                             <a href="?page=overview" class="btn btn-outline-primary btn-sm">Vue d'ensemble</a>
                             <a href="?page=vcard-edit" class="btn btn-outline-primary btn-sm">Ma vCard</a>
+                            <a href="?page=vcard-edit-legacy" class="btn btn-outline-primary btn-sm">Ma vCard Old</a>
                             <a href="?page=qr-codes" class="btn btn-outline-primary btn-sm">QR Codes</a>
                             <a href="?page=contacts" class="btn btn-outline-primary btn-sm">Contacts</a>
                             <a href="?page=statistics" class="btn btn-outline-primary btn-sm">Statistics</a>

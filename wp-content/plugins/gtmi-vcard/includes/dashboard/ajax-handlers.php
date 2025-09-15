@@ -43,6 +43,13 @@ class NFC_Dashboard_Ajax
         add_action('wp_ajax_nfc_remove_profile_image', [$this, 'remove_profile_image']);
         add_action('wp_ajax_nfc_remove_image', [$this, 'remove_image']);
 
+        add_action('wp_ajax_save_vcard_data', [$this, 'save_vcard_data']);
+        add_action('wp_ajax_upload_vcard_image', [$this, 'upload_vcard_image']);
+        add_action('wp_ajax_remove_vcard_image', [$this, 'remove_vcard_image']);
+        add_action('wp_ajax_get_vcard_preview', [$this, 'get_vcard_preview']);
+        add_action('wp_ajax_validate_vcard_data', [$this, 'validate_vcard_data']);
+        add_action('wp_ajax_duplicate_vcard', [$this, 'duplicate_vcard']);
+
         // QR Code actions
         add_action('wp_ajax_nfc_generate_qr', [$this, 'generate_qr']);
         add_action('wp_ajax_nfc_download_qr', [$this, 'download_qr']);
@@ -342,8 +349,560 @@ class NFC_Dashboard_Ajax
     }
 
     // ============================================
-    // FONCTIONS EXISTANTES CONSERVÉES (inchangées)
+    // VCARD EDIT
     // ============================================
+
+
+    /**
+ * Sauvegarder les données vCard
+ * @return void JSON Response
+ */
+public function save_vcard_data() {
+    // 1. VÉRIFICATION NONCE
+    check_ajax_referer('nfc_dashboard_nonce', 'nonce');
+    
+    // 2. VALIDATION DONNÉES
+    $vcard_id = intval($_POST['vcard_id'] ?? 0);
+    $user_id = get_current_user_id();
+    
+    if (!$vcard_id) {
+        wp_send_json_error(['message' => 'ID vCard manquant']);
+        return;
+    }
+    
+    // Vérifier que l'utilisateur possède cette vCard
+    $vcard = get_post($vcard_id);
+    if (!$vcard || $vcard->post_author != $user_id || $vcard->post_type !== 'virtual_card') {
+        wp_send_json_error(['message' => 'Accès non autorisé']);
+        return;
+    }
+    
+    // 3. LOGIQUE MÉTIER
+    try {
+        $fields_to_save = [
+            'firstname' => sanitize_text_field($_POST['firstname'] ?? ''),
+            'lastname' => sanitize_text_field($_POST['lastname'] ?? ''),
+            'society' => sanitize_text_field($_POST['society'] ?? ''),
+            'service' => sanitize_text_field($_POST['service'] ?? ''),
+            'post' => sanitize_text_field($_POST['post'] ?? ''),
+            'email' => sanitize_email($_POST['email'] ?? ''),
+            'phone' => sanitize_text_field($_POST['phone'] ?? ''),
+            'mobile' => sanitize_text_field($_POST['mobile'] ?? ''),
+            'website' => esc_url_raw($_POST['website'] ?? ''),
+            'linkedin' => esc_url_raw($_POST['linkedin'] ?? ''),
+            'twitter' => esc_url_raw($_POST['twitter'] ?? ''),
+            'instagram' => esc_url_raw($_POST['instagram'] ?? ''),
+            'facebook' => esc_url_raw($_POST['facebook'] ?? ''),
+            'pinterest' => esc_url_raw($_POST['pinterest'] ?? ''),
+            'youtube' => esc_url_raw($_POST['youtube'] ?? ''),
+            'description' => sanitize_textarea_field($_POST['description'] ?? ''),
+            'address' => sanitize_text_field($_POST['address'] ?? ''),
+            'additional' => sanitize_text_field($_POST['additional'] ?? ''),
+            'postcode' => sanitize_text_field($_POST['postcode'] ?? ''),
+            'city' => sanitize_text_field($_POST['city'] ?? ''),
+            'country' => sanitize_text_field($_POST['country'] ?? ''),
+            'custom_url' => esc_url_raw($_POST['custom_url'] ?? ''),
+            'redirect_mode' => sanitize_text_field($_POST['redirect_mode'] ?? 'vcard')
+        ];
+        
+        // Validation des champs obligatoires
+        if (empty($fields_to_save['firstname']) || empty($fields_to_save['lastname'])) {
+            wp_send_json_error(['message' => 'Le prénom et le nom sont obligatoires']);
+            return;
+        }
+        
+        if (empty($fields_to_save['email']) || !is_email($fields_to_save['email'])) {
+            wp_send_json_error(['message' => 'Un email valide est obligatoire']);
+            return;
+        }
+        
+        // Validation URL personnalisée
+        if ($fields_to_save['redirect_mode'] === 'custom') {
+            if (empty($fields_to_save['custom_url'])) {
+                wp_send_json_error(['message' => 'URL personnalisée requise en mode redirection']);
+                return;
+            }
+            
+            if (!filter_var($fields_to_save['custom_url'], FILTER_VALIDATE_URL)) {
+                wp_send_json_error(['message' => 'URL personnalisée invalide']);
+                return;
+            }
+        }
+        
+        // Sauvegarder les méta-données
+        $saved_count = 0;
+        foreach ($fields_to_save as $key => $value) {
+            $result = update_post_meta($vcard_id, $key, $value);
+            if ($result !== false) {
+                $saved_count++;
+            }
+        }
+        
+        // Mettre à jour la date de modification du post
+        wp_update_post([
+            'ID' => $vcard_id,
+            'post_modified' => current_time('mysql'),
+            'post_modified_gmt' => current_time('mysql', 1)
+        ]);
+        
+        error_log("✅ vCard saved successfully: {$vcard_id} - {$saved_count} fields updated");
+        
+        wp_send_json_success([
+            'message' => 'vCard sauvegardée avec succès',
+            'data' => [
+                'vcard_id' => $vcard_id,
+                'fields_updated' => $saved_count,
+                'timestamp' => current_time('timestamp')
+            ]
+        ]);
+        
+    } catch (Exception $e) {
+        error_log("❌ Error saving vCard {$vcard_id}: " . $e->getMessage());
+        wp_send_json_error(['message' => 'Erreur lors de la sauvegarde: ' . $e->getMessage()]);
+    }
+}
+
+
+/**
+ * Upload image vCard (photo de profil, logo, etc.)
+ * @return void JSON Response
+ */
+public function upload_vcard_image() {
+    // 1. VÉRIFICATION NONCE
+    check_ajax_referer('nfc_dashboard_nonce', 'nonce');
+    
+    // 2. VALIDATION DONNÉES
+    $vcard_id = intval($_POST['vcard_id'] ?? 0);
+    $user_id = get_current_user_id();
+    
+    if (!$vcard_id) {
+        wp_send_json_error(['message' => 'ID vCard manquant']);
+        return;
+    }
+    
+    // Vérifier que l'utilisateur possède cette vCard
+    $vcard = get_post($vcard_id);
+    if (!$vcard || $vcard->post_author != $user_id) {
+        wp_send_json_error(['message' => 'Accès non autorisé']);
+        return;
+    }
+    
+    // Vérifier qu'un fichier a été uploadé
+    if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+        wp_send_json_error(['message' => 'Aucun fichier reçu ou erreur d\'upload']);
+        return;
+    }
+    
+    // 3. LOGIQUE MÉTIER
+    try {
+        $file = $_FILES['file'];
+        
+        // Validation du type de fichier
+        $allowed_types = ['image/jpeg', 'image/png', 'image/svg+xml'];
+        $file_type = wp_check_filetype($file['name']);
+        
+        if (!in_array($file['type'], $allowed_types)) {
+            wp_send_json_error(['message' => 'Type de fichier non supporté']);
+            return;
+        }
+        
+        // Validation de la taille (5MB max)
+        $max_size = 5 * 1024 * 1024; // 5MB
+        if ($file['size'] > $max_size) {
+            wp_send_json_error(['message' => 'Fichier trop volumineux (max 5MB)']);
+            return;
+        }
+        
+        // Upload via WordPress
+        if (!function_exists('wp_handle_upload')) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+        }
+        
+        $upload_overrides = [
+            'test_form' => false,
+            'unique_filename_callback' => function($dir, $name, $ext) use ($vcard_id) {
+                return "vcard-{$vcard_id}-profile-" . time() . $ext;
+            }
+        ];
+        
+        $uploaded_file = wp_handle_upload($file, $upload_overrides);
+        
+        if (!empty($uploaded_file['error'])) {
+            wp_send_json_error(['message' => $uploaded_file['error']]);
+            return;
+        }
+        
+        // Supprimer l'ancienne image si elle existe
+        $old_image = get_post_meta($vcard_id, 'profile_picture', true);
+        if ($old_image) {
+            $old_attachment_id = attachment_url_to_postid($old_image);
+            if ($old_attachment_id) {
+                wp_delete_attachment($old_attachment_id, true);
+            }
+        }
+        
+        // Créer l'attachment WordPress
+        $attachment_data = [
+            'post_title' => "Photo de profil - vCard {$vcard_id}",
+            'post_content' => '',
+            'post_status' => 'inherit',
+            'post_author' => $user_id,
+            'post_parent' => $vcard_id
+        ];
+        
+        $attachment_id = wp_insert_attachment($attachment_data, $uploaded_file['file']);
+        
+        if (!is_wp_error($attachment_id)) {
+            // Générer les métadonnées de l'image
+            if (!function_exists('wp_generate_attachment_metadata')) {
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+            }
+            
+            $attachment_metadata = wp_generate_attachment_metadata($attachment_id, $uploaded_file['file']);
+            wp_update_attachment_metadata($attachment_id, $attachment_metadata);
+            
+            // Sauvegarder l'URL dans la vCard
+            update_post_meta($vcard_id, 'profile_picture', $uploaded_file['url']);
+            
+            error_log("✅ Image uploaded successfully for vCard {$vcard_id}: {$uploaded_file['url']}");
+            
+            wp_send_json_success([
+                'message' => 'Image uploadée avec succès',
+                'data' => [
+                    'url' => $uploaded_file['url'],
+                    'attachment_id' => $attachment_id,
+                    'file_name' => basename($uploaded_file['file'])
+                ]
+            ]);
+        } else {
+            wp_send_json_error(['message' => 'Erreur lors de la création de l\'attachment']);
+        }
+        
+    } catch (Exception $e) {
+        error_log("❌ Error uploading image for vCard {$vcard_id}: " . $e->getMessage());
+        wp_send_json_error(['message' => 'Erreur lors de l\'upload: ' . $e->getMessage()]);
+    }
+}
+
+
+/**
+ * Supprimer image vCard
+ * @return void JSON Response
+ */
+public function remove_vcard_image() {
+    // 1. VÉRIFICATION NONCE
+    check_ajax_referer('nfc_dashboard_nonce', 'nonce');
+    
+    // 2. VALIDATION DONNÉES
+    $vcard_id = intval($_POST['vcard_id'] ?? 0);
+    $user_id = get_current_user_id();
+    
+    if (!$vcard_id) {
+        wp_send_json_error(['message' => 'ID vCard manquant']);
+        return;
+    }
+    
+    // Vérifier que l'utilisateur possède cette vCard
+    $vcard = get_post($vcard_id);
+    if (!$vcard || $vcard->post_author != $user_id) {
+        wp_send_json_error(['message' => 'Accès non autorisé']);
+        return;
+    }
+    
+    // 3. LOGIQUE MÉTIER
+    try {
+        $current_image = get_post_meta($vcard_id, 'profile_picture', true);
+        
+        if ($current_image) {
+            // Supprimer l'attachment WordPress
+            $attachment_id = attachment_url_to_postid($current_image);
+            if ($attachment_id) {
+                wp_delete_attachment($attachment_id, true);
+            }
+            
+            // Supprimer la meta
+            delete_post_meta($vcard_id, 'profile_picture');
+            
+            error_log("✅ Image removed successfully for vCard {$vcard_id}");
+        }
+        
+        wp_send_json_success([
+            'message' => 'Image supprimée avec succès',
+            'data' => [
+                'vcard_id' => $vcard_id,
+                'removed_url' => $current_image
+            ]
+        ]);
+        
+    } catch (Exception $e) {
+        error_log("❌ Error removing image for vCard {$vcard_id}: " . $e->getMessage());
+        wp_send_json_error(['message' => 'Erreur lors de la suppression: ' . $e->getMessage()]);
+    }
+}
+
+
+/**
+ * Générer preview HTML de la vCard
+ * @return void JSON Response
+ */
+public function get_vcard_preview() {
+    // 1. VÉRIFICATION NONCE
+    check_ajax_referer('nfc_dashboard_nonce', 'nonce');
+    
+    // 2. VALIDATION DONNÉES
+    $vcard_id = intval($_POST['vcard_id'] ?? 0);
+    $user_id = get_current_user_id();
+    
+    if (!$vcard_id) {
+        wp_send_json_error(['message' => 'ID vCard manquant']);
+        return;
+    }
+    
+    // Vérifier que l'utilisateur possède cette vCard
+    $vcard = get_post($vcard_id);
+    if (!$vcard || $vcard->post_author != $user_id) {
+        wp_send_json_error(['message' => 'Accès non autorisé']);
+        return;
+    }
+    
+    // 3. LOGIQUE MÉTIER
+    try {
+        // Récupérer les données de la vCard
+        $vcard_data = [
+            'firstname' => get_post_meta($vcard_id, 'firstname', true),
+            'lastname' => get_post_meta($vcard_id, 'lastname', true),
+            'post' => get_post_meta($vcard_id, 'post', true),
+            'society' => get_post_meta($vcard_id, 'society', true),
+            'email' => get_post_meta($vcard_id, 'email', true),
+            'phone' => get_post_meta($vcard_id, 'phone', true),
+            'mobile' => get_post_meta($vcard_id, 'mobile', true),
+            'description' => get_post_meta($vcard_id, 'description', true),
+            'profile_picture' => get_post_meta($vcard_id, 'profile_picture', true)
+        ];
+        
+        // Générer le HTML du preview
+        $full_name = trim($vcard_data['firstname'] . ' ' . $vcard_data['lastname']);
+        $initials = strtoupper(substr($vcard_data['firstname'], 0, 1) . substr($vcard_data['lastname'], 0, 1));
+        
+        ob_start();
+        ?>
+        <div class="preview-card">
+            <div class="preview-header">
+                <div class="preview-avatar">
+                    <?php if ($vcard_data['profile_picture']): ?>
+                        <img src="<?= esc_url($vcard_data['profile_picture']) ?>" alt="Photo de profil">
+                    <?php else: ?>
+                        <span class="initials"><?= esc_html($initials) ?></span>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="preview-content">
+                <h3 class="preview-name"><?= esc_html($full_name ?: 'Nom Prénom') ?></h3>
+                <?php if ($vcard_data['post']): ?>
+                    <p class="preview-job"><?= esc_html($vcard_data['post']) ?></p>
+                <?php endif; ?>
+                <?php if ($vcard_data['society']): ?>
+                    <p class="preview-company"><?= esc_html($vcard_data['society']) ?></p>
+                <?php endif; ?>
+                <?php if ($vcard_data['description']): ?>
+                    <p class="preview-description"><?= esc_html($vcard_data['description']) ?></p>
+                <?php endif; ?>
+                <div class="preview-contacts">
+                    <?php if ($vcard_data['email']): ?>
+                        <div class="preview-contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span><?= esc_html($vcard_data['email']) ?></span>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($vcard_data['phone']): ?>
+                        <div class="preview-contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span><?= esc_html($vcard_data['phone']) ?></span>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($vcard_data['mobile']): ?>
+                        <div class="preview-contact-item">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span><?= esc_html($vcard_data['mobile']) ?></span>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+        <?php
+        $preview_html = ob_get_clean();
+        
+        wp_send_json_success([
+            'message' => 'Preview généré avec succès',
+            'data' => [
+                'html' => $preview_html,
+                'vcard_data' => $vcard_data
+            ]
+        ]);
+        
+    } catch (Exception $e) {
+        error_log("❌ Error generating preview for vCard {$vcard_id}: " . $e->getMessage());
+        wp_send_json_error(['message' => 'Erreur lors de la génération du preview: ' . $e->getMessage()]);
+    }
+}
+
+/**
+ * Valider les données vCard avant sauvegarde
+ * @return void JSON Response
+ */
+public function validate_vcard_data() {
+    // 1. VÉRIFICATION NONCE
+    check_ajax_referer('nfc_dashboard_nonce', 'nonce');
+    
+    // 2. VALIDATION DONNÉES
+    $vcard_id = intval($_POST['vcard_id'] ?? 0);
+    $user_id = get_current_user_id();
+    
+    if (!$vcard_id) {
+        wp_send_json_error(['message' => 'ID vCard manquant']);
+        return;
+    }
+    
+    // 3. LOGIQUE MÉTIER
+    try {
+        $validation_errors = [];
+        
+        // Prénom obligatoire
+        $firstname = sanitize_text_field($_POST['firstname'] ?? '');
+        if (empty($firstname)) {
+            $validation_errors['firstname'] = 'Le prénom est obligatoire';
+        }
+        
+        // Nom obligatoire
+        $lastname = sanitize_text_field($_POST['lastname'] ?? '');
+        if (empty($lastname)) {
+            $validation_errors['lastname'] = 'Le nom est obligatoire';
+        }
+        
+        // Email obligatoire et valide
+        $email = sanitize_email($_POST['email'] ?? '');
+        if (empty($email)) {
+            $validation_errors['email'] = 'L\'email est obligatoire';
+        } elseif (!is_email($email)) {
+            $validation_errors['email'] = 'L\'email n\'est pas valide';
+        }
+        
+        // Validation URLs
+        $urls_to_validate = ['website', 'linkedin', 'twitter', 'instagram', 'facebook', 'pinterest', 'youtube', 'custom_url'];
+        foreach ($urls_to_validate as $url_field) {
+            $url = esc_url_raw($_POST[$url_field] ?? '');
+            if (!empty($url) && !filter_var($url, FILTER_VALIDATE_URL)) {
+                $validation_errors[$url_field] = 'URL invalide';
+            }
+        }
+        
+        // Validation redirection personnalisée
+        $redirect_mode = sanitize_text_field($_POST['redirect_mode'] ?? 'vcard');
+        if ($redirect_mode === 'custom') {
+            $custom_url = esc_url_raw($_POST['custom_url'] ?? '');
+            if (empty($custom_url)) {
+                $validation_errors['custom_url'] = 'URL personnalisée requise en mode redirection';
+            }
+        }
+        
+        if (empty($validation_errors)) {
+            wp_send_json_success([
+                'message' => 'Données valides',
+                'data' => ['is_valid' => true]
+            ]);
+        } else {
+            wp_send_json_error([
+                'message' => 'Erreurs de validation',
+                'data' => [
+                    'is_valid' => false,
+                    'errors' => $validation_errors
+                ]
+            ]);
+        }
+        
+    } catch (Exception $e) {
+        error_log("❌ Error validating vCard {$vcard_id}: " . $e->getMessage());
+        wp_send_json_error(['message' => 'Erreur lors de la validation: ' . $e->getMessage()]);
+    }
+}
+
+/**
+ * Dupliquer une vCard
+ * @return void JSON Response
+ */
+public function duplicate_vcard() {
+    // 1. VÉRIFICATION NONCE
+    check_ajax_referer('nfc_dashboard_nonce', 'nonce');
+    
+    // 2. VALIDATION DONNÉES
+    $vcard_id = intval($_POST['vcard_id'] ?? 0);
+    $user_id = get_current_user_id();
+    
+    if (!$vcard_id) {
+        wp_send_json_error(['message' => 'ID vCard manquant']);
+        return;
+    }
+    
+    // Vérifier que l'utilisateur possède cette vCard
+    $original_vcard = get_post($vcard_id);
+    if (!$original_vcard || $original_vcard->post_author != $user_id) {
+        wp_send_json_error(['message' => 'Accès non autorisé']);
+        return;
+    }
+    
+    // 3. LOGIQUE MÉTIER
+    try {
+        // Créer le nouveau post
+        $new_vcard_data = [
+            'post_title' => $original_vcard->post_title . ' (Copie)',
+            'post_content' => $original_vcard->post_content,
+            'post_status' => 'publish',
+            'post_type' => 'virtual_card',
+            'post_author' => $user_id
+        ];
+        
+        $new_vcard_id = wp_insert_post($new_vcard_data);
+        
+        if (is_wp_error($new_vcard_id)) {
+            wp_send_json_error(['message' => 'Erreur lors de la création de la copie']);
+            return;
+        }
+        
+        // Copier toutes les méta-données
+        $meta_keys = [
+            'firstname', 'lastname', 'society', 'service', 'post', 'email', 'phone', 'mobile',
+            'website', 'linkedin', 'twitter', 'instagram', 'facebook', 'pinterest', 'youtube',
+            'description', 'address', 'additional', 'postcode', 'city', 'country',
+            'custom_url', 'redirect_mode'
+        ];
+        
+        foreach ($meta_keys as $meta_key) {
+            $meta_value = get_post_meta($vcard_id, $meta_key, true);
+            if (!empty($meta_value)) {
+                update_post_meta($new_vcard_id, $meta_key, $meta_value);
+            }
+        }
+        
+        // Ne pas copier l'image de profil (pour éviter les conflits)
+        // L'utilisateur devra uploader une nouvelle image
+        
+        error_log("✅ vCard duplicated successfully: {$vcard_id} -> {$new_vcard_id}");
+        
+        wp_send_json_success([
+            'message' => 'vCard dupliquée avec succès',
+            'data' => [
+                'original_id' => $vcard_id,
+                'new_id' => $new_vcard_id,
+                'edit_url' => '?page=vcard-edit&vcard_id=' . $new_vcard_id
+            ]
+        ]);
+        
+    } catch (Exception $e) {
+        error_log("❌ Error duplicating vCard {$vcard_id}: " . $e->getMessage());
+        wp_send_json_error(['message' => 'Erreur lors de la duplication: ' . $e->getMessage()]);
+    }
+}
+
 
     /**
      * Save vCard data
