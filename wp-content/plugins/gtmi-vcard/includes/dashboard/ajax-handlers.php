@@ -886,24 +886,61 @@ class NFC_Dashboard_Ajax
     /**
      * Get dashboard data
      */
-    public function get_dashboard_data()
-    {
+    public function get_dashboard_data() {
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-
-        $vcard_id = intval($_POST['vcard_id'] ?? 0);
-
-        if (!$vcard_id) {
-            wp_send_json_error(['message' => 'ID vCard manquant']);
+        
+        try {
+            $user_id = get_current_user_id();
+            $user_vcards = $this->get_user_vcards();
+            $vcard_ids = wp_list_pluck($user_vcards, 'ID');
+            
+            if (empty($vcard_ids)) {
+                wp_send_json_success($this->get_empty_dashboard_data());
+                return;
+            }
+            
+            // NOUVELLES STATS RÉELLES au lieu des simulations
+            $stats = $this->calculate_real_statistics($vcard_ids, '30d');
+            
+            // Activité récente (déjà réelle)
+            $recent_activity = $this->get_user_recent_activity($user_id);
+            
+            // Données complètes
+            $dashboard_data = [
+                'stats' => $stats,
+                'recent_activity' => $recent_activity,
+                'vcards' => $user_vcards,
+                'has_analytics' => true,
+                'debug_info' => [
+                    'vcard_count' => count($vcard_ids),
+                    'analytics_source' => 'real_data'
+                ]
+            ];
+            
+            wp_send_json_success($dashboard_data);
+            
+        } catch (Exception $e) {
+            error_log("❌ Erreur get_dashboard_data: " . $e->getMessage());
+            wp_send_json_error(['message' => 'Erreur lors de la récupération des données']);
         }
+    }
 
-        // Aggreger les données depuis les APIs REST
-        $dashboard_data = [
-            'vcard_data' => $this->get_vcard_data_internal($vcard_id),
-            'quick_stats' => $this->get_quick_stats_internal($vcard_id),
-            'recent_activity' => $this->get_recent_activity_internal($vcard_id)
+    /**
+     * Données vides si aucune vCard
+     */
+    private function get_empty_dashboard_data() {
+        return [
+            'stats' => [
+                'total_views' => 0,
+                'views_change' => 0,
+                'nfc_scans' => 0,
+                'contacts_generated' => 0,
+                'conversion_rate' => 0
+            ],
+            'recent_activity' => [],
+            'vcards' => [],
+            'has_analytics' => false
         ];
-
-        wp_send_json_success($dashboard_data);
     }
 
 
@@ -1076,51 +1113,241 @@ class NFC_Dashboard_Ajax
     /**
      * Récupérer les données statistiques
      */
-    public function get_statistics_data()
-    {
+    public function get_statistics_data() {
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-
+        
         $user_id = get_current_user_id();
         $period = sanitize_text_field($_POST['period'] ?? '30d');
         $profile_id = intval($_POST['profile'] ?? 0);
-
-        error_log("📊 get_statistics_data appelé - User: $user_id, Période: $period, Profil: $profile_id");
-
+        
         try {
             // Récupérer les vCards utilisateur
-            if (!function_exists('nfc_get_user_vcard_profiles')) {
-                wp_send_json_error(['message' => 'Fonction nfc_get_user_vcard_profiles non trouvée']);
-                return;
-            }
-
-            $user_vcards = nfc_get_user_vcard_profiles($user_id);
-
-            if (empty($user_vcards)) {
+            $user_vcards = $this->get_user_vcards();
+            $vcard_ids = wp_list_pluck($user_vcards, 'ID');
+            
+            if (empty($vcard_ids)) {
                 wp_send_json_error(['message' => 'Aucune vCard trouvée']);
                 return;
             }
-
+            
             // Filtrer par profil si spécifié
-            $target_vcards = $profile_id ? [$profile_id] : array_column($user_vcards, 'vcard_id');
-
-            error_log("📊 vCards cibles: " . implode(', ', $target_vcards));
-
-            // Calculer les statistiques
-            $stats = $this->calculate_statistics($target_vcards, $period);
-            $charts_data = $this->get_charts_data($target_vcards, $period);
-            $recent_activity = $this->get_recent_activity($target_vcards, $period);
-
+            $target_vcards = $profile_id ? [$profile_id] : $vcard_ids;
+            
+            // Calculer les statistiques RÉELLES
+            $stats = $this->calculate_real_statistics($target_vcards, $period);
+            $charts_data = $this->get_real_charts_data($target_vcards, $period);
+            
             wp_send_json_success([
                 'stats' => $stats,
                 'charts' => $charts_data,
-                'recent_activity' => $recent_activity,
                 'period' => $period,
-                'profile' => $profile_id
+                'profile' => $profile_id,
+                'has_real_data' => true
             ]);
-
+            
         } catch (Exception $e) {
             error_log("❌ Erreur get_statistics_data: " . $e->getMessage());
             wp_send_json_error(['message' => 'Erreur lors du calcul des statistiques']);
+        }
+    }
+
+    /**
+     * Calculer les statistiques RÉELLES depuis wp_nfc_analytics
+     */
+    private function calculate_real_statistics($vcard_ids, $period) {
+        global $wpdb;
+        
+        $analytics_table = $wpdb->prefix . 'nfc_analytics';
+        $days = $this->period_to_days($period);
+        $current_start = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+        $previous_start = date('Y-m-d H:i:s', strtotime("-" . ($days * 2) . " days"));
+        
+        $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
+        
+        // 1. Vues totales période actuelle
+        $current_views = intval($wpdb->get_var($wpdb->prepare("
+            SELECT COUNT(*) FROM {$analytics_table}
+            WHERE vcard_id IN ({$placeholders}) AND view_datetime >= %s
+        ", array_merge($vcard_ids, [$current_start]))));
+        
+        // 2. Vues période précédente
+        $previous_views = intval($wpdb->get_var($wpdb->prepare("
+            SELECT COUNT(*) FROM {$analytics_table}
+            WHERE vcard_id IN ({$placeholders}) 
+            AND view_datetime >= %s AND view_datetime < %s
+        ", array_merge($vcard_ids, [$previous_start, $current_start]))));
+        
+        // 3. Scans NFC réels
+        $nfc_scans = intval($wpdb->get_var($wpdb->prepare("
+            SELECT COUNT(*) FROM {$analytics_table}
+            WHERE vcard_id IN ({$placeholders}) 
+            AND view_datetime >= %s 
+            AND traffic_source = 'nfc_scan'
+        ", array_merge($vcard_ids, [$current_start]))));
+        
+        // 4. Contacts générés (déjà réel)
+        $contacts_count = $this->get_real_contacts_count($vcard_ids, $current_start);
+        
+        // 5. Calculs dérivés
+        $views_change = $previous_views > 0 ? 
+            round((($current_views - $previous_views) / $previous_views) * 100, 1) : 0;
+        
+        $conversion_rate = $current_views > 0 ? 
+            round(($contacts_count / $current_views) * 100, 1) : 0;
+        
+        return [
+            'total_views' => $current_views,
+            'previous_views' => $previous_views,
+            'views_change' => $views_change,
+            'nfc_scans' => $nfc_scans,
+            'contacts_generated' => $contacts_count,
+            'conversion_rate' => $conversion_rate,
+            'unique_visitors' => $this->get_unique_visitors($vcard_ids, $current_start),
+            'avg_session_duration' => $this->get_avg_session_duration($vcard_ids, $current_start)
+        ];
+    }
+
+    /**
+     * Obtenir les données graphiques RÉELLES
+     */
+    private function get_real_charts_data($vcard_ids, $period) {
+        global $wpdb;
+        
+        $analytics_table = $wpdb->prefix . 'nfc_analytics';
+        $days = $this->period_to_days($period);
+        $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
+        
+        // 1. Évolution des vues (graphique ligne)
+        $views_evolution = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-{$i} days"));
+            $next_date = date('Y-m-d', strtotime("-{$i} days +1 day"));
+            
+            $views = $wpdb->get_var($wpdb->prepare("
+                SELECT COUNT(*) FROM {$analytics_table}
+                WHERE vcard_id IN ({$placeholders})
+                AND view_datetime >= %s AND view_datetime < %s
+            ", array_merge($vcard_ids, [$date, $next_date])));
+            
+            $views_evolution[] = [
+                'date' => date('d/m', strtotime($date)),
+                'views' => intval($views ?: 0)
+            ];
+        }
+        
+        // 2. Sources de trafic (graphique camembert)
+        $start_date = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+        $traffic_sources = $wpdb->get_results($wpdb->prepare("
+            SELECT 
+                traffic_source,
+                COUNT(*) as count,
+                ROUND((COUNT(*) * 100.0 / (
+                    SELECT COUNT(*) FROM {$analytics_table} 
+                    WHERE vcard_id IN ({$placeholders}) AND view_datetime >= %s
+                )), 1) as percentage
+            FROM {$analytics_table}
+            WHERE vcard_id IN ({$placeholders}) AND view_datetime >= %s
+            GROUP BY traffic_source
+            ORDER BY count DESC
+        ", array_merge($vcard_ids, [$start_date], $vcard_ids, [$start_date])));
+        
+        $sources_data = [];
+        foreach ($traffic_sources as $source) {
+            $sources_data[] = [
+                'source' => $this->format_traffic_source($source->traffic_source),
+                'count' => intval($source->count),
+                'percentage' => floatval($source->percentage)
+            ];
+        }
+        
+        // 3. Types d'appareils
+        $device_types = $wpdb->get_results($wpdb->prepare("
+            SELECT 
+                device_type,
+                COUNT(*) as count
+            FROM {$analytics_table}
+            WHERE vcard_id IN ({$placeholders}) AND view_datetime >= %s
+            GROUP BY device_type
+            ORDER BY count DESC
+        ", array_merge($vcard_ids, [$start_date])));
+        
+        $devices_data = array_map(function($device) {
+            return [
+                'device' => ucfirst($device->device_type),
+                'count' => intval($device->count)
+            ];
+        }, $device_types);
+        
+        return [
+            'views_evolution' => $views_evolution,
+            'traffic_sources' => $sources_data,
+            'device_types' => $devices_data
+        ];
+    }
+
+    /**
+     * Obtenir le nombre de visiteurs uniques
+     */
+    private function get_unique_visitors($vcard_ids, $start_date) {
+        global $wpdb;
+        
+        $analytics_table = $wpdb->prefix . 'nfc_analytics';
+        $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
+        
+        return intval($wpdb->get_var($wpdb->prepare("
+            SELECT COUNT(DISTINCT session_id) FROM {$analytics_table}
+            WHERE vcard_id IN ({$placeholders}) AND view_datetime >= %s
+        ", array_merge($vcard_ids, [$start_date]))));
+    }
+
+    /**
+     * Calculer la durée moyenne de session (estimée)
+     */
+    private function get_avg_session_duration($vcard_ids, $start_date) {
+        // Pour l'instant, estimation basique
+        // Dans une version plus avancée, on trackera les interactions
+        return 45; // 45 secondes par défaut
+    }
+
+     /**
+     * Formater les sources de trafic pour affichage
+     */
+    private function format_traffic_source($source) {
+        switch ($source) {
+            case 'qr_code':
+                return 'QR Code';
+            case 'nfc_scan':
+                return 'Scan NFC';
+            case 'direct':
+                return 'Accès direct';
+            case 'social':
+                return 'Réseaux sociaux';
+            case 'email':
+                return 'Email';
+            case 'referral':
+                return 'Référence';
+            case 'search':
+                return 'Recherche';
+            default:
+                return 'Autre';
+        }
+    }
+
+    /**
+     * Convertir période en nombre de jours
+     */
+    private function period_to_days($period) {
+        switch ($period) {
+            case '7d':
+                return 7;
+            case '30d':
+                return 30;
+            case '3m':
+                return 90;
+            case '1y':
+                return 365;
+            default:
+                return 30;
         }
     }
 
@@ -1326,24 +1553,6 @@ class NFC_Dashboard_Ajax
     /**
      * Utilitaires de calcul
      */
-    private function period_to_days($period)
-    {
-        switch ($period) {
-            case '7d':
-                return 7;
-            case '30d':
-                return 30;
-            case '3m':
-                return 90;
-            case '6m':
-                return 180;
-            case '1y':
-                return 365;
-            default:
-                return 30;
-        }
-    }
-
     private function get_total_views($vcard_ids, $start_date, $end_date = null)
     {
         global $wpdb;
