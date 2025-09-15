@@ -1088,6 +1088,11 @@ class NFC_Dashboard_Ajax
 
         try {
             // Récupérer les vCards utilisateur
+            if (!function_exists('nfc_get_user_vcard_profiles')) {
+                wp_send_json_error(['message' => 'Fonction nfc_get_user_vcard_profiles non trouvée']);
+                return;
+            }
+
             $user_vcards = nfc_get_user_vcard_profiles($user_id);
 
             if (empty($user_vcards)) {
@@ -1131,7 +1136,14 @@ class NFC_Dashboard_Ajax
         $profile_id = intval($_POST['profile'] ?? 0);
         $format = sanitize_text_field($_POST['format'] ?? 'csv');
 
+        error_log("📥 export_statistics appelé - User: $user_id, Période: $period, Format: $format");
+
         try {
+            if (!function_exists('nfc_get_user_vcard_profiles')) {
+                wp_send_json_error(['message' => 'Fonction nfc_get_user_vcard_profiles non trouvée']);
+                return;
+            }
+
             $user_vcards = nfc_get_user_vcard_profiles($user_id);
             $target_vcards = $profile_id ? [$profile_id] : array_column($user_vcards, 'vcard_id');
 
@@ -1150,6 +1162,37 @@ class NFC_Dashboard_Ajax
     }
 
     /**
+     * Données pour les graphiques (optionnel)
+     */
+    public function get_chart_data()
+    {
+        check_ajax_referer('nfc_dashboard_nonce', 'nonce');
+
+        $user_id = get_current_user_id();
+        $period = sanitize_text_field($_POST['period'] ?? '30d');
+        $profile_id = intval($_POST['profile'] ?? 0);
+        $chart_type = sanitize_text_field($_POST['chart_type'] ?? 'all');
+
+        try {
+            if (!function_exists('nfc_get_user_vcard_profiles')) {
+                wp_send_json_error(['message' => 'Fonction nfc_get_user_vcard_profiles non trouvée']);
+                return;
+            }
+
+            $user_vcards = nfc_get_user_vcard_profiles($user_id);
+            $target_vcards = $profile_id ? [$profile_id] : array_column($user_vcards, 'vcard_id');
+
+            $charts_data = $this->get_charts_data($target_vcards, $period);
+
+            wp_send_json_success($charts_data);
+
+        } catch (Exception $e) {
+            error_log("❌ Erreur get_chart_data: " . $e->getMessage());
+            wp_send_json_error(['message' => 'Erreur lors de la récupération des données graphiques']);
+        }
+    }
+
+    /**
      * Calculer les statistiques principales
      */
     private function calculate_statistics($vcard_ids, $period)
@@ -1162,7 +1205,7 @@ class NFC_Dashboard_Ajax
 
         error_log("📊 Calcul stats - vCards: " . implode(', ', $vcard_ids) . " - Période: $days jours depuis $start_date");
 
-        // Vues des profils (table wp_posts + analytics si disponible)
+        // Vues des profils (table analytics ou simulation)
         $total_views = $this->get_total_views($vcard_ids, $start_date);
         $previous_views = $this->get_total_views($vcard_ids, date('Y-m-d', strtotime("-" . ($days * 2) . " days")), $start_date);
 
@@ -1208,12 +1251,13 @@ class NFC_Dashboard_Ajax
         // Évolution des vues (données par jour)
         $views_evolution = $this->get_views_evolution($vcard_ids, $days);
 
-        // Sources de trafic (simulé pour l'instant)
+        // Sources de trafic (simulé pour l'instant, à adapter selon vos besoins)
+        $total_views = $this->get_total_views($vcard_ids, date('Y-m-d', strtotime("-{$days} days")));
         $traffic_sources = [
-            ['source' => 'QR Code', 'count' => 45],
-            ['source' => 'NFC Scan', 'count' => 35],
-            ['source' => 'Partage direct', 'count' => 15],
-            ['source' => 'Recherche', 'count' => 5]
+            ['source' => 'QR Code', 'count' => intval($total_views * 0.45)],
+            ['source' => 'NFC Scan', 'count' => intval($total_views * 0.35)],
+            ['source' => 'Partage direct', 'count' => intval($total_views * 0.15)],
+            ['source' => 'Recherche', 'count' => intval($total_views * 0.05)]
         ];
 
         // Évolution des contacts
@@ -1239,6 +1283,8 @@ class NFC_Dashboard_Ajax
         $leads_table = $wpdb->prefix . 'posts';
         $meta_table = $wpdb->prefix . 'postmeta';
 
+        $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
+
         $recent_contacts = $wpdb->get_results($wpdb->prepare("
         SELECT p.post_title, p.post_date, pm.meta_value as vcard_id
         FROM {$leads_table} p
@@ -1246,7 +1292,7 @@ class NFC_Dashboard_Ajax
         WHERE p.post_type = 'lead'
           AND p.post_status = 'publish'
           AND p.post_date >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-          AND pm.meta_value IN (" . implode(',', array_fill(0, count($vcard_ids), '%d')) . ")
+          AND pm.meta_value IN ({$placeholders})
         ORDER BY p.post_date DESC
         LIMIT 5
     ", $vcard_ids));
@@ -1255,16 +1301,24 @@ class NFC_Dashboard_Ajax
             $activities[] = [
                 'type' => 'contact',
                 'description' => "Nouveau contact : " . $contact->post_title,
-                'time_ago' => human_time_diff(strtotime($contact->post_date)) . ' ago'
+                'time_ago' => human_time_diff(strtotime($contact->post_date), current_time('timestamp')) . ' ago'
             ];
         }
 
-        // Ajouter quelques vues simulées
-        $activities[] = [
-            'type' => 'view',
-            'description' => "Profil consulté 12 fois",
-            'time_ago' => '2 heures ago'
-        ];
+        // Ajouter quelques activités simulées si pas assez de données réelles
+        if (count($activities) < 3) {
+            $activities[] = [
+                'type' => 'view',
+                'description' => "Profil consulté 12 fois aujourd'hui",
+                'time_ago' => '2 heures ago'
+            ];
+
+            $activities[] = [
+                'type' => 'scan',
+                'description' => "5 nouveaux scans NFC",
+                'time_ago' => '4 heures ago'
+            ];
+        }
 
         return array_slice($activities, 0, 5);
     }
@@ -1292,10 +1346,38 @@ class NFC_Dashboard_Ajax
 
     private function get_total_views($vcard_ids, $start_date, $end_date = null)
     {
-        // Pour l'instant, simulation basée sur les ID vCards
-        $base_views = array_sum($vcard_ids) * 10; // Simulation
+        global $wpdb;
+
+        // Essayer d'abord avec une vraie table d'analytics si elle existe
+        $analytics_table = $wpdb->prefix . 'nfc_vcard_analytics';
+
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$analytics_table}'") == $analytics_table) {
+            $where_date = $end_date ?
+                "AND view_date BETWEEN '$start_date' AND '$end_date'" :
+                "AND view_date >= '$start_date'";
+
+            $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
+
+            $sql = "
+            SELECT COUNT(*) as total
+            FROM {$analytics_table}
+            WHERE vcard_id IN ({$placeholders})
+            {$where_date}
+        ";
+
+            $result = $wpdb->get_var($wpdb->prepare($sql, $vcard_ids));
+
+            if ($result !== null) {
+                return intval($result);
+            }
+        }
+
+        // Fallback : simulation basée sur les ID vCards et la période
+        $base_views = array_sum($vcard_ids) * 8; // Base de calcul
         $random_factor = rand(80, 120) / 100; // Variation ±20%
-        return intval($base_views * $random_factor);
+        $period_factor = $end_date ? 0.7 : 1.0; // Période précédente = 70% de la actuelle
+
+        return intval($base_views * $random_factor * $period_factor);
     }
 
     private function get_total_contacts($vcard_ids, $start_date, $end_date = null)
@@ -1309,6 +1391,8 @@ class NFC_Dashboard_Ajax
             "AND p.post_date BETWEEN '$start_date' AND '$end_date'" :
             "AND p.post_date >= '$start_date'";
 
+        $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
+
         $sql = "
         SELECT COUNT(DISTINCT p.ID) as total
         FROM {$posts_table} p
@@ -1316,8 +1400,8 @@ class NFC_Dashboard_Ajax
         WHERE p.post_type = 'lead'
           AND p.post_status = 'publish'
           AND pm.meta_key = 'linked_virtual_card'
-          AND pm.meta_value IN (" . implode(',', array_fill(0, count($vcard_ids), '%d')) . ")
-          $where_date
+          AND pm.meta_value IN ({$placeholders})
+          {$where_date}
     ";
 
         $result = $wpdb->get_var($wpdb->prepare($sql, $vcard_ids));
@@ -1330,7 +1414,16 @@ class NFC_Dashboard_Ajax
 
         for ($i = $days - 1; $i >= 0; $i--) {
             $date = date('Y-m-d', strtotime("-{$i} days"));
-            $views = rand(5, 50); // Simulation pour l'instant
+
+            // Simulation avec variabilité réaliste
+            $base_views = array_sum($vcard_ids) * 0.3;
+            $day_of_week = date('N', strtotime($date)); // 1=lundi, 7=dimanche
+
+            // Plus d'activité en semaine
+            $week_factor = ($day_of_week <= 5) ? 1.2 : 0.7;
+            $random_factor = rand(70, 130) / 100;
+
+            $views = intval($base_views * $week_factor * $random_factor);
 
             $evolution[] = [
                 'date' => date('d/m', strtotime($date)),
@@ -1346,12 +1439,12 @@ class NFC_Dashboard_Ajax
         global $wpdb;
 
         $evolution = [];
+        $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
 
         for ($i = $days - 1; $i >= 0; $i--) {
             $date = date('Y-m-d', strtotime("-{$i} days"));
-            $next_date = date('Y-m-d', strtotime("-" . ($i - 1) . " days"));
 
-            // Compter les contacts pour cette date
+            // Compter les contacts réels pour cette date
             $contacts = $wpdb->get_var($wpdb->prepare("
             SELECT COUNT(DISTINCT p.ID)
             FROM {$wpdb->prefix}posts p
@@ -1359,7 +1452,7 @@ class NFC_Dashboard_Ajax
             WHERE p.post_type = 'lead'
               AND p.post_status = 'publish'
               AND pm.meta_key = 'linked_virtual_card'
-              AND pm.meta_value IN (" . implode(',', array_fill(0, count($vcard_ids), '%d')) . ")
+              AND pm.meta_value IN ({$placeholders})
               AND DATE(p.post_date) = %s
         ", array_merge($vcard_ids, [$date])));
 
@@ -1381,6 +1474,16 @@ class NFC_Dashboard_Ajax
         $csv .= "Contacts générés,{$stats['total_contacts']},{$stats['contacts_change']}%\n";
         $csv .= "Scans NFC,{$stats['total_scans']},{$stats['scans_change']}%\n";
         $csv .= "Taux de conversion,{$stats['conversion_rate']}%,{$stats['conversion_change']}%\n";
+
+        // Ajouter l'évolution des données
+        $csv .= "\nÉvolution sur {$period}\n";
+        $csv .= "Date,Vues,Contacts\n";
+
+        $charts_data = $this->get_charts_data($vcard_ids, $period);
+        foreach ($charts_data['views_evolution'] as $i => $view_data) {
+            $contact_data = $charts_data['contacts_evolution'][$i] ?? ['contacts' => 0];
+            $csv .= "{$view_data['date']},{$view_data['views']},{$contact_data['contacts']}\n";
+        }
 
         return $csv;
     }
