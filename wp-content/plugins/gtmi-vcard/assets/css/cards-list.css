@@ -1,0 +1,366 @@
+/**
+ * Cards List - Dashboard NFC France
+ * Styles modernes et responsive
+ */
+
+/* === VARIABLES === */
+:root {
+    --cards-primary: #0d6efd;
+    --cards-success: #198754;
+    --cards-warning: #ffc107;
+    --cards-danger: #dc3545;
+    --cards-info: #0dcaf0;
+    --cards-light: #f8f9fa;
+    --cards-dark: #212529;
+    --cards-border: #dee2e6;
+    --cards-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --cards-shadow-lg: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --cards-radius: 0.375rem;
+    --cards-radius-lg: 0.5rem;
+    --cards-transition: all 0.2s ease-in-out;
+}
+
+/**
+ * Cards List - Dashboard NFC France
+ * Design cohérent avec leads.php
+ */
+
+/* === REPRENDRE LES STYLES DE LEADS.PHP === */
+
+/* Layout principal - même structure que leads */
+.dashboard-cards-main {
+    margin-top: 0;
+}
+
+/* Header - style identique à leads.php */
+.content-header h1 {
+    font-weight: 600;
+    color: #212529;
+}
+
+.content-header .text-muted {
+    font-size: 0.95rem;
+}
+
+/* Stats cards - exactement comme leads.php */
+.card {
+    border: 0;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-body .fa-2x {
+    font-size: 2em;
+}
+
+.card-body h3 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.card-body .text-muted.small {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+/* Tableau - style exact de leads.php */
+.table {
+    font-size: 0.9rem;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: #495057;
+    padding: 1rem 0.75rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.table tbody tr {
+    transition: background-color 0.15s ease-in-out;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Badges - style identique à leads.php */
+.badge {
+    font-weight: 500;
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+}
+
+.badge.bg-success.bg-opacity-10 {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+    color: #198754 !important;
+    border: 1px solid rgba(25, 135, 84, 0.2);
+}
+
+.badge.bg-warning.bg-opacity-10 {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+    color: #ffc107 !important;
+    border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.badge.bg-primary.bg-opacity-10 {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+    color: #0d6efd !important;
+    border: 1px solid rgba(13, 110, 253, 0.2);
+}
+
+.badge.bg-info.bg-opacity-10 {
+    background-color: rgba(13, 202, 240, 0.1) !important;
+    color: #0dcaf0 !important;
+    border: 1px solid rgba(13, 202, 240, 0.2);
+}
+
+/* Avatar circulaire - même style que leads.php */
+.rounded-circle {
+    border-radius: 50% !important;
+}
+
+/* Boutons d'actions - style leads.php */
+.btn-group .btn {
+    border: 1px solid #dee2e6;
+    padding: 0.375rem 0.5rem;
+}
+
+.btn-group .btn:hover {
+    z-index: 2;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #fff;
+}
+
+.btn-outline-info {
+    color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+
+.btn-outline-info:hover {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: #000;
+}
+
+.btn-outline-success {
+    color: #198754;
+    border-color: #198754;
+}
+
+.btn-outline-success:hover {
+    background-color: #198754;
+    border-color: #198754;
+    color: #fff;
+}
+
+/* Champ de recherche - style leads.php */
+.input-group-text {
+    background-color: #fff;
+    border-right: none;
+    color: #6c757d;
+}
+
+.form-control {
+    border-left: none;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Card header - style leads.php */
+.card-header {
+    background-color: #fff !important;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+}
+
+.card-header h5 {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0;
+}
+
+/* Mode carte unique - style amélioré */
+.dashboard-cards-main .card-body {
+    padding: 2rem;
+}
+
+.dashboard-cards-main .card-body h4 {
+    font-weight: 600;
+    color: #212529;
+}
+
+.dashboard-cards-main .card-body .text-muted {
+    color: #6c757d !important;
+}
+
+/* Responsive - même breakpoints que leads.php */
+@media (max-width: 768px) {
+    .content-header .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.8rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .btn-group .btn {
+        padding: 0.25rem 0.375rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Mode carte unique responsive */
+    .dashboard-cards-main .card-body .row {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .dashboard-cards-main .card-body .col-md-4 {
+        margin-top: 1.5rem;
+    }
+    
+    .dashboard-cards-main .d-flex.flex-column {
+        align-items: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .content-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .card-body h3 {
+        font-size: 1.25rem;
+    }
+    
+    .table th {
+        font-size: 0.7rem;
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .table td {
+        padding: 0.75rem 0.25rem;
+        font-size: 0.8rem;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        border-radius: 0.375rem !important;
+        margin-bottom: 0.25rem;
+        width: 100%;
+    }
+}
+
+/* Modals - style leads.php */
+.modal-content {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.modal-title {
+    font-weight: 600;
+    color: #495057;
+}
+
+.qr-preview {
+    padding: 1rem;
+}
+
+/* Toast notifications */
+.toast-container {
+    z-index: 1056; /* Au-dessus des modals */
+}
+
+.toast {
+    min-width: 300px;
+}
+
+/* Animations subtiles */
+.card {
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.badge {
+    transition: all 0.15s ease-in-out;
+}
+
+.btn {
+    transition: all 0.15s ease-in-out;
+}
+
+/* États des couleurs - cohérent avec leads.php */
+.text-primary { color: #0d6efd !important; }
+.text-success { color: #198754 !important; }
+.text-warning { color: #ffc107 !important; }
+.text-info { color: #0dcaf0 !important; }
+.text-danger { color: #dc3545 !important; }
+
+.bg-primary { background-color: #0d6efd !important; }
+.bg-success { background-color: #198754 !important; }
+.bg-warning { background-color: #ffc107 !important; }
+.bg-info { background-color: #0dcaf0 !important; }
+.bg-danger { background-color: #dc3545 !important; }
+
+/* Utilitaires spacing - même que leads.php */
+.gap-1 { gap: 0.25rem !important; }
+.gap-2 { gap: 0.5rem !important; }
+.gap-3 { gap: 1rem !important; }

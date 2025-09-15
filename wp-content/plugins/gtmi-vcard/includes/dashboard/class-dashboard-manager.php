@@ -455,6 +455,24 @@ class NFC_Dashboard_Manager
         echo '</div>';
     }
 
+
+    private function render_cards_list_page($vcard)
+    {
+        // Passer référence du dashboard manager pour accès aux fonctions
+        global $nfc_dashboard_manager;
+        $nfc_dashboard_manager = $this;
+        
+        // Utiliser le nouveau template standardisé
+        $template_path = $this->plugin_path . 'templates/dashboard/cards-list.php';
+        
+        if (file_exists($template_path)) {
+            include $template_path;
+        } else {
+            // Fallback vers l'ancienne version si le nouveau template n'existe pas encore
+            $this->render_cards_list_page_legacy($vcard);
+        }
+    }
+
     /**
      * PAGES INDIVIDUELLES - VERSION TEST
      */
@@ -556,7 +574,7 @@ class NFC_Dashboard_Manager
     </script>';
     }
 
-    private function render_cards_list_page($vcard)
+    private function render_cards_list_page_legacy($vcard)
     {
         $user_id = get_current_user_id();
         $user_vcards = $this->get_user_vcards($user_id);
@@ -1044,7 +1062,7 @@ class NFC_Dashboard_Manager
         }
     }
 
-    private function get_card_identifier($vcard_id)
+    public function get_card_identifier($vcard_id)
     {
         global $wpdb;
 

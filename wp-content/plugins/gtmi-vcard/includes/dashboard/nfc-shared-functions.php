@@ -392,3 +392,163 @@ function nfc_generate_renewal_url($identifier) {
         'action' => 'renew_card'
     ], $base_url);
 }
+
+
+/**
+ * Récupère le nombre total de vues d'une vCard
+ * Utilise la même logique que ajax-handlers.php get_total_views()
+ * 
+ * @param int $vcard_id ID de la vCard
+ * @param string $start_date Date de début (optionnel)
+ * @param string $end_date Date de fin (optionnel)
+ * @return int Nombre de vues
+ */
+function nfc_get_vcard_total_views($vcard_id, $start_date = null, $end_date = null) {
+    global $wpdb;
+    
+    // 1. Essayer d'abord la table analytics (données réelles)
+    $analytics_table = $wpdb->prefix . 'nfc_analytics';
+    
+    if ($wpdb->get_var("SHOW TABLES LIKE '$analytics_table'") == $analytics_table) {
+        $where_conditions = ["vcard_id = %d"];
+        $params = [$vcard_id];
+        
+        if ($start_date) {
+            $where_conditions[] = "view_datetime >= %s";
+            $params[] = $start_date;
+        }
+        
+        if ($end_date) {
+            $where_conditions[] = "view_datetime <= %s";
+            $params[] = $end_date;
+        }
+        
+        $where_clause = implode(' AND ', $where_conditions);
+        
+        $query = "SELECT COUNT(*) FROM {$analytics_table} WHERE {$where_clause}";
+        $views = $wpdb->get_var($wpdb->prepare($query, $params));
+        
+        if ($views > 0) {
+            error_log("📊 nfc_get_vcard_total_views - Analytics: vCard {$vcard_id} = {$views} vues");
+            return intval($views);
+        }
+    }
+    
+    // 2. Fallback sur les métadonnées (comme dans statistics.php)
+    $profile_views = get_post_meta($vcard_id, 'profile_views', true);
+    if ($profile_views && intval($profile_views) > 0) {
+        error_log("📊 nfc_get_vcard_total_views - Meta profile_views: vCard {$vcard_id} = {$profile_views} vues");
+        return intval($profile_views);
+    }
+    
+    // 3. Autre fallback
+    $view_count = get_post_meta($vcard_id, 'view_count', true);
+    if ($view_count && intval($view_count) > 0) {
+        error_log("📊 nfc_get_vcard_total_views - Meta view_count: vCard {$vcard_id} = {$view_count} vues");
+        return intval($view_count);
+    }
+    
+    // 4. Dernière chance : table stats
+    $stats_table = $wpdb->prefix . 'nfc_card_stats';
+    if ($wpdb->get_var("SHOW TABLES LIKE '$stats_table'") == $stats_table) {
+        $stats_views = $wpdb->get_var($wpdb->prepare("
+            SELECT total_views 
+            FROM {$stats_table} 
+            WHERE vcard_id = %d 
+            ORDER BY created_at DESC 
+            LIMIT 1
+        ", $vcard_id));
+        
+        if ($stats_views > 0) {
+            error_log("📊 nfc_get_vcard_total_views - Stats table: vCard {$vcard_id} = {$stats_views} vues");
+            return intval($stats_views);
+        }
+    }
+    
+    error_log("📊 nfc_get_vcard_total_views - Aucune vue trouvée pour vCard {$vcard_id}");
+    return 0;
+}
+
+
+/**
+ * Récupère le nombre total de vues pour plusieurs vCards
+ * Réplique exacte de get_total_views() de ajax-handlers.php
+ * 
+ * @param array $vcard_ids IDs des vCards
+ * @param string $start_date Date de début
+ * @param string $end_date Date de fin (optionnel)
+ * @return int Nombre total de vues
+ */
+function nfc_get_multiple_vcards_total_views($vcard_ids, $start_date, $end_date = null) {
+    if (empty($vcard_ids)) return 0;
+    
+    global $wpdb;
+    
+    // Table analytics en priorité
+    $analytics_table = $wpdb->prefix . 'nfc_analytics';
+    
+    if ($wpdb->get_var("SHOW TABLES LIKE '$analytics_table'") == $analytics_table) {
+        $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
+        
+        $where_date = $end_date ? 
+            "AND view_datetime BETWEEN %s AND %s" :
+            "AND view_datetime >= %s";
+        
+        $sql = "
+            SELECT COUNT(*) as total
+            FROM {$analytics_table}
+            WHERE vcard_id IN ({$placeholders})
+            {$where_date}
+        ";
+        
+        $params = array_merge($vcard_ids, [$start_date]);
+        if ($end_date) {
+            $params[] = $end_date;
+        }
+        
+        $total_views = $wpdb->get_var($wpdb->prepare($sql, $params));
+        
+        if ($total_views > 0) {
+            error_log("📊 nfc_get_multiple_vcards_total_views - Analytics: " . count($vcard_ids) . " vCards = {$total_views} vues");
+            return intval($total_views);
+        }
+    }
+    
+    // Fallback : somme des métadonnées
+    $total = 0;
+    foreach ($vcard_ids as $vcard_id) {
+        $total += nfc_get_vcard_total_views($vcard_id);
+    }
+    
+    error_log("📊 nfc_get_multiple_vcards_total_views - Fallback meta: " . count($vcard_ids) . " vCards = {$total} vues");
+    return $total;
+}
+
+
+/**
+ * Récupère le nombre de contacts d'une vCard
+ * Utilise la même logique que get_vcard_contacts_count() existante
+ * 
+ * @param int $vcard_id ID de la vCard
+ * @return int Nombre de contacts
+ */
+function nfc_get_vcard_contacts_count($vcard_id) {
+    global $wpdb;
+    
+    // Format sérialisé exact comme dans api/lead/find.php
+    $exact_pattern = 'a:1:{i:0;s:' . strlen($vcard_id) . ':"' . $vcard_id . '";}';
+    
+    $count = $wpdb->get_var($wpdb->prepare("
+        SELECT COUNT(*)
+        FROM {$wpdb->posts} p
+        INNER JOIN {$wpdb->postmeta} pm 
+            ON p.ID = pm.post_id 
+            AND pm.meta_key = 'linked_virtual_card'
+            AND pm.meta_value = %s
+        WHERE p.post_type = 'lead'
+        AND p.post_status = 'publish'
+    ", $exact_pattern));
+    
+    error_log("📊 nfc_get_vcard_contacts_count - vCard {$vcard_id} = " . intval($count) . " contacts");
+    return intval($count);
+}
