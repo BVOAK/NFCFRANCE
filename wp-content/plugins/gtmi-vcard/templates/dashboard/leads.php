@@ -39,8 +39,6 @@ $nfc_vcard = (object)['ID' => $primary_vcard_id];
 $nfc_current_page = 'contacts';
 ?>
 
-<!-- CSS -->
-<link rel="stylesheet" href="<?php echo plugin_dir_url(dirname(dirname(__FILE__))); ?>assets/css/contacts-manager.css">
 
 <!-- PAGE HEADER -->
 <div class="contacts-header mb-4">

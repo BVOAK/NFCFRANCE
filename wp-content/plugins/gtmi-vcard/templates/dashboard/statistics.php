@@ -91,27 +91,7 @@ $stats_config = [
     'nonce' => wp_create_nonce('nfc_dashboard_nonce')
 ];
 
-// ================================================================================
-// ASSETS
-// ================================================================================
-
-wp_enqueue_script('chart-js', 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js', [], '3.9.1', true);
-wp_enqueue_script('statistics-manager', 
-    plugin_dir_url(__FILE__) . '../../assets/js/dashboard/statistics-manager.js',
-    ['jquery', 'chart-js'], '1.0.0', true
-);
 wp_localize_script('statistics-manager', 'statisticsConfig', $stats_config);
-
-wp_enqueue_style('statistics-css',
-    plugin_dir_url(__FILE__) . '../../assets/css/dashboard/statistics.css',
-    [], '1.0.0'
-);
-
-// Styles CSS communs du dashboard
-wp_enqueue_style('nfc-dashboard-common', 
-    plugin_dir_url(__FILE__) . '../../assets/css/dashboard-common.css',
-    [], '1.0.0'
-);
 ?>
 
 <!-- ================================================================================ -->

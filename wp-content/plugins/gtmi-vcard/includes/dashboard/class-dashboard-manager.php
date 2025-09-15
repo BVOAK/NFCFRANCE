@@ -374,27 +374,8 @@ class NFC_Dashboard_Manager
                 <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/contacts-manager.js?v=<?php echo time(); ?>"></script>
             <?php } ?>
             <?php if ($current_page === 'statistics') { ?>
-                <script>
-                    // Configuration STATS_CONFIG directement ici
-                    window.STATS_CONFIG = {
-                        vcard_id: <?php echo json_encode($vcard->ID); ?>,
-                        ajax_url: <?php echo json_encode(admin_url('admin-ajax.php')); ?>,
-                        api_url: <?php echo json_encode(home_url('/wp-json/gtmi_vcard/v1/')); ?>,
-                        nonce: <?php echo json_encode(wp_create_nonce('nfc_dashboard_nonce')); ?>,
-                        public_url: <?php echo json_encode(get_permalink($vcard->ID)); ?>,
-                        colors: {
-                            primary: '#0040C1',
-                            secondary: '#667eea',
-                            success: '#10b981',
-                            info: '#3b82f6',
-                            warning: '#f59e0b',
-                            danger: '#ef4444'
-                        }
-                    };
-                    console.log('📊 STATS_CONFIG injecté:', window.STATS_CONFIG);
-                </script>
-                <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/statistics.js?v=<?php echo time(); ?>"></script>
-
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+                <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/statistics-manager.js?v=<?php echo time(); ?>"></script>
             <?php } ?>
 
             <!-- Configuration JavaScript -->
