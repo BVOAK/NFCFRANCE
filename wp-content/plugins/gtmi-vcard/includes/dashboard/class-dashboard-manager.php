@@ -1123,7 +1123,7 @@ class NFC_Dashboard_Manager
 
     private function render_statistics_page($vcard)
     {
-        $template_path = $this->plugin_path . 'templates/dashboard/simple/statistics.php';
+        $template_path = $this->plugin_path . 'templates/dashboard/statistics.php';
         if (file_exists($template_path)) {
             include $template_path;
         } else {

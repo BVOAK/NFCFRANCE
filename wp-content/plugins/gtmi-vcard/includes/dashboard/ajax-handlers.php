@@ -64,11 +64,15 @@ class NFC_Dashboard_Ajax
 
         // Stats rapides - REDIRECTION VERS API REST
         add_action('wp_ajax_nfc_get_quick_stats', [$this, 'get_quick_stats_redirect']);
-
         add_action('wp_ajax_nfc_get_user_leads', [$this, 'get_user_leads']);
 
         // Dans register_ajax_handlers()
         add_action('wp_ajax_nfc_debug_vcard_fields', [$this, 'debug_vcard_fields']);
+
+        // Statistics actions
+        add_action('wp_ajax_nfc_get_statistics_data', [$this, 'get_statistics_data']);
+        add_action('wp_ajax_nfc_export_statistics', [$this, 'export_statistics']);
+        add_action('wp_ajax_nfc_get_chart_data', [$this, 'get_chart_data']);
     }
 
     /**
@@ -906,9 +910,10 @@ class NFC_Dashboard_Ajax
     /**
      * Ajouter un contact via AJAX
      */
-    public function add_contact() {
+    public function add_contact()
+    {
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-        
+
         $firstname = sanitize_text_field($_POST['firstname'] ?? '');
         $lastname = sanitize_text_field($_POST['lastname'] ?? '');
         $email = sanitize_email($_POST['email'] ?? '');
@@ -917,26 +922,26 @@ class NFC_Dashboard_Ajax
         $post = sanitize_text_field($_POST['post'] ?? '');
         $vcard_id = intval($_POST['linked_virtual_card'] ?? 0);
         $source = sanitize_text_field($_POST['source'] ?? 'manual');
-        
+
         if (!$firstname || !$lastname || !$vcard_id) {
             wp_send_json_error(['message' => 'Prénom, nom et profil vCard sont obligatoires']);
             return;
         }
-        
+
         // Créer le lead
         $lead_post_args = [
             'post_title' => $firstname . ' ' . $lastname,
             'post_type' => 'lead',
             'post_status' => 'publish',
         ];
-        
+
         $lead_id = wp_insert_post($lead_post_args, true);
-        
+
         if (is_wp_error($lead_id)) {
             wp_send_json_error(['message' => 'Erreur lors de la création']);
             return;
         }
-        
+
         // Sauvegarder les champs ACF
         update_field('firstname', $firstname, $lead_id);
         update_field('lastname', $lastname, $lead_id);
@@ -947,16 +952,17 @@ class NFC_Dashboard_Ajax
         update_field('source', $source, $lead_id);
         update_field('linked_virtual_card', [$vcard_id], $lead_id);
         update_field('contact_datetime', date('Y-m-d H:i:s'), $lead_id);
-        
+
         wp_send_json_success(['message' => 'Contact ajouté avec succès', 'lead_id' => $lead_id]);
     }
 
     /**
      * Update lead
      */
-    public function update_lead() {
+    public function update_lead()
+    {
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-        
+
         $lead_id = intval($_POST['lead_id'] ?? 0);
         $firstname = sanitize_text_field($_POST['firstname'] ?? '');
         $lastname = sanitize_text_field($_POST['lastname'] ?? '');
@@ -966,25 +972,25 @@ class NFC_Dashboard_Ajax
         $post = sanitize_text_field($_POST['post'] ?? '');
         $source = sanitize_text_field($_POST['source'] ?? 'manual');
         $linked_virtual_card = intval($_POST['linked_virtual_card'] ?? 0);
-        
+
         if (!$lead_id || !$firstname || !$lastname) {
             wp_send_json_error(['message' => 'Données obligatoires manquantes']);
             return;
         }
-        
+
         // Vérifier que le lead existe
         $lead = get_post($lead_id);
         if (!$lead || $lead->post_type !== 'lead') {
             wp_send_json_error(['message' => 'Lead introuvable']);
             return;
         }
-        
+
         // Mettre à jour le titre du post
         wp_update_post([
             'ID' => $lead_id,
             'post_title' => $firstname . ' ' . $lastname
         ]);
-        
+
         // ✅ UTILISER ACF comme dans add_contact
         update_field('firstname', $firstname, $lead_id);
         update_field('lastname', $lastname, $lead_id);
@@ -994,9 +1000,9 @@ class NFC_Dashboard_Ajax
         update_field('post', $post, $lead_id);
         update_field('source', $source, $lead_id);
         update_field('linked_virtual_card', [$linked_virtual_card], $lead_id); // ARRAY !
-        
+
         error_log("✅ Lead {$lead_id} mis à jour via ACF");
-        
+
         wp_send_json_success([
             'message' => 'Contact mis à jour avec succès',
             'lead_id' => $lead_id
@@ -1006,26 +1012,27 @@ class NFC_Dashboard_Ajax
     /**
      * Supprimer un lead
      */
-    public function delete_lead() {
+    public function delete_lead()
+    {
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-        
+
         $lead_id = intval($_POST['lead_id'] ?? 0);
-        
+
         if (!$lead_id) {
             wp_send_json_error(['message' => 'ID lead manquant']);
             return;
         }
-        
+
         // Vérifier que le lead existe
         $lead = get_post($lead_id);
         if (!$lead || $lead->post_type !== 'lead') {
             wp_send_json_error(['message' => 'Lead introuvable']);
             return;
         }
-        
+
         // Supprimer le lead
         $deleted = wp_delete_post($lead_id, true);
-        
+
         if ($deleted) {
             wp_send_json_success(['message' => 'Contact supprimé avec succès']);
         } else {
@@ -1059,6 +1066,326 @@ class NFC_Dashboard_Ajax
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
         wp_send_json_success(['message' => 'Import CSV en cours']);
     }
+
+
+    // ============================================
+    // FONCTIONS STATISTICS
+    // ===========================================
+
+
+    /**
+     * Récupérer les données statistiques
+     */
+    public function get_statistics_data()
+    {
+        check_ajax_referer('nfc_dashboard_nonce', 'nonce');
+
+        $user_id = get_current_user_id();
+        $period = sanitize_text_field($_POST['period'] ?? '30d');
+        $profile_id = intval($_POST['profile'] ?? 0);
+
+        error_log("📊 get_statistics_data appelé - User: $user_id, Période: $period, Profil: $profile_id");
+
+        try {
+            // Récupérer les vCards utilisateur
+            $user_vcards = nfc_get_user_vcard_profiles($user_id);
+
+            if (empty($user_vcards)) {
+                wp_send_json_error(['message' => 'Aucune vCard trouvée']);
+                return;
+            }
+
+            // Filtrer par profil si spécifié
+            $target_vcards = $profile_id ? [$profile_id] : array_column($user_vcards, 'vcard_id');
+
+            error_log("📊 vCards cibles: " . implode(', ', $target_vcards));
+
+            // Calculer les statistiques
+            $stats = $this->calculate_statistics($target_vcards, $period);
+            $charts_data = $this->get_charts_data($target_vcards, $period);
+            $recent_activity = $this->get_recent_activity($target_vcards, $period);
+
+            wp_send_json_success([
+                'stats' => $stats,
+                'charts' => $charts_data,
+                'recent_activity' => $recent_activity,
+                'period' => $period,
+                'profile' => $profile_id
+            ]);
+
+        } catch (Exception $e) {
+            error_log("❌ Erreur get_statistics_data: " . $e->getMessage());
+            wp_send_json_error(['message' => 'Erreur lors du calcul des statistiques']);
+        }
+    }
+
+    /**
+     * Export des statistiques
+     */
+    public function export_statistics()
+    {
+        check_ajax_referer('nfc_dashboard_nonce', 'nonce');
+
+        $user_id = get_current_user_id();
+        $period = sanitize_text_field($_POST['period'] ?? '30d');
+        $profile_id = intval($_POST['profile'] ?? 0);
+        $format = sanitize_text_field($_POST['format'] ?? 'csv');
+
+        try {
+            $user_vcards = nfc_get_user_vcard_profiles($user_id);
+            $target_vcards = $profile_id ? [$profile_id] : array_column($user_vcards, 'vcard_id');
+
+            // Générer le CSV
+            $csv_data = $this->generate_statistics_csv($target_vcards, $period);
+
+            wp_send_json_success([
+                'csv_content' => $csv_data,
+                'filename' => "statistiques_nfc_{$period}_" . date('Y-m-d') . '.csv'
+            ]);
+
+        } catch (Exception $e) {
+            error_log("❌ Erreur export_statistics: " . $e->getMessage());
+            wp_send_json_error(['message' => 'Erreur lors de l\'export']);
+        }
+    }
+
+    /**
+     * Calculer les statistiques principales
+     */
+    private function calculate_statistics($vcard_ids, $period)
+    {
+        global $wpdb;
+
+        // Convertir période en jours
+        $days = $this->period_to_days($period);
+        $start_date = date('Y-m-d', strtotime("-{$days} days"));
+
+        error_log("📊 Calcul stats - vCards: " . implode(', ', $vcard_ids) . " - Période: $days jours depuis $start_date");
+
+        // Vues des profils (table wp_posts + analytics si disponible)
+        $total_views = $this->get_total_views($vcard_ids, $start_date);
+        $previous_views = $this->get_total_views($vcard_ids, date('Y-m-d', strtotime("-" . ($days * 2) . " days")), $start_date);
+
+        // Contacts générés (table leads)
+        $total_contacts = $this->get_total_contacts($vcard_ids, $start_date);
+        $previous_contacts = $this->get_total_contacts($vcard_ids, date('Y-m-d', strtotime("-" . ($days * 2) . " days")), $start_date);
+
+        // Scans NFC (simulé pour l'instant)
+        $total_scans = intval($total_views * 0.4); // 40% des vues via NFC
+        $previous_scans = intval($previous_views * 0.4);
+
+        // Calcul des variations
+        $views_change = $previous_views > 0 ? (($total_views - $previous_views) / $previous_views) * 100 : 0;
+        $contacts_change = $previous_contacts > 0 ? (($total_contacts - $previous_contacts) / $previous_contacts) * 100 : 0;
+        $scans_change = $previous_scans > 0 ? (($total_scans - $previous_scans) / $previous_scans) * 100 : 0;
+
+        // Taux de conversion
+        $conversion_rate = $total_views > 0 ? ($total_contacts / $total_views) * 100 : 0;
+        $previous_conversion = $previous_views > 0 ? ($previous_contacts / $previous_views) * 100 : 0;
+        $conversion_change = $previous_conversion > 0 ? $conversion_rate - $previous_conversion : 0;
+
+        error_log("📊 Stats calculées - Vues: $total_views (+$views_change%), Contacts: $total_contacts (+$contacts_change%), Conversion: $conversion_rate%");
+
+        return [
+            'total_views' => $total_views,
+            'total_contacts' => $total_contacts,
+            'total_scans' => $total_scans,
+            'conversion_rate' => $conversion_rate,
+            'views_change' => round($views_change, 1),
+            'contacts_change' => round($contacts_change, 1),
+            'scans_change' => round($scans_change, 1),
+            'conversion_change' => round($conversion_change, 1)
+        ];
+    }
+
+    /**
+     * Obtenir les données pour les graphiques
+     */
+    private function get_charts_data($vcard_ids, $period)
+    {
+        $days = $this->period_to_days($period);
+
+        // Évolution des vues (données par jour)
+        $views_evolution = $this->get_views_evolution($vcard_ids, $days);
+
+        // Sources de trafic (simulé pour l'instant)
+        $traffic_sources = [
+            ['source' => 'QR Code', 'count' => 45],
+            ['source' => 'NFC Scan', 'count' => 35],
+            ['source' => 'Partage direct', 'count' => 15],
+            ['source' => 'Recherche', 'count' => 5]
+        ];
+
+        // Évolution des contacts
+        $contacts_evolution = $this->get_contacts_evolution($vcard_ids, $days);
+
+        return [
+            'views_evolution' => $views_evolution,
+            'traffic_sources' => $traffic_sources,
+            'contacts_evolution' => $contacts_evolution
+        ];
+    }
+
+    /**
+     * Obtenir l'activité récente
+     */
+    private function get_recent_activity($vcard_ids, $period)
+    {
+        global $wpdb;
+
+        $activities = [];
+
+        // Récupérer les derniers contacts
+        $leads_table = $wpdb->prefix . 'posts';
+        $meta_table = $wpdb->prefix . 'postmeta';
+
+        $recent_contacts = $wpdb->get_results($wpdb->prepare("
+        SELECT p.post_title, p.post_date, pm.meta_value as vcard_id
+        FROM {$leads_table} p
+        LEFT JOIN {$meta_table} pm ON p.ID = pm.post_id AND pm.meta_key = 'linked_virtual_card'
+        WHERE p.post_type = 'lead'
+          AND p.post_status = 'publish'
+          AND p.post_date >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+          AND pm.meta_value IN (" . implode(',', array_fill(0, count($vcard_ids), '%d')) . ")
+        ORDER BY p.post_date DESC
+        LIMIT 5
+    ", $vcard_ids));
+
+        foreach ($recent_contacts as $contact) {
+            $activities[] = [
+                'type' => 'contact',
+                'description' => "Nouveau contact : " . $contact->post_title,
+                'time_ago' => human_time_diff(strtotime($contact->post_date)) . ' ago'
+            ];
+        }
+
+        // Ajouter quelques vues simulées
+        $activities[] = [
+            'type' => 'view',
+            'description' => "Profil consulté 12 fois",
+            'time_ago' => '2 heures ago'
+        ];
+
+        return array_slice($activities, 0, 5);
+    }
+
+    /**
+     * Utilitaires de calcul
+     */
+    private function period_to_days($period)
+    {
+        switch ($period) {
+            case '7d':
+                return 7;
+            case '30d':
+                return 30;
+            case '3m':
+                return 90;
+            case '6m':
+                return 180;
+            case '1y':
+                return 365;
+            default:
+                return 30;
+        }
+    }
+
+    private function get_total_views($vcard_ids, $start_date, $end_date = null)
+    {
+        // Pour l'instant, simulation basée sur les ID vCards
+        $base_views = array_sum($vcard_ids) * 10; // Simulation
+        $random_factor = rand(80, 120) / 100; // Variation ±20%
+        return intval($base_views * $random_factor);
+    }
+
+    private function get_total_contacts($vcard_ids, $start_date, $end_date = null)
+    {
+        global $wpdb;
+
+        $meta_table = $wpdb->prefix . 'postmeta';
+        $posts_table = $wpdb->prefix . 'posts';
+
+        $where_date = $end_date ?
+            "AND p.post_date BETWEEN '$start_date' AND '$end_date'" :
+            "AND p.post_date >= '$start_date'";
+
+        $sql = "
+        SELECT COUNT(DISTINCT p.ID) as total
+        FROM {$posts_table} p
+        LEFT JOIN {$meta_table} pm ON p.ID = pm.post_id 
+        WHERE p.post_type = 'lead'
+          AND p.post_status = 'publish'
+          AND pm.meta_key = 'linked_virtual_card'
+          AND pm.meta_value IN (" . implode(',', array_fill(0, count($vcard_ids), '%d')) . ")
+          $where_date
+    ";
+
+        $result = $wpdb->get_var($wpdb->prepare($sql, $vcard_ids));
+        return intval($result ?: 0);
+    }
+
+    private function get_views_evolution($vcard_ids, $days)
+    {
+        $evolution = [];
+
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-{$i} days"));
+            $views = rand(5, 50); // Simulation pour l'instant
+
+            $evolution[] = [
+                'date' => date('d/m', strtotime($date)),
+                'views' => $views
+            ];
+        }
+
+        return $evolution;
+    }
+
+    private function get_contacts_evolution($vcard_ids, $days)
+    {
+        global $wpdb;
+
+        $evolution = [];
+
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-{$i} days"));
+            $next_date = date('Y-m-d', strtotime("-" . ($i - 1) . " days"));
+
+            // Compter les contacts pour cette date
+            $contacts = $wpdb->get_var($wpdb->prepare("
+            SELECT COUNT(DISTINCT p.ID)
+            FROM {$wpdb->prefix}posts p
+            LEFT JOIN {$wpdb->prefix}postmeta pm ON p.ID = pm.post_id 
+            WHERE p.post_type = 'lead'
+              AND p.post_status = 'publish'
+              AND pm.meta_key = 'linked_virtual_card'
+              AND pm.meta_value IN (" . implode(',', array_fill(0, count($vcard_ids), '%d')) . ")
+              AND DATE(p.post_date) = %s
+        ", array_merge($vcard_ids, [$date])));
+
+            $evolution[] = [
+                'date' => date('d/m', strtotime($date)),
+                'contacts' => intval($contacts ?: 0)
+            ];
+        }
+
+        return $evolution;
+    }
+
+    private function generate_statistics_csv($vcard_ids, $period)
+    {
+        $stats = $this->calculate_statistics($vcard_ids, $period);
+
+        $csv = "Métrique,Valeur,Variation\n";
+        $csv .= "Vues du profil,{$stats['total_views']},{$stats['views_change']}%\n";
+        $csv .= "Contacts générés,{$stats['total_contacts']},{$stats['contacts_change']}%\n";
+        $csv .= "Scans NFC,{$stats['total_scans']},{$stats['scans_change']}%\n";
+        $csv .= "Taux de conversion,{$stats['conversion_rate']}%,{$stats['conversion_change']}%\n";
+
+        return $csv;
+    }
+
+
 
     // ============================================
     // FONCTIONS UTILITAIRES PRIVÉES
