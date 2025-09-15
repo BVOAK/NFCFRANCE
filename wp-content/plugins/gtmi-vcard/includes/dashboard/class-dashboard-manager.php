@@ -195,13 +195,6 @@ class NFC_Dashboard_Manager
             <?php if ($current_page === 'vcard-edit') { ?>
                 <link href="<?php echo $this->plugin_url; ?>assets/css/vcard-edit.css?v=<?php echo time(); ?>" rel="stylesheet">
             <?php } ?>
-            <?php if ($current_page === 'contacts') { ?>
-                <link href="<?php echo $this->plugin_url; ?>assets/css/contacts-manager.css?v=<?php echo time(); ?>"
-                    rel="stylesheet">
-            <?php } ?>
-            <?php if ($current_page === 'statitics') { ?>
-                <link href="<?php echo $this->plugin_url; ?>assets/css/statitics.css?v=<?php echo time(); ?>" rel="stylesheet">
-            <?php } ?>
         </head>
 
         <?php
@@ -369,14 +362,7 @@ class NFC_Dashboard_Manager
             <?php endif; ?>
             <?php if ($current_page === 'vcard-edit') { ?>
                 <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/vcard-editor.js?v=<?php echo time(); ?>"></script>
-            <?php } ?>
-            <?php if ($current_page === 'contacts') { ?>
-                <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/contacts-manager.js?v=<?php echo time(); ?>"></script>
-            <?php } ?>
-            <?php if ($current_page === 'statistics') { ?>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-                <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/statistics-manager.js?v=<?php echo time(); ?>"></script>
-            <?php } ?>
+            <?php } ?>>
 
             <!-- Configuration JavaScript -->
             <script type="text/javascript">

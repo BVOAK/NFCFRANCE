@@ -39,6 +39,7 @@ $nfc_vcard = (object)['ID' => $primary_vcard_id];
 $nfc_current_page = 'contacts';
 ?>
 
+<link rel="stylesheet" href="<?= plugin_dir_url(__FILE__) ?>../../assets/css/contacts-manager.css?v=<?= time() ?>">
 
 <!-- PAGE HEADER -->
 <div class="contacts-header mb-4">
@@ -437,6 +438,7 @@ $nfc_current_page = 'contacts';
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+
 <!-- CONFIGURATION POUR contacts-manager.js -->
 <script>
 // Configuration globale pour contacts-manager.js
@@ -453,3 +455,5 @@ window.nfcContactsConfig = {
 
 console.log('🔧 Configuration nfcContactsConfig injectée:', window.nfcContactsConfig);
 </script>
+
+<script src="<?= plugin_dir_url(__FILE__) ?>../../assets/js/dashboard/contacts-manager.js?v=<?= time() ?>"></script>

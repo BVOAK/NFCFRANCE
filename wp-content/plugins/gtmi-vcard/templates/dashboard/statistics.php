@@ -90,9 +90,16 @@ $stats_config = [
     'ajax_url' => admin_url('admin-ajax.php'),
     'nonce' => wp_create_nonce('nfc_dashboard_nonce')
 ];
-
-wp_localize_script('statistics-manager', 'statisticsConfig', $stats_config);
 ?>
+
+<link rel="stylesheet" href="<?= plugin_dir_url(__FILE__) ?>../../assets/css/statistics.css?v=<?= time() ?>">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="<?= plugin_dir_url(__FILE__) ?>../../assets/js/dashboard/statistics-manager.js?v=<?= time() ?>"></script>
+
+<script>
+// Configuration globale
+const statisticsConfig = <?= json_encode($stats_config) ?>;
+</script>
 
 <!-- ================================================================================ -->
 <!-- HTML DE LA PAGE -->

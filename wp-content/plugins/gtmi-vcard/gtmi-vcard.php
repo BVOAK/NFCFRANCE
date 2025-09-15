@@ -325,3 +325,13 @@ function gtmi_vcard_debug_vcards() {
     }
 }
 add_action('init', 'gtmi_vcard_debug_vcards');
+
+
+
+// 🆕 Système Analytics Réelles
+require_once plugin_dir_path(__FILE__) . 'includes/analytics/analytics-database-setup.php';
+require_once plugin_dir_path(__FILE__) . 'includes/analytics/analytics-handlers.php';
+
+// Hook d'activation pour créer les tables analytics
+register_activation_hook(__FILE__, 'nfc_analytics_activate');
+register_deactivation_hook(__FILE__, 'nfc_analytics_deactivate');

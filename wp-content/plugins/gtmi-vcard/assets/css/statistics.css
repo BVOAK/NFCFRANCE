@@ -77,7 +77,7 @@
     font-weight: 500;
     opacity: 0.85;
     display: flex;
-    align-items-center;
+    align-items: center;
     gap: 0.25rem;
 }
 
@@ -395,7 +395,7 @@
 /* DARK MODE SUPPORT (optionnel) */
 /* =============================================================================== */
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
     .dashboard-statistics {
         background-color: #1a1a1a;
         color: #fff;
@@ -422,4 +422,4 @@
     #recentActivity .d-flex:hover {
         background-color: #3a3a3a;
     }
-}
+} */

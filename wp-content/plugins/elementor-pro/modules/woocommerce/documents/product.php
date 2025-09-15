@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class Product extends Single_Base {
+	const EXPORT_GROUP = 'product';
 
 	public static function get_properties() {
 		$properties = parent::get_properties();
