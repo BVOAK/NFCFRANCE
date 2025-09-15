@@ -335,6 +335,17 @@ $nfc_current_page = 'contacts';
                                 <option value="web">Site Web</option>
                             </select>
                         </div>
+                        <div class="col-md-6">
+                            <label for="profile_vcard" class="form-label">Profil vCard <span class="text-danger">*</span></label>
+                            <select class="form-select" id="profile_vcard" name="profile_vcard" required>
+                                <option value="">-- Choisir un profil --</option>
+                                <?php foreach ($user_vcards as $vcard): ?>
+                                    <option value="<?php echo $vcard['vcard_id']; ?>">
+                                        <?php echo esc_html(nfc_format_vcard_full_name($vcard['vcard_data'] ?? [])); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                     </div>
                 </form>
             </div>

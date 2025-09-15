@@ -53,6 +53,7 @@ class NFC_Dashboard_Ajax
         add_action('wp_ajax_nfc_save_contact', [$this, 'save_contact']);
         add_action('wp_ajax_nfc_delete_contact', [$this, 'delete_contact']);
         add_action('wp_ajax_nfc_export_contacts', [$this, 'export_contacts']);
+        add_action('wp_ajax_nfc_add_contact', [$this, 'add_contact']);
 
         // Statistics actions - REDIRIGÉES VERS API REST
         add_action('wp_ajax_nfc_get_statistics', [$this, 'get_statistics_redirect']);
@@ -926,6 +927,54 @@ class NFC_Dashboard_Ajax
 
         // Implémenter la sauvegarde de contact
         wp_send_json_success(['message' => 'Contact sauvegardé']);
+    }
+
+    /**
+     * Ajouter un contact via AJAX
+     */
+    public function add_contact() {
+        check_ajax_referer('nfc_dashboard_nonce', 'nonce');
+        
+        $firstname = sanitize_text_field($_POST['firstname'] ?? '');
+        $lastname = sanitize_text_field($_POST['lastname'] ?? '');
+        $email = sanitize_email($_POST['email'] ?? '');
+        $mobile = sanitize_text_field($_POST['mobile'] ?? '');
+        $society = sanitize_text_field($_POST['society'] ?? '');
+        $post = sanitize_text_field($_POST['post'] ?? '');
+        $vcard_id = intval($_POST['linked_virtual_card'] ?? 0);
+        $source = sanitize_text_field($_POST['source'] ?? 'manual');
+        
+        if (!$firstname || !$lastname || !$vcard_id) {
+            wp_send_json_error(['message' => 'Prénom, nom et profil vCard sont obligatoires']);
+            return;
+        }
+        
+        // Créer le lead
+        $lead_post_args = [
+            'post_title' => $firstname . ' ' . $lastname,
+            'post_type' => 'lead',
+            'post_status' => 'publish',
+        ];
+        
+        $lead_id = wp_insert_post($lead_post_args, true);
+        
+        if (is_wp_error($lead_id)) {
+            wp_send_json_error(['message' => 'Erreur lors de la création']);
+            return;
+        }
+        
+        // Sauvegarder les champs ACF
+        update_field('firstname', $firstname, $lead_id);
+        update_field('lastname', $lastname, $lead_id);
+        update_field('email', $email, $lead_id);
+        update_field('mobile', $mobile, $lead_id);
+        update_field('society', $society, $lead_id);
+        update_field('post', $post, $lead_id);
+        update_field('source', $source, $lead_id);
+        update_field('linked_virtual_card', [$vcard_id], $lead_id);
+        update_field('contact_datetime', date('Y-m-d H:i:s'), $lead_id);
+        
+        wp_send_json_success(['message' => 'Contact ajouté avec succès', 'lead_id' => $lead_id]);
     }
 
     /**

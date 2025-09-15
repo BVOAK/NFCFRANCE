@@ -580,6 +580,19 @@
                 source: formData.get('source') || 'manual'
             };
 
+            // Gérer le profil vCard selon le mode
+            if (this.config.is_multi_profile) {
+                const selectedProfile = formData.get('profile_vcard');
+                if (!selectedProfile) {
+                    this.showNotification('Veuillez sélectionner un profil vCard', 'error');
+                    this.resetSaveButton();
+                    return;
+                }
+                contactData.linked_virtual_card = selectedProfile;
+            } else {
+                contactData.linked_virtual_card = this.config.vcard_id;
+            }
+
             // Ajouter vcard_id selon le mode
             if (this.useAjax) {
                 contactData.user_id = this.config.user_id;
@@ -605,35 +618,40 @@
             }
         },
 
-        createContactViaApi: function (contactData) {
-            const url = `${this.config.api_url}lead`;
-
-            fetch(url, {
+        createContactViaApi: function(contactData) {
+            // Utiliser AJAX WordPress au lieu de l'API REST
+            const ajaxData = {
+                action: 'nfc_add_contact',
+                nonce: this.config.nonce,
+                ...contactData
+            };
+            
+            fetch(this.config.ajax_url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: new URLSearchParams(contactData)
+                body: new URLSearchParams(ajaxData)
             })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('✅ Contact ajouté:', data);
-
-                    if (data.success) {
-                        this.closeModal('contactModal');
-                        this.loadContacts();
-                        this.showNotification('Contact ajouté avec succès!', 'success');
-                    } else {
-                        throw new Error(data.message || 'Erreur lors de l\'ajout');
-                    }
-                })
-                .catch(error => {
-                    console.error('❌ Erreur ajout:', error);
-                    this.showNotification('Erreur lors de l\'ajout: ' + error.message, 'error');
-                })
-                .finally(() => {
-                    this.resetSaveButton();
-                });
+            .then(response => response.json())
+            .then(data => {
+                console.log('✅ Contact ajouté:', data);
+                
+                if (data.success) {
+                    this.closeModal('contactModal');
+                    this.loadContacts();
+                    this.showNotification('Contact ajouté avec succès!', 'success');
+                } else {
+                    throw new Error(data.data.message || 'Erreur lors de l\'ajout');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Erreur ajout:', error);
+                this.showNotification('Erreur lors de l\'ajout: ' + error.message, 'error');
+            })
+            .finally(() => {
+                this.resetSaveButton();
+            });
         },
 
         updateContactViaAjax: function (contactData) {
