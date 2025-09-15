@@ -123,6 +123,7 @@ class NFCStatisticsManager {
         this.renderStatsCards();
         this.renderCharts();
         this.renderRecentActivity();
+        this.renderDeviceTypes();
     }
     
     renderStatsCards() {
@@ -188,6 +189,13 @@ class NFCStatisticsManager {
             console.warn('⚠️ Pas de données graphiques disponibles');
             return;
         }
+        
+        // ✅ AJOUTER CE DEBUG
+        console.log('📊 Données graphiques disponibles:', {
+            views_evolution: this.data.charts.views_evolution?.length || 0,
+            traffic_sources: this.data.charts.traffic_sources?.length || 0,
+            device_types: this.data.charts.device_types?.length || 0
+        });
         
         this.renderViewsChart();
         this.renderSourcesChart();
@@ -297,6 +305,64 @@ class NFCStatisticsManager {
         
         activityHtml += '</tbody></table></div>';
         container.html(activityHtml);
+    }
+
+    renderDeviceTypes() {
+        console.log('📱 Rendu des types d\'appareils');
+        
+        const container = $('#deviceTypes');
+        
+        if (!this.data?.charts?.device_types?.length) {
+            container.html('<p class="text-muted text-center">Aucune donnée d\'appareil disponible</p>');
+            return;
+        }
+        
+        const devices = this.data.charts.device_types;
+        const total = devices.reduce((sum, device) => sum + device.count, 0);
+        
+        let deviceHtml = '<div class="device-types-list">';
+        
+        devices.forEach(device => {
+            const percentage = total > 0 ? ((device.count / total) * 100).toFixed(1) : 0;
+            const icon = this.getDeviceIcon(device.device);
+            
+            deviceHtml += `
+                <div class="device-type-item d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="device-icon me-3">
+                            <i class="${icon}" style="font-size: 1.2rem; color: #0d6efd;"></i>
+                        </div>
+                        <div>
+                            <div class="fw-medium">${device.device}</div>
+                            <small class="text-muted">${device.count} visites</small>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold">${percentage}%</div>
+                        <div class="progress mt-1" style="width: 60px; height: 4px;">
+                            <div class="progress-bar" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        deviceHtml += '</div>';
+        container.html(deviceHtml);
+    }
+
+    getDeviceIcon(deviceType) {
+        const deviceLower = deviceType.toLowerCase();
+        
+        if (deviceLower.includes('mobile')) {
+            return 'fas fa-mobile-alt';
+        } else if (deviceLower.includes('tablet')) {
+            return 'fas fa-tablet-alt';
+        } else if (deviceLower.includes('desktop')) {
+            return 'fas fa-desktop';
+        } else {
+            return 'fas fa-devices';
+        }
     }
     
     showLoading(show) {
