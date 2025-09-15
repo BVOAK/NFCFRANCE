@@ -401,8 +401,8 @@ class NFC_Dashboard_Manager
                         console.error('❌ Configuration NFCContacts invalide:', window.nfcContactsConfig);
                     }
                 </script>
-                <script
-                    src="<?php echo $this->plugin_url; ?>assets/js/dashboard/contacts-manager.js?v=<?php echo time(); ?>"></script>
+                <!-- <script
+                    src="<?php echo $this->plugin_url; ?>assets/js/dashboard/contacts-manager.js?v=<?php echo time(); ?>"></script> -->
 
             <?php } ?>
             <?php if ($current_page === 'statistics') { ?>

@@ -72,8 +72,88 @@ class NFC_Dashboard_Ajax
         // Stats rapides - REDIRECTION VERS API REST
         add_action('wp_ajax_nfc_get_quick_stats', [$this, 'get_quick_stats_redirect']);
 
+        add_action('wp_ajax_nfc_get_user_leads', [$this, 'get_user_leads']);
+
         // Dans register_ajax_handlers()
         add_action('wp_ajax_nfc_debug_vcard_fields', [$this, 'debug_vcard_fields']);
+    }
+
+    /**
+     * Récupérer les leads d'un utilisateur via AJAX
+     * Fonctionne avec l'authentification WordPress standard
+     */
+    public function get_user_leads()
+    {
+        check_ajax_referer('nfc_dashboard_nonce', 'nonce');
+
+        $user_id = intval($_POST['user_id'] ?? 0);
+        $current_user_id = get_current_user_id();
+
+        error_log("🔍 AJAX Leads - user_id demandé: {$user_id}");
+        error_log("🔍 AJAX Leads - current_user_id: {$current_user_id}");
+
+        // Vérifier les permissions
+        if (!$user_id) {
+            wp_send_json_error(['message' => 'User ID manquant']);
+        }
+
+        if ($user_id !== $current_user_id && !current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Accès non autorisé']);
+        }
+
+        // Utiliser les mêmes fonctions que l'API REST
+        if (!function_exists('nfc_get_user_vcard_profiles')) {
+            wp_send_json_error(['message' => 'Fonction nfc_get_user_vcard_profiles non trouvée']);
+        }
+
+        try {
+            $user_vcards = nfc_get_user_vcard_profiles($user_id);
+
+            if (empty($user_vcards)) {
+                wp_send_json_success([]);
+            }
+
+            error_log("🔍 AJAX - " . count($user_vcards) . " vCards trouvées");
+
+            $all_leads = [];
+
+            foreach ($user_vcards as $vcard) {
+                $current_vcard_id = $vcard['vcard_id'];
+
+                if (!function_exists('get_vcard_leads')) {
+                    error_log("❌ AJAX - Fonction get_vcard_leads manquante");
+                    continue;
+                }
+
+                $vcard_leads = get_vcard_leads($current_vcard_id);
+                error_log("🔍 AJAX - vCard {$current_vcard_id}: " . count($vcard_leads) . " leads");
+
+                // Ajouter métadonnées comme dans l'API REST
+                foreach ($vcard_leads as &$lead) {
+                    $lead['vcard_id'] = $current_vcard_id;
+                    $lead['vcard_source_name'] = nfc_format_vcard_full_name($vcard['vcard_data'] ?? []);
+                    $lead['linked_vcard'] = [$current_vcard_id];
+                }
+                unset($lead);
+
+                $all_leads = array_merge($all_leads, $vcard_leads);
+            }
+
+            // Trier par date
+            usort($all_leads, function ($a, $b) {
+                $date_a = strtotime($a['created_at'] ?? $a['contact_datetime'] ?? '1970-01-01');
+                $date_b = strtotime($b['created_at'] ?? $b['contact_datetime'] ?? '1970-01-01');
+                return $date_b - $date_a;
+            });
+
+            error_log("✅ AJAX - Total leads retournés: " . count($all_leads));
+
+            wp_send_json_success($all_leads);
+
+        } catch (Exception $e) {
+            error_log("❌ AJAX Leads erreur: " . $e->getMessage());
+            wp_send_json_error(['message' => 'Erreur serveur: ' . $e->getMessage()]);
+        }
     }
 
     /**

@@ -14,6 +14,246 @@ if (!current_user_can('administrator')) {
     wp_die('Accès non autorisé. Connectez-vous comme administrateur.');
 }
 
+/**
+ * TESTS API LEADS - À COPIER DANS test-simple.php
+ * Pour identifier exactement où ça plante
+ */
+
+echo "<style>
+.test-section { border: 1px solid #ddd; padding: 20px; margin: 20px 0; }
+.success { color: green; font-weight: bold; }
+.error { color: red; font-weight: bold; }
+.info { color: blue; }
+</style>";
+
+echo "<h1>🔍 TESTS API LEADS COMPLETS</h1>";
+
+$user_id = get_current_user_id();
+echo "<p><strong>User ID testé:</strong> $user_id</p>";
+
+// ================================================================================
+// TEST 1: Vérifier les fonctions enterprise
+// ================================================================================
+echo "<div class='test-section'>";
+echo "<h2>🧪 TEST 1: Fonctions Enterprise</h2>";
+
+if (function_exists('nfc_get_user_vcard_profiles')) {
+    echo "<div class='success'>✅ nfc_get_user_vcard_profiles() existe</div>";
+    
+    $user_vcards = nfc_get_user_vcard_profiles($user_id);
+    echo "<div class='info'>📊 Nombre de vCards: " . count($user_vcards) . "</div>";
+    
+    if (!empty($user_vcards)) {
+        echo "<pre>" . print_r($user_vcards, true) . "</pre>";
+        
+        $first_vcard_id = $user_vcards[0]['vcard_id'];
+        echo "<div class='info'>🎯 Première vCard ID: $first_vcard_id</div>";
+    } else {
+        echo "<div class='error'>❌ Aucune vCard trouvée pour cet utilisateur</div>";
+    }
+} else {
+    echo "<div class='error'>❌ Fonction nfc_get_user_vcard_profiles() manquante</div>";
+}
+
+echo "</div>";
+
+// ================================================================================
+// TEST 2: Test API endpoint user
+// ================================================================================
+echo "<div class='test-section'>";
+echo "<h2>🧪 TEST 2: API Endpoint User</h2>";
+
+$api_url = home_url("/wp-json/gtmi_vcard/v1/leads/user/{$user_id}");
+echo "<div class='info'>🌐 URL testée: $api_url</div>";
+
+// Test avec authentification
+$response = wp_remote_get($api_url, [
+    'headers' => [
+        'Authorization' => 'Bearer ' . wp_create_nonce('wp_rest'),
+    ],
+    'cookies' => $_COOKIE
+]);
+
+if (is_wp_error($response)) {
+    echo "<div class='error'>❌ Erreur HTTP: " . $response->get_error_message() . "</div>";
+} else {
+    $status_code = wp_remote_retrieve_response_code($response);
+    $body = wp_remote_retrieve_body($response);
+    
+    echo "<div class='info'>📊 Status Code: $status_code</div>";
+    echo "<div class='info'>📊 Taille réponse: " . strlen($body) . " chars</div>";
+    
+    if ($status_code === 200) {
+        echo "<div class='success'>✅ API répond correctement</div>";
+        $data = json_decode($body, true);
+        
+        if ($data) {
+            echo "<h3>Structure de la réponse:</h3>";
+            echo "<pre>" . print_r($data, true) . "</pre>";
+            
+            if (isset($data['data']) && is_array($data['data'])) {
+                echo "<div class='info'>📊 Nombre de leads retournés: " . count($data['data']) . "</div>";
+            }
+        } else {
+            echo "<div class='error'>❌ Réponse JSON invalide</div>";
+            echo "<pre>$body</pre>";
+        }
+    } else {
+        echo "<div class='error'>❌ Erreur Status $status_code</div>";
+        echo "<pre>$body</pre>";
+    }
+}
+
+echo "</div>";
+
+// ================================================================================
+// TEST 3: Test API endpoint vcard classique
+// ================================================================================
+if (!empty($user_vcards)) {
+    echo "<div class='test-section'>";
+    echo "<h2>🧪 TEST 3: API Endpoint vCard Classique</h2>";
+    
+    $first_vcard_id = $user_vcards[0]['vcard_id'];
+    $api_url_vcard = home_url("/wp-json/gtmi_vcard/v1/leads/{$first_vcard_id}");
+    echo "<div class='info'>🌐 URL testée: $api_url_vcard</div>";
+    
+    $response_vcard = wp_remote_get($api_url_vcard, [
+        'cookies' => $_COOKIE
+    ]);
+    
+    if (is_wp_error($response_vcard)) {
+        echo "<div class='error'>❌ Erreur HTTP: " . $response_vcard->get_error_message() . "</div>";
+    } else {
+        $status_code = wp_remote_retrieve_response_code($response_vcard);
+        $body = wp_remote_retrieve_body($response_vcard);
+        
+        echo "<div class='info'>📊 Status Code: $status_code</div>";
+        
+        if ($status_code === 200) {
+            echo "<div class='success'>✅ API vCard répond correctement</div>";
+            $data = json_decode($body, true);
+            
+            if (isset($data['data']) && is_array($data['data'])) {
+                echo "<div class='info'>📊 Nombre de leads vCard: " . count($data['data']) . "</div>";
+            }
+        } else {
+            echo "<div class='error'>❌ Erreur Status $status_code</div>";
+            echo "<pre>$body</pre>";
+        }
+    }
+    
+    echo "</div>";
+}
+
+// ================================================================================
+// TEST 4: Test direct de la fonction get_vcard_leads
+// ================================================================================
+if (!empty($user_vcards)) {
+    echo "<div class='test-section'>";
+    echo "<h2>🧪 TEST 4: Fonction get_vcard_leads directe</h2>";
+    
+    $first_vcard_id = $user_vcards[0]['vcard_id'];
+    
+    if (function_exists('get_vcard_leads')) {
+        echo "<div class='success'>✅ Fonction get_vcard_leads() existe</div>";
+        
+        $direct_leads = get_vcard_leads($first_vcard_id);
+        echo "<div class='info'>📊 Leads directs trouvés: " . count($direct_leads) . "</div>";
+        
+        if (!empty($direct_leads)) {
+            echo "<h3>Premier lead trouvé:</h3>";
+            echo "<pre>" . print_r($direct_leads[0], true) . "</pre>";
+        }
+    } else {
+        echo "<div class='error'>❌ Fonction get_vcard_leads() manquante</div>";
+    }
+    
+    echo "</div>";
+}
+
+// ================================================================================
+// TEST 5: Vérifier la base de données directement
+// ================================================================================
+echo "<div class='test-section'>";
+echo "<h2>🧪 TEST 5: Vérification Base de Données</h2>";
+
+global $wpdb;
+
+// Compter tous les leads
+$total_leads = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = 'lead' AND post_status = 'publish'");
+echo "<div class='info'>📊 Total leads en BDD: $total_leads</div>";
+
+if ($total_leads > 0) {
+    // Examiner les linked_virtual_card
+    $sample_leads = $wpdb->get_results("
+        SELECT p.ID, p.post_title, pm.meta_value as linked_vcard
+        FROM {$wpdb->posts} p
+        LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = 'linked_virtual_card'
+        WHERE p.post_type = 'lead' AND p.post_status = 'publish'
+        LIMIT 5
+    ");
+    
+    echo "<h3>Échantillon de leads (format linked_virtual_card):</h3>";
+    foreach ($sample_leads as $lead) {
+        echo "<div class='info'>Lead #{$lead->ID}: {$lead->post_title}</div>";
+        echo "<div style='margin-left: 20px; font-family: monospace; font-size: 12px;'>linked_vcard: " . ($lead->linked_vcard ?: 'NULL') . "</div>";
+    }
+    
+    // Si on a des vCards, tester le pattern ACF
+    if (!empty($user_vcards)) {
+        $first_vcard_id = $user_vcards[0]['vcard_id'];
+        $exact_pattern = 'a:1:{i:0;s:' . strlen($first_vcard_id) . ':"' . $first_vcard_id . '";}';
+        
+        echo "<h3>Test pattern ACF pour vCard $first_vcard_id:</h3>";
+        echo "<div style='font-family: monospace; font-size: 12px;'>Pattern recherché: $exact_pattern</div>";
+        
+        $matching_leads = $wpdb->get_var($wpdb->prepare("
+            SELECT COUNT(*)
+            FROM {$wpdb->posts} p
+            LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = 'linked_virtual_card'
+            WHERE p.post_type = 'lead' AND pm.meta_value = %s
+        ", $exact_pattern));
+        
+        echo "<div class='info'>📊 Leads correspondants au pattern: $matching_leads</div>";
+        
+        // Test pattern plus large
+        $like_pattern = '%"' . $first_vcard_id . '"%';
+        $like_leads = $wpdb->get_var($wpdb->prepare("
+            SELECT COUNT(*)
+            FROM {$wpdb->posts} p
+            LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = 'linked_virtual_card'
+            WHERE p.post_type = 'lead' AND pm.meta_value LIKE %s
+        ", $like_pattern));
+        
+        echo "<div class='info'>📊 Leads avec LIKE pattern: $like_leads</div>";
+    }
+}
+
+echo "</div>";
+
+// ================================================================================
+// RÉSUMÉ
+// ================================================================================
+echo "<div class='test-section' style='background-color: #f0f0f0;'>";
+echo "<h2>📋 RÉSUMÉ DES TESTS</h2>";
+echo "<ul>";
+echo "<li>User ID: $user_id</li>";
+echo "<li>Nombre de vCards: " . (empty($user_vcards) ? '0' : count($user_vcards)) . "</li>";
+echo "<li>Total leads BDD: $total_leads</li>";
+echo "</ul>";
+
+if (empty($user_vcards)) {
+    echo "<div class='error'>🚨 PROBLÈME PRINCIPAL: Aucune vCard trouvée pour cet utilisateur</div>";
+    echo "<p>Vérifiez que l'utilisateur a bien passé une commande et que le système enterprise fonctionne.</p>";
+} elseif ($total_leads == 0) {
+    echo "<div class='error'>🚨 PROBLÈME: Aucun lead en base de données</div>";
+    echo "<p>Il faut créer des leads de test ou vérifier que les contacts sont bien enregistrés.</p>";
+} else {
+    echo "<div class='info'>💡 Continuez avec les résultats ci-dessus pour identifier le problème exact.</div>";
+}
+
+echo "</div>";
+
 echo "<html><head><title>Test Simple NFC Enterprise</title>";
 echo "<style>
     body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
@@ -214,4 +454,6 @@ echo "<p><strong>✅ Si tous les tests de base passent:</strong> Le système est
 echo "<p><strong>📍 Prochaine étape:</strong> Créer une commande test avec plusieurs cartes pour tester le workflow complet.</p>";
 
 echo "</body></html>";
+
+
 ?>
