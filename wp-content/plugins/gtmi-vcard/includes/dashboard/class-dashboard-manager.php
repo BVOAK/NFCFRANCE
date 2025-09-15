@@ -371,39 +371,7 @@ class NFC_Dashboard_Manager
                 <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/vcard-editor.js?v=<?php echo time(); ?>"></script>
             <?php } ?>
             <?php if ($current_page === 'contacts') { ?>
-                <script type="text/javascript">
-                    // Configuration globale pour NFCContacts
-                    window.nfcContactsConfig = {
-                        vcard_id: <?php echo json_encode($vcard->ID); ?>,
-                        ajax_url: <?php echo json_encode(admin_url('admin-ajax.php')); ?>,
-                        api_url: <?php echo json_encode(home_url('/wp-json/gtmi_vcard/v1/')); ?>,
-                        nonce: <?php echo json_encode(wp_create_nonce('nfc_dashboard_nonce')); ?>,
-                        public_url: <?php echo json_encode(get_permalink($vcard->ID)); ?>,
-                        user_name: <?php echo json_encode($first_name . ' ' . $last_name); ?>,
-                        i18n: {
-                            loading: <?php echo json_encode(__('Chargement...', 'gtmi_vcard')); ?>,
-                            error: <?php echo json_encode(__('Une erreur est survenue', 'gtmi_vcard')); ?>,
-                            success: <?php echo json_encode(__('Action réalisée avec succès', 'gtmi_vcard')); ?>,
-                            confirm_delete: <?php echo json_encode(__('Êtes-vous sûr de vouloir supprimer ce contact ?', 'gtmi_vcard')); ?>,
-                            confirm_delete_multiple: <?php echo json_encode(__('Êtes-vous sûr de vouloir supprimer ces contacts ?', 'gtmi_vcard')); ?>,
-                            no_contacts: <?php echo json_encode(__('Aucun contact trouvé', 'gtmi_vcard')); ?>,
-                            search_placeholder: <?php echo json_encode(__('Rechercher un contact...', 'gtmi_vcard')); ?>
-                        }
-                    };
-
-                    // Debug immédiat
-                    console.log('📧 Configuration NFCContacts injectée AVANT script:', window.nfcContactsConfig);
-
-                    // Vérification que tout est là
-                    if (window.nfcContactsConfig.vcard_id && window.nfcContactsConfig.api_url) {
-                        console.log('✅ Configuration NFCContacts valide');
-                    } else {
-                        console.error('❌ Configuration NFCContacts invalide:', window.nfcContactsConfig);
-                    }
-                </script>
-                <!-- <script
-                    src="<?php echo $this->plugin_url; ?>assets/js/dashboard/contacts-manager.js?v=<?php echo time(); ?>"></script> -->
-
+                <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/contacts-manager.js?v=<?php echo time(); ?>"></script>
             <?php } ?>
             <?php if ($current_page === 'statistics') { ?>
                 <script>

@@ -28,7 +28,7 @@
         currentView: 'table',
         
         // 🆕 NOUVEAU: Flag pour savoir si on utilise AJAX ou REST
-        useAjax: false,
+        useAjax: true,
         
         // Filtres actifs
         filters: {
@@ -89,7 +89,26 @@
             console.log('✅ NFCContacts prêt');
         },
 
-
+        /**
+         * 🆕 NOUVEAU: Prendre le relais de NFCLeads
+         */
+        takeOverFromNFCLeads: function() {
+            console.log('🔄 Prise de relais NFCLeads → NFCContacts');
+            
+            // Copier les données
+            this.contacts = window.NFCLeads.contacts || [];
+            this.filteredContacts = window.NFCLeads.filteredContacts || [...this.contacts];
+            this.config = { ...this.config, ...window.NFCLeads.config };
+            this.useAjax = true;
+            
+            // Initialiser l'interface
+            this.cacheElements();
+            this.bindEvents();
+            this.updateStats();
+            this.renderContacts();
+            
+            console.log('✅ Prise de relais terminée, ' + this.contacts.length + ' contacts');
+        },
 
         /**
          * Cache des éléments DOM - INCHANGÉ
