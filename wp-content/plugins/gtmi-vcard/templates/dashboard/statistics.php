@@ -10,7 +10,28 @@ if (!is_user_logged_in()) wp_redirect(home_url('/login'));
 
 // Logique métier
 $user_id = get_current_user_id();
-$user_vcards = nfc_get_user_vcard_profiles($user_id);
+if (class_exists('NFC_Enterprise_Core')) {
+    $enterprise_cards = NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
+    if (!empty($enterprise_cards)) {
+        $user_vcards = [];
+        foreach ($enterprise_cards as $card) {
+            $post = get_post($card['vcard_id']);
+            if ($post) {
+                $user_vcards[] = $post;
+            }
+        }
+    } else {
+        $user_vcards = [];
+    }
+} else {
+    // Fallback
+    $user_vcards = get_posts([
+        'post_type' => 'virtual_card',
+        'author' => $user_id,
+        'post_status' => 'publish',
+        'posts_per_page' => -1
+    ]);
+}
 
 // Gestion des états
 if (empty($user_vcards)) {
@@ -91,8 +112,15 @@ console.log('📊 Configuration Statistics chargée:', window.STATISTICS_CONFIG)
                 <select class="form-select" id="profileFilter">
                     <option value="">Tous les profils</option>
                     <?php foreach ($user_vcards as $vcard): ?>
-                        <option value="<?= esc_attr($vcard['ID']) ?>">
-                            <?= esc_html(get_post_meta($vcard['ID'], 'first_name', true) . ' ' . get_post_meta($vcard['ID'], 'last_name', true)) ?>
+                        <?php 
+                        // ✅ CORRECTION: $vcard est un objet WP_Post, pas un array
+                        $vcard_id = $vcard->ID;
+                        $firstname = get_post_meta($vcard_id, 'firstname', true) ?: get_post_meta($vcard_id, 'first_name', true) ?: '';
+                        $lastname = get_post_meta($vcard_id, 'lastname', true) ?: get_post_meta($vcard_id, 'last_name', true) ?: '';
+                        $full_name = trim($firstname . ' ' . $lastname) ?: 'Profil #' . $vcard_id;
+                        ?>
+                        <option value="<?= esc_attr($vcard_id) ?>">
+                            <?= esc_html($full_name) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>

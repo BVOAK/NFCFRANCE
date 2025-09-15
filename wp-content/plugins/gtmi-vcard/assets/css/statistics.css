@@ -1,425 +1,109 @@
-/**
- * Statistics Dashboard - Styles CSS
- * Page statistiques adaptative multi-vCard
- */
-
-/* =============================================================================== */
-/* LAYOUT PRINCIPAL */
-/* =============================================================================== */
+/* Statistics Dashboard CSS - Version minimale */
 
 .dashboard-statistics {
-    min-height: 100vh;
-    position: relative;
-}
-
-.statistics-header {
-    margin-bottom: 2rem;
-}
-
-.statistics-header h2 {
-    color: #333;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.statistics-header .text-muted {
-    font-size: 0.95rem;
-}
-
-/* =============================================================================== */
-/* CARTES STATISTIQUES */
-/* =============================================================================== */
-
-.statistics-cards {
-    margin-bottom: 2rem;
+    padding: 20px 0;
 }
 
 .stat-card {
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    padding: 20px;
+    border-radius: 8px;
+    color: white;
     position: relative;
-    overflow: hidden;
+    min-height: 120px;
 }
 
-.stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+.stat-card.loading {
+    opacity: 0.7;
 }
 
-.stat-card::before {
+.stat-card.loading::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.3);
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .stat-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 0.5rem;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
 }
 
 .stat-label {
     font-size: 0.9rem;
-    font-weight: 500;
     opacity: 0.9;
-    margin-bottom: 0.75rem;
+    margin-bottom: 10px;
 }
 
 .stat-change {
     font-size: 0.8rem;
-    font-weight: 500;
-    opacity: 0.85;
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 5px;
 }
 
 .stat-change.positive {
-    color: rgba(255, 255, 255, 0.9);
+    color: #d4edda;
 }
 
 .stat-change.negative {
-    color: rgba(255, 255, 255, 0.8);
+    color: #f8d7da;
 }
 
-/* Couleurs des cartes */
-.stat-card.bg-primary {
-    background: linear-gradient(135deg, #0d6efd, #0056b3);
+.statistics-header {
+    margin-bottom: 30px;
 }
 
-.stat-card.bg-success {
-    background: linear-gradient(135deg, #198754, #146c43);
-}
-
-.stat-card.bg-info {
-    background: linear-gradient(135deg, #0dcaf0, #087990);
-}
-
-.stat-card.bg-warning {
-    background: linear-gradient(135deg, #ffc107, #d39e00);
-}
-
-/* =============================================================================== */
-/* GRAPHIQUES */
-/* =============================================================================== */
-
-.statistics-charts .card {
-    border: 1px solid #e0e6ed;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-}
-
-.statistics-charts .card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.statistics-charts .card-header {
-    background: #f8f9fa;
-    border-bottom: 1px solid #e0e6ed;
-    border-radius: 12px 12px 0 0;
-    padding: 1rem 1.25rem;
-}
-
-.statistics-charts .card-header h5 {
-    color: #495057;
-    font-weight: 600;
-    margin: 0;
-}
-
-.statistics-charts .card-body {
-    padding: 1.25rem;
-}
-
-/* Loading pour les graphiques */
-.chart-loading {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-    color: #6c757d;
-}
-
-/* =============================================================================== */
-/* FILTRES ET CONTRÔLES */
-/* =============================================================================== */
-
-.statistics-header .form-select {
-    min-width: 160px;
-    border: 1px solid #ced4da;
+.card {
+    border: 1px solid #dee2e6;
     border-radius: 8px;
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
-    transition: all 0.2s ease;
+    margin-bottom: 20px;
 }
 
-.statistics-header .form-select:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-}
-
-.statistics-header .form-label {
-    color: #495057;
-    font-weight: 500;
-    font-size: 0.9rem;
-}
-
-#exportBtn {
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-#exportBtn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-/* =============================================================================== */
-/* ACTIVITÉ RÉCENTE */
-/* =============================================================================== */
-
-#recentActivity .d-flex {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #f1f3f4;
-    transition: background-color 0.2s ease;
-}
-
-#recentActivity .d-flex:last-child {
-    border-bottom: none;
-}
-
-#recentActivity .d-flex:hover {
+.card-header {
     background-color: #f8f9fa;
-    border-radius: 6px;
-    margin: 0 -0.5rem;
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
+    border-bottom: 1px solid #dee2e6;
+    padding: 15px 20px;
 }
 
-#recentActivity .rounded-circle {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.card-body {
+    padding: 20px;
 }
 
-#recentActivity .fw-medium {
-    color: #495057;
-    font-size: 0.9rem;
-    line-height: 1.4;
+/* States de chargement pour les graphiques */
+canvas {
+    opacity: 1;
+    transition: opacity 0.3s;
 }
 
-#recentActivity .text-muted {
-    font-size: 0.8rem;
-}
-
-/* =============================================================================== */
-/* LOADING STATES */
-/* =============================================================================== */
-
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.9);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(2px);
-}
-
-.loading-overlay.d-none {
-    display: none !important;
-}
-
-/* Placeholders */
-.placeholder-glow .placeholder {
-    animation: placeholder-glow 2s ease-in-out infinite alternate;
-}
-
-@keyframes placeholder-glow {
-    50% {
-        opacity: 0.2;
-    }
-}
-
-.placeholder {
-    display: inline-block;
-    min-height: 1em;
-    background-color: currentColor;
-    border-radius: 0.25rem;
+.chart-loading canvas {
     opacity: 0.5;
 }
 
-.placeholder.col-4 { width: 33.33%; }
-.placeholder.col-5 { width: 41.66%; }
-.placeholder.col-6 { width: 50%; }
-.placeholder.col-7 { width: 58.33%; }
-.placeholder.col-8 { width: 66.66%; }
-
-/* =============================================================================== */
-/* NOTIFICATIONS */
-/* =============================================================================== */
-
-.notification-container {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 10000;
-    max-width: 400px;
-}
-
-.notification-container .alert {
-    margin-bottom: 0.5rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border: none;
-}
-
-.notification-container .alert-success {
-    background-color: #d1e7dd;
-    color: #0a3622;
-}
-
-.notification-container .alert-danger {
-    background-color: #f8d7da;
-    color: #58151c;
-}
-
-.notification-container .alert-info {
-    background-color: #d1ecf1;
-    color: #055160;
-}
-
-/* =============================================================================== */
-/* RESPONSIVE DESIGN */
-/* =============================================================================== */
-
+/* Responsive */
 @media (max-width: 768px) {
-    .statistics-header .row {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .statistics-header .col-auto {
-        order: -1;
-        align-self: flex-start;
-    }
-    
     .stat-card {
-        margin-bottom: 1rem;
+        margin-bottom: 15px;
     }
     
     .stat-value {
-        font-size: 2rem;
-    }
-    
-    .statistics-charts .col-lg-8,
-    .statistics-charts .col-lg-6,
-    .statistics-charts .col-lg-4 {
-        margin-bottom: 1.5rem;
-    }
-    
-    .notification-container {
-        left: 20px;
-        right: 20px;
-        max-width: none;
-    }
-}
-
-@media (max-width: 576px) {
-    .statistics-header h2 {
         font-size: 1.5rem;
     }
     
-    .stat-value {
-        font-size: 1.75rem;
-    }
-    
-    .stat-label {
-        font-size: 0.8rem;
-    }
-    
-    .stat-change {
-        font-size: 0.75rem;
-    }
-    
-    .card-body {
-        padding: 1rem;
+    .statistics-header .d-flex {
+        flex-direction: column;
+        gap: 10px;
     }
 }
-
-/* =============================================================================== */
-/* ANIMATIONS */
-/* =============================================================================== */
-
-.statistics-cards .col-md-3 {
-    animation: fadeInUp 0.6s ease forwards;
-}
-
-.statistics-cards .col-md-3:nth-child(1) { animation-delay: 0.1s; }
-.statistics-cards .col-md-3:nth-child(2) { animation-delay: 0.2s; }
-.statistics-cards .col-md-3:nth-child(3) { animation-delay: 0.3s; }
-.statistics-cards .col-md-3:nth-child(4) { animation-delay: 0.4s; }
-
-.statistics-charts .card {
-    animation: fadeInUp 0.6s ease forwards;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* =============================================================================== */
-/* DARK MODE SUPPORT (optionnel) */
-/* =============================================================================== */
-
-/* @media (prefers-color-scheme: dark) {
-    .dashboard-statistics {
-        background-color: #1a1a1a;
-        color: #fff;
-    }
-    
-    .statistics-header h2 {
-        color: #fff;
-    }
-    
-    .statistics-charts .card {
-        background-color: #2d2d2d;
-        border-color: #404040;
-    }
-    
-    .statistics-charts .card-header {
-        background-color: #3a3a3a;
-        border-color: #404040;
-    }
-    
-    .statistics-charts .card-header h5 {
-        color: #fff;
-    }
-    
-    #recentActivity .d-flex:hover {
-        background-color: #3a3a3a;
-    }
-} */

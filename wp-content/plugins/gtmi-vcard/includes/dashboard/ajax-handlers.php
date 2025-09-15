@@ -76,6 +76,41 @@ class NFC_Dashboard_Ajax
     }
 
     /**
+     * 
+     * Récupérer les vCards d'un utilisateur
+     */
+    private function get_user_vcards($user_id = null) {
+        if (!$user_id) {
+            $user_id = get_current_user_id();
+        }
+        
+        // Essayer d'abord les Enterprise cards
+        if (class_exists('NFC_Enterprise_Core')) {
+            $enterprise_cards = NFC_Enterprise_Core::get_user_enterprise_cards($user_id);
+
+            if (!empty($enterprise_cards)) {
+                // Convertir au format attendu par le dashboard
+                $vcards = [];
+                foreach ($enterprise_cards as $card) {
+                    $post = get_post($card['vcard_id']);
+                    if ($post) {
+                        $vcards[] = $post;
+                    }
+                }
+                return $vcards;
+            }
+        }
+
+        // Fallback pour anciennes vCards
+        return get_posts([
+            'post_type' => 'virtual_card',
+            'author' => $user_id,
+            'post_status' => 'publish',
+            'posts_per_page' => -1
+        ]);
+    }
+
+    /**
      * Récupérer les leads d'un utilisateur via AJAX
      * Fonctionne avec l'authentification WordPress standard
      */
@@ -1159,6 +1194,58 @@ class NFC_Dashboard_Ajax
             error_log("❌ Erreur get_statistics_data: " . $e->getMessage());
             wp_send_json_error(['message' => 'Erreur: ' . $e->getMessage()]);
         }
+    }
+
+
+    /**
+     * 
+     * Récupérer l'activité récente d'un utilisateur
+     */
+    private function get_user_recent_activity($user_id, $limit = 10) {
+        // Récupérer les contacts récents de l'utilisateur
+        $recent_contacts = get_posts([
+            'post_type' => 'lead',
+            'author' => $user_id,
+            'posts_per_page' => $limit,
+            'orderby' => 'date',
+            'order' => 'DESC'
+        ]);
+        
+        $activity = [];
+        
+        foreach ($recent_contacts as $contact) {
+            $activity[] = [
+                'type' => 'Nouveau contact',
+                'description' => get_post_meta($contact->ID, 'first_name', true) . ' ' . 
+                                get_post_meta($contact->ID, 'last_name', true),
+                'date' => wp_date('d/m/Y H:i', strtotime($contact->post_date))
+            ];
+        }
+        
+        return $activity;
+    }
+
+    /**
+     * 
+     * Obtenir le nombre réel de contacts générés
+     */
+    private function get_real_contacts_count($vcard_ids, $start_date) {
+        global $wpdb;
+        
+        $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
+        
+        // Compter les leads créés pour ces vCards depuis la date
+        $count = $wpdb->get_var($wpdb->prepare("
+            SELECT COUNT(DISTINCT p.ID)
+            FROM {$wpdb->posts} p
+            LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = 'vcard_id'
+            WHERE p.post_type = 'lead'
+              AND p.post_status = 'publish'
+              AND p.post_date >= %s
+              AND (pm.meta_value IN ({$placeholders}) OR p.post_parent IN ({$placeholders}))
+        ", array_merge([$start_date], $vcard_ids, $vcard_ids)));
+        
+        return intval($count ?: 0);
     }
 
     /**
