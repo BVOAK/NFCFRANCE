@@ -54,6 +54,9 @@ $nfc_current_page = 'contacts';
         </div>
         <div class="col-auto">
             <div class="d-flex gap-2">
+                <button class="btn btn-outline-success" onclick="NFCContacts.showImportModal()">
+                    <i class="fas fa-upload me-1"></i>Importer
+                </button>
                 <button class="btn btn-outline-primary" onclick="NFCContacts.showAddModal()">
                     <i class="fas fa-plus me-1"></i>Ajouter
                 </button>
@@ -289,7 +292,7 @@ $nfc_current_page = 'contacts';
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Ajouter un contact</h5>
+                <h5 class="modal-title" id="contactModalTitle">Ajouter un contact</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -298,6 +301,8 @@ $nfc_current_page = 'contacts';
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- CONFIGURATION POUR contacts-manager.js -->
 <script>
