@@ -21,7 +21,7 @@
         filteredContacts: [],
         selectedContacts: [],
         currentPage: 1,
-        itemsPerPage: 5,
+        itemsPerPage: 25,
         totalPages: 1,
         isLoading: false,
         currentEditId: null,

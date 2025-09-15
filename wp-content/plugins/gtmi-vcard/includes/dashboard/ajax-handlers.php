@@ -48,13 +48,6 @@ class NFC_Dashboard_Ajax
         add_action('wp_ajax_nfc_download_qr', [$this, 'download_qr']);
         add_action('wp_ajax_nfc_get_qr_stats', [$this, 'get_qr_stats']);
 
-        // Contacts/Leads actions
-        add_action('wp_ajax_nfc_get_contacts', [$this, 'get_contacts']);
-        add_action('wp_ajax_nfc_save_contact', [$this, 'save_contact']);
-        add_action('wp_ajax_nfc_delete_contact', [$this, 'delete_contact']);
-        add_action('wp_ajax_nfc_export_contacts', [$this, 'export_contacts']);
-        add_action('wp_ajax_nfc_add_contact', [$this, 'add_contact']);
-
         // Statistics actions - REDIRIGÉES VERS API REST
         add_action('wp_ajax_nfc_get_statistics', [$this, 'get_statistics_redirect']);
 
@@ -62,11 +55,10 @@ class NFC_Dashboard_Ajax
         add_action('wp_ajax_nfc_get_dashboard_data', [$this, 'get_dashboard_data']);
 
         // Gestion des leads (contacts) - CRUD complet
+        add_action('wp_ajax_nfc_add_contact', [$this, 'add_contact']);
         add_action('wp_ajax_nfc_update_lead', [$this, 'update_lead']);
         add_action('wp_ajax_nfc_delete_lead', [$this, 'delete_lead']);
         add_action('wp_ajax_nfc_delete_leads_bulk', [$this, 'delete_leads_bulk']);
-
-        // Export/Import contacts
         add_action('wp_ajax_nfc_export_contacts_csv', [$this, 'export_contacts_csv']);
         add_action('wp_ajax_nfc_import_contacts_csv', [$this, 'import_contacts_csv']);
 
@@ -886,10 +878,11 @@ class NFC_Dashboard_Ajax
         $this->get_statistics_redirect();
     }
 
+
     /**
-     * Get contacts
+     * Get dashboard data
      */
-    public function get_contacts()
+    public function get_dashboard_data()
     {
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
 
@@ -899,35 +892,16 @@ class NFC_Dashboard_Ajax
             wp_send_json_error(['message' => 'ID vCard manquant']);
         }
 
-        // Utiliser l'API REST pour les leads/contacts
-        $api_url = home_url("/wp-json/gtmi_vcard/v1/leads/{$vcard_id}");
+        // Aggreger les données depuis les APIs REST
+        $dashboard_data = [
+            'vcard_data' => $this->get_vcard_data_internal($vcard_id),
+            'quick_stats' => $this->get_quick_stats_internal($vcard_id),
+            'recent_activity' => $this->get_recent_activity_internal($vcard_id)
+        ];
 
-        $response = wp_remote_get($api_url);
-
-        if (is_wp_error($response)) {
-            wp_send_json_error(['message' => 'Erreur de connexion à l\'API']);
-        }
-
-        $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body, true);
-
-        if ($data && $data['success']) {
-            wp_send_json_success($data['data']);
-        } else {
-            wp_send_json_success([]);
-        }
+        wp_send_json_success($dashboard_data);
     }
 
-    /**
-     * Save contact
-     */
-    public function save_contact()
-    {
-        check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-
-        // Implémenter la sauvegarde de contact
-        wp_send_json_success(['message' => 'Contact sauvegardé']);
-    }
 
     /**
      * Ajouter un contact via AJAX
@@ -978,78 +952,55 @@ class NFC_Dashboard_Ajax
     }
 
     /**
-     * Delete contact
-     */
-    public function delete_contact()
-    {
-        check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-
-        $contact_id = intval($_POST['contact_id'] ?? 0);
-
-        if (!$contact_id) {
-            wp_send_json_error(['message' => 'ID contact manquant']);
-            return;
-        }
-
-        // Vérifier que le contact existe et est de type 'lead'
-        $contact = get_post($contact_id);
-        if (!$contact || $contact->post_type !== 'lead') {
-            wp_send_json_error(['message' => 'Contact introuvable']);
-            return;
-        }
-
-        // Supprimer le contact
-        $deleted = wp_delete_post($contact_id, true); // true = suppression définitive
-
-        if ($deleted) {
-            error_log("✅ Contact {$contact_id} supprimé avec succès");
-            wp_send_json_success(['message' => 'Contact supprimé avec succès']);
-        } else {
-            error_log("❌ Échec suppression contact {$contact_id}");
-            wp_send_json_error(['message' => 'Erreur lors de la suppression']);
-        }
-    }
-    /**
-     * Export contacts
-     */
-    public function export_contacts()
-    {
-        check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-
-        // Implémenter l'export de contacts
-        wp_send_json_success(['message' => 'Export en cours']);
-    }
-
-    /**
-     * Get dashboard data
-     */
-    public function get_dashboard_data()
-    {
-        check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-
-        $vcard_id = intval($_POST['vcard_id'] ?? 0);
-
-        if (!$vcard_id) {
-            wp_send_json_error(['message' => 'ID vCard manquant']);
-        }
-
-        // Aggreger les données depuis les APIs REST
-        $dashboard_data = [
-            'vcard_data' => $this->get_vcard_data_internal($vcard_id),
-            'quick_stats' => $this->get_quick_stats_internal($vcard_id),
-            'recent_activity' => $this->get_recent_activity_internal($vcard_id)
-        ];
-
-        wp_send_json_success($dashboard_data);
-    }
-
-    /**
      * Update lead
      */
-    public function update_lead()
-    {
+    public function update_lead() {
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-        wp_send_json_success(['message' => 'Lead mis à jour']);
+        
+        $lead_id = intval($_POST['lead_id'] ?? 0);
+        $firstname = sanitize_text_field($_POST['firstname'] ?? '');
+        $lastname = sanitize_text_field($_POST['lastname'] ?? '');
+        $email = sanitize_email($_POST['email'] ?? '');
+        $mobile = sanitize_text_field($_POST['mobile'] ?? '');
+        $society = sanitize_text_field($_POST['society'] ?? '');
+        $post = sanitize_text_field($_POST['post'] ?? '');
+        $source = sanitize_text_field($_POST['source'] ?? 'manual');
+        $linked_virtual_card = intval($_POST['linked_virtual_card'] ?? 0);
+        
+        if (!$lead_id || !$firstname || !$lastname) {
+            wp_send_json_error(['message' => 'Données obligatoires manquantes']);
+            return;
+        }
+        
+        // Vérifier que le lead existe
+        $lead = get_post($lead_id);
+        if (!$lead || $lead->post_type !== 'lead') {
+            wp_send_json_error(['message' => 'Lead introuvable']);
+            return;
+        }
+        
+        // Mettre à jour le titre du post
+        wp_update_post([
+            'ID' => $lead_id,
+            'post_title' => $firstname . ' ' . $lastname
+        ]);
+        
+        // ✅ UTILISER ACF comme dans add_contact
+        update_field('firstname', $firstname, $lead_id);
+        update_field('lastname', $lastname, $lead_id);
+        update_field('email', $email, $lead_id);
+        update_field('mobile', $mobile, $lead_id);
+        update_field('society', $society, $lead_id);
+        update_field('post', $post, $lead_id);
+        update_field('source', $source, $lead_id);
+        update_field('linked_virtual_card', [$linked_virtual_card], $lead_id); // ARRAY !
+        
+        error_log("✅ Lead {$lead_id} mis à jour via ACF");
+        
+        wp_send_json_success([
+            'message' => 'Contact mis à jour avec succès',
+            'lead_id' => $lead_id
+        ]);
     }
 
     /**
