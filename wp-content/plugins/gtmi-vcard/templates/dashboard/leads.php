@@ -241,15 +241,30 @@ $nfc_current_page = 'contacts';
                         <th style="width: 40px;">
                             <input type="checkbox" class="form-check-input" id="selectAll">
                         </th>
-                        <th>Contact</th>
-                        <th>Email</th>
-                        <th>Téléphone</th>
-                        <th>Entreprise</th>
+                        <th class="sortable" onclick="NFCContacts.sortBy('name')" style="cursor: pointer;">
+                            Contact 
+                            <i class="fas fa-sort ms-1 text-muted" id="sort-name"></i>
+                        </th>
+                        <th class="sortable" onclick="NFCContacts.sortBy('email')" style="cursor: pointer;">
+                            Email 
+                            <i class="fas fa-sort ms-1 text-muted" id="sort-email"></i>
+                        </th>
+                        <th class="sortable" onclick="NFCContacts.sortBy('mobile')" style="cursor: pointer;">
+                            Téléphone 
+                            <i class="fas fa-sort ms-1 text-muted" id="sort-mobile"></i>
+                        </th>
+                        <th class="sortable" onclick="NFCContacts.sortBy('society')" style="cursor: pointer;">
+                            Entreprise 
+                            <i class="fas fa-sort ms-1 text-muted" id="sort-society"></i>
+                        </th>
                         <th>Source</th>
                         <?php if ($is_multi_profile): ?>
                         <th>Profil</th>
                         <?php endif; ?>
-                        <th>Date</th>
+                        <th class="sortable" onclick="NFCContacts.sortBy('date')" style="cursor: pointer;">
+                            Date 
+                            <i class="fas fa-sort ms-1 text-muted" id="sort-date"></i>
+                        </th>
                         <th style="width: 120px;">Actions</th>
                     </tr>
                 </thead>

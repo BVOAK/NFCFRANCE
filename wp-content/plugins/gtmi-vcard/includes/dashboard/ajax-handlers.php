@@ -1053,12 +1053,33 @@ class NFC_Dashboard_Ajax
     }
 
     /**
-     * Delete lead
+     * Supprimer un lead
      */
-    public function delete_lead()
-    {
+    public function delete_lead() {
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-        wp_send_json_success(['message' => 'Lead supprimé']);
+        
+        $lead_id = intval($_POST['lead_id'] ?? 0);
+        
+        if (!$lead_id) {
+            wp_send_json_error(['message' => 'ID lead manquant']);
+            return;
+        }
+        
+        // Vérifier que le lead existe
+        $lead = get_post($lead_id);
+        if (!$lead || $lead->post_type !== 'lead') {
+            wp_send_json_error(['message' => 'Lead introuvable']);
+            return;
+        }
+        
+        // Supprimer le lead
+        $deleted = wp_delete_post($lead_id, true);
+        
+        if ($deleted) {
+            wp_send_json_success(['message' => 'Contact supprimé avec succès']);
+        } else {
+            wp_send_json_error(['message' => 'Erreur lors de la suppression']);
+        }
     }
 
     /**

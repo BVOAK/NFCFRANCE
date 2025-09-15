@@ -27,6 +27,7 @@
         currentEditId: null,
         currentView: 'table',
         csvData: [],
+        currentSort: { field: 'date', direction: 'desc' },
 
         // 🆕 NOUVEAU: Flag pour savoir si on utilise AJAX ou REST
         useAjax: false,
@@ -354,19 +355,42 @@
                 });
             }
 
-            // Tri
+            // Tri personnalisé
             filtered.sort((a, b) => {
-                switch (this.filters.sortBy) {
-                    case 'date_asc':
-                        return new Date(a.created_at || a.contact_datetime) - new Date(b.created_at || b.contact_datetime);
-                    case 'date_desc':
-                        return new Date(b.created_at || b.contact_datetime) - new Date(a.created_at || a.contact_datetime);
-                    case 'name_asc':
-                        return (a.lastname || '').localeCompare(b.lastname || '');
-                    case 'name_desc':
-                        return (b.lastname || '').localeCompare(a.lastname || '');
+                let valueA, valueB;
+
+                switch (this.currentSort.field) {
+                    case 'name':
+                        valueA = `${a.lastname || ''} ${a.firstname || ''}`.trim().toLowerCase();
+                        valueB = `${b.lastname || ''} ${b.firstname || ''}`.trim().toLowerCase();
+                        break;
+                    case 'email':
+                        valueA = (a.email || '').toLowerCase();
+                        valueB = (b.email || '').toLowerCase();
+                        break;
+                    case 'mobile':
+                        valueA = (a.mobile || '').toLowerCase();
+                        valueB = (b.mobile || '').toLowerCase();
+                        break;
+                    case 'society':
+                        valueA = (a.society || '').toLowerCase();
+                        valueB = (b.society || '').toLowerCase();
+                        break;
+                    case 'date':
+                        valueA = new Date(a.created_at || a.contact_datetime || '1970-01-01');
+                        valueB = new Date(b.created_at || b.contact_datetime || '1970-01-01');
+                        break;
                     default:
                         return 0;
+                }
+
+                if (this.currentSort.field === 'date') {
+                    // Tri par date
+                    return this.currentSort.direction === 'asc' ? valueA - valueB : valueB - valueA;
+                } else {
+                    // Tri alphabétique
+                    const comparison = valueA.localeCompare(valueB);
+                    return this.currentSort.direction === 'asc' ? comparison : -comparison;
                 }
             });
 
@@ -700,51 +724,111 @@
             const fullName = `${contact.firstname || ''} ${contact.lastname || ''}`.trim();
 
             const content = `
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 100px; height: 100px; font-size: 32px;">
+                        ${this.getContactInitials(fullName)}
+                    </div>
+                    <h4 class="mb-1">${this.escapeHtml(fullName)}</h4>
+                    ${contact.post ? `<p class="text-muted mb-2">${this.escapeHtml(contact.post)}</p>` : ''}
+                    ${contact.society ? `<p class="fw-medium text-primary">${this.escapeHtml(contact.society)}</p>` : ''}
+                    
+                    <div class="mt-3">
+                        <span class="badge bg-${this.getSourceColor(contact.source)} fs-6">
+                            ${this.getSourceLabel(contact.source || 'web')}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
                 <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="text-center mb-4">
-                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
-                                 style="width: 80px; height: 80px; font-size: 24px;">
-                                ${this.getContactInitials(fullName)}
+                    ${contact.email ? `
+                    <div class="col-12">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-envelope text-primary me-3" style="width: 20px;"></i>
+                            <div>
+                                <small class="text-muted d-block">Email</small>
+                                <a href="mailto:${contact.email}" class="text-decoration-none fw-medium">
+                                    ${this.escapeHtml(contact.email)}
+                                </a>
                             </div>
-                            <h4 class="mt-3 mb-1">${fullName}</h4>
-                            ${contact.post ? `<p class="text-muted">${this.escapeHtml(contact.post)}</p>` : ''}
-                            ${contact.society ? `<p class="fw-medium">${this.escapeHtml(contact.society)}</p>` : ''}
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        ${contact.email ? `
-                        <div class="mb-3">
-                            <strong>Email :</strong><br>
-                            <a href="mailto:${contact.email}" class="text-decoration-none">${this.escapeHtml(contact.email)}</a>
+                    ` : ''}
+                    
+                    ${contact.mobile ? `
+                    <div class="col-12">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-phone text-success me-3" style="width: 20px;"></i>
+                            <div>
+                                <small class="text-muted d-block">Téléphone</small>
+                                <a href="tel:${contact.mobile}" class="text-decoration-none fw-medium">
+                                    ${this.escapeHtml(contact.mobile)}
+                                </a>
+                            </div>
                         </div>
-                        ` : ''}
-                        
-                        ${contact.mobile ? `
-                        <div class="mb-3">
-                            <strong>Téléphone :</strong><br>
-                            <a href="tel:${contact.mobile}" class="text-decoration-none">${this.escapeHtml(contact.mobile)}</a>
+                    </div>
+                    ` : ''}
+                    
+                    ${this.config.is_multi_profile && contact.vcard_source_name ? `
+                    <div class="col-12">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-id-card text-info me-3" style="width: 20px;"></i>
+                            <div>
+                                <small class="text-muted d-block">Profil vCard source</small>
+                                <span class="fw-medium">${this.escapeHtml(contact.vcard_source_name)}</span>
+                            </div>
                         </div>
-                        ` : ''}
-                        
-                        <div class="mb-3">
-                            <strong>Source :</strong><br>
-                            <span class="badge bg-secondary">${this.getSourceLabel(contact.source || 'web')}</span>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <strong>Ajouté le :</strong><br>
-                            <small class="text-muted">${this.formatDate(contact.created_at || contact.contact_datetime)}</small>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="col-12">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-calendar text-warning me-3" style="width: 20px;"></i>
+                            <div>
+                                <small class="text-muted d-block">Date de contact</small>
+                                <span class="fw-medium">${this.formatDate(contact.created_at || contact.contact_datetime)}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            `;
+                
+                ${contact.email && contact.mobile ? `
+                <div class="mt-4">
+                    <h6 class="text-muted mb-3">Actions rapides</h6>
+                    <div class="d-flex gap-2">
+                        <a href="mailto:${contact.email}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-envelope me-1"></i>Envoyer email
+                        </a>
+                        <a href="tel:${contact.mobile}" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-phone me-1"></i>Appeler
+                        </a>
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
 
             document.getElementById('contactDetailsContent').innerHTML = content;
             this.currentEditId = contactId;
 
             const modal = new bootstrap.Modal(document.getElementById('contactDetailsModal'));
             modal.show();
+        },
+
+        // Ajouter cette fonction utilitaire
+        getSourceColor: function (source) {
+            const colors = {
+                'qr': 'primary',
+                'nfc': 'success',
+                'web': 'info',
+                'manual': 'secondary'
+            };
+            return colors[source] || 'secondary';
         },
 
         editContact: function (contactId) {
@@ -1185,6 +1269,35 @@
                 importBtn.innerHTML = originalText;
                 importBtn.disabled = false;
             });
+        },
+        sortBy: function (field) {
+            // Inverser la direction si même champ
+            if (this.currentSort.field === field) {
+                this.currentSort.direction = this.currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                this.currentSort.field = field;
+                this.currentSort.direction = 'asc';
+            }
+
+            // Mettre à jour les icônes
+            this.updateSortIcons();
+
+            // Appliquer le tri
+            this.applyFilters();
+        },
+
+        updateSortIcons: function () {
+            // Reset toutes les icônes
+            document.querySelectorAll('[id^="sort-"]').forEach(icon => {
+                icon.className = 'fas fa-sort ms-1 text-muted';
+            });
+
+            // Mettre à jour l'icône active
+            const activeIcon = document.getElementById(`sort-${this.currentSort.field}`);
+            if (activeIcon) {
+                const iconClass = this.currentSort.direction === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
+                activeIcon.className = `fas ${iconClass} ms-1 text-primary`;
+            }
         }
     };
 
