@@ -335,17 +335,19 @@ $nfc_current_page = 'contacts';
                                 <option value="web">Site Web</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label for="profile_vcard" class="form-label">Profil vCard <span class="text-danger">*</span></label>
-                            <select class="form-select" id="profile_vcard" name="profile_vcard" required>
-                                <option value="">-- Choisir un profil --</option>
-                                <?php foreach ($user_vcards as $vcard): ?>
-                                    <option value="<?php echo $vcard['vcard_id']; ?>">
-                                        <?php echo esc_html(nfc_format_vcard_full_name($vcard['vcard_data'] ?? [])); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
+                        <?php if ($is_multi_profile): ?>
+                            <div class="col-md-6">
+                                <label for="profile_vcard" class="form-label">Profil vCard <span class="text-danger">*</span></label>
+                                <select class="form-select" id="profile_vcard" name="profile_vcard" required>
+                                    <option value="">-- Choisir un profil --</option>
+                                    <?php foreach ($user_vcards as $vcard): ?>
+                                        <option value="<?php echo $vcard['vcard_id']; ?>">
+                                            <?php echo esc_html(nfc_format_vcard_full_name($vcard['vcard_data'] ?? [])); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </form>
             </div>
@@ -370,12 +372,26 @@ $nfc_current_page = 'contacts';
             <div class="modal-body">
                 <div class="mb-3">
                     <label for="csvFile" class="form-label">Fichier CSV</label>
-                    <input type="file" class="form-control" id="csvFile" accept=".csv">
+                    <input type="file" class="form-control" id="csvFile" accept=".csv" onchange="NFCContacts.validateCsvFile(this)">
                 </div>
+                <?php if ($is_multi_profile): ?>
+                    <div class="mb-3">
+                        <label for="import_profile_vcard" class="form-label">Profil vCard de destination</label>
+                        <select class="form-select" id="import_profile_vcard">
+                            <?php foreach ($user_vcards as $vcard): ?>
+                                <option value="<?php echo $vcard['vcard_id']; ?>">
+                                    <?php echo esc_html(nfc_format_vcard_full_name($vcard['vcard_data'] ?? [])); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                <?php endif; ?>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary">Importer</button>
+                <button type="button" class="btn btn-primary" id="importBtn" onclick="NFCContacts.importCsv()" disabled>
+                    <i class="fas fa-upload me-2"></i>Importer
+                </button>
             </div>
         </div>
     </div>

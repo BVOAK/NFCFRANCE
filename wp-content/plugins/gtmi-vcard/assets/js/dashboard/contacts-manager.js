@@ -26,6 +26,7 @@
         isLoading: false,
         currentEditId: null,
         currentView: 'table',
+        csvData: [],
 
         // 🆕 NOUVEAU: Flag pour savoir si on utilise AJAX ou REST
         useAjax: false,
@@ -618,14 +619,14 @@
             }
         },
 
-        createContactViaApi: function(contactData) {
+        createContactViaApi: function (contactData) {
             // Utiliser AJAX WordPress au lieu de l'API REST
             const ajaxData = {
                 action: 'nfc_add_contact',
                 nonce: this.config.nonce,
                 ...contactData
             };
-            
+
             fetch(this.config.ajax_url, {
                 method: 'POST',
                 headers: {
@@ -633,25 +634,25 @@
                 },
                 body: new URLSearchParams(ajaxData)
             })
-            .then(response => response.json())
-            .then(data => {
-                console.log('✅ Contact ajouté:', data);
-                
-                if (data.success) {
-                    this.closeModal('contactModal');
-                    this.loadContacts();
-                    this.showNotification('Contact ajouté avec succès!', 'success');
-                } else {
-                    throw new Error(data.data.message || 'Erreur lors de l\'ajout');
-                }
-            })
-            .catch(error => {
-                console.error('❌ Erreur ajout:', error);
-                this.showNotification('Erreur lors de l\'ajout: ' + error.message, 'error');
-            })
-            .finally(() => {
-                this.resetSaveButton();
-            });
+                .then(response => response.json())
+                .then(data => {
+                    console.log('✅ Contact ajouté:', data);
+
+                    if (data.success) {
+                        this.closeModal('contactModal');
+                        this.loadContacts();
+                        this.showNotification('Contact ajouté avec succès!', 'success');
+                    } else {
+                        throw new Error(data.data.message || 'Erreur lors de l\'ajout');
+                    }
+                })
+                .catch(error => {
+                    console.error('❌ Erreur ajout:', error);
+                    this.showNotification('Erreur lors de l\'ajout: ' + error.message, 'error');
+                })
+                .finally(() => {
+                    this.resetSaveButton();
+                });
         },
 
         updateContactViaAjax: function (contactData) {
@@ -1037,13 +1038,153 @@
             container.innerHTML = html;
         },
         validateCsvFile: function (input) {
-            // TODO: Implémenter validation CSV
-            console.log('Validation CSV:', input.files[0]);
+            console.log('📁 Validation fichier CSV');
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.parseCsvContent(e.target.result);
+            };
+            reader.readAsText(file);
+        },
+
+        parseCsvContent: function (content) {
+            const lines = content.split('\n').filter(line => line.trim());
+            if (lines.length < 2) {
+                this.showNotification('Fichier CSV vide ou invalide', 'error');
+                return;
+            }
+
+            // Parser le CSV simple
+            const headers = lines[0].split(',').map(h => h.trim());
+            this.csvData = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim());
+                if (values.length >= 2) { // Au moins prénom + nom
+                    this.csvData.push({
+                        firstname: values[0] || '',
+                        lastname: values[1] || '',
+                        email: values[2] || '',
+                        mobile: values[3] || '',
+                        society: values[4] || '',
+                        post: values[5] || '',
+                        source: 'manual'
+                    });
+                }
+            }
+
+            // Afficher aperçu
+            this.showCsvPreview();
+        },
+
+        showCsvPreview: function () {
+            const preview = document.getElementById('csvPreview');
+            const importBtn = document.getElementById('importBtn');
+
+            if (this.csvData && this.csvData.length > 0) {
+                console.log('📊 CSV parsé:', this.csvData.length, 'contacts');
+                importBtn.disabled = false;
+                // TODO: Afficher un aperçu visuel
+            } else {
+                console.log('❌ Aucun contact valide dans le CSV');
+                importBtn.disabled = true;
+            }
         },
 
         importCsv: function () {
-            // TODO: Implémenter import CSV
-            console.log('Import CSV');
+            if (!this.csvData || this.csvData.length === 0) {
+                this.showNotification('Aucun contact à importer', 'error');
+                return;
+            }
+
+            console.log('📤 Import de', this.csvData.length, 'contacts');
+
+            const importBtn = document.getElementById('importBtn');
+            const originalText = importBtn.innerHTML;
+            importBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Import en cours...';
+            importBtn.disabled = true;
+
+            let imported = 0;
+            let errors = 0;
+
+            // Fonction pour importer un contact
+            const importContact = (contactData, index) => {
+                return new Promise((resolve, reject) => {
+                    // Ajouter la vCard selon le mode
+                    if (this.config.is_multi_profile) {
+                        const selectedProfile = document.getElementById('import_profile_vcard');
+                        contactData.linked_virtual_card = selectedProfile ? selectedProfile.value : this.config.vcard_id; // TODO: Permettre choix profil
+                    } else {
+                        contactData.linked_virtual_card = this.config.vcard_id;
+                    }
+
+                    const ajaxData = {
+                        action: 'nfc_add_contact',
+                        nonce: this.config.nonce,
+                        ...contactData
+                    };
+
+                    fetch(this.config.ajax_url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams(ajaxData)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                imported++;
+                                console.log(`✅ Contact ${index + 1}/${this.csvData.length} importé`);
+                            } else {
+                                errors++;
+                                console.error(`❌ Erreur contact ${index + 1}:`, data.data);
+                            }
+                            resolve();
+                        })
+                        .catch(error => {
+                            errors++;
+                            console.error(`❌ Erreur contact ${index + 1}:`, error);
+                            resolve(); // Continue même en cas d'erreur
+                        });
+                });
+            };
+
+            // Importer tous les contacts séquentiellement (pour éviter la surcharge)
+            const importAll = async () => {
+                for (let i = 0; i < this.csvData.length; i++) {
+                    await importContact(this.csvData[i], i);
+
+                    // Petite pause entre chaque import
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+
+                // Résultats finaux
+                const message = `Import terminé: ${imported} contacts ajoutés`;
+                if (errors > 0) {
+                    this.showNotification(`${message}, ${errors} erreurs`, 'warning');
+                } else {
+                    this.showNotification(message, 'success');
+                }
+
+                // Recharger les contacts et fermer la modal
+                this.loadContacts();
+                this.closeModal('importModal');
+
+                // Remettre le bouton
+                importBtn.innerHTML = originalText;
+                importBtn.disabled = false;
+            };
+
+            // Lancer l'import
+            importAll().catch(error => {
+                console.error('❌ Erreur import global:', error);
+                this.showNotification('Erreur lors de l\'import', 'error');
+                importBtn.innerHTML = originalText;
+                importBtn.disabled = false;
+            });
         }
     };
 

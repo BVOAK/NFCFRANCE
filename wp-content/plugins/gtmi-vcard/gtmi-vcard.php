@@ -12,7 +12,7 @@
 defined( 'ABSPATH') or die('Forbidden');
 
 require_once plugin_dir_path(__FILE__) . 'includes/custom-post-type/virtual_card.php';
-//require_once plugin_dir_path( __FILE__) . 'includes/custom-post-type/lead.php';
+require_once plugin_dir_path( __FILE__) . 'includes/custom-post-type/lead.php';
 require_once plugin_dir_path( __FILE__) . 'includes/custom-post-type/statistics.php';
 require_once plugin_dir_path( __FILE__) . 'includes/utils/after_order.php';
 require_once plugin_dir_path( __FILE__) . 'includes/utils/api.php';
