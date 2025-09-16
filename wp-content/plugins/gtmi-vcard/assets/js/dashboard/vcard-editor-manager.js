@@ -14,13 +14,13 @@ class VCardEditor {
         this.customUrlSection = null;
         this.saveTimeout = null;
         this.cropper = null;
-
+        
         // État
         this.isDirty = false;
         this.isSaving = false;
         this.lastSaveData = null;
         this.pendingDeletions = [];
-
+        
         this.init();
     }
 
@@ -34,7 +34,7 @@ class VCardEditor {
         this.initPreview();
         this.initImageUploads();
         this.initCustomUrl();
-
+        
         console.log('✅ VCard Editor initialized', this.config);
     }
 
@@ -48,12 +48,12 @@ class VCardEditor {
         this.saveStatusBar = document.getElementById('save-status-bar');
         this.customUrlCheckbox = document.getElementById('enable_custom_url');
         this.customUrlSection = document.getElementById('custom_url_section');
-
+        
         if (!this.form) {
             console.error('❌ Form vcard-edit-form not found');
             return;
         }
-
+        
         console.log('✅ DOM elements initialized');
     }
 
@@ -86,15 +86,15 @@ class VCardEditor {
         // Boutons preview
         const toggleDeviceBtn = document.getElementById('toggle-device');
         const openPublicBtn = document.getElementById('open-public');
-
+        
         if (toggleDeviceBtn) {
             toggleDeviceBtn.addEventListener('click', () => this.toggleDevicePreview());
         }
-
+        
         if (openPublicBtn) {
             openPublicBtn.addEventListener('click', () => this.openPublicView());
         }
-
+        
         console.log('✅ Event listeners initialized');
     }
 
@@ -128,7 +128,7 @@ class VCardEditor {
         if (this.saveTimeout) {
             clearTimeout(this.saveTimeout);
         }
-
+        
         this.saveTimeout = setTimeout(() => {
             if (this.isDirty && !this.isSaving) {
                 this.saveVCard(false); // Auto-save silencieux
@@ -142,20 +142,20 @@ class VCardEditor {
      */
     async saveVCard(showFeedback = true) {
         if (this.isSaving) return;
-
+        
         this.isSaving = true;
-
+        
         if (showFeedback) {
             this.updateSaveButton('saving');
         }
-
+        
         try {
             const formData = new FormData(this.form);
-
+            
             // Ajouter le mode de redirection
             const redirectMode = this.customUrlCheckbox && this.customUrlCheckbox.checked ? 'custom' : 'vcard';
             formData.append('redirect_mode', redirectMode);
-
+            
             // Gestion des suppressions d'images
             if (this.pendingDeletions && this.pendingDeletions.length > 0) {
                 if (this.pendingDeletions.includes('profile_picture')) {
@@ -165,17 +165,17 @@ class VCardEditor {
                     formData.append('delete_cover_image', 'true');
                 }
             }
-
+            
             const response = await this.callAjax('save_vcard_data', formData);
-
+            
             if (response.success) {
                 this.isDirty = false;
                 this.pendingDeletions = []; // Reset suppressions
                 this.lastSaveData = this.getFormData();
-
+                
                 if (showFeedback) {
                     this.showSaveStatus('success', response.data && response.data.message || 'Modifications sauvegardées');
-
+                    
                     // Redirection si en mode multi-vCard
                     if (this.config.is_multi_vcard_mode && this.config.redirect_after_save) {
                         setTimeout(() => {
@@ -183,16 +183,16 @@ class VCardEditor {
                         }, 1500);
                     }
                 }
-
+                
                 this.updateSaveIndicator('saved');
-
+                
             } else {
                 if (showFeedback) {
                     this.showSaveStatus('error', response.data && response.data.message || 'Erreur lors de la sauvegarde');
                 }
                 this.updateSaveIndicator('error');
             }
-
+            
         } catch (error) {
             console.error('❌ Save error:', error);
             if (showFeedback) {
@@ -212,7 +212,7 @@ class VCardEditor {
      */
     async callAjax(action, data = {}) {
         const formData = new FormData();
-
+        
         if (data instanceof FormData) {
             // Si c'est déjà un FormData, l'utiliser tel quel
             for (let pair of data.entries()) {
@@ -224,20 +224,20 @@ class VCardEditor {
                 formData.append(key, data[key]);
             });
         }
-
+        
         formData.append('action', action);
         formData.append('nonce', this.config.nonce);
-
+        
         const response = await fetch(this.config.ajax_url, {
             method: 'POST',
             body: formData,
             credentials: 'same-origin'
         });
-
+        
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
         }
-
+        
         return await response.json();
     }
 
@@ -246,7 +246,7 @@ class VCardEditor {
      */
     updateSaveButton(state) {
         const buttons = [this.saveButton, this.saveButtonHeader].filter(btn => btn);
-
+        
         buttons.forEach(button => {
             switch (state) {
                 case 'saving':
@@ -267,15 +267,15 @@ class VCardEditor {
      */
     showSaveStatus(type, message) {
         if (!this.saveStatusBar) return;
-
+        
         this.saveStatusBar.className = `alert alert-${type === 'success' ? 'success' : 'danger'} mb-4`;
         const statusText = this.saveStatusBar.querySelector('#save-status-text');
         if (statusText) {
             statusText.textContent = message;
         }
-
+        
         this.saveStatusBar.classList.remove('d-none');
-
+        
         setTimeout(() => {
             this.saveStatusBar.classList.add('d-none');
         }, type === 'success' ? 3000 : 5000);
@@ -287,10 +287,10 @@ class VCardEditor {
     updateSaveIndicator(state) {
         const saveStatus = document.getElementById('save-status');
         if (!saveStatus) return;
-
+        
         const icon = saveStatus.querySelector('i');
         const text = saveStatus.querySelector('span');
-
+        
         if (icon && text) {
             switch (state) {
                 case 'saving':
@@ -314,7 +314,7 @@ class VCardEditor {
      */
     initPreview() {
         this.updatePreview();
-
+        
         // Écouter les changements pour mettre à jour le preview
         const previewFields = ['firstname', 'lastname', 'post', 'society', 'email', 'phone'];
         previewFields.forEach(fieldId => {
@@ -337,28 +337,28 @@ class VCardEditor {
         const email = document.getElementById('email') ? document.getElementById('email').value : '';
         const phone = document.getElementById('phone') ? document.getElementById('phone').value : '';
         const description = document.getElementById('description') ? document.getElementById('description').value : '';
-
+        
         // Mettre à jour les éléments du preview
         const previewName = document.querySelector('.preview-name');
         const previewJob = document.querySelector('.preview-job');
         const previewCompany = document.querySelector('.preview-company');
-
+        
         const fullName = `${firstname} ${lastname}`.trim() || 'Nom Prénom';
-
+        
         if (previewName) {
             previewName.textContent = fullName;
         }
-
+        
         if (previewJob) {
             previewJob.textContent = post || '';
             previewJob.style.display = post ? 'block' : 'none';
         }
-
+        
         if (previewCompany) {
             previewCompany.textContent = society || '';
             previewCompany.style.display = society ? 'block' : 'none';
         }
-
+        
         // Mettre à jour les contacts dans le preview
         this.updatePreviewContacts();
     }
@@ -370,10 +370,10 @@ class VCardEditor {
         const email = document.getElementById('email') ? document.getElementById('email').value : '';
         const phone = document.getElementById('phone') ? document.getElementById('phone').value : '';
         const previewContacts = document.querySelector('.preview-contacts');
-
+        
         if (previewContacts) {
             let contactsHtml = '';
-
+            
             if (email) {
                 contactsHtml += `
                     <div class="preview-contact-item">
@@ -382,7 +382,7 @@ class VCardEditor {
                     </div>
                 `;
             }
-
+            
             if (phone) {
                 contactsHtml += `
                     <div class="preview-contact-item">
@@ -391,7 +391,7 @@ class VCardEditor {
                     </div>
                 `;
             }
-
+            
             previewContacts.innerHTML = contactsHtml;
         }
     }
@@ -424,28 +424,22 @@ class VCardEditor {
     }
 
     /**
- * Gérer l'upload d'image - VERSION ARRAY BUFFER
- */
+     * Gérer l'upload d'image
+     */
     async handleImageUpload(file, type) {
-        console.log(`📸 Starting upload for ${type}:`, file.name);
+        console.log(`📸 Uploading ${type} image:`, file.name);
 
         // Validation
         if (!this.validateFile(file)) return;
 
+        // Afficher preview immédiat
+        this.showImagePreview(file, type);
+
         try {
-            // 🔥 LIRE LE FILE EN ARRAY BUFFER IMMÉDIATEMENT
-            const arrayBuffer = await file.arrayBuffer();
-            const blob = new Blob([arrayBuffer], { type: file.type });
-
-            console.log('📁 File converted to Blob:', blob);
-
+            // Upload via AJAX existant
             const formData = new FormData();
-            const fieldName = type === 'profile' ? 'profile_picture' : 'cover_image';
-
-            // 🔥 UTILISER LE BLOB AU LIEU DU FILE
-            formData.append('file', blob, file.name);
+            formData.append(type === 'profile' ? 'profile_picture' : 'cover_image', file);
             formData.append('vcard_id', this.config.vcard_id);
-            formData.append('field_name', fieldName);
             formData.append('action', 'upload_vcard_image');
             formData.append('nonce', this.config.nonce);
 
@@ -455,52 +449,20 @@ class VCardEditor {
                 credentials: 'same-origin'
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-
             const result = await response.json();
 
             if (result.success) {
-                const imageUrl = result.data.url;
-                console.log(`✅ ${type} uploaded:`, imageUrl);
-
-                if (imageUrl) {
-                    this.updateImagePreview(fieldName, imageUrl);
-                    this.showNotification('Image mise à jour avec succès', 'success');
-                    this.markAsDirty();
-                    return { url: imageUrl };
-                }
+                console.log(`✅ ${type} image uploaded:`, result.data && result.data.url);
+                this.updateImagePreview(result.data && result.data.url || '', type);
+                this.markAsDirty();
             } else {
-                this.showNotification('error', `Erreur: ${result.data?.message || 'Upload failed'}`);
+                console.error(`❌ ${type} upload error:`, result.data);
+                this.showNotification('error', `Erreur lors de l'upload ${type}`);
             }
 
         } catch (error) {
             console.error(`❌ ${type} upload error:`, error);
-            this.showNotification('error', `Erreur: ${error.message}`);
-        }
-    }
-
-    /**
-     * Afficher preview depuis URL (après upload réussi)
-     */
-    showImagePreviewFromUrl(imageUrl, type) {
-        console.log(`🖼️ Preview from URL: ${imageUrl} for ${type}`);
-
-        const previewId = type === 'profile' ? '#profile-preview' : '#cover-preview';
-        const previewImg = document.querySelector(`${previewId} img`);
-
-        if (previewImg) {
-            previewImg.src = imageUrl;
-            previewImg.style.display = 'block';
-        }
-
-        // Mettre à jour le preview principal si c'est la photo de profil
-        if (type === 'profile') {
-            const mainPreview = document.querySelector('.preview-profile-image');
-            if (mainPreview) {
-                mainPreview.src = imageUrl;
-            }
+            this.showNotification('error', 'Erreur de connexion');
         }
     }
 
@@ -513,66 +475,80 @@ class VCardEditor {
             this.showNotification('error', 'Fichier trop volumineux (max 5MB)');
             return false;
         }
-
+        
         // Type
         if (!this.config.allowed_types.includes(file.type)) {
             this.showNotification('error', 'Format non supporté');
             return false;
         }
-
+        
         return true;
     }
 
     /**
      * Afficher preview image immédiat
      */
-    /**
- * Preview immédiat (optionnel) - VERSION SÉCURISÉE  
- */
     showImagePreview(file, type) {
-        // Créer un nouveau FileReader pour éviter les conflits
         const reader = new FileReader();
-
         reader.onload = (e) => {
-            const previewId = type === 'profile' ? '#profile-preview' : '#cover-preview';
-            const previewImg = document.querySelector(`${previewId} img`);
-
-            if (previewImg) {
-                previewImg.src = e.target.result;
-                previewImg.style.display = 'block';
-                // Ajouter une classe pour indiquer que c'est temporaire
-                previewImg.classList.add('preview-temp');
+            const previewId = type === 'profile' ? 'profile-preview' : 'cover-preview';
+            const preview = document.getElementById(previewId);
+            
+            if (preview) {
+                if (type === 'profile') {
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" 
+                             class="img-fluid rounded-circle border"
+                             style="width: 120px; height: 120px; object-fit: cover;" 
+                             alt="Photo de profil">
+                        <div class="upload-overlay">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    `;
+                } else {
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" 
+                             class="img-fluid rounded border"
+                             style="width: 100%; max-height: 120px; object-fit: cover;" 
+                             alt="Image de couverture">
+                        <div class="upload-overlay">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    `;
+                }
             }
         };
-
-        // Utiliser readAsDataURL au lieu de readAsArrayBuffer
         reader.readAsDataURL(file);
     }
 
     /**
      * Mettre à jour preview image avec URL finale
      */
-    updateImagePreview(fieldName, imageUrl) {
-        console.log(`🖼️ Updating preview for ${fieldName}:`, imageUrl);
-
-        // Mettre à jour l'input hidden si il existe
-        const hiddenInput = document.querySelector(`input[name="${fieldName}"]`);
-        if (hiddenInput) {
-            hiddenInput.value = imageUrl || '';
-        }
-
-        // Mettre à jour l'aperçu visuel
-        const previewImg = document.querySelector(`#${fieldName}-preview img, .${fieldName}-preview img`);
-        if (previewImg && imageUrl) {
-            previewImg.src = imageUrl;
-            previewImg.style.display = 'block';
-        }
-
-        // Mettre à jour le preview principal si c'est la photo de profil
-        if (fieldName === 'profile_picture') {
-            const mainPreview = document.querySelector('.preview-profile-image');
-            if (mainPreview && imageUrl) {
-                mainPreview.src = imageUrl;
+    updateImagePreview(imageUrl, type) {
+        const previewId = type === 'profile' ? 'profile-preview' : 'cover-preview';
+        const preview = document.getElementById(previewId);
+        
+        if (preview && imageUrl) {
+            if (type === 'profile') {
+                preview.innerHTML = `
+                    <img src="${imageUrl}" 
+                         class="img-fluid rounded-circle border"
+                         style="width: 120px; height: 120px; object-fit: cover;" 
+                         alt="Photo de profil">
+                `;
+                
+                // Mettre à jour le preview principal
+                const previewAvatar = document.querySelector('.preview-avatar');
+                if (previewAvatar) {
+                    previewAvatar.innerHTML = `<img src="${imageUrl}" alt="Photo de profil">`;
+                }
+            } else {
+                preview.innerHTML = `
+                    <img src="${imageUrl}" 
+                         class="img-fluid rounded border"
+                         style="width: 100%; max-height: 120px; object-fit: cover;" 
+                         alt="Image de couverture">
+                `;
             }
         }
     }
@@ -582,7 +558,7 @@ class VCardEditor {
      */
     initCustomUrl() {
         if (!this.customUrlCheckbox || !this.customUrlSection) return;
-
+        
         this.customUrlCheckbox.addEventListener('change', () => {
             if (this.customUrlCheckbox.checked) {
                 this.customUrlSection.style.display = 'block';
@@ -634,9 +610,9 @@ class VCardEditor {
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
-
+        
         document.body.appendChild(notification);
-
+        
         // Auto-supprimer après 5 secondes
         setTimeout(() => {
             if (notification.parentNode) {
@@ -720,6 +696,6 @@ window.removeCoverImage = function () {
 };
 
 // Initialisation au chargement du DOM
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     window.vCardEditor = new VCardEditor();
 });
