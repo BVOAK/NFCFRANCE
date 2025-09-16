@@ -538,136 +538,87 @@ class NFC_Dashboard_Ajax
      * Upload image vCard (photo de profil, logo, etc.)
      * @return void JSON Response
      */
-    public function upload_vcard_image() {
-        // 1. VÉRIFICATION NONCE
+
+    public function upload_vcard_image()
+    {
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-        
-        // 2. VALIDATION DONNÉES
+
+        // Vérifier si on a un fichier
+        if (empty($_FILES)) {
+            error_log("❌ Aucun fichier dans \$_FILES");
+            wp_send_json_error(['message' => 'Aucun fichier reçu - $_FILES vide']);
+            return;
+        }
+
+        $file = null;
+        $possible_names = ['file', 'profile_picture', 'cover_image', 'image'];
+
+        foreach ($possible_names as $name) {
+            if (isset($_FILES[$name]) && $_FILES[$name]['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES[$name];
+                error_log("✅ Fichier trouvé sous le nom: $name");
+                break;
+            }
+        }
+
+        if (!$file) {
+            error_log("❌ Aucun fichier valide trouvé");
+            wp_send_json_error(['message' => 'Aucun fichier valide trouvé']);
+            return;
+        }
+
         $vcard_id = intval($_POST['vcard_id'] ?? 0);
-        $user_id = get_current_user_id();
-        
+        $field_name = sanitize_text_field($_POST['field_name'] ?? 'profile_picture');
+
+        error_log("📸 Upload starting: vcard_id=$vcard_id, field_name=$field_name");
+
         if (!$vcard_id) {
             wp_send_json_error(['message' => 'ID vCard manquant']);
             return;
         }
-        
-        // Vérifier que l'utilisateur possède cette vCard
-        $vcard = get_post($vcard_id);
-        if (!$vcard || $vcard->post_author != $user_id) {
-            wp_send_json_error(['message' => 'Accès non autorisé']);
-            return;
-        }
-        
-        // Vérifier qu'un fichier a été uploadé
-        if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
-            wp_send_json_error(['message' => 'Aucun fichier reçu ou erreur d\'upload']);
-            return;
-        }
-        
-        // 3. LOGIQUE MÉTIER
-        try {
-            $file = $_FILES['file'] ?? $_FILES['profile_picture'] ?? $_FILES['cover_image'] ?? null;
-            $image_type = 'profile'; // default
-            
-            // Déterminer le type d'image
-            if (isset($_FILES['cover_image'])) {
-                $image_type = 'cover';
-            }
-            
-            if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
-                wp_send_json_error(['message' => 'Aucun fichier reçu ou erreur d\'upload']);
-                return;
-            }
-            
-            // Validation du type de fichier
-            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-            $file_type = wp_check_filetype($file['name']);
-            
-            if (!in_array($file['type'], $allowed_types)) {
-                wp_send_json_error(['message' => 'Type de fichier non supporté']);
-                return;
-            }
-            
-            // Validation de la taille (5MB max)
-            $max_size = 5 * 1024 * 1024; // 5MB
-            if ($file['size'] > $max_size) {
-                wp_send_json_error(['message' => 'Fichier trop volumineux (max 5MB)']);
-                return;
-            }
-            
-            // Upload via WordPress
-            if (!function_exists('wp_handle_upload')) {
-                require_once(ABSPATH . 'wp-admin/includes/file.php');
-            }
-            
-            $upload_overrides = [
-                'test_form' => false,
-                'unique_filename_callback' => function($dir, $name, $ext) use ($vcard_id, $image_type) {
-                    return "vcard-{$vcard_id}-{$image_type}-" . time() . $ext;
-                }
-            ];
-            
-            $uploaded_file = wp_handle_upload($file, $upload_overrides);
-            
-            if (!empty($uploaded_file['error'])) {
-                wp_send_json_error(['message' => $uploaded_file['error']]);
-                return;
-            }
-            
-            // Supprimer l'ancienne image si elle existe
-            $meta_key = $image_type === 'cover' ? 'cover_image' : 'profile_picture';
-            $old_image = get_post_meta($vcard_id, $meta_key, true);
-            if ($old_image) {
-                $old_attachment_id = attachment_url_to_postid($old_image);
-                if ($old_attachment_id) {
-                    wp_delete_attachment($old_attachment_id, true);
-                }
-            }
-            
-            // Créer l'attachment WordPress
-            $attachment_data = [
-                'post_title' => ucfirst($image_type) . " - vCard {$vcard_id}",
-                'post_content' => '',
-                'post_status' => 'inherit',
-                'post_author' => $user_id,
-                'post_parent' => $vcard_id
-            ];
-            
-            $attachment_id = wp_insert_attachment($attachment_data, $uploaded_file['file']);
-            
-            if (!is_wp_error($attachment_id)) {
-                // Générer les métadonnées de l'image
-                if (!function_exists('wp_generate_attachment_metadata')) {
-                    require_once(ABSPATH . 'wp-admin/includes/image.php');
-                }
-                
-                $attachment_metadata = wp_generate_attachment_metadata($attachment_id, $uploaded_file['file']);
-                wp_update_attachment_metadata($attachment_id, $attachment_metadata);
-                
-                // Sauvegarder l'URL dans la vCard
-                update_post_meta($vcard_id, $meta_key, $uploaded_file['url']);
-                
-                error_log("✅ {$image_type} image uploaded successfully for vCard {$vcard_id}: {$uploaded_file['url']}");
-                
-                wp_send_json_success([
-                    'message' => ucfirst($image_type) . ' uploadée avec succès',
-                    'data' => [
-                        'url' => $uploaded_file['url'],
-                        'attachment_id' => $attachment_id,
-                        'file_name' => basename($uploaded_file['file']),
-                        'type' => $image_type
-                    ]
-                ]);
-            } else {
-                wp_send_json_error(['message' => 'Erreur lors de la création de l\'attachment']);
-            }
-            
-        } catch (Exception $e) {
-            error_log("❌ Error uploading image for vCard {$vcard_id}: " . $e->getMessage());
-            wp_send_json_error(['message' => 'Erreur lors de l\'upload: ' . $e->getMessage()]);
-        }
-    }
 
+        // Vérifier que le fichier existe
+        if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+            error_log("❌ Pas de fichier valide reçu");
+            wp_send_json_error(['message' => 'Aucun fichier reçu']);
+            return;
+        }
+
+        // 🔥 UTILISER LA MÊME MÉTHODE QUE TON ANCIEN CODE
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+        // 🔥 RENOMMER temporairement $_FILES pour que media_handle_upload fonctionne
+        $_FILES['upload_file'] = $_FILES['file'];
+
+        $attachment_id = media_handle_upload('upload_file', $vcard_id);
+
+        if (is_wp_error($attachment_id)) {
+            error_log("❌ media_handle_upload error: " . $attachment_id->get_error_message());
+            wp_send_json_error(['message' => $attachment_id->get_error_message()]);
+            return;
+        }
+
+        // 🔥 RÉCUPÉRER L'URL ET SAUVEGARDER COMME DANS TON ANCIEN CODE
+        $image_url = wp_get_attachment_url($attachment_id);
+
+        error_log("✅ File uploaded: attachment_id=$attachment_id, url=$image_url");
+
+        // 🔥 SAUVEGARDER EXACTEMENT COMME TON ANCIEN CODE
+        $meta_result = update_post_meta($vcard_id, $field_name, $image_url);
+
+        error_log("💾 update_post_meta result: " . ($meta_result ? 'SUCCESS' : 'FAILED'));
+        error_log("🔍 Verification: " . get_post_meta($vcard_id, $field_name, true));
+
+        wp_send_json_success([
+            'message' => 'Image uploadée avec succès',
+            'url' => $image_url,
+            'attachment_id' => $attachment_id,
+            'field_name' => $field_name,
+            'vcard_id' => $vcard_id
+        ]);
+    }
 
     /**
      * Supprimer image vCard
