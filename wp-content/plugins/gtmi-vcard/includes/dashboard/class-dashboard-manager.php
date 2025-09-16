@@ -220,8 +220,7 @@ class NFC_Dashboard_Manager
                         <div class="nfc-nav-section">
                             <div class="nfc-nav-section-title">Dashboard</div>
                             <div class="nfc-nav-item">
-                                <a href="?page=overview"
-                                    class="nfc-nav-link <?php echo $current_page === 'overview' ? 'active' : ''; ?>">
+                                <a href="?page=overview" class="nfc-nav-link <?php echo $current_page === 'overview' ? 'active' : ''; ?>">
                                     <i class="fas fa-home"></i>
                                     Vue d'ensemble
                                 </a>

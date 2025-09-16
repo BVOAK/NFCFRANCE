@@ -1,6 +1,6 @@
 /**
  * vCard Editor - Manager JavaScript
- * Architecture standardisée NFC France
+ * Architecture standardisée NFC France + Corrections syntaxe
  */
 
 class VCardEditor {
@@ -8,6 +8,7 @@ class VCardEditor {
         this.config = window.vcardEditConfig || {};
         this.form = null;
         this.saveButton = null;
+        this.saveButtonHeader = null;
         this.saveStatusBar = null;
         this.customUrlCheckbox = null;
         this.customUrlSection = null;
@@ -18,6 +19,7 @@ class VCardEditor {
         this.isDirty = false;
         this.isSaving = false;
         this.lastSaveData = null;
+        this.pendingDeletions = [];
         
         this.init();
     }
@@ -30,7 +32,7 @@ class VCardEditor {
         this.initEventListeners();
         this.initAutoSave();
         this.initPreview();
-        this.initFileUploads();
+        this.initImageUploads();
         this.initCustomUrl();
         
         console.log('✅ VCard Editor initialized', this.config);
@@ -42,6 +44,7 @@ class VCardEditor {
     initDOMElements() {
         this.form = document.getElementById('vcard-edit-form');
         this.saveButton = document.getElementById('save-btn');
+        this.saveButtonHeader = document.getElementById('save-btn-header');
         this.saveStatusBar = document.getElementById('save-status-bar');
         this.customUrlCheckbox = document.getElementById('enable_custom_url');
         this.customUrlSection = document.getElementById('custom_url_section');
@@ -50,6 +53,8 @@ class VCardEditor {
             console.error('❌ Form vcard-edit-form not found');
             return;
         }
+        
+        console.log('✅ DOM elements initialized');
     }
 
     /**
@@ -60,6 +65,13 @@ class VCardEditor {
         if (this.form) {
             this.form.addEventListener('submit', (e) => {
                 e.preventDefault();
+                this.saveVCard(true);
+            });
+        }
+
+        // Sync des boutons save
+        if (this.saveButtonHeader && this.saveButton) {
+            this.saveButtonHeader.addEventListener('click', () => {
                 this.saveVCard(true);
             });
         }
@@ -82,6 +94,8 @@ class VCardEditor {
         if (openPublicBtn) {
             openPublicBtn.addEventListener('click', () => this.openPublicView());
         }
+        
+        console.log('✅ Event listeners initialized');
     }
 
     /**
@@ -139,17 +153,28 @@ class VCardEditor {
             const formData = new FormData(this.form);
             
             // Ajouter le mode de redirection
-            const redirectMode = this.customUrlCheckbox?.checked ? 'custom' : 'vcard';
+            const redirectMode = this.customUrlCheckbox && this.customUrlCheckbox.checked ? 'custom' : 'vcard';
             formData.append('redirect_mode', redirectMode);
+            
+            // Gestion des suppressions d'images
+            if (this.pendingDeletions && this.pendingDeletions.length > 0) {
+                if (this.pendingDeletions.includes('profile_picture')) {
+                    formData.append('delete_profile_picture', 'true');
+                }
+                if (this.pendingDeletions.includes('cover_image')) {
+                    formData.append('delete_cover_image', 'true');
+                }
+            }
             
             const response = await this.callAjax('save_vcard_data', formData);
             
             if (response.success) {
                 this.isDirty = false;
+                this.pendingDeletions = []; // Reset suppressions
                 this.lastSaveData = this.getFormData();
                 
                 if (showFeedback) {
-                    this.showSaveStatus('success', response.data?.message || 'Modifications sauvegardées');
+                    this.showSaveStatus('success', response.data && response.data.message || 'Modifications sauvegardées');
                     
                     // Redirection si en mode multi-vCard
                     if (this.config.is_multi_vcard_mode && this.config.redirect_after_save) {
@@ -163,7 +188,7 @@ class VCardEditor {
                 
             } else {
                 if (showFeedback) {
-                    this.showSaveStatus('error', response.data?.message || 'Erreur lors de la sauvegarde');
+                    this.showSaveStatus('error', response.data && response.data.message || 'Erreur lors de la sauvegarde');
                 }
                 this.updateSaveIndicator('error');
             }
@@ -190,8 +215,8 @@ class VCardEditor {
         
         if (data instanceof FormData) {
             // Si c'est déjà un FormData, l'utiliser tel quel
-            for (let [key, value] of data.entries()) {
-                formData.append(key, value);
+            for (let pair of data.entries()) {
+                formData.append(pair[0], pair[1]);
             }
         } else {
             // Sinon, ajouter les données
@@ -220,19 +245,21 @@ class VCardEditor {
      * Mettre à jour le bouton de sauvegarde
      */
     updateSaveButton(state) {
-        if (!this.saveButton) return;
+        const buttons = [this.saveButton, this.saveButtonHeader].filter(btn => btn);
         
-        switch (state) {
-            case 'saving':
-                this.saveButton.disabled = true;
-                this.saveButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sauvegarde...';
-                break;
-            case 'normal':
-            default:
-                this.saveButton.disabled = false;
-                this.saveButton.innerHTML = '<i class="fas fa-save me-2"></i>Enregistrer';
-                break;
-        }
+        buttons.forEach(button => {
+            switch (state) {
+                case 'saving':
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sauvegarde...';
+                    break;
+                case 'normal':
+                default:
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-save me-2"></i>Enregistrer';
+                    break;
+            }
+        });
     }
 
     /**
@@ -264,19 +291,21 @@ class VCardEditor {
         const icon = saveStatus.querySelector('i');
         const text = saveStatus.querySelector('span');
         
-        switch (state) {
-            case 'saving':
-                icon.className = 'fas fa-spinner fa-spin text-warning';
-                text.textContent = 'Sauvegarde...';
-                break;
-            case 'saved':
-                icon.className = 'fas fa-check-circle text-success';
-                text.textContent = 'Synchronisé';
-                break;
-            case 'error':
-                icon.className = 'fas fa-exclamation-triangle text-danger';
-                text.textContent = 'Erreur';
-                break;
+        if (icon && text) {
+            switch (state) {
+                case 'saving':
+                    icon.className = 'fas fa-spinner fa-spin text-warning';
+                    text.textContent = 'Sauvegarde...';
+                    break;
+                case 'saved':
+                    icon.className = 'fas fa-check-circle text-success';
+                    text.textContent = 'Synchronisé';
+                    break;
+                case 'error':
+                    icon.className = 'fas fa-exclamation-triangle text-danger';
+                    text.textContent = 'Erreur';
+                    break;
+            }
         }
     }
 
@@ -300,125 +329,139 @@ class VCardEditor {
      * Mettre à jour le preview en temps réel
      */
     updatePreview() {
-        const previewFrame = document.getElementById('vcard-preview');
-        if (!previewFrame) return;
-        
         // Récupérer les valeurs actuelles
-        const firstname = document.getElementById('firstname')?.value || '';
-        const lastname = document.getElementById('lastname')?.value || '';
-        const post = document.getElementById('post')?.value || '';
-        const society = document.getElementById('society')?.value || '';
-        const email = document.getElementById('email')?.value || '';
-        const phone = document.getElementById('phone')?.value || '';
-        const description = document.getElementById('description')?.value || '';
+        const firstname = document.getElementById('firstname') ? document.getElementById('firstname').value : '';
+        const lastname = document.getElementById('lastname') ? document.getElementById('lastname').value : '';
+        const post = document.getElementById('post') ? document.getElementById('post').value : '';
+        const society = document.getElementById('society') ? document.getElementById('society').value : '';
+        const email = document.getElementById('email') ? document.getElementById('email').value : '';
+        const phone = document.getElementById('phone') ? document.getElementById('phone').value : '';
+        const description = document.getElementById('description') ? document.getElementById('description').value : '';
         
-        // Générer le HTML du preview
+        // Mettre à jour les éléments du preview
+        const previewName = document.querySelector('.preview-name');
+        const previewJob = document.querySelector('.preview-job');
+        const previewCompany = document.querySelector('.preview-company');
+        
         const fullName = `${firstname} ${lastname}`.trim() || 'Nom Prénom';
-        const initials = `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase();
         
-        const previewHtml = `
-            <div class="preview-card">
-                <div class="preview-header">
-                    <div class="preview-avatar">
-                        <span class="initials">${initials}</span>
-                    </div>
-                </div>
-                <div class="preview-content">
-                    <h3 class="preview-name">${fullName}</h3>
-                    ${post ? `<p class="preview-job">${post}</p>` : ''}
-                    ${society ? `<p class="preview-company">${society}</p>` : ''}
-                    ${description ? `<p class="preview-description">${description}</p>` : ''}
-                    <div class="preview-contacts">
-                        ${email ? `
-                            <div class="preview-contact-item">
-                                <i class="fas fa-envelope"></i>
-                                <span>${email}</span>
-                            </div>
-                        ` : ''}
-                        ${phone ? `
-                            <div class="preview-contact-item">
-                                <i class="fas fa-phone"></i>
-                                <span>${phone}</span>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
-        `;
+        if (previewName) {
+            previewName.textContent = fullName;
+        }
         
-        previewFrame.innerHTML = previewHtml;
+        if (previewJob) {
+            previewJob.textContent = post || '';
+            previewJob.style.display = post ? 'block' : 'none';
+        }
+        
+        if (previewCompany) {
+            previewCompany.textContent = society || '';
+            previewCompany.style.display = society ? 'block' : 'none';
+        }
+        
+        // Mettre à jour les contacts dans le preview
+        this.updatePreviewContacts();
     }
 
     /**
-     * Initialiser les uploads de fichiers
+     * Mettre à jour les contacts du preview
      */
-    initFileUploads() {
-        const uploadZone = document.getElementById('profile-upload-zone');
-        const fileInput = document.getElementById('profile_picture');
+    updatePreviewContacts() {
+        const email = document.getElementById('email') ? document.getElementById('email').value : '';
+        const phone = document.getElementById('phone') ? document.getElementById('phone').value : '';
+        const previewContacts = document.querySelector('.preview-contacts');
         
-        if (!uploadZone || !fileInput) return;
-        
-        // Click sur la zone
-        uploadZone.addEventListener('click', () => {
-            fileInput.click();
-        });
-        
-        // Drag & Drop
-        uploadZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadZone.classList.add('drag-over');
-        });
-        
-        uploadZone.addEventListener('dragleave', () => {
-            uploadZone.classList.remove('drag-over');
-        });
-        
-        uploadZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadZone.classList.remove('drag-over');
+        if (previewContacts) {
+            let contactsHtml = '';
             
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                this.handleFileUpload(files[0]);
+            if (email) {
+                contactsHtml += `
+                    <div class="preview-contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>${email}</span>
+                    </div>
+                `;
             }
-        });
-        
-        // Changement de fichier
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                this.handleFileUpload(e.target.files[0]);
+            
+            if (phone) {
+                contactsHtml += `
+                    <div class="preview-contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>${phone}</span>
+                    </div>
+                `;
             }
-        });
+            
+            previewContacts.innerHTML = contactsHtml;
+        }
     }
 
     /**
-     * Gérer l'upload de fichier
+     * Initialiser les uploads d'images
      */
-    async handleFileUpload(file) {
+    initImageUploads() {
+        // Upload photo de profil
+        const profileInput = document.getElementById('profile_image_input');
+        if (profileInput) {
+            profileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    this.handleImageUpload(e.target.files[0], 'profile');
+                }
+            });
+        }
+
+        // Upload photo de couverture
+        const coverInput = document.getElementById('cover_image_input');
+        if (coverInput) {
+            coverInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    this.handleImageUpload(e.target.files[0], 'cover');
+                }
+            });
+        }
+
+        console.log('✅ Image uploads initialized');
+    }
+
+    /**
+     * Gérer l'upload d'image
+     */
+    async handleImageUpload(file, type) {
+        console.log(`📸 Uploading ${type} image:`, file.name);
+
         // Validation
         if (!this.validateFile(file)) return;
-        
+
         // Afficher preview immédiat
-        this.showImagePreview(file);
-        
+        this.showImagePreview(file, type);
+
         try {
-            // Upload via AJAX
+            // Upload via AJAX existant
             const formData = new FormData();
-            formData.append('file', file);
+            formData.append(type === 'profile' ? 'profile_picture' : 'cover_image', file);
             formData.append('vcard_id', this.config.vcard_id);
-            
-            const response = await this.callAjax('upload_vcard_image', formData);
-            
-            if (response.success) {
-                // Mettre à jour le preview avec l'URL finale
-                this.updateImagePreview(response.data.url);
+            formData.append('action', 'upload_vcard_image');
+            formData.append('nonce', this.config.nonce);
+
+            const response = await fetch(this.config.ajax_url, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                console.log(`✅ ${type} image uploaded:`, result.data && result.data.url);
+                this.updateImagePreview(result.data && result.data.url || '', type);
                 this.markAsDirty();
             } else {
-                this.showNotification('error', 'Erreur lors de l\'upload');
+                console.error(`❌ ${type} upload error:`, result.data);
+                this.showNotification('error', `Erreur lors de l'upload ${type}`);
             }
-            
+
         } catch (error) {
-            console.error('❌ Upload error:', error);
+            console.error(`❌ ${type} upload error:`, error);
             this.showNotification('error', 'Erreur de connexion');
         }
     }
@@ -445,20 +488,34 @@ class VCardEditor {
     /**
      * Afficher preview image immédiat
      */
-    showImagePreview(file) {
+    showImagePreview(file, type) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            const uploadZone = document.getElementById('profile-upload-zone');
-            if (uploadZone) {
-                uploadZone.innerHTML = `
-                    <div class="upload-preview">
-                        <img src="${e.target.result}" alt="Preview" class="preview-image">
+            const previewId = type === 'profile' ? 'profile-preview' : 'cover-preview';
+            const preview = document.getElementById(previewId);
+            
+            if (preview) {
+                if (type === 'profile') {
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" 
+                             class="img-fluid rounded-circle border"
+                             style="width: 120px; height: 120px; object-fit: cover;" 
+                             alt="Photo de profil">
                         <div class="upload-overlay">
                             <i class="fas fa-spinner fa-spin"></i>
-                            <p>Upload en cours...</p>
                         </div>
-                    </div>
-                `;
+                    `;
+                } else {
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" 
+                             class="img-fluid rounded border"
+                             style="width: 100%; max-height: 120px; object-fit: cover;" 
+                             alt="Image de couverture">
+                        <div class="upload-overlay">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    `;
+                }
             }
         };
         reader.readAsDataURL(file);
@@ -467,25 +524,32 @@ class VCardEditor {
     /**
      * Mettre à jour preview image avec URL finale
      */
-    updateImagePreview(imageUrl) {
-        const uploadZone = document.getElementById('profile-upload-zone');
-        if (uploadZone) {
-            uploadZone.innerHTML = `
-                <div class="upload-preview">
-                    <img src="${imageUrl}" alt="Photo de profil" class="preview-image">
-                    <div class="upload-actions">
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="vCardEditor.removeImage()">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
+    updateImagePreview(imageUrl, type) {
+        const previewId = type === 'profile' ? 'profile-preview' : 'cover-preview';
+        const preview = document.getElementById(previewId);
         
-        // Mettre à jour le preview principal
-        const previewAvatar = document.querySelector('.preview-avatar');
-        if (previewAvatar) {
-            previewAvatar.innerHTML = `<img src="${imageUrl}" alt="Photo de profil">`;
+        if (preview && imageUrl) {
+            if (type === 'profile') {
+                preview.innerHTML = `
+                    <img src="${imageUrl}" 
+                         class="img-fluid rounded-circle border"
+                         style="width: 120px; height: 120px; object-fit: cover;" 
+                         alt="Photo de profil">
+                `;
+                
+                // Mettre à jour le preview principal
+                const previewAvatar = document.querySelector('.preview-avatar');
+                if (previewAvatar) {
+                    previewAvatar.innerHTML = `<img src="${imageUrl}" alt="Photo de profil">`;
+                }
+            } else {
+                preview.innerHTML = `
+                    <img src="${imageUrl}" 
+                         class="img-fluid rounded border"
+                         style="width: 100%; max-height: 120px; object-fit: cover;" 
+                         alt="Image de couverture">
+                `;
+            }
         }
     }
 
@@ -528,8 +592,8 @@ class VCardEditor {
     getFormData() {
         const formData = new FormData(this.form);
         const data = {};
-        for (let [key, value] of formData.entries()) {
-            data[key] = value;
+        for (let pair of formData.entries()) {
+            data[pair[0]] = pair[1];
         }
         return data;
     }
@@ -551,66 +615,85 @@ class VCardEditor {
         
         // Auto-supprimer après 5 secondes
         setTimeout(() => {
-            notification.remove();
+            if (notification.parentNode) {
+                notification.remove();
+            }
         }, 5000);
     }
-
-    /**
-     * Supprimer image
-     */
-    async removeImage() {
-        try {
-            const response = await this.callAjax('remove_vcard_image', {
-                vcard_id: this.config.vcard_id
-            });
-            
-            if (response.success) {
-                // Réinitialiser la zone d'upload
-                const uploadZone = document.getElementById('profile-upload-zone');
-                if (uploadZone) {
-                    uploadZone.innerHTML = `
-                        <div class="upload-placeholder">
-                            <i class="fas fa-camera fa-2x mb-2"></i>
-                            <p>Cliquez ou glissez pour uploader</p>
-                            <small class="text-muted">JPG, PNG, SVG - Max 5MB</small>
-                        </div>
-                    `;
-                }
-                
-                // Réinitialiser le preview
-                const previewAvatar = document.querySelector('.preview-avatar');
-                if (previewAvatar) {
-                    const firstname = document.getElementById('firstname')?.value || '';
-                    const lastname = document.getElementById('lastname')?.value || '';
-                    const initials = `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase();
-                    previewAvatar.innerHTML = `<span class="initials">${initials}</span>`;
-                }
-                
-                this.markAsDirty();
-                
-            } else {
-                this.showNotification('error', 'Erreur lors de la suppression');
-            }
-            
-        } catch (error) {
-            console.error('❌ Remove image error:', error);
-            this.showNotification('error', 'Erreur de connexion');
-        }
-    }
 }
 
-// Fonctions globales pour compatibilité
-function previewVCard() {
+// Fonctions globales pour compatibilité avec l'existant
+window.removeProfileImage = function () {
+    if (!confirm('Supprimer la photo de profil ?')) return;
+
+    console.log('🗑️ Suppression photo de profil demandée');
+
+    // Calculer les initiales depuis les champs du formulaire
+    const firstname = document.getElementById('firstname') ? document.getElementById('firstname').value : 'U';
+    const lastname = document.getElementById('lastname') ? document.getElementById('lastname').value : 'N';
+    const initials = firstname.charAt(0).toUpperCase() + lastname.charAt(0).toUpperCase();
+
+    // Remettre l'état initial (initiales)
+    const profilePreview = document.getElementById('profile-preview');
+    if (profilePreview) {
+        profilePreview.innerHTML = `
+            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center border"
+                 style="width: 120px; height: 120px; margin: 0 auto;">
+                <span class="text-primary fw-bold fs-2">${initials}</span>
+            </div>
+        `;
+    }
+
+    // Reset l'input
+    const profileInput = document.getElementById('profile_image_input');
+    if (profileInput) profileInput.value = '';
+
+    // Marquer la suppression
     if (window.vCardEditor) {
-        window.vCardEditor.openPublicView();
+        if (!window.vCardEditor.pendingDeletions.includes('profile_picture')) {
+            window.vCardEditor.pendingDeletions.push('profile_picture');
+        }
+        window.vCardEditor.markAsDirty();
     }
-}
 
-function resetForm() {
-    if (confirm('Êtes-vous sûr de vouloir annuler toutes vos modifications ?')) {
-        location.reload();
+    // Mettre à jour le preview principal
+    const previewAvatar = document.querySelector('.preview-avatar');
+    if (previewAvatar) {
+        previewAvatar.innerHTML = `<span class="initials">${initials}</span>`;
     }
-}
+};
+
+window.removeCoverImage = function () {
+    if (!confirm('Supprimer l\'image de couverture ?')) return;
+
+    console.log('🗑️ Suppression image de couverture demandée');
+
+    // Remettre l'état initial (placeholder)
+    const coverPreview = document.getElementById('cover-preview');
+    if (coverPreview) {
+        coverPreview.innerHTML = `
+            <div class="bg-light rounded border d-flex align-items-center justify-content-center"
+                 style="width: 100%; height: 120px;">
+                <div class="text-center">
+                    <i class="fas fa-image fa-2x text-muted mb-2"></i>
+                    <div class="text-muted small">Aucune image de couverture</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Reset l'input
+    const coverInput = document.getElementById('cover_image_input');
+    if (coverInput) coverInput.value = '';
+
+    // Marquer la suppression
+    if (window.vCardEditor) {
+        if (!window.vCardEditor.pendingDeletions.includes('cover_image')) {
+            window.vCardEditor.pendingDeletions.push('cover_image');
+        }
+        window.vCardEditor.markAsDirty();
+    }
+};
 
 // Initialisation au chargement du DOM
 document.addEventListener('DOMContentLoaded', function() {

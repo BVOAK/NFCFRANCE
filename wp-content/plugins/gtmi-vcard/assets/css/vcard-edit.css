@@ -1,15 +1,17 @@
-/**
- * vCard Edit - Styles Éditeur
- * Architecture standardisée NFC France
- */
-
 /* ==========================================
-   LAYOUT PRINCIPAL
+   LAYOUT PRINCIPAL - FULLWIDTH
    ========================================== */
 
 .dashboard-vcard-editor {
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     padding: 0;
+}
+
+.dashboard-vcard-editor .container-fluid {
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .content-header {
@@ -246,6 +248,47 @@
 
 .section-content {
     padding: 0; /* Le padding est géré par card-body */
+}
+
+/* ==========================================
+   UPLOAD OVERLAY POUR PREVIEW DES IMAGES
+   ========================================== */
+
+.upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+    font-size: 0.9rem;
+    z-index: 10;
+}
+
+.upload-overlay i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Preview containers */
+.profile-image-container,
+.cover-image-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+#profile-preview,
+#cover-preview {
+    position: relative;
+    display: inline-block;
+    width: 100%;
 }
 
 /* ==========================================
@@ -731,4 +774,3 @@
         border: 1px solid #ddd;
     }
 }
-    
