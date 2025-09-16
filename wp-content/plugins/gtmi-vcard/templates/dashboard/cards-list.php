@@ -115,12 +115,10 @@ $cards_config = [
     'nonce' => wp_create_nonce('nfc_dashboard_nonce')
 ];
 
-// 3. CHARGEMENT ASSETS (même pattern que leads.php)
-$plugin_url = plugin_dir_url(__FILE__);
 ?>
 
 <!-- CSS - même structure que leads.php -->
-<link rel="stylesheet" href="<?= $plugin_url ?>../../assets/css/dashboard/cards-list.css">
+<link rel="stylesheet" href="<?= plugin_dir_url(__FILE__) ?>../../assets/css/cards-list.css">
 
 <!-- Configuration JavaScript -->
 <script>
@@ -402,4 +400,4 @@ window.CARDS_CONFIG = <?= json_encode($cards_config, JSON_HEX_TAG | JSON_HEX_AMP
 </div>
 
 <!-- JavaScript -->
-<script src="<?= $plugin_url ?>../../assets/js/dashboard/cards-manager.js"></script>
+<script src="<?= plugin_dir_url(__FILE__) ?>../../assets/js/dashboard/cards-manager.js"></script>

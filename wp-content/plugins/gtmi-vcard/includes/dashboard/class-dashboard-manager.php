@@ -27,8 +27,7 @@ class NFC_Dashboard_Manager
         $this->allowed_pages = [
             'overview' => 'Vue d\'ensemble',        // Stats globales
             'cards-list' => 'Mes cartes',          // Liste des vCards
-            'vcard-edit' => 'Ma vCard',
-            'vcard-edit-legacy' => 'Ma vCard Old',              // Édition vCard spécifique
+            'vcard-edit' => 'Ma vCard',              // Édition vCard spécifique
             'qr-codes' => 'QR Codes',
             'contacts' => 'Mes contacts',
             'statistics' => 'Statistiques',
@@ -167,7 +166,6 @@ class NFC_Dashboard_Manager
         $dashboard_pages = [
             'overview' => ['title' => 'Vue d\'ensemble', 'icon' => 'fas fa-home'],
             'vcard-edit' => ['title' => 'Ma vCard', 'icon' => 'fas fa-id-card'],
-            'vcard-edit-legacy' => ['title' => 'Ma vCard', 'icon' => 'fas fa-id-card'],
             'qr-codes' => ['title' => 'Codes QR', 'icon' => 'fas fa-qrcode'],
             'contacts' => ['title' => 'Mes contacts', 'icon' => 'fas fa-users'],
             'statistics' => ['title' => 'Statistiques', 'icon' => 'fas fa-chart-line'],
@@ -252,15 +250,6 @@ class NFC_Dashboard_Manager
                                             class="nfc-nav-link <?php echo $current_page === 'cards-list' ? 'active' : ''; ?>">
                                             <i class="fas fa-id-card-alt"></i>
                                             Mes cartes
-                                            <span class="nfc-nav-badge"><?php echo $vcard_count; ?></span>
-                                        </a>
-                                    </div>
-
-                                    <div class="nfc-nav-item">
-                                        <a href="?page=vcard-edit-legacy&vcard_id=3736"
-                                            class="nfc-nav-link <?php echo $current_page === 'vcard-edit-legacy' ? 'active' : ''; ?>">
-                                            <i class="fas fa-id-card-alt"></i>
-                                            Edition cartes old
                                             <span class="nfc-nav-badge"><?php echo $vcard_count; ?></span>
                                         </a>
                                     </div>
@@ -367,9 +356,6 @@ class NFC_Dashboard_Manager
             <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
             <!-- <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script> -->
             <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/stats-commons.js?v=<?php echo time(); ?>"></script>
-            <?php if ($current_page === 'overview'): ?>
-                <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/overview.js?v=<?php echo time(); ?>"></script>
-            <?php endif; ?>
 
             <!-- Configuration JavaScript -->
             <script type="text/javascript">
@@ -438,11 +424,7 @@ class NFC_Dashboard_Manager
             case 'vcard-edit':
                 error_log("🎯 Rendering vCard Edit page - URL params: " . json_encode($_GET));
                 $this->render_vcard_edit_page($vcard);
-                break;
-
-            case 'vcard-edit-legacy':
-                $this->render_vcard_edit_page_legacy($vcard);
-                break;    
+                break;   
 
             case 'qr-codes':
                 $this->render_qr_codes_page($vcard);
@@ -490,100 +472,18 @@ class NFC_Dashboard_Manager
      */
     private function render_overview_page($vcard)
     {
-        $user_id = get_current_user_id();
-        $user_vcards = $this->get_user_vcards($user_id);
-
-        if (empty($user_vcards)) {
-            // Aucune vCard → Empty state
-            echo '<div class="content-header">';
-            echo '<h1 class="h3 mb-1">Vue d\'ensemble</h1>';
-            echo '<p class="text-muted mb-0">Aperçu de vos performances NFC</p>';
-            echo '</div>';
-
-            echo '<div class="alert alert-info mt-4">';
-            echo '<h5><i class="fas fa-info-circle me-2"></i>Aucune carte NFC configurée</h5>';
-            echo '<p>Commandez vos premiers produits NFC pour commencer à voir vos statistiques.</p>';
-            echo '<a href="' . home_url('/boutique-nfc/') . '" class="btn btn-primary">📱 Commander mes cartes</a>';
-            echo '</div>';
-            return;
+        // Chemin vers le template overview
+        $template_path = $this->plugin_path . 'templates/dashboard/overview.php';
+        
+        if (file_exists($template_path)) {
+            // Template overview.php existe
+            error_log('NFC_Dashboard: Chargement template overview.php');
+            include $template_path;
+        } else {
+            // Fallback vers page de test
+            error_log('NFC_Dashboard: Template overview.php non trouvé, affichage page de test');
+            $this->render_test_page('overview', 'Vue d\'ensemble', $vcard);
         }
-
-        // Interface Overview avec stats (comme mockup)
-        echo '<div class="content-header">';
-        echo '<div class="d-flex justify-content-between align-items-center">';
-        echo '<div>';
-        echo '<h1 class="h3 mb-1">Vue d\'ensemble</h1>';
-        echo '<p class="text-muted mb-0">Aperçu de vos performances NFC</p>';
-        echo '</div>';
-        echo '<a href="?page=cards-list" class="btn btn-primary">';
-        echo '<i class="fas fa-id-card me-2"></i>Gérer mes cartes';
-        echo '</a>';
-        echo '</div>';
-        echo '</div>';
-
-        echo '<div class="content-body">';
-
-        // Stats Cards comme dans le mockup
-        echo '<div class="row mb-4">';
-
-        echo '<div class="col-md-3 mb-3">';
-        echo '<div class="stat-card">';
-        echo '<div class="stat-value" id="total-views">--</div>';
-        echo '<div class="stat-label">Vues totales</div>';
-        echo '</div>';
-        echo '</div>';
-
-        echo '<div class="col-md-3 mb-3">';
-        echo '<div class="stat-card">';
-        echo '<div class="stat-value" id="total-contacts">--</div>';
-        echo '<div class="stat-label">Contacts générés</div>';
-        echo '</div>';
-        echo '</div>';
-
-        echo '<div class="col-md-3 mb-3">';
-        echo '<div class="stat-card">';
-        echo '<div class="stat-value">' . count($user_vcards) . '</div>';
-        echo '<div class="stat-label">Cartes actives</div>';
-        echo '</div>';
-        echo '</div>';
-
-        echo '<div class="col-md-3 mb-3">';
-        echo '<div class="stat-card">';
-        echo '<div class="stat-value" id="conversion-rate">--%</div>';
-        echo '<div class="stat-label">Taux de conversion</div>';
-        echo '</div>';
-        echo '</div>';
-
-        echo '</div>'; // row
-
-        // Graphique placeholder (à développer plus tard)
-        echo '<div class="row">';
-        echo '<div class="col-12">';
-        echo '<div class="dashboard-card">';
-        echo '<div class="card-header">';
-        echo '<h3 class="h6 mb-0"><i class="fas fa-chart-line me-2"></i>Évolution des performances</h3>';
-        echo '</div>';
-        echo '<div class="card-body">';
-        echo '<div class="chart-placeholder">Graphique des performances (à développer)</div>';
-        echo '</div>';
-        echo '</div>';
-        echo '</div>';
-        echo '</div>';
-
-        echo '</div>'; // content-body
-
-        // TODO: Charger les vraies stats via AJAX
-        echo '<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Charger les stats globales
-        loadGlobalStats(' . $user_id . ');
-    });
-    
-    function loadGlobalStats(userId) {
-        // TODO: Appel AJAX pour récupérer les vraies stats
-        console.log("Loading global stats for user " + userId);
-    }
-    </script>';
     }
 
     private function render_cards_list_page_legacy($vcard)
@@ -1196,7 +1096,6 @@ class NFC_Dashboard_Manager
                         <div class="d-flex gap-2 flex-wrap">
                             <a href="?page=overview" class="btn btn-outline-primary btn-sm">Vue d'ensemble</a>
                             <a href="?page=vcard-edit" class="btn btn-outline-primary btn-sm">Ma vCard</a>
-                            <a href="?page=vcard-edit-legacy" class="btn btn-outline-primary btn-sm">Ma vCard Old</a>
                             <a href="?page=qr-codes" class="btn btn-outline-primary btn-sm">QR Codes</a>
                             <a href="?page=contacts" class="btn btn-outline-primary btn-sm">Contacts</a>
                             <a href="?page=statistics" class="btn btn-outline-primary btn-sm">Statistics</a>

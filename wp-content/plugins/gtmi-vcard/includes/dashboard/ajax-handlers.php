@@ -72,6 +72,9 @@ class NFC_Dashboard_Ajax
         add_action('wp_ajax_nfc_get_statistics_data', [$this, 'get_statistics_data']);
         add_action('wp_ajax_nfc_export_statistics', [$this, 'export_statistics']);
         add_action('wp_ajax_nfc_get_chart_data', [$this, 'get_chart_data']);
+
+        add_action('wp_ajax_nfc_get_dashboard_overview', [$this, 'get_dashboard_overview']);
+    
     }
 
     /**
@@ -2098,6 +2101,426 @@ class NFC_Dashboard_Ajax
         return $csv;
     }
 
+
+    // ============================================
+    // FONCTIONS OVERVIEW
+    // ============================================
+
+    /**
+     * OVERVIEW - Récupérer les données dashboard (version simple)
+     * @return void JSON Response
+     */
+    public function get_dashboard_overview() {
+        check_ajax_referer('nfc_dashboard_nonce', 'nonce');
+        
+        $user_id = intval($_POST['user_id'] ?? get_current_user_id());
+        $action_type = sanitize_text_field($_POST['action_type'] ?? 'trends');
+        
+        if (!$user_id) {
+            wp_send_json_error(['message' => 'Utilisateur invalide']);
+            return;
+        }
+        
+        try {
+            $user_vcards = $this->get_user_vcards($user_id);
+            
+            if (empty($user_vcards)) {
+                wp_send_json_error(['message' => 'Aucune vCard trouvée']);
+                return;
+            }
+            
+            // Selon le type d'action demandé
+            switch ($action_type) {
+                case 'trends':
+                    $data = $this->calculate_overview_trends($user_vcards);
+                    break;
+                default:
+                    $data = $this->get_overview_summary($user_vcards);
+            }
+            
+            error_log("✅ Overview {$action_type} chargé pour {$user_id}");
+            wp_send_json_success([
+                'message' => 'Overview chargé avec succès',
+                'data' => $data,
+                'action_type' => $action_type
+            ]);
+            
+        } catch (Exception $e) {
+            error_log("❌ Erreur get_dashboard_overview: " . $e->getMessage());
+            wp_send_json_error(['message' => 'Erreur lors du chargement']);
+        }
+    }
+
+    /**
+     * Calculer les tendances simples pour l'overview
+     */
+    private function calculate_overview_trends($vcards) {
+        // Calculer les stats de cette semaine vs semaine dernière
+        $this_week_start = date('Y-m-d', strtotime('monday this week'));
+        $last_week_start = date('Y-m-d', strtotime('monday last week'));
+        $last_week_end = date('Y-m-d', strtotime('sunday last week'));
+        
+        $this_week_views = 0;
+        $this_week_contacts = 0;
+        $last_week_views = 0;
+        $last_week_contacts = 0;
+        
+        foreach ($vcards as $vcard) {
+            // Vues cette semaine
+            $this_week_views += $this->get_vcard_views_for_period($vcard->ID, $this_week_start, date('Y-m-d'));
+            
+            // Vues semaine dernière
+            $last_week_views += $this->get_vcard_views_for_period($vcard->ID, $last_week_start, $last_week_end);
+            
+            // Contacts cette semaine
+            $this_week_contacts += $this->get_vcard_contacts_for_period($vcard->ID, $this_week_start, date('Y-m-d'));
+            
+            // Contacts semaine dernière
+            $last_week_contacts += $this->get_vcard_contacts_for_period($vcard->ID, $last_week_start, $last_week_end);
+        }
+        
+        // Calculer les pourcentages de changement
+        $views_change = 0;
+        if ($last_week_views > 0) {
+            $views_change = round((($this_week_views - $last_week_views) / $last_week_views) * 100);
+        } elseif ($this_week_views > 0) {
+            $views_change = 100; // Nouvelle activité
+        }
+        
+        $contacts_change = 0;
+        if ($last_week_contacts > 0) {
+            $contacts_change = round((($this_week_contacts - $last_week_contacts) / $last_week_contacts) * 100);
+        } elseif ($this_week_contacts > 0) {
+            $contacts_change = 100; // Nouveaux contacts
+        }
+        
+        return array(
+            'trends' => array(
+                'views_change' => $views_change,
+                'contacts_change' => $contacts_change,
+                'period' => 'cette semaine vs semaine dernière'
+            ),
+            'this_week' => array(
+                'views' => $this_week_views,
+                'contacts' => $this_week_contacts
+            ),
+            'last_week' => array(
+                'views' => $last_week_views,
+                'contacts' => $last_week_contacts
+            )
+        );
+    }
+
+    /**
+     * Obtenir un résumé général de l'overview
+     */
+    private function get_overview_summary($vcards) {
+        $summary = array(
+            'total_cards' => count($vcards),
+            'configured_cards' => 0,
+            'total_views' => 0,
+            'total_contacts' => 0
+        );
+        
+        foreach ($vcards as $vcard) {
+            // Vérifier si configurée
+            $firstname = get_post_meta($vcard->ID, 'firstname', true);
+            if (!empty($firstname)) {
+                $summary['configured_cards']++;
+            }
+            
+            // Ajouter les stats
+            $summary['total_views'] += nfc_get_vcard_total_views($vcard->ID);
+            $summary['total_contacts'] += nfc_get_vcard_contacts_count($vcard->ID);
+        }
+        
+        return $summary;
+    }
+
+    /**
+     * Obtenir les contacts pour une période
+     */
+    private function get_vcard_contacts_for_period($vcard_id, $start_date, $end_date) {
+        global $wpdb;
+        
+        $count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->prefix}nfc_leads 
+             WHERE vcard_id = %d 
+             AND DATE(contact_datetime) BETWEEN %s AND %s",
+            $vcard_id, $start_date, $end_date
+        ));
+        
+        return intval($count);
+    }
+
+    /**
+     * Récupérer les données pour les graphiques
+     */
+    private function get_overview_charts($vcards, $period, $view_mode, $profile_id) {
+        $period_days = $this->get_period_days($period);
+        
+        // Données pour graphique principal (évolution temporelle)
+        $performance_data = $this->get_performance_evolution($vcards, $period_days, $view_mode, $profile_id);
+        
+        // Données pour graphique secondaire (adaptatif selon mode)
+        $secondary_data = ($view_mode === 'individual' && $profile_id) ?
+            $this->get_traffic_sources($profile_id, $period_days) :
+            $this->get_top_performers($vcards, $period_days);
+        
+        return [
+            'performance' => $performance_data,
+            'secondary' => $secondary_data
+        ];
+    }
+
+    /**
+     * Évolution des performances - Version simplifiée
+     */
+    private function get_performance_evolution($vcards, $period_days, $view_mode, $profile_id) {
+        // Version simplifiée avec données des 7 derniers jours
+        $labels = array();
+        $views_data = array();
+        $contacts_data = array();
+        
+        // Générer les 7 derniers jours
+        for ($i = 6; $i >= 0; $i--) {
+            $date = date('d/m', strtotime("-{$i} days"));
+            $labels[] = $date;
+            
+            // Données simplifiées - à améliorer plus tard
+            $views_data[] = rand(5, 25);
+            $contacts_data[] = rand(0, 3);
+        }
+        
+        return array(
+            'labels' => $labels,
+            'views' => $views_data,
+            'contacts' => $contacts_data
+        );
+    }
+
+    /**
+     * Top performers (mode global) - Version simplifiée
+     */
+    private function get_top_performers($vcards, $period_days) {
+        $performers = array();
+        $labels = array();
+        $data = array();
+        $colors = array('#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1', '#fd7e14');
+        
+        foreach ($vcards as $vcard) {
+            $firstname = get_post_meta($vcard->ID, 'firstname', true);
+            $lastname = get_post_meta($vcard->ID, 'lastname', true);
+            $name = trim($firstname . ' ' . $lastname);
+            if (empty($name)) {
+                $name = 'Profil #' . $vcard->ID;
+            }
+            
+            // Utiliser les fonctions existantes
+            $views = nfc_get_vcard_total_views($vcard->ID);
+            
+            if ($views > 0) {
+                $performers[] = array(
+                    'name' => $name,
+                    'views' => $views
+                );
+            }
+        }
+        
+        // Trier par vues décroissantes
+        usort($performers, function($a, $b) {
+            return $b['views'] - $a['views'];
+        });
+        
+        // Limiter aux top 6
+        $performers = array_slice($performers, 0, 6);
+        
+        // Construire les arrays séparément
+        foreach ($performers as $performer) {
+            $labels[] = $performer['name'];
+            $data[] = $performer['views'];
+        }
+        
+        return array(
+            'labels' => $labels,
+            'data' => $data,
+            'colors' => array_slice($colors, 0, count($data))
+        );
+    }
+
+    /**
+     * Sources de trafic (mode individuel) - Version simplifiée
+     */
+    private function get_traffic_sources($vcard_id, $period_days) {
+        // Pour le moment, version simplifiée avec QR/NFC uniquement
+        return array(
+            'labels' => array('QR Code', 'NFC', 'Direct'),
+            'data' => array(65, 25, 10),
+            'colors' => array('#0d6efd', '#198754', '#ffc107')
+        );
+    }
+
+    /**
+     * Activité récente - Version simplifiée avec vraies données contacts
+     */
+    private function get_overview_activity($vcards, $view_mode, $profile_id) {
+        global $wpdb;
+        
+        $vcard_ids = array();
+        if ($view_mode === 'individual' && $profile_id) {
+            $vcard_ids[] = $profile_id;
+        } else {
+            foreach ($vcards as $vcard) {
+                $vcard_ids[] = $vcard->ID;
+            }
+        }
+        
+        if (empty($vcard_ids)) {
+            return array();
+        }
+        
+        $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
+        
+        // Récupérer les 8 derniers contacts réels
+        $query = $wpdb->prepare(
+            "SELECT l.*, v.post_title as vcard_title 
+             FROM {$wpdb->prefix}nfc_leads l 
+             JOIN {$wpdb->posts} v ON l.vcard_id = v.ID 
+             WHERE l.vcard_id IN ({$placeholders})
+             ORDER BY l.contact_datetime DESC 
+             LIMIT 8",
+            $vcard_ids
+        );
+        
+        $contacts = $wpdb->get_results($query);
+        
+        $activity = array();
+        foreach ($contacts as $contact) {
+            $firstname = get_post_meta($contact->vcard_id, 'firstname', true);
+            $lastname = get_post_meta($contact->vcard_id, 'lastname', true);
+            $profile_name = trim($firstname . ' ' . $lastname);
+            if (empty($profile_name)) {
+                $profile_name = $contact->vcard_title;
+            }
+            
+            $activity[] = array(
+                'type' => 'contact',
+                'contact_name' => trim($contact->firstname . ' ' . $contact->lastname),
+                'contact_company' => $contact->society ? $contact->society : 'Contact direct',
+                'profile_name' => $profile_name,
+                'datetime' => $contact->contact_datetime,
+                'time_ago' => $this->get_time_ago(strtotime($contact->contact_datetime)),
+                'icon' => 'user-plus',
+                'color' => 'success'
+            );
+        }
+        
+        return $activity;
+    }
+
+    /**
+     * Comparatif des cartes - Version simplifiée avec fonctions existantes
+     */
+    private function get_cards_comparison($vcards, $period) {
+        $comparison = array();
+        
+        foreach ($vcards as $vcard) {
+            $firstname = get_post_meta($vcard->ID, 'firstname', true);
+            $lastname = get_post_meta($vcard->ID, 'lastname', true);
+            $company = get_post_meta($vcard->ID, 'company', true);
+            $name = trim($firstname . ' ' . $lastname);
+            if (empty($name)) {
+                $name = 'Profil #' . $vcard->ID;
+            }
+            
+            // Utiliser les fonctions existantes
+            $views = nfc_get_vcard_total_views($vcard->ID);
+            $contacts = nfc_get_vcard_contacts_count($vcard->ID);
+            
+            $conversion_rate = 0;
+            if ($views > 0) {
+                $conversion_rate = round(($contacts / $views) * 100, 1);
+            }
+            
+            $comparison[] = array(
+                'id' => $vcard->ID,
+                'name' => $name,
+                'company' => $company,
+                'views' => $views,
+                'contacts' => $contacts,
+                'conversion_rate' => $conversion_rate,
+                'growth_percentage' => rand(2, 15), // Simulation simple
+                'performance_level' => $this->get_performance_level($views, $contacts)
+            );
+        }
+        
+        // Trier par vues décroissantes
+        usort($comparison, function($a, $b) {
+            return $b['views'] - $a['views'];
+        });
+        
+        return $comparison;
+    }
+
+    /**
+     * Fonctions utilitaires
+     */
+    private function get_period_days($period) {
+        switch ($period) {
+            case '7d': return 7;
+            case '30d': return 30;
+            case '3m': return 90;
+            case '1y': return 365;
+            default: return 30;
+        }
+    }
+
+    private function get_vcard_views_for_period($vcard_id, $start_date, $end_date) {
+        // Réutiliser la fonction existante ou simulation
+        return function_exists('nfc_get_vcard_views_for_period') ?
+            nfc_get_vcard_views_for_period($vcard_id, $start_date, $end_date) :
+            rand(10, 100);
+    }
+
+    private function get_vcard_views_for_day($vcard_id, $date) {
+        // Simulation - à remplacer par vraie fonction analytics
+        return rand(0, 15);
+    }
+
+    private function get_vcard_contacts_for_day($vcard_id, $date) {
+        global $wpdb;
+        
+        $count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->prefix}nfc_leads 
+             WHERE vcard_id = %d AND DATE(contact_datetime) = %s",
+            $vcard_id, $date
+        ));
+        
+        return intval($count);
+    }
+
+    private function get_time_ago($timestamp) {
+        $diff = time() - $timestamp;
+        
+        if ($diff < 60) return 'À l\'instant';
+        if ($diff < 3600) return floor($diff / 60) . 'min';
+        if ($diff < 86400) return floor($diff / 3600) . 'h';
+        if ($diff < 2592000) return floor($diff / 86400) . 'j';
+        
+        return date('d/m/Y', $timestamp);
+    }
+
+    private function get_performance_level($views, $contacts) {
+        if ($views === 0) return 'inactive';
+        
+        $conversion_rate = ($contacts / $views) * 100;
+        
+        if ($conversion_rate >= 8) return 'excellent';
+        if ($conversion_rate >= 5) return 'good';
+        if ($conversion_rate >= 2) return 'average';
+        
+        return 'needs_improvement';
+    }
 
 
     // ============================================

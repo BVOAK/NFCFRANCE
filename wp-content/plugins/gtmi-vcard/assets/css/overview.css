@@ -1,0 +1,582 @@
+/**
+ * Overview.css - Styles Dashboard Overview NFC France
+ * Version: 1.0
+ * Compatible avec: statistics.css, cards-list.css
+ */
+
+/* ========================================
+   VARIABLES CSS OVERVIEW
+======================================== */
+:root {
+    --overview-primary: #0d6efd;
+    --overview-success: #198754;
+    --overview-info: #0dcaf0;
+    --overview-warning: #ffc107;
+    --overview-danger: #dc3545;
+    --overview-secondary: #6c757d;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #0d6efd, #4285f4);
+    --gradient-success: linear-gradient(135deg, #198754, #28a745);
+    --gradient-info: linear-gradient(135deg, #0dcaf0, #17a2b8);
+    --gradient-warning: linear-gradient(135deg, #ffc107, #fd7e14);
+    
+    /* Shadows */
+    --shadow-light: 0 2px 4px rgba(0,0,0,0.08);
+    --shadow-medium: 0 4px 8px rgba(0,0,0,0.12);
+    --shadow-strong: 0 8px 16px rgba(0,0,0,0.16);
+    
+    /* Transitions */
+    --transition-fast: all 0.2s ease;
+    --transition-smooth: all 0.3s ease-out;
+}
+
+/* ========================================
+   LAYOUT OVERVIEW PRINCIPAL
+======================================== */
+.dashboard-overview {
+    min-height: 100vh;
+    background: #f8f9fa;
+}
+
+.content-header {
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: var(--shadow-light);
+    padding: 1.5rem 2rem;
+    margin-bottom: 0;
+}
+
+.content-body {
+    padding: 2rem;
+}
+
+/* ========================================
+   CARTES KPI STATISTIQUES
+======================================== */
+.stat-card {
+    position: relative;
+    padding: 1.75rem 1.5rem;
+    border-radius: 1rem;
+    color: white;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+    box-shadow: var(--shadow-medium);
+    border: none;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: var(--transition-smooth);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-strong);
+}
+
+.stat-card:hover::before {
+    transform: scale(1.1);
+}
+
+.stat-card.bg-primary {
+    background: var(--gradient-primary);
+}
+
+.stat-card.bg-success {
+    background: var(--gradient-success);
+}
+
+.stat-card.bg-info {
+    background: var(--gradient-info);
+}
+
+.stat-card.bg-warning {
+    background: var(--gradient-warning);
+    color: #212529 !important;
+}
+
+.stat-value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 2;
+    font-weight: 500;
+}
+
+.stat-trend {
+    font-size: 0.8rem;
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+    opacity: 0.8;
+    transition: var(--transition-fast);
+}
+
+.stat-trend i {
+    margin-right: 0.25rem;
+}
+
+/* Animations des tendances */
+.stat-trend.text-success {
+    animation: pulseGreen 2s infinite;
+}
+
+.stat-trend.text-danger {
+    animation: pulseRed 2s infinite;
+}
+
+@keyframes pulseGreen {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+@keyframes pulseRed {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+/* ========================================
+   CARTES DASHBOARD & GRAPHIQUES
+======================================== */
+.dashboard-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-light);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+}
+
+.dashboard-card:hover {
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    padding: 1.5rem 2rem 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 1rem 1rem 0 0;
+}
+
+.card-header h5 {
+    margin: 0;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Conteneurs graphiques */
+.chart-container {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+}
+
+.chart-container canvas {
+    max-height: 300px !important;
+}
+
+/* ========================================
+   SÉLECTEURS ET CONTRÔLES
+======================================== */
+.form-select {
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    transition: var(--transition-fast);
+    background-color: white;
+    min-width: 140px;
+}
+
+.form-select:focus {
+    border-color: var(--overview-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-outline-primary {
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.btn-outline-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-light);
+}
+
+/* Gap pour les contrôles */
+.d-flex.gap-2 > * {
+    margin-right: 0.5rem;
+}
+
+.d-flex.gap-2 > *:last-child {
+    margin-right: 0;
+}
+
+/* ========================================
+   ACTIVITÉ RÉCENTE & LISTES
+======================================== */
+.list-group-flush .list-group-item {
+    padding: 1rem 0;
+    border-left: none;
+    border-right: none;
+    transition: var(--transition-fast);
+}
+
+.list-group-flush .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.list-group-flush .list-group-item:first-child {
+    border-top: none;
+}
+
+.list-group-flush .list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* Icônes activité */
+.list-group-item .fas {
+    width: 20px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.text-success { color: var(--overview-success) !important; }
+.text-primary { color: var(--overview-primary) !important; }
+.text-info { color: var(--overview-info) !important; }
+.text-warning { color: var(--overview-warning) !important; }
+.text-danger { color: var(--overview-danger) !important; }
+
+/* ========================================
+   TABLEAU COMPARATIF CARTES
+======================================== */
+.table-responsive {
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.table-sm th,
+.table-sm td {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+.table-sm thead th {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-sm tbody tr {
+    transition: var(--transition-fast);
+}
+
+.table-sm tbody tr:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.01);
+}
+
+.table-sm .badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.table-sm .badge.bg-success {
+    background-color: var(--overview-success) !important;
+}
+
+.table-sm .badge.bg-warning {
+    background-color: var(--overview-warning) !important;
+    color: #212529 !important;
+}
+
+.table-sm .badge.bg-secondary {
+    background-color: var(--overview-secondary) !important;
+}
+
+/* Badges ranking */
+.badge.bg-primary {
+    background: var(--gradient-primary) !important;
+    color: white;
+    font-weight: 600;
+    min-width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+/* ========================================
+   ÉTATS VIDES ET LOADING
+======================================== */
+.spinner-border {
+    width: 2rem;
+    height: 2rem;
+    border-width: 0.2rem;
+}
+
+.empty-state,
+.loading-state,
+.error-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state i,
+.loading-state i,
+.error-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}
+
+.empty-state p,
+.error-state p {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state small,
+.error-state small {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+
+/* Tablette */
+@media (max-width: 992px) {
+    .content-header {
+        padding: 1rem 1.5rem;
+    }
+    
+    .content-body {
+        padding: 1.5rem;
+    }
+    
+    .d-flex.gap-2 {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .d-flex.gap-2 > * {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .stat-value {
+        font-size: 1.8rem;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .content-header {
+        padding: 1rem;
+    }
+    
+    .content-body {
+        padding: 1rem;
+    }
+    
+    .content-header .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .content-header .d-flex > div:last-child {
+        margin-top: 1rem;
+        width: 100%;
+    }
+    
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .stat-label {
+        font-size: 0.8rem;
+    }
+    
+    .chart-container {
+        min-height: 250px;
+    }
+    
+    .table-sm {
+        font-size: 0.8rem;
+    }
+    
+    .table-sm th,
+    .table-sm td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    /* Masquer certaines colonnes sur mobile */
+    .table-sm th:nth-child(5),
+    .table-sm td:nth-child(5) {
+        display: none;
+    }
+}
+
+/* ========================================
+   ANIMATIONS ET EFFETS
+======================================== */
+
+/* Animation apparition */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation des cartes KPI */
+.stat-card {
+    animation: slideInUp 0.6s ease-out;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* Animation des dashboard cards */
+.dashboard-card {
+    animation: slideInUp 0.6s ease-out;
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+}
+
+/* Loading pulse */
+.loading-pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ========================================
+   UTILITAIRES OVERVIEW
+======================================== */
+
+/* Espacement personnalisé */
+.mb-overview {
+    margin-bottom: 2rem !important;
+}
+
+.p-overview {
+    padding: 1.5rem !important;
+}
+
+/* Couleurs de fond utilitaires */
+.bg-gradient-primary {
+    background: var(--gradient-primary) !important;
+}
+
+.bg-gradient-success {
+    background: var(--gradient-success) !important;
+}
+
+.bg-gradient-info {
+    background: var(--gradient-info) !important;
+}
+
+.bg-gradient-warning {
+    background: var(--gradient-warning) !important;
+}
+
+/* Text shadows pour contraste */
+.text-shadow {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.text-shadow-strong {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Bordures arrondies */
+.rounded-lg {
+    border-radius: 1rem !important;
+}
+
+.rounded-xl {
+    border-radius: 1.5rem !important;
+}
+
+/* ========================================
+   PRINT STYLES
+======================================== */
+@media print {
+    .dashboard-overview {
+        background: white !important;
+    }
+    
+    .stat-card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+    }
+    
+    .dashboard-card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+    }
+    
+    .content-header .d-flex > div:last-child,
+    .chart-container {
+        display: none !important;
+    }
+}
