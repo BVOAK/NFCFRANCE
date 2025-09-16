@@ -370,9 +370,6 @@ class NFC_Dashboard_Manager
             <?php if ($current_page === 'overview'): ?>
                 <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/overview.js?v=<?php echo time(); ?>"></script>
             <?php endif; ?>
-            <?php if ($current_page === 'vcard-edit') { ?>
-                <script src="<?php echo $this->plugin_url; ?>assets/js/dashboard/vcard-editor.js?v=<?php echo time(); ?>"></script>
-            <?php } ?>>
 
             <!-- Configuration JavaScript -->
             <script type="text/javascript">
