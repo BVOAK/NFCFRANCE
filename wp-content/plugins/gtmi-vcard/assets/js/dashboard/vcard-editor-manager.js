@@ -424,33 +424,31 @@ class VCardEditor {
     }
 
     /**
- * Gérer l'upload d'image - CORRECTION DOMException
+ * Gérer l'upload d'image - VERSION ARRAY BUFFER
  */
     async handleImageUpload(file, type) {
-        console.log(`📸 Uploading ${type} image:`, file.name);
-        console.log('📁 File object:', file);
+        console.log(`📸 Starting upload for ${type}:`, file.name);
 
         // Validation
         if (!this.validateFile(file)) return;
 
         try {
-            // 🔥 CRÉER LE FormData IMMÉDIATEMENT (avant toute manipulation du file)
+            // 🔥 LIRE LE FILE EN ARRAY BUFFER IMMÉDIATEMENT
+            const arrayBuffer = await file.arrayBuffer();
+            const blob = new Blob([arrayBuffer], { type: file.type });
+
+            console.log('📁 File converted to Blob:', blob);
+
             const formData = new FormData();
             const fieldName = type === 'profile' ? 'profile_picture' : 'cover_image';
 
-            formData.append('file', file);
+            // 🔥 UTILISER LE BLOB AU LIEU DU FILE
+            formData.append('file', blob, file.name);
             formData.append('vcard_id', this.config.vcard_id);
             formData.append('field_name', fieldName);
             formData.append('action', 'upload_vcard_image');
             formData.append('nonce', this.config.nonce);
 
-            // 🔥 DEBUG: Vérifier le FormData
-            console.log('📤 FormData contents:');
-            for (let pair of formData.entries()) {
-                console.log(`  ${pair[0]}:`, pair[1]);
-            }
-
-            // Upload via fetch
             const response = await fetch(this.config.ajax_url, {
                 method: 'POST',
                 body: formData,
@@ -462,28 +460,24 @@ class VCardEditor {
             }
 
             const result = await response.json();
-            console.log('📥 Upload response:', result);
 
             if (result.success) {
                 const imageUrl = result.data.url;
                 console.log(`✅ ${type} uploaded:`, imageUrl);
 
                 if (imageUrl) {
-                    // 🔥 MAINTENANT faire le preview APRÈS l'upload réussi
-                    this.showImagePreviewFromUrl(imageUrl, type);
                     this.updateImagePreview(fieldName, imageUrl);
                     this.showNotification('Image mise à jour avec succès', 'success');
                     this.markAsDirty();
                     return { url: imageUrl };
                 }
             } else {
-                console.error(`❌ ${type} upload error:`, result.data);
-                this.showNotification('error', `Erreur lors de l'upload ${type}: ${result.data?.message || 'Erreur inconnue'}`);
+                this.showNotification('error', `Erreur: ${result.data?.message || 'Upload failed'}`);
             }
 
         } catch (error) {
             console.error(`❌ ${type} upload error:`, error);
-            this.showNotification('error', `Erreur de connexion: ${error.message}`);
+            this.showNotification('error', `Erreur: ${error.message}`);
         }
     }
 
