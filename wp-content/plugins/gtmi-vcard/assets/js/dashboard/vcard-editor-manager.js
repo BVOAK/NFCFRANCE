@@ -438,8 +438,11 @@ class VCardEditor {
         try {
             // Upload via AJAX existant
             const formData = new FormData();
-            formData.append(type === 'profile' ? 'profile_picture' : 'cover_image', file);
+            const fieldName = type === 'profile' ? 'profile_picture' : 'cover_image';
+
+            formData.append('file', file);
             formData.append('vcard_id', this.config.vcard_id);
+            formData.append('field_name', fieldName);
             formData.append('action', 'upload_vcard_image');
             formData.append('nonce', this.config.nonce);
 
@@ -453,17 +456,18 @@ class VCardEditor {
 
             if (result.success) {
                 const imageUrl = result.data.url;
+                console.log(`✅ ${type} uploaded:`, imageUrl);
+                
                 if (imageUrl) {
-                        this.updateImagePreview(fieldName, imageUrl);
-                        this.showNotification('Image mise à jour avec succès', 'success');
-                        return { url: imageUrl };
+                    this.updateImagePreview(fieldName, imageUrl);  // ✅ CORRIGÉ
+                    this.showNotification('Image mise à jour avec succès', 'success');
+                    this.markAsDirty();
+                    return { url: imageUrl };
                 }
-                this.markAsDirty();
             } else {
                 console.error(`❌ ${type} upload error:`, result.data);
                 this.showNotification('error', `Erreur lors de l'upload ${type}`);
             }
-
         } catch (error) {
             console.error(`❌ ${type} upload error:`, error);
             this.showNotification('error', 'Erreur de connexion');
@@ -528,31 +532,27 @@ class VCardEditor {
     /**
      * Mettre à jour preview image avec URL finale
      */
-    updateImagePreview(imageUrl, type) {
-        const previewId = type === 'profile' ? 'profile-preview' : 'cover-preview';
-        const preview = document.getElementById(previewId);
+    updateImagePreview(fieldName, imageUrl) {
+        console.log(`🖼️ Updating preview for ${fieldName}:`, imageUrl);
         
-        if (preview && imageUrl) {
-            if (type === 'profile') {
-                preview.innerHTML = `
-                    <img src="${imageUrl}" 
-                         class="img-fluid rounded-circle border"
-                         style="width: 120px; height: 120px; object-fit: cover;" 
-                         alt="Photo de profil">
-                `;
-                
-                // Mettre à jour le preview principal
-                const previewAvatar = document.querySelector('.preview-avatar');
-                if (previewAvatar) {
-                    previewAvatar.innerHTML = `<img src="${imageUrl}" alt="Photo de profil">`;
-                }
-            } else {
-                preview.innerHTML = `
-                    <img src="${imageUrl}" 
-                         class="img-fluid rounded border"
-                         style="width: 100%; max-height: 120px; object-fit: cover;" 
-                         alt="Image de couverture">
-                `;
+        // Mettre à jour l'input hidden si il existe
+        const hiddenInput = document.querySelector(`input[name="${fieldName}"]`);
+        if (hiddenInput) {
+            hiddenInput.value = imageUrl || '';
+        }
+        
+        // Mettre à jour l'aperçu visuel
+        const previewImg = document.querySelector(`#${fieldName}-preview img, .${fieldName}-preview img`);
+        if (previewImg && imageUrl) {
+            previewImg.src = imageUrl;
+            previewImg.style.display = 'block';
+        }
+        
+        // Mettre à jour le preview principal si c'est la photo de profil
+        if (fieldName === 'profile_picture') {
+            const mainPreview = document.querySelector('.preview-profile-image');
+            if (mainPreview && imageUrl) {
+                mainPreview.src = imageUrl;
             }
         }
     }

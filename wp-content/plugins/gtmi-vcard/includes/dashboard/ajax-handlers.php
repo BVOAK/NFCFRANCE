@@ -543,54 +543,46 @@ class NFC_Dashboard_Ajax
     {
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
 
-        // Vérifier si on a un fichier
-        if (empty($_FILES)) {
-            error_log("❌ Aucun fichier dans \$_FILES");
-            wp_send_json_error(['message' => 'Aucun fichier reçu - $_FILES vide']);
-            return;
-        }
-
-        $file = null;
-        $possible_names = ['file', 'profile_picture', 'cover_image', 'image'];
-
-        foreach ($possible_names as $name) {
-            if (isset($_FILES[$name]) && $_FILES[$name]['error'] === UPLOAD_ERR_OK) {
-                $file = $_FILES[$name];
-                error_log("✅ Fichier trouvé sous le nom: $name");
-                break;
-            }
-        }
-
-        if (!$file) {
-            error_log("❌ Aucun fichier valide trouvé");
-            wp_send_json_error(['message' => 'Aucun fichier valide trouvé']);
-            return;
-        }
-
         $vcard_id = intval($_POST['vcard_id'] ?? 0);
         $field_name = sanitize_text_field($_POST['field_name'] ?? 'profile_picture');
 
         error_log("📸 Upload starting: vcard_id=$vcard_id, field_name=$field_name");
+        error_log("📁 FILES received: " . print_r($_FILES, true));
 
         if (!$vcard_id) {
             wp_send_json_error(['message' => 'ID vCard manquant']);
             return;
         }
 
-        // Vérifier que le fichier existe
-        if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
-            error_log("❌ Pas de fichier valide reçu");
-            wp_send_json_error(['message' => 'Aucun fichier reçu']);
+        // 🔥 CHERCHER LE FICHIER DANS TOUS LES NOMS POSSIBLES
+        $file = null;
+        $file_key = null;
+        $possible_names = ['file', 'profile_picture', 'cover_image', 'image'];
+
+        foreach ($possible_names as $name) {
+            if (isset($_FILES[$name]) && $_FILES[$name]['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES[$name];
+                $file_key = $name;
+                error_log("✅ Fichier trouvé sous le nom: $name");
+                break;
+            }
+        }
+
+        // 🔥 VÉRIFIER QU'ON A TROUVÉ UN FICHIER
+        if (!$file) {
+            error_log("❌ Aucun fichier valide trouvé dans: " . implode(', ', $possible_names));
+            error_log("📁 $_FILES keys disponibles: " . implode(', ', array_keys($_FILES)));
+            wp_send_json_error(['message' => 'Aucun fichier valide trouvé']);
             return;
         }
 
-        // 🔥 UTILISER LA MÊME MÉTHODE QUE TON ANCIEN CODE
+        // 🔥 UPLOAD AVEC LA MÉTHODE QUI MARCHAIT
         require_once(ABSPATH . 'wp-admin/includes/image.php');
         require_once(ABSPATH . 'wp-admin/includes/file.php');
         require_once(ABSPATH . 'wp-admin/includes/media.php');
 
-        // 🔥 RENOMMER temporairement $_FILES pour que media_handle_upload fonctionne
-        $_FILES['upload_file'] = $_FILES['file'];
+        // Utiliser le fichier trouvé pour media_handle_upload
+        $_FILES['upload_file'] = $file;
 
         $attachment_id = media_handle_upload('upload_file', $vcard_id);
 
@@ -600,16 +592,14 @@ class NFC_Dashboard_Ajax
             return;
         }
 
-        // 🔥 RÉCUPÉRER L'URL ET SAUVEGARDER COMME DANS TON ANCIEN CODE
+        // Récupérer l'URL et sauvegarder
         $image_url = wp_get_attachment_url($attachment_id);
 
         error_log("✅ File uploaded: attachment_id=$attachment_id, url=$image_url");
 
-        // 🔥 SAUVEGARDER EXACTEMENT COMME TON ANCIEN CODE
         $meta_result = update_post_meta($vcard_id, $field_name, $image_url);
 
         error_log("💾 update_post_meta result: " . ($meta_result ? 'SUCCESS' : 'FAILED'));
-        error_log("🔍 Verification: " . get_post_meta($vcard_id, $field_name, true));
 
         wp_send_json_success([
             'message' => 'Image uploadée avec succès',
