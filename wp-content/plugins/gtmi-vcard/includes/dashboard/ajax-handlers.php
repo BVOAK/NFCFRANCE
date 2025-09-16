@@ -37,12 +37,6 @@ class NFC_Dashboard_Ajax
     private function register_ajax_handlers()
     {
         // vCard actions
-        add_action('wp_ajax_nfc_save_vcard', [$this, 'save_vcard']);
-        add_action('wp_ajax_nfc_get_vcard', [$this, 'get_vcard']);
-        add_action('wp_ajax_nfc_upload_profile_image', [$this, 'upload_profile_image']);
-        add_action('wp_ajax_nfc_remove_profile_image', [$this, 'remove_profile_image']);
-        add_action('wp_ajax_nfc_remove_image', [$this, 'remove_image']);
-
         add_action('wp_ajax_save_vcard_data', [$this, 'save_vcard_data']);
         add_action('wp_ajax_upload_vcard_image', [$this, 'upload_vcard_image']);
         add_action('wp_ajax_remove_vcard_image', [$this, 'remove_vcard_image']);
@@ -51,8 +45,6 @@ class NFC_Dashboard_Ajax
         add_action('wp_ajax_duplicate_vcard', [$this, 'duplicate_vcard']);
 
         // QR Code actions
-        add_action('wp_ajax_nfc_generate_qr', [$this, 'generate_qr']);
-        add_action('wp_ajax_nfc_download_qr', [$this, 'download_qr']);
         add_action('wp_ajax_nfc_get_qr_stats', [$this, 'get_qr_stats']);
 
         // Statistics actions - REDIRIGÉES VERS API REST
