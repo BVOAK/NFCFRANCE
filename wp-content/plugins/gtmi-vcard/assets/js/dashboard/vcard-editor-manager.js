@@ -429,19 +429,25 @@ class VCardEditor {
     async handleImageUpload(file, type) {
         console.log(`📸 Uploading ${type} image:`, file.name);
 
-        // Validation
         if (!this.validateFile(file)) return;
 
-        // Afficher preview immédiat
-        this.showImagePreview(file, type);
-
         try {
-            // Upload via AJAX existant
             const formData = new FormData();
-            formData.append(type === 'profile' ? 'profile_picture' : 'cover_image', file);
+            const fieldName = type === 'profile' ? 'profile_picture' : 'cover_image';
+            
+            // 🔥 CORRECTION: Toujours utiliser 'file' comme nom du fichier
+            formData.append('file', file);  // ✅ Pas fieldName !
             formData.append('vcard_id', this.config.vcard_id);
+            formData.append('field_name', fieldName);  // ✅ Ça c'est le nom du champ de destination
             formData.append('action', 'upload_vcard_image');
             formData.append('nonce', this.config.nonce);
+
+            // Debug pour vérifier
+            console.log('📤 Uploading:', {
+                fileKey: 'file',  // Ce qui va dans $_FILES['file']
+                fieldName: fieldName,  // Ce qui va dans $_POST['field_name']
+                type: type
+            });
 
             const response = await fetch(this.config.ajax_url, {
                 method: 'POST',

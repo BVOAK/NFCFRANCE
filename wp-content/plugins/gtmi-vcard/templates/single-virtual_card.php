@@ -54,8 +54,36 @@ $vcard_data = [
 ];
 
 // Images
-$profile_picture = function_exists('get_field') ? get_field('profile_picture', $vcard_id) : get_post_meta($vcard_id, 'profile_picture', true);
-$cover_image = function_exists('get_field') ? get_field('cover_image', $vcard_id) : get_post_meta($vcard_id, 'cover_image', true);
+// Images - Version robuste
+$profile_picture = get_post_meta($vcard_id, 'profile_picture', true);
+if (empty($profile_picture) && function_exists('get_field')) {
+    $acf_profile = get_field('profile_picture', $vcard_id);
+    if (is_array($acf_profile) && isset($acf_profile['url'])) {
+        $profile_picture = $acf_profile['url'];
+    } elseif (is_string($acf_profile) && !empty($acf_profile)) {
+        $profile_picture = $acf_profile;
+    }
+}
+
+$cover_image = get_post_meta($vcard_id, 'cover_image', true);
+if (empty($cover_image) && function_exists('get_field')) {
+    $acf_cover = get_field('cover_image', $vcard_id);
+    if (is_array($acf_cover) && isset($acf_cover['url'])) {
+        $cover_image = $acf_cover['url'];
+    } elseif (is_string($acf_cover) && !empty($acf_cover)) {
+        $cover_image = $acf_cover;
+    }
+}
+
+// DEBUG: Voir les données pour l'ID 3736
+if ($vcard_id == 3736) {
+    error_log("DEBUG ID 3736 - cover_image données:");
+    error_log("  get_post_meta: " . var_export(get_post_meta($vcard_id, 'cover_image', true), true));
+    if (function_exists('get_field')) {
+        error_log("  get_field: " . var_export(get_field('cover_image', $vcard_id), true));
+    }
+    error_log("  $cover_image final: " . var_export($cover_image, true));
+}
 
 // Traitement des images ACF
 if (is_array($profile_picture) && isset($profile_picture['url'])) {
