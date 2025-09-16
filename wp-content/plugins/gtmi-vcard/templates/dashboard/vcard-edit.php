@@ -757,7 +757,7 @@ $vcard_edit_data = [
 
 <!-- SCRIPTS DIRECT (pas de wp_enqueue) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-<script src="<?= $plugin_url ?>js/dashboard/vcard-editor-manager.js?v=<?= time() ?>"></script>
+<script src="<?= plugin_dir_url(__FILE__) ?>../../assets/js/dashboard/vcard-editor-manager.js?v=<?= time() ?>"></script>
 
 <script>
 // Configuration JavaScript DIRECTE
