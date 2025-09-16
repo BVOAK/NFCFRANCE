@@ -452,8 +452,12 @@ class VCardEditor {
             const result = await response.json();
 
             if (result.success) {
-                console.log(`✅ ${type} image uploaded:`, result.data && result.data.url);
-                this.updateImagePreview(result.data && result.data.url || '', type);
+                const imageUrl = result.data.url;
+                if (imageUrl) {
+                        this.updateImagePreview(fieldName, imageUrl);
+                        this.showNotification('Image mise à jour avec succès', 'success');
+                        return { url: imageUrl };
+                }
                 this.markAsDirty();
             } else {
                 console.error(`❌ ${type} upload error:`, result.data);
