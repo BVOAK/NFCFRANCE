@@ -427,5 +427,6 @@ class NFC_Analytics_Handler
     }
 }
 
+
 // Initialisation
 new NFC_Analytics_Handler();

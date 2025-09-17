@@ -225,4 +225,5 @@ console.log('📊 Configuration Statistics chargée:', window.STATISTICS_CONFIG)
     </div>
 </div>
 
+<!-- JavaScript Statistics Manager -->
 <script src="<?= plugin_dir_url(__FILE__) ?>../../assets/js/dashboard/statistics-manager.js?v=<?= time() ?>"></script>
