@@ -74,7 +74,7 @@ class NFC_Dashboard_Ajax
         add_action('wp_ajax_nfc_get_chart_data', [$this, 'get_chart_data']);
 
         add_action('wp_ajax_nfc_get_dashboard_overview', [$this, 'get_dashboard_overview']);
-    
+
     }
 
     /**
@@ -1482,7 +1482,7 @@ class NFC_Dashboard_Ajax
                 'recent_activity' => $recent_activity,
                 'period' => $period,
                 'profile' => $profile_id,
-                'vcard_count' => count($target_vcards)
+                'vcard_count' => count($target_vcards),
             ];
 
             error_log("✅ Envoi données stats: " . json_encode($stats));
@@ -1823,53 +1823,107 @@ class NFC_Dashboard_Ajax
         }
     }
 
+
     /**
      * Calculer les statistiques principales
      */
     private function calculate_statistics($vcard_ids, $period)
     {
-        global $wpdb;
+        // S'assurer que nfc-shared-functions.php est inclus
+        if (!function_exists('nfc_get_vcard_contacts_count')) {
+            $shared_functions_path = dirname(__FILE__) . '/nfc-shared-functions.php';
+            if (file_exists($shared_functions_path)) {
+                require_once $shared_functions_path;
+                error_log("✅ nfc-shared-functions.php inclus dans calculate_statistics");
+            } else {
+                error_log("❌ nfc-shared-functions.php NON TROUVÉ dans : $shared_functions_path");
+            }
+        }
 
-        // Convertir période en jours
         $days = $this->period_to_days($period);
-        $start_date = date('Y-m-d', strtotime("-{$days} days"));
+        error_log("📊 calculate_statistics - vCards: " . implode(', ', $vcard_ids) . " - Période: $days jours");
 
-        error_log("📊 Calcul stats - vCards: " . implode(', ', $vcard_ids) . " - Période: $days jours depuis $start_date");
+        $total_views = 0;
+        $total_contacts = 0;
 
-        // Vues des profils (table analytics ou simulation)
-        $total_views = $this->get_total_views($vcard_ids, $start_date);
-        $previous_views = $this->get_total_views($vcard_ids, date('Y-m-d', strtotime("-" . ($days * 2) . " days")), $start_date);
+        // ✅ UTILISER LES VRAIES FONCTIONS qui marchent dans overview
+        foreach ($vcard_ids as $vcard_id) {
 
-        // Contacts générés (table leads)
-        $total_contacts = $this->get_total_contacts($vcard_ids, $start_date);
-        $previous_contacts = $this->get_total_contacts($vcard_ids, date('Y-m-d', strtotime("-" . ($days * 2) . " days")), $start_date);
+            // Vues - Utiliser la fonction qui marche
+            if (function_exists('nfc_get_vcard_total_views')) {
+                $card_views = nfc_get_vcard_total_views($vcard_id);
+                $total_views += $card_views;
+                error_log("📊 vCard $vcard_id : $card_views vues");
+            }
 
-        // Scans NFC (simulé pour l'instant)
-        $total_scans = intval($total_views * 0.4); // 40% des vues via NFC
-        $previous_scans = intval($previous_views * 0.4);
+            // Contacts - Utiliser la fonction qui marche  
+            if (function_exists('nfc_get_vcard_contacts_count')) {
+                $card_contacts = nfc_get_vcard_contacts_count($vcard_id);
+                $total_contacts += $card_contacts;
+                error_log("📊 vCard $vcard_id : $card_contacts contacts");
+            }
+        }
 
-        // Calcul des variations
-        $views_change = $previous_views > 0 ? (($total_views - $previous_views) / $previous_views) * 100 : 0;
-        $contacts_change = $previous_contacts > 0 ? (($total_contacts - $previous_contacts) / $previous_contacts) * 100 : 0;
-        $scans_change = $previous_scans > 0 ? (($total_scans - $previous_scans) / $previous_scans) * 100 : 0;
+        // Scans basés sur analytics si disponible
+        $total_scans = $this->get_total_scans_from_analytics($vcard_ids, $days);
+        if ($total_scans === 0) {
+            $total_scans = intval($total_views * 0.6); // Estimation : 60% via scans physiques
+        }
 
-        // Taux de conversion
-        $conversion_rate = $total_views > 0 ? ($total_contacts / $total_views) * 100 : 0;
-        $previous_conversion = $previous_views > 0 ? ($previous_contacts / $previous_views) * 100 : 0;
-        $conversion_change = $previous_conversion > 0 ? $conversion_rate - $previous_conversion : 0;
+        // Calcul du taux de conversion RÉEL
+        $conversion_rate = $total_views > 0 ? round(($total_contacts / $total_views) * 100, 2) : 0;
 
-        error_log("📊 Stats calculées - Vues: $total_views (+$views_change%), Contacts: $total_contacts (+$contacts_change%), Conversion: $conversion_rate%");
+        error_log("📊 Stats RÉELLES calculées - Vues: $total_views, Contacts: $total_contacts, Conversion: $conversion_rate%");
 
         return [
             'total_views' => $total_views,
             'total_contacts' => $total_contacts,
             'total_scans' => $total_scans,
             'conversion_rate' => $conversion_rate,
-            'views_change' => round($views_change, 1),
-            'contacts_change' => round($contacts_change, 1),
-            'scans_change' => round($scans_change, 1),
-            'conversion_change' => round($conversion_change, 1)
+            'views_change' => 0,      // Calculer si besoin
+            'contacts_change' => 0,   // Calculer si besoin
+            'scans_change' => 0,
+            'conversion_change' => 0,
+            'debug' => [
+                'functions_available' => [
+                    'nfc_get_vcard_total_views' => function_exists('nfc_get_vcard_total_views'),
+                    'nfc_get_vcard_contacts_count' => function_exists('nfc_get_vcard_contacts_count')
+                ]
+            ]
         ];
+    }
+
+    private function get_total_scans_from_analytics($vcard_ids, $days)
+    {
+        global $wpdb;
+
+        $analytics_table = $wpdb->prefix . 'nfc_analytics';
+
+        // Vérifier si la table existe
+        if ($wpdb->get_var("SHOW TABLES LIKE '$analytics_table'") != $analytics_table) {
+            return 0;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
+        $start_date = date('Y-m-d', strtotime("-{$days} days"));
+
+        $qr_scans = intval($wpdb->get_var($wpdb->prepare("
+        SELECT COUNT(*) 
+        FROM {$analytics_table} 
+        WHERE vcard_id IN ({$placeholders}) 
+          AND view_datetime >= %s
+          AND (traffic_source = 'qr' OR traffic_source = 'qr_scan')
+    ", array_merge($vcard_ids, [$start_date])))) ?: 0;
+
+        $nfc_taps = intval($wpdb->get_var($wpdb->prepare("
+        SELECT COUNT(*) 
+        FROM {$analytics_table} 
+        WHERE vcard_id IN ({$placeholders}) 
+          AND view_datetime >= %s  
+          AND (traffic_source = 'nfc' OR traffic_source = 'nfc_tap')
+    ", array_merge($vcard_ids, [$start_date])))) ?: 0;
+
+        return $qr_scans + $nfc_taps;
     }
 
     /**
@@ -2110,25 +2164,26 @@ class NFC_Dashboard_Ajax
      * OVERVIEW - Récupérer les données dashboard (version simple)
      * @return void JSON Response
      */
-    public function get_dashboard_overview() {
+    public function get_dashboard_overview()
+    {
         check_ajax_referer('nfc_dashboard_nonce', 'nonce');
-        
+
         $user_id = intval($_POST['user_id'] ?? get_current_user_id());
         $action_type = sanitize_text_field($_POST['action_type'] ?? 'trends');
-        
+
         if (!$user_id) {
             wp_send_json_error(['message' => 'Utilisateur invalide']);
             return;
         }
-        
+
         try {
             $user_vcards = $this->get_user_vcards($user_id);
-            
+
             if (empty($user_vcards)) {
                 wp_send_json_error(['message' => 'Aucune vCard trouvée']);
                 return;
             }
-            
+
             // Selon le type d'action demandé
             switch ($action_type) {
                 case 'trends':
@@ -2137,14 +2192,14 @@ class NFC_Dashboard_Ajax
                 default:
                     $data = $this->get_overview_summary($user_vcards);
             }
-            
+
             error_log("✅ Overview {$action_type} chargé pour {$user_id}");
             wp_send_json_success([
                 'message' => 'Overview chargé avec succès',
                 'data' => $data,
                 'action_type' => $action_type
             ]);
-            
+
         } catch (Exception $e) {
             error_log("❌ Erreur get_dashboard_overview: " . $e->getMessage());
             wp_send_json_error(['message' => 'Erreur lors du chargement']);
@@ -2154,31 +2209,32 @@ class NFC_Dashboard_Ajax
     /**
      * Calculer les tendances simples pour l'overview
      */
-    private function calculate_overview_trends($vcards) {
+    private function calculate_overview_trends($vcards)
+    {
         // Calculer les stats de cette semaine vs semaine dernière
         $this_week_start = date('Y-m-d', strtotime('monday this week'));
         $last_week_start = date('Y-m-d', strtotime('monday last week'));
         $last_week_end = date('Y-m-d', strtotime('sunday last week'));
-        
+
         $this_week_views = 0;
         $this_week_contacts = 0;
         $last_week_views = 0;
         $last_week_contacts = 0;
-        
+
         foreach ($vcards as $vcard) {
             // Vues cette semaine
             $this_week_views += $this->get_vcard_views_for_period($vcard->ID, $this_week_start, date('Y-m-d'));
-            
+
             // Vues semaine dernière
             $last_week_views += $this->get_vcard_views_for_period($vcard->ID, $last_week_start, $last_week_end);
-            
+
             // Contacts cette semaine
             $this_week_contacts += $this->get_vcard_contacts_for_period($vcard->ID, $this_week_start, date('Y-m-d'));
-            
+
             // Contacts semaine dernière
             $last_week_contacts += $this->get_vcard_contacts_for_period($vcard->ID, $last_week_start, $last_week_end);
         }
-        
+
         // Calculer les pourcentages de changement
         $views_change = 0;
         if ($last_week_views > 0) {
@@ -2186,14 +2242,14 @@ class NFC_Dashboard_Ajax
         } elseif ($this_week_views > 0) {
             $views_change = 100; // Nouvelle activité
         }
-        
+
         $contacts_change = 0;
         if ($last_week_contacts > 0) {
             $contacts_change = round((($this_week_contacts - $last_week_contacts) / $last_week_contacts) * 100);
         } elseif ($this_week_contacts > 0) {
             $contacts_change = 100; // Nouveaux contacts
         }
-        
+
         return array(
             'trends' => array(
                 'views_change' => $views_change,
@@ -2214,59 +2270,64 @@ class NFC_Dashboard_Ajax
     /**
      * Obtenir un résumé général de l'overview
      */
-    private function get_overview_summary($vcards) {
+    private function get_overview_summary($vcards)
+    {
         $summary = array(
             'total_cards' => count($vcards),
             'configured_cards' => 0,
             'total_views' => 0,
             'total_contacts' => 0
         );
-        
+
         foreach ($vcards as $vcard) {
             // Vérifier si configurée
             $firstname = get_post_meta($vcard->ID, 'firstname', true);
             if (!empty($firstname)) {
                 $summary['configured_cards']++;
             }
-            
+
             // Ajouter les stats
             $summary['total_views'] += nfc_get_vcard_total_views($vcard->ID);
             $summary['total_contacts'] += nfc_get_vcard_contacts_count($vcard->ID);
         }
-        
+
         return $summary;
     }
 
     /**
      * Obtenir les contacts pour une période
      */
-    private function get_vcard_contacts_for_period($vcard_id, $start_date, $end_date) {
+    private function get_vcard_contacts_for_period($vcard_id, $start_date, $end_date)
+    {
         global $wpdb;
-        
+
         $count = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM {$wpdb->prefix}nfc_leads 
              WHERE vcard_id = %d 
              AND DATE(contact_datetime) BETWEEN %s AND %s",
-            $vcard_id, $start_date, $end_date
+            $vcard_id,
+            $start_date,
+            $end_date
         ));
-        
+
         return intval($count);
     }
 
     /**
      * Récupérer les données pour les graphiques
      */
-    private function get_overview_charts($vcards, $period, $view_mode, $profile_id) {
+    private function get_overview_charts($vcards, $period, $view_mode, $profile_id)
+    {
         $period_days = $this->get_period_days($period);
-        
+
         // Données pour graphique principal (évolution temporelle)
         $performance_data = $this->get_performance_evolution($vcards, $period_days, $view_mode, $profile_id);
-        
+
         // Données pour graphique secondaire (adaptatif selon mode)
         $secondary_data = ($view_mode === 'individual' && $profile_id) ?
             $this->get_traffic_sources($profile_id, $period_days) :
             $this->get_top_performers($vcards, $period_days);
-        
+
         return [
             'performance' => $performance_data,
             'secondary' => $secondary_data
@@ -2276,22 +2337,23 @@ class NFC_Dashboard_Ajax
     /**
      * Évolution des performances - Version simplifiée
      */
-    private function get_performance_evolution($vcards, $period_days, $view_mode, $profile_id) {
+    private function get_performance_evolution($vcards, $period_days, $view_mode, $profile_id)
+    {
         // Version simplifiée avec données des 7 derniers jours
         $labels = array();
         $views_data = array();
         $contacts_data = array();
-        
+
         // Générer les 7 derniers jours
         for ($i = 6; $i >= 0; $i--) {
             $date = date('d/m', strtotime("-{$i} days"));
             $labels[] = $date;
-            
+
             // Données simplifiées - à améliorer plus tard
             $views_data[] = rand(5, 25);
             $contacts_data[] = rand(0, 3);
         }
-        
+
         return array(
             'labels' => $labels,
             'views' => $views_data,
@@ -2302,12 +2364,13 @@ class NFC_Dashboard_Ajax
     /**
      * Top performers (mode global) - Version simplifiée
      */
-    private function get_top_performers($vcards, $period_days) {
+    private function get_top_performers($vcards, $period_days)
+    {
         $performers = array();
         $labels = array();
         $data = array();
         $colors = array('#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1', '#fd7e14');
-        
+
         foreach ($vcards as $vcard) {
             $firstname = get_post_meta($vcard->ID, 'firstname', true);
             $lastname = get_post_meta($vcard->ID, 'lastname', true);
@@ -2315,10 +2378,10 @@ class NFC_Dashboard_Ajax
             if (empty($name)) {
                 $name = 'Profil #' . $vcard->ID;
             }
-            
+
             // Utiliser les fonctions existantes
             $views = nfc_get_vcard_total_views($vcard->ID);
-            
+
             if ($views > 0) {
                 $performers[] = array(
                     'name' => $name,
@@ -2326,21 +2389,21 @@ class NFC_Dashboard_Ajax
                 );
             }
         }
-        
+
         // Trier par vues décroissantes
-        usort($performers, function($a, $b) {
+        usort($performers, function ($a, $b) {
             return $b['views'] - $a['views'];
         });
-        
+
         // Limiter aux top 6
         $performers = array_slice($performers, 0, 6);
-        
+
         // Construire les arrays séparément
         foreach ($performers as $performer) {
             $labels[] = $performer['name'];
             $data[] = $performer['views'];
         }
-        
+
         return array(
             'labels' => $labels,
             'data' => $data,
@@ -2351,7 +2414,8 @@ class NFC_Dashboard_Ajax
     /**
      * Sources de trafic (mode individuel) - Version simplifiée
      */
-    private function get_traffic_sources($vcard_id, $period_days) {
+    private function get_traffic_sources($vcard_id, $period_days)
+    {
         // Pour le moment, version simplifiée avec QR/NFC uniquement
         return array(
             'labels' => array('QR Code', 'NFC', 'Direct'),
@@ -2363,9 +2427,10 @@ class NFC_Dashboard_Ajax
     /**
      * Activité récente - Version simplifiée avec vraies données contacts
      */
-    private function get_overview_activity($vcards, $view_mode, $profile_id) {
+    private function get_overview_activity($vcards, $view_mode, $profile_id)
+    {
         global $wpdb;
-        
+
         $vcard_ids = array();
         if ($view_mode === 'individual' && $profile_id) {
             $vcard_ids[] = $profile_id;
@@ -2374,13 +2439,13 @@ class NFC_Dashboard_Ajax
                 $vcard_ids[] = $vcard->ID;
             }
         }
-        
+
         if (empty($vcard_ids)) {
             return array();
         }
-        
+
         $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
-        
+
         // Récupérer les 8 derniers contacts réels
         $query = $wpdb->prepare(
             "SELECT l.*, v.post_title as vcard_title 
@@ -2391,9 +2456,9 @@ class NFC_Dashboard_Ajax
              LIMIT 8",
             $vcard_ids
         );
-        
+
         $contacts = $wpdb->get_results($query);
-        
+
         $activity = array();
         foreach ($contacts as $contact) {
             $firstname = get_post_meta($contact->vcard_id, 'firstname', true);
@@ -2402,7 +2467,7 @@ class NFC_Dashboard_Ajax
             if (empty($profile_name)) {
                 $profile_name = $contact->vcard_title;
             }
-            
+
             $activity[] = array(
                 'type' => 'contact',
                 'contact_name' => trim($contact->firstname . ' ' . $contact->lastname),
@@ -2414,16 +2479,17 @@ class NFC_Dashboard_Ajax
                 'color' => 'success'
             );
         }
-        
+
         return $activity;
     }
 
     /**
      * Comparatif des cartes - Version simplifiée avec fonctions existantes
      */
-    private function get_cards_comparison($vcards, $period) {
+    private function get_cards_comparison($vcards, $period)
+    {
         $comparison = array();
-        
+
         foreach ($vcards as $vcard) {
             $firstname = get_post_meta($vcard->ID, 'firstname', true);
             $lastname = get_post_meta($vcard->ID, 'lastname', true);
@@ -2432,16 +2498,16 @@ class NFC_Dashboard_Ajax
             if (empty($name)) {
                 $name = 'Profil #' . $vcard->ID;
             }
-            
+
             // Utiliser les fonctions existantes
             $views = nfc_get_vcard_total_views($vcard->ID);
             $contacts = nfc_get_vcard_contacts_count($vcard->ID);
-            
+
             $conversion_rate = 0;
             if ($views > 0) {
                 $conversion_rate = round(($contacts / $views) * 100, 1);
             }
-            
+
             $comparison[] = array(
                 'id' => $vcard->ID,
                 'name' => $name,
@@ -2453,72 +2519,92 @@ class NFC_Dashboard_Ajax
                 'performance_level' => $this->get_performance_level($views, $contacts)
             );
         }
-        
+
         // Trier par vues décroissantes
-        usort($comparison, function($a, $b) {
+        usort($comparison, function ($a, $b) {
             return $b['views'] - $a['views'];
         });
-        
+
         return $comparison;
     }
 
     /**
      * Fonctions utilitaires
      */
-    private function get_period_days($period) {
+    private function get_period_days($period)
+    {
         switch ($period) {
-            case '7d': return 7;
-            case '30d': return 30;
-            case '3m': return 90;
-            case '1y': return 365;
-            default: return 30;
+            case '7d':
+                return 7;
+            case '30d':
+                return 30;
+            case '3m':
+                return 90;
+            case '1y':
+                return 365;
+            default:
+                return 30;
         }
     }
 
-    private function get_vcard_views_for_period($vcard_id, $start_date, $end_date) {
+    private function get_vcard_views_for_period($vcard_id, $start_date, $end_date)
+    {
         // Réutiliser la fonction existante ou simulation
         return function_exists('nfc_get_vcard_views_for_period') ?
             nfc_get_vcard_views_for_period($vcard_id, $start_date, $end_date) :
             rand(10, 100);
     }
 
-    private function get_vcard_views_for_day($vcard_id, $date) {
+    private function get_vcard_views_for_day($vcard_id, $date)
+    {
         // Simulation - à remplacer par vraie fonction analytics
         return rand(0, 15);
     }
 
-    private function get_vcard_contacts_for_day($vcard_id, $date) {
+    private function get_vcard_contacts_for_day($vcard_id, $date)
+    {
         global $wpdb;
-        
+
         $count = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM {$wpdb->prefix}nfc_leads 
              WHERE vcard_id = %d AND DATE(contact_datetime) = %s",
-            $vcard_id, $date
+            $vcard_id,
+            $date
         ));
-        
+
         return intval($count);
     }
 
-    private function get_time_ago($timestamp) {
+    private function get_time_ago($timestamp)
+    {
         $diff = time() - $timestamp;
-        
-        if ($diff < 60) return 'À l\'instant';
-        if ($diff < 3600) return floor($diff / 60) . 'min';
-        if ($diff < 86400) return floor($diff / 3600) . 'h';
-        if ($diff < 2592000) return floor($diff / 86400) . 'j';
-        
+
+        if ($diff < 60)
+            return 'À l\'instant';
+        if ($diff < 3600)
+            return floor($diff / 60) . 'min';
+        if ($diff < 86400)
+            return floor($diff / 3600) . 'h';
+        if ($diff < 2592000)
+            return floor($diff / 86400) . 'j';
+
         return date('d/m/Y', $timestamp);
     }
 
-    private function get_performance_level($views, $contacts) {
-        if ($views === 0) return 'inactive';
-        
+    private function get_performance_level($views, $contacts)
+    {
+        if ($views === 0)
+            return 'inactive';
+
         $conversion_rate = ($contacts / $views) * 100;
-        
-        if ($conversion_rate >= 8) return 'excellent';
-        if ($conversion_rate >= 5) return 'good';
-        if ($conversion_rate >= 2) return 'average';
-        
+
+        if ($conversion_rate >= 8)
+            return 'excellent';
+        if ($conversion_rate >= 5)
+            return 'good';
+        if ($conversion_rate >= 2)
+            return 'average';
+
         return 'needs_improvement';
     }
 
