@@ -25,7 +25,7 @@ class NFC_Dashboard_Manager
 
         // Pages autorisées
         $this->allowed_pages = [
-            'overview' => 'Vue d\'ensemble',        // Stats globales
+            //'overview' => 'Vue d\'ensemble',        // Stats globales
             'cards-list' => 'Mes cartes',          // Liste des vCards
             'vcard-edit' => 'Ma vCard',              // Édition vCard spécifique
             'qr-codes' => 'QR Codes',
@@ -90,11 +90,11 @@ class NFC_Dashboard_Manager
      */
     private function get_current_page()
     {
-        $page = isset($_GET['page']) ? sanitize_text_field($_GET['page']) : 'overview';
+        $page = isset($_GET['page']) ? sanitize_text_field($_GET['page']) : 'cards-list';
 
         // Vérifier que la page est autorisée
         if (!array_key_exists($page, $this->allowed_pages)) {
-            $page = 'overview';
+            $page = 'cards-list';
         }
 
         error_log("NFC_Dashboard: Page courante détectée: {$page}");
@@ -164,7 +164,7 @@ class NFC_Dashboard_Manager
 
         // Pages disponibles
         $dashboard_pages = [
-            'overview' => ['title' => 'Vue d\'ensemble', 'icon' => 'fas fa-home'],
+            //'overview' => ['title' => 'Vue d\'ensemble', 'icon' => 'fas fa-home'],
             'vcard-edit' => ['title' => 'Ma vCard', 'icon' => 'fas fa-id-card'],
             'qr-codes' => ['title' => 'Codes QR', 'icon' => 'fas fa-qrcode'],
             'contacts' => ['title' => 'Mes contacts', 'icon' => 'fas fa-users'],
@@ -172,7 +172,7 @@ class NFC_Dashboard_Manager
             'preview' => ['title' => 'Aperçu public', 'icon' => 'fas fa-eye']
         ];
 
-        $current_page_data = $dashboard_pages[$current_page] ?? $dashboard_pages['overview'];
+        $current_page_data = $dashboard_pages[$current_page] ?? $dashboard_pages['cards-list'];
         ?>
         <!DOCTYPE html>
         <html lang="fr">
@@ -209,13 +209,13 @@ class NFC_Dashboard_Manager
                 <!-- SIDEBAR -->
                 <nav class="nfc-sidebar" id="nfcSidebar">
                     <div class="nfc-sidebar-header">
-                        <a href="?page=overview" class="nfc-sidebar-logo">
+                        <a href="?page=cards-list" class="nfc-sidebar-logo">
                             Votre dashboard
                     </div>
 
                     <div class="nfc-sidebar-nav">
 
-                        <div class="nfc-nav-section">
+                        <!-- <div class="nfc-nav-section">
                             <div class="nfc-nav-section-title">Dashboard</div>
                             <div class="nfc-nav-item">
                                 <a href="?page=overview" class="nfc-nav-link <?php echo $current_page === 'overview' ? 'active' : ''; ?>">
@@ -223,7 +223,7 @@ class NFC_Dashboard_Manager
                                     Vue d'ensemble
                                 </a>
                             </div>
-                        </div>
+                        </div> -->
 
                         <?php if ($vcard_count > 0): ?>
                             <div class="nfc-nav-section">

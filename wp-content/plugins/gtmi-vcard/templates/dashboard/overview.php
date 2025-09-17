@@ -9,8 +9,23 @@
 if (!defined('ABSPATH')) exit;
 if (!is_user_logged_in()) wp_redirect(home_url('/login'));
 
+// Inclure les fonctions partagées si elles existent
+if (file_exists(dirname(__FILE__) . '/../../includes/dashboard/nfc-shared-functions.php')) {
+    require_once dirname(__FILE__) . '/../../includes/dashboard/nfc-shared-functions.php';
+    error_log('📊 Overview - nfc-shared-functions.php inclus');
+} else {
+    error_log('📊 Overview - nfc-shared-functions.php NON TROUVÉ');
+}
+
 // 2. LOGIQUE MÉTIER
 $user_id = get_current_user_id();
+
+// Vérifier si les fonctions nécessaires existent
+if (!function_exists('nfc_get_user_vcard_profiles')) {
+    echo '<div class="alert alert-danger">Fonction nfc_get_user_vcard_profiles manquante</div>';
+    return;
+}
+
 $user_vcards = nfc_get_user_vcard_profiles($user_id);
 
 // Gestion état sans vCards
@@ -27,8 +42,17 @@ if (empty($user_vcards)) {
 
 // Données utilisateur
 $current_user = wp_get_current_user();
-$first_name = get_post_meta($user_vcards[0]->ID, 'firstname', true) ?: $current_user->first_name;
-$last_name = get_post_meta($user_vcards[0]->ID, 'lastname', true) ?: $current_user->last_name;
+
+// Utiliser les vCard IDs plutôt que les objets
+if (empty($user_vcards)) {
+    $first_name = $current_user->first_name;
+    $last_name = $current_user->last_name;
+} else {
+    $primary_vcard_data = $user_vcards[0]['vcard_data'] ?? [];
+    $first_name = $primary_vcard_data['firstname'] ?? $current_user->first_name;
+    $last_name = $primary_vcard_data['lastname'] ?? $current_user->last_name;
+}
+
 $display_name = trim($first_name . ' ' . $last_name) ?: $current_user->display_name ?: 'Utilisateur';
 
 // REPRENDRE EXACTEMENT LA LOGIQUE DE CARDS-LIST.PHP
@@ -39,17 +63,34 @@ $global_stats = [
     'total_contacts' => 0
 ];
 
-// Enrichir les données des cartes avec vraies stats (même logique que cards-list.php)
+// Debug pour voir les fonctions disponibles
+error_log('📊 Overview - Fonctions disponibles: nfc_get_vcard_total_views=' . (function_exists('nfc_get_vcard_total_views') ? 'OUI' : 'NON'));
+error_log('📊 Overview - Fonctions disponibles: nfc_get_vcard_contacts_count=' . (function_exists('nfc_get_vcard_contacts_count') ? 'OUI' : 'NON'));
+
+// Enrichir les données des cartes avec vraies stats
 $enriched_vcards = [];
-foreach ($user_vcards as $vcard) {
-    $firstname = get_post_meta($vcard->ID, 'firstname', true);
-    $lastname = get_post_meta($vcard->ID, 'lastname', true);
-    $job_title = get_post_meta($vcard->ID, 'job_title', true);
-    $company = get_post_meta($vcard->ID, 'company', true);
+foreach ($user_vcards as $vcard_data) {
+    $vcard_id = $vcard_data['vcard_id'];
+    $vcard_meta = $vcard_data['vcard_data'] ?? [];
     
-    // Calculer les vraies stats par carte (utilise les fonctions mutualisées)
-    $card_contact_count = nfc_get_vcard_contacts_count($vcard->ID);
-    $card_views = nfc_get_vcard_total_views($vcard->ID);
+    $firstname = $vcard_meta['firstname'] ?? '';
+    $lastname = $vcard_meta['lastname'] ?? '';
+    $job_title = $vcard_meta['job_title'] ?? '';
+    $company = $vcard_meta['company'] ?? '';
+    
+    // Calculer les vraies stats par carte
+    $card_contact_count = 0;
+    $card_views = 0;
+    
+    if (function_exists('nfc_get_vcard_contacts_count')) {
+        $card_contact_count = nfc_get_vcard_contacts_count($vcard_id);
+    }
+    
+    if (function_exists('nfc_get_vcard_total_views')) {
+        $card_views = nfc_get_vcard_total_views($vcard_id);
+    }
+    
+    error_log("📊 Overview - vCard {$vcard_id}: {$card_views} vues, {$card_contact_count} contacts");
     
     $is_configured = !empty($firstname);
     if ($is_configured) {
@@ -60,7 +101,7 @@ foreach ($user_vcards as $vcard) {
     $global_stats['total_contacts'] += $card_contact_count;
     
     $enriched_vcards[] = [
-        'vcard' => $vcard,
+        'vcard_id' => $vcard_id,
         'firstname' => $firstname,
         'lastname' => $lastname,
         'full_name' => trim($firstname . ' ' . $lastname),
@@ -69,25 +110,63 @@ foreach ($user_vcards as $vcard) {
         'is_configured' => $is_configured,
         'views' => $card_views,
         'contacts' => $card_contact_count,
-        'created_date' => get_the_date('d/m/Y', $vcard->ID)
+        'created_date' => date('d/m/Y')
     ];
 }
 
-// Calcul taux de conversion
+error_log('📊 Overview - Stats globales calculées: ' . json_encode($global_stats));
 $conversion_rate = $global_stats['total_views'] > 0 ? 
     round(($global_stats['total_contacts'] / $global_stats['total_views']) * 100, 1) : 0;
 
-// Récupérer l'activité récente (contacts réels)
+// Récupérer l'activité récente (contacts réels) - CORRIGER LA REQUÊTE
 global $wpdb;
-$recent_contacts = $wpdb->get_results($wpdb->prepare(
-    "SELECT l.*, v.post_title as vcard_title 
-     FROM {$wpdb->prefix}nfc_leads l 
-     JOIN {$wpdb->posts} v ON l.vcard_id = v.ID 
-     WHERE l.vcard_id IN (" . implode(',', array_fill(0, count($user_vcards), '%d')) . ")
-     ORDER BY l.contact_datetime DESC 
-     LIMIT 5",
-    ...array_column($user_vcards, 'ID')
-));
+
+$recent_contacts = [];
+if (!empty($user_vcards)) {
+    // Construire les patterns ACF pour toutes les vCards
+    $vcard_conditions = [];
+    $params = [];
+    
+    foreach ($user_vcards as $vcard_data) {
+        $vcard_id = $vcard_data['vcard_id'];
+        $exact_pattern = 'a:1:{i:0;s:' . strlen($vcard_id) . ':"' . $vcard_id . '";}';
+        $vcard_conditions[] = 'pm_link.meta_value = %s';
+        $params[] = $exact_pattern;
+    }
+    
+    if (!empty($vcard_conditions)) {
+        $vcard_where = '(' . implode(' OR ', $vcard_conditions) . ')';
+        
+        $query = "
+            SELECT l.ID, l.post_title, l.post_date as created_at,
+                   pm_firstname.meta_value as firstname,
+                   pm_lastname.meta_value as lastname,
+                   pm_email.meta_value as email,
+                   pm_mobile.meta_value as mobile,
+                   pm_society.meta_value as society,
+                   pm_link.meta_value as linked_vcard
+            FROM {$wpdb->posts} l
+            INNER JOIN {$wpdb->postmeta} pm_link 
+                ON l.ID = pm_link.post_id 
+                AND pm_link.meta_key = 'linked_virtual_card'
+                AND {$vcard_where}
+            LEFT JOIN {$wpdb->postmeta} pm_firstname ON l.ID = pm_firstname.post_id AND pm_firstname.meta_key = 'firstname'
+            LEFT JOIN {$wpdb->postmeta} pm_lastname ON l.ID = pm_lastname.post_id AND pm_lastname.meta_key = 'lastname'
+            LEFT JOIN {$wpdb->postmeta} pm_email ON l.ID = pm_email.post_id AND pm_email.meta_key = 'email'
+            LEFT JOIN {$wpdb->postmeta} pm_mobile ON l.ID = pm_mobile.post_id AND pm_mobile.meta_key = 'mobile'
+            LEFT JOIN {$wpdb->postmeta} pm_society ON l.ID = pm_society.post_id AND pm_society.meta_key = 'society'
+            WHERE l.post_type = 'lead'
+            AND l.post_status = 'publish'
+            ORDER BY l.post_date DESC
+            LIMIT 5
+        ";
+        
+        $params[] = 5; // Limit
+        $recent_contacts = $wpdb->get_results($wpdb->prepare($query, ...$params));
+        
+        error_log('📊 Overview - Contacts récents trouvés: ' . count($recent_contacts));
+    }
+}
 
 // Configuration JavaScript
 $overview_config = [
@@ -96,6 +175,7 @@ $overview_config = [
     'ajax_url' => admin_url('admin-ajax.php'),
     'nonce' => wp_create_nonce('nfc_dashboard_nonce')
 ];
+
 ?>
 
 <!-- CSS Simple -->
@@ -183,13 +263,25 @@ $overview_config = [
                         <?php if (!empty($recent_contacts)): ?>
                             <div class="list-group list-group-flush">
                                 <?php foreach ($recent_contacts as $contact): 
-                                    // Récupérer le nom du profil de la vCard
-                                    $vcard_firstname = get_post_meta($contact->vcard_id, 'firstname', true);
-                                    $vcard_lastname = get_post_meta($contact->vcard_id, 'lastname', true);
-                                    $profile_name = trim($vcard_firstname . ' ' . $vcard_lastname) ?: $contact->vcard_title;
+                                    // Décoder le lien vCard pour trouver le nom du profil
+                                    $profile_name = 'Profil inconnu';
+                                    if (!empty($contact->linked_vcard)) {
+                                        // Extraire l'ID du format sérialisé ACF
+                                        preg_match('/s:\d+:"(\d+)"/', $contact->linked_vcard, $matches);
+                                        if (!empty($matches[1])) {
+                                            $vcard_id = $matches[1];
+                                            // Chercher dans nos vCards enrichies
+                                            foreach ($enriched_vcards as $enriched) {
+                                                if ($enriched['vcard_id'] == $vcard_id) {
+                                                    $profile_name = $enriched['full_name'] ?: 'Profil #' . $vcard_id;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
                                     
                                     // Calculer le temps écoulé
-                                    $time_diff = time() - strtotime($contact->contact_datetime);
+                                    $time_diff = time() - strtotime($contact->created_at);
                                     if ($time_diff < 3600) {
                                         $time_ago = floor($time_diff / 60) . 'min';
                                     } elseif ($time_diff < 86400) {
@@ -205,7 +297,7 @@ $overview_config = [
                                         </div>
                                         <div class="flex-grow-1">
                                             <div class="fw-medium">
-                                                <?= esc_html(trim($contact->firstname . ' ' . $contact->lastname)) ?>
+                                                <?= esc_html(trim(($contact->firstname ?? '') . ' ' . ($contact->lastname ?? ''))) ?: 'Contact sans nom' ?>
                                             </div>
                                             <small class="text-muted">
                                                 <?= $contact->society ? esc_html($contact->society) : 'Contact direct' ?>
@@ -216,10 +308,10 @@ $overview_config = [
                                         </div>
                                         <div class="text-end">
                                             <small class="text-muted"><?= $time_ago ?></small>
-                                            <?php if ($contact->email): ?>
+                                            <?php if (!empty($contact->email)): ?>
                                                 <div><small class="text-primary"><i class="fas fa-envelope"></i></small></div>
                                             <?php endif; ?>
-                                            <?php if ($contact->phone): ?>
+                                            <?php if (!empty($contact->mobile)): ?>
                                                 <div><small class="text-success"><i class="fas fa-phone"></i></small></div>
                                             <?php endif; ?>
                                         </div>
