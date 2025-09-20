@@ -1,66 +1,31 @@
 <?php
+declare(strict_types=1);
 namespace Sabberworm\CSS\CSSList;
 if (!defined('ABSPATH')) exit;
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parsing\ParserState;
 use Sabberworm\CSS\Parsing\SourceException;
 use Sabberworm\CSS\Property\Selector;
-use Sabberworm\CSS\RuleSet\DeclarationBlock;
-use Sabberworm\CSS\RuleSet\RuleSet;
 class Document extends CSSBlockList
 {
- public function __construct($iLineNo = 0)
+ public static function parse(ParserState $parserState): Document
  {
- parent::__construct($iLineNo);
+ $document = new Document($parserState->currentLine());
+ CSSList::parseList($parserState, $document);
+ return $document;
  }
- public static function parse(ParserState $oParserState)
+ public function getSelectorsBySpecificity(?string $specificitySearch = null): array
  {
- $oDocument = new Document($oParserState->currentLine());
- CSSList::parseList($oParserState, $oDocument);
- return $oDocument;
+ return $this->getAllSelectors($specificitySearch);
  }
- public function getAllDeclarationBlocks()
+ public function render(?OutputFormat $outputFormat = null): string
  {
- $aResult = [];
- $this->allDeclarationBlocks($aResult);
- return $aResult;
+ if ($outputFormat === null) {
+ $outputFormat = new OutputFormat();
  }
- public function getAllSelectors()
- {
- return $this->getAllDeclarationBlocks();
+ return $outputFormat->getFormatter()->comments($this) . $this->renderListContents($outputFormat);
  }
- public function getAllRuleSets()
- {
- $aResult = [];
- $this->allRuleSets($aResult);
- return $aResult;
- }
- public function getSelectorsBySpecificity($sSpecificitySearch = null)
- {
- $aResult = [];
- $this->allSelectors($aResult, $sSpecificitySearch);
- return $aResult;
- }
- public function expandShorthands()
- {
- foreach ($this->getAllDeclarationBlocks() as $oDeclaration) {
- $oDeclaration->expandShorthands();
- }
- }
- public function createShorthands()
- {
- foreach ($this->getAllDeclarationBlocks() as $oDeclaration) {
- $oDeclaration->createShorthands();
- }
- }
- public function render($oOutputFormat = null)
- {
- if ($oOutputFormat === null) {
- $oOutputFormat = new OutputFormat();
- }
- return $oOutputFormat->comments($this) . $this->renderListContents($oOutputFormat);
- }
- public function isRootList()
+ public function isRootList(): bool
  {
  return true;
  }

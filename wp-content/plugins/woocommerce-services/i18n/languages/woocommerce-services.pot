@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: _s woocommerce-services\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-08T11:54:56.895Z\n"
+"POT-Creation-Date: 2025-09-16T05:16:08.560Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -14,19 +14,19 @@ msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "Try WooCommerce Shipping"
 msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "A new WooCommerce Shipping experience is now available"
 msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid ""
 "We'll ensure a seamless transition by allowing you to migrate all your "
 "compatible settings and shipping labels when you update."
@@ -34,19 +34,19 @@ msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "Here's what you can expect from the new shipping experience:"
 msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "A seamless transition"
 msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid ""
 "Automatically migrate all your compatible settings and shipment history to "
 "the new extension."
@@ -54,13 +54,13 @@ msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "Print and save"
 msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid ""
 "Speed up label creation with a streamlined process to print and save your "
 "label preferences."
@@ -68,13 +68,13 @@ msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "USPS and DHL Express"
 msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid ""
 "Ship your productss using trusted shipping carriers like USPS and DHL "
 "Express at discounted rates, with more options and carriers coming soon."
@@ -82,20 +82,20 @@ msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "Enhanced label purchase flow"
 msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid ""
 "Experience a smoother label purchasing process with our updated interface."
 msgstr ""
 
 #: dist/chunks/1cd54c8459b48958fc12.min.js:1
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "Maybe later"
 msgstr ""
 
@@ -1416,7 +1416,7 @@ msgstr ""
 
 #: dist/chunks/7c634c6d5a0480a6a85e.min.js:1
 #: dist/chunks/99bfbd63f5e3ca74b304.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "Create shipping label"
 msgid_plural "Create shipping labels"
 msgstr[0] ""
@@ -1631,24 +1631,24 @@ msgid "Tracking #: {{trackingLink/}}"
 msgstr ""
 
 #: dist/chunks/99bfbd63f5e3ca74b304.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "Track Package"
 msgid_plural "Track Packages"
 msgstr[0] ""
 msgstr[1] ""
 
 #: dist/chunks/99bfbd63f5e3ca74b304.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "Create new label"
 msgstr ""
 
 #: dist/chunks/99bfbd63f5e3ca74b304.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "Connection error: unable to create label at this time"
 msgstr ""
 
 #: dist/chunks/99bfbd63f5e3ca74b304.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "%(itemCount)d item was fulfilled on {{span}}%(createdDate)s{{/span}}"
 msgid_plural ""
 "%(itemCount)d items were fulfilled on {{span}}%(createdDate)s{{/span}}"
@@ -1656,7 +1656,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: dist/chunks/99bfbd63f5e3ca74b304.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.0.11.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.1.0.js:1
 msgid "%(itemCount)d item is ready to be fulfilled"
 msgid_plural "%(itemCount)d items are ready to be fulfilled"
 msgstr[0] ""

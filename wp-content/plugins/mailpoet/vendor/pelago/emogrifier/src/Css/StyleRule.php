@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace Pelago\Emogrifier\Css;
 if (!defined('ABSPATH')) exit;
+use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Property\Selector;
 use Sabberworm\CSS\RuleSet\DeclarationBlock;
 final class StyleRule
@@ -18,14 +19,22 @@ final class StyleRule
  $selectors = $this->declarationBlock->getSelectors();
  return \array_map(
  static function (Selector $selector): string {
- return (string) $selector;
+ $selectorAsString = $selector->getSelector();
+ \assert($selectorAsString !== '');
+ return $selectorAsString;
  },
  $selectors
  );
  }
  public function getDeclarationAsText(): string
  {
- return \implode(' ', $this->declarationBlock->getRules());
+ $rules = $this->declarationBlock->getRules();
+ $renderedRules = [];
+ $outputFormat = OutputFormat::create();
+ foreach ($rules as $rule) {
+ $renderedRules[] = $rule->render($outputFormat);
+ }
+ return \implode(' ', $renderedRules);
  }
  public function hasAtLeastOneDeclaration(): bool
  {

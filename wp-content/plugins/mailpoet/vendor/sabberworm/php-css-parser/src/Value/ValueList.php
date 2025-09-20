@@ -1,50 +1,48 @@
 <?php
+declare(strict_types=1);
 namespace Sabberworm\CSS\Value;
 if (!defined('ABSPATH')) exit;
 use Sabberworm\CSS\OutputFormat;
 abstract class ValueList extends Value
 {
- protected $aComponents;
- protected $sSeparator;
- public function __construct($aComponents = [], $sSeparator = ',', $iLineNo = 0)
+ protected $components;
+ protected $separator;
+ public function __construct($components = [], $separator = ',', ?int $lineNumber = null)
  {
- parent::__construct($iLineNo);
- if (!is_array($aComponents)) {
- $aComponents = [$aComponents];
+ parent::__construct($lineNumber);
+ if (!\is_array($components)) {
+ $components = [$components];
  }
- $this->aComponents = $aComponents;
- $this->sSeparator = $sSeparator;
+ $this->components = $components;
+ $this->separator = $separator;
  }
- public function addListComponent($mComponent)
+ public function addListComponent($component): void
  {
- $this->aComponents[] = $mComponent;
+ $this->components[] = $component;
  }
- public function getListComponents()
+ public function getListComponents(): array
  {
- return $this->aComponents;
+ return $this->components;
  }
- public function setListComponents(array $aComponents)
+ public function setListComponents(array $components): void
  {
- $this->aComponents = $aComponents;
+ $this->components = $components;
  }
- public function getListSeparator()
+ public function getListSeparator(): string
  {
- return $this->sSeparator;
+ return $this->separator;
  }
- public function setListSeparator($sSeparator)
+ public function setListSeparator(string $separator): void
  {
- $this->sSeparator = $sSeparator;
+ $this->separator = $separator;
  }
- public function __toString()
+ public function render(OutputFormat $outputFormat): string
  {
- return $this->render(new OutputFormat());
- }
- public function render($oOutputFormat)
- {
- return $oOutputFormat->implode(
- $oOutputFormat->spaceBeforeListArgumentSeparator($this->sSeparator) . $this->sSeparator
- . $oOutputFormat->spaceAfterListArgumentSeparator($this->sSeparator),
- $this->aComponents
+ $formatter = $outputFormat->getFormatter();
+ return $formatter->implode(
+ $formatter->spaceBeforeListArgumentSeparator($this->separator) . $this->separator
+ . $formatter->spaceAfterListArgumentSeparator($this->separator),
+ $this->components
  );
  }
 }

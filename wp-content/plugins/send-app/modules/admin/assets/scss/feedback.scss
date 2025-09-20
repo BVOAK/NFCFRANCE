@@ -71,10 +71,6 @@
 input[type=radio].send-app-deactivate-feedback-dialog-input {
 	margin: 0 15px 0 0;
 	box-shadow: none;
-
-	&:not(:checked)~.send-app-feedback-text-wrapper {
-		display: none;
-	}
 }
 
 .send-app-deactivate-feedback-dialog-label {

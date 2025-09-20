@@ -64,6 +64,8 @@ class App extends BaseApp {
 				'wp-i18n',
 				'elementor-app-packages',
 				'elementor-common',
+				'elementor-v2-ui',
+				'elementor-v2-icons',
 				'select2',
 				'react-dom',
 			],

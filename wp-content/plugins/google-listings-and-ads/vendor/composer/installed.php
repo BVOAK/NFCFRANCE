@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'woocommerce/google-listings-and-ads',
-        'pretty_version' => 'dev-release/3.4.2',
-        'version' => 'dev-release/3.4.2',
-        'reference' => '104265d383472b9a911d9e5f4766f0076c00a72f',
+        'pretty_version' => 'dev-release/3.4.3',
+        'version' => 'dev-release/3.4.3',
+        'reference' => 'e1eff3fac45aa2fbba48bd7a975e31a5f61dc4c8',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -89,9 +89,9 @@
             'dev_requirement' => false,
         ),
         'googleads/google-ads-php' => array(
-            'pretty_version' => 'dev-legacy-v28.0.0',
-            'version' => 'dev-legacy-v28.0.0',
-            'reference' => 'c4b6287faac4f2da523b6d4b3eca053cd182fd9b',
+            'pretty_version' => 'dev-legacy-v31.0.1',
+            'version' => 'dev-legacy-v31.0.1',
+            'reference' => 'e217e6176fb5d72ff51f9c47e91b8e71bbf21dfb',
             'type' => 'library',
             'install_path' => __DIR__ . '/../googleads/google-ads-php',
             'aliases' => array(),
@@ -374,9 +374,9 @@
             'dev_requirement' => false,
         ),
         'woocommerce/google-listings-and-ads' => array(
-            'pretty_version' => 'dev-release/3.4.2',
-            'version' => 'dev-release/3.4.2',
-            'reference' => '104265d383472b9a911d9e5f4766f0076c00a72f',
+            'pretty_version' => 'dev-release/3.4.3',
+            'version' => 'dev-release/3.4.3',
+            'reference' => 'e1eff3fac45aa2fbba48bd7a975e31a5f61dc4c8',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

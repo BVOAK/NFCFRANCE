@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
 namespace Sabberworm\CSS\Value;
 if (!defined('ABSPATH')) exit;
 class RuleValueList extends ValueList
 {
- public function __construct($sSeparator = ',', $iLineNo = 0)
+ public function __construct(string $separator = ',', ?int $lineNumber = null)
  {
- parent::__construct([], $sSeparator, $iLineNo);
+ parent::__construct([], $separator, $lineNumber);
  }
 }

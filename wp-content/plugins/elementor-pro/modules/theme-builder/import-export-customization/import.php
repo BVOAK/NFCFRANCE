@@ -46,7 +46,6 @@ class Import {
 
 		$theme_builder_types = array_keys( Plugin::elementor()->documents->get_document_types( [
 			'is_editable' => true,
-			'support_site_editor' => true,
 			'export_group' => Theme_Document::EXPORT_GROUP,
 		] ) );
 

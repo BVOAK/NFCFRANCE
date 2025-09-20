@@ -451,31 +451,31 @@
         },
         {
             "name": "googleads/google-ads-php",
-            "version": "dev-legacy-v28.0.0",
-            "version_normalized": "dev-legacy-v28.0.0",
+            "version": "dev-legacy-v31.0.1",
+            "version_normalized": "dev-legacy-v31.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleads/google-ads-php.git",
-                "reference": "c4b6287faac4f2da523b6d4b3eca053cd182fd9b"
+                "reference": "e217e6176fb5d72ff51f9c47e91b8e71bbf21dfb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleads/google-ads-php/zipball/c4b6287faac4f2da523b6d4b3eca053cd182fd9b",
-                "reference": "c4b6287faac4f2da523b6d4b3eca053cd182fd9b",
+                "url": "https://api.github.com/repos/googleads/google-ads-php/zipball/e217e6176fb5d72ff51f9c47e91b8e71bbf21dfb",
+                "reference": "e217e6176fb5d72ff51f9c47e91b8e71bbf21dfb",
                 "shasum": ""
             },
             "require": {
                 "google/gax": "^1.19.1",
-                "google/protobuf": "^3.21.5 || ^4.26",
-                "grpc/grpc": "^1.36.0",
+                "google/protobuf": "^3.21.5 || >=4.26 <=4.30.0",
+                "grpc/grpc": ">=1.36.0 <=1.57.0",
                 "monolog/monolog": "^1.26 || ^2.0 || ^3.0",
                 "php": ">=7.4"
             },
             "require-dev": {
                 "composer/composer": "^2.0",
                 "ext-bcmath": "*",
-                "ext-grpc": "*",
-                "ext-protobuf": "*",
+                "ext-grpc": ">=1.57.0 <=1.66.0",
+                "ext-protobuf": "3.21.5 || >=4.26 <=4.30.0",
                 "phpunit/phpunit": "^9.5",
                 "react/http": "^1.2.0",
                 "squizlabs/php_codesniffer": "^3.5",
@@ -488,7 +488,7 @@
                 "grpc/grpc": "In case the C implementation of gRPC is not suitable, use the PHP one to enable other transports",
                 "react/http": "To run the AuthenticateInWebApplication.php example"
             },
-            "time": "2025-06-10T09:11:44+00:00",
+            "time": "2025-08-28T15:13:29+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -511,7 +511,7 @@
             "homepage": "https://github.com/googleads/google-ads-php",
             "support": {
                 "issues": "https://github.com/googleads/google-ads-php/issues",
-                "source": "https://github.com/googleads/google-ads-php/tree/legacy-v28.0.0"
+                "source": "https://github.com/googleads/google-ads-php/tree/legacy-v31.0.1"
             },
             "install-path": "../googleads/google-ads-php"
         },

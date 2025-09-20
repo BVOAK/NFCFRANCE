@@ -16,12 +16,16 @@ return array(
  'version' => '5.4.9999999.9999999-dev',
  'path' => array( $vendorDir . '/symfony/css-selector' )
  ),
+ 'Safe\\' => array(
+ 'version' => '1.9999999.9999999.9999999-dev',
+ 'path' => array( $vendorDir . '/thecodingmachine/safe/lib', $vendorDir . '/thecodingmachine/safe/deprecated', $vendorDir . '/thecodingmachine/safe/generated' )
+ ),
  'Sabberworm\\CSS\\' => array(
- 'version' => '8.9999999.9999999.9999999-dev',
+ 'version' => 'dev-main',
  'path' => array( $vendorDir . '/sabberworm/php-css-parser/src' )
  ),
  'Pelago\\Emogrifier\\' => array(
- 'version' => '7.3.0.0',
+ 'version' => 'dev-main',
  'path' => array( $vendorDir . '/pelago/emogrifier/src' )
  ),
  'MailPoet\\Test\\DataGenerator\\' => array(

@@ -1,71 +1,56 @@
 <?php
+declare(strict_types=1);
 namespace Sabberworm\CSS\Property;
 if (!defined('ABSPATH')) exit;
-use Sabberworm\CSS\Comment\Comment;
+use Sabberworm\CSS\Comment\CommentContainer;
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Position\Position;
 use Sabberworm\CSS\Position\Positionable;
+use Sabberworm\CSS\Value\CSSString;
+use Sabberworm\CSS\Value\URL;
 class CSSNamespace implements AtRule, Positionable
 {
+ use CommentContainer;
  use Position;
- private $mUrl;
- private $sPrefix;
- private $iLineNo;
- protected $aComments;
- public function __construct($mUrl, $sPrefix = null, $iLineNo = 0)
+ private $url;
+ private $prefix;
+ public function __construct($url, ?string $prefix = null, ?int $lineNumber = null)
  {
- $this->mUrl = $mUrl;
- $this->sPrefix = $sPrefix;
- $this->setPosition($iLineNo);
- $this->aComments = [];
+ $this->url = $url;
+ $this->prefix = $prefix;
+ $this->setPosition($lineNumber);
  }
- public function __toString()
+ public function render(OutputFormat $outputFormat): string
  {
- return $this->render(new OutputFormat());
- }
- public function render($oOutputFormat)
- {
- return '@namespace ' . ($this->sPrefix === null ? '' : $this->sPrefix . ' ')
- . $this->mUrl->render($oOutputFormat) . ';';
+ return '@namespace ' . ($this->prefix === null ? '' : $this->prefix . ' ')
+ . $this->url->render($outputFormat) . ';';
  }
  public function getUrl()
  {
- return $this->mUrl;
+ return $this->url;
  }
- public function getPrefix()
+ public function getPrefix(): ?string
  {
- return $this->sPrefix;
+ return $this->prefix;
  }
- public function setUrl($mUrl)
+ public function setUrl($url): void
  {
- $this->mUrl = $mUrl;
+ $this->url = $url;
  }
- public function setPrefix($sPrefix)
+ public function setPrefix(string $prefix): void
  {
- $this->sPrefix = $sPrefix;
+ $this->prefix = $prefix;
  }
- public function atRuleName()
+ public function atRuleName(): string
  {
  return 'namespace';
  }
- public function atRuleArgs()
+ public function atRuleArgs(): array
  {
- $aResult = [$this->mUrl];
- if ($this->sPrefix) {
- array_unshift($aResult, $this->sPrefix);
+ $result = [$this->url];
+ if (\is_string($this->prefix) && $this->prefix !== '') {
+ \array_unshift($result, $this->prefix);
  }
- return $aResult;
- }
- public function addComments(array $aComments)
- {
- $this->aComments = array_merge($this->aComments, $aComments);
- }
- public function getComments()
- {
- return $this->aComments;
- }
- public function setComments(array $aComments)
- {
- $this->aComments = $aComments;
+ return $result;
  }
 }

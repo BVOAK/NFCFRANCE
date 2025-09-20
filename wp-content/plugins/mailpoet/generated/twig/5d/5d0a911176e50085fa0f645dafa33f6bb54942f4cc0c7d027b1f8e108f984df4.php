@@ -213,158 +213,162 @@ class __TwigTemplate_8581a8ede6c645c86df82d14a0f9727da4ff92aa0bb85d1970f9d521978
         // line 73
         yield json_encode(($context["cron_trigger_method"] ?? null));
         yield ";
+  var mailpoet_use_block_email_editor_for_automation_emails = ";
+        // line 74
+        yield json_encode(($context["use_block_email_editor_for_automation_emails"] ?? null));
+        yield ";
 
   var mailpoet_site_name = '";
-        // line 75
+        // line 76
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["site_name"] ?? null), "html", null, true);
         yield "';
   var mailpoet_site_url = \"";
-        // line 76
+        // line 77
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["site_url"] ?? null), "html", null, true);
         yield "\";
   var mailpoet_site_address = '";
-        // line 77
+        // line 78
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["site_address"] ?? null), "html", null, true);
         yield "';
 
   // Premium status
   var mailpoet_current_wp_user_email = '";
-        // line 80
+        // line 81
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape($this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["current_wp_user_email"] ?? null), "js"), "html", null, true);
         yield "';
   var mailpoet_premium_link = ";
-        // line 81
+        // line 82
         yield json_encode(($context["link_premium"] ?? null));
         yield ";
   var mailpoet_premium_plugin_installed = ";
-        // line 82
+        // line 83
         yield json_encode(($context["premium_plugin_installed"] ?? null));
         yield ";
   var mailpoet_premium_active = ";
-        // line 83
+        // line 84
         yield json_encode(($context["premium_plugin_active"] ?? null));
         yield ";
   var mailpoet_premium_plugin_download_url = ";
-        // line 84
+        // line 85
         yield json_encode(($context["premium_plugin_download_url"] ?? null));
         yield ";
   var mailpoet_premium_plugin_activation_url = ";
-        // line 85
+        // line 86
         yield json_encode(($context["premium_plugin_activation_url"] ?? null));
         yield ";
   var mailpoet_has_valid_api_key = ";
-        // line 86
+        // line 87
         yield json_encode(($context["has_valid_api_key"] ?? null));
         yield ";
   var mailpoet_has_valid_premium_key = ";
-        // line 87
+        // line 88
         yield json_encode(($context["has_valid_premium_key"] ?? null));
         yield ";
   var mailpoet_has_premium_support = ";
-        // line 88
+        // line 89
         yield json_encode(($context["has_premium_support"] ?? null));
         yield ";
   var has_mss_key_specified = ";
-        // line 89
+        // line 90
         yield json_encode(($context["has_mss_key_specified"] ?? null));
         yield ";
   var mailpoet_mss_key_invalid = ";
-        // line 90
+        // line 91
         yield json_encode(($context["mss_key_invalid"] ?? null));
         yield ";
   var mailpoet_mss_key_valid = ";
-        // line 91
+        // line 92
         yield json_encode(($context["mss_key_valid"] ?? null));
         yield ";
   var mailpoet_mss_key_pending_approval = '";
-        // line 92
+        // line 93
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["mss_key_pending_approval"] ?? null), "html", null, true);
         yield "';
   var mailpoet_mss_active = ";
-        // line 93
+        // line 94
         yield json_encode(($context["mss_active"] ?? null));
         yield ";
   var mailpoet_plugin_partial_key = '";
-        // line 94
+        // line 95
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["plugin_partial_key"] ?? null), "html", null, true);
         yield "';
   var mailpoet_subscribers_count = ";
-        // line 95
+        // line 96
         yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["subscriber_count"] ?? null), "html", null, true);
         yield ";
   var mailpoet_subscribers_counts_cache_created_at = ";
-        // line 96
+        // line 97
         yield json_encode(($context["subscribers_counts_cache_created_at"] ?? null));
         yield ";
   var mailpoet_subscribers_limit = ";
-        // line 97
+        // line 98
         ((($context["subscribers_limit"] ?? null)) ? (yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["subscribers_limit"] ?? null), "html", null, true)) : (yield "false"));
         yield ";
   var mailpoet_subscribers_limit_reached = ";
-        // line 98
+        // line 99
         yield json_encode(($context["subscribers_limit_reached"] ?? null));
         yield ";
   var mailpoet_email_volume_limit = ";
-        // line 99
+        // line 100
         yield json_encode(($context["email_volume_limit"] ?? null));
         yield ";
   var mailpoet_email_volume_limit_reached = ";
-        // line 100
+        // line 101
         yield json_encode(($context["email_volume_limit_reached"] ?? null));
         yield ";
   var mailpoet_capabilities = ";
-        // line 101
+        // line 102
         yield json_encode(($context["capabilities"] ?? null));
         yield ";
   var mailpoet_tier = ";
-        // line 102
+        // line 103
         yield json_encode(($context["tier"] ?? null));
         yield ";
   var mailpoet_cdn_url = ";
-        // line 103
+        // line 104
         yield json_encode($this->extensions['MailPoet\Twig\Assets']->generateCdnUrl(""));
         yield ";
   var mailpoet_tags = ";
-        // line 104
+        // line 105
         yield json_encode(($context["tags"] ?? null));
         yield ";
 
   ";
-        // line 106
+        // line 107
         if ( !($context["premium_plugin_active"] ?? null)) {
-            // line 107
+            // line 108
             yield "    var mailpoet_free_premium_subscribers_limit = ";
             yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["free_premium_subscribers_limit"] ?? null), "html", null, true);
             yield ";
   ";
         }
-        // line 109
+        // line 110
         yield "</script>
 
 ";
-        // line 111
+        // line 112
         yield $this->extensions['MailPoet\Twig\I18n']->localize(["topBarLogoTitle" => $this->extensions['MailPoet\Twig\I18n']->translate("Back to section root"), "topBarUpdates" => $this->extensions['MailPoet\Twig\I18n']->translate("Updates"), "whatsNew" => $this->extensions['MailPoet\Twig\I18n']->translate("What’s new"), "updateMailPoetNotice" => $this->extensions['MailPoet\Twig\I18n']->translate("[link]Update MailPoet[/link] to see the latest changes"), "ajaxFailedErrorMessage" => $this->extensions['MailPoet\Twig\I18n']->translate("An error has happened while performing a request, the server has responded with response code %d"), "ajaxTimeoutErrorMessage" => $this->extensions['MailPoet\Twig\I18n']->translate("An error has happened while performing a request, the server request has timed out after %d seconds"), "dismissNotice" => $this->extensions['MailPoet\Twig\I18n']->translate("Dismiss this notice."), "confirmEdit" => $this->extensions['MailPoet\Twig\I18n']->translate("Sending is in progress. Do you want to pause sending and edit the newsletter?"), "confirmAutomaticNewsletterEdit" => $this->extensions['MailPoet\Twig\I18n']->translate("To edit this email, it needs to be deactivated. You can activate it again after you make the changes."), "subscribersLimitNoticeTitle" => $this->extensions['MailPoet\Twig\I18n']->translate("Action required: Upgrade your plan for more than [subscribersLimit] subscribers!"), "subscribersLimitNoticeTitleUnknownLimit" => $this->extensions['MailPoet\Twig\I18n']->translate("Action required: Upgrade your plan!"), "subscribersLimitReached" => $this->extensions['MailPoet\Twig\I18n']->translate("Congratulations on reaching over [subscribersLimit] subscribers!"), "subscribersLimitReachedUnknownLimit" => $this->extensions['MailPoet\Twig\I18n']->translate("Congratulations, you now have more subscribers than your plan’s limit!"), "freeVersionLimit" => $this->extensions['MailPoet\Twig\I18n']->translate("Our free version is limited to [subscribersLimit] subscribers."), "yourPlanLimit" => $this->extensions['MailPoet\Twig\I18n']->translate("Your plan is limited to [subscribersLimit] subscribers."), "youNeedToUpgrade" => $this->extensions['MailPoet\Twig\I18n']->translate("To continue using MailPoet without interruption, it’s time to upgrade your plan."), "actToSeamlessService" => $this->extensions['MailPoet\Twig\I18n']->translate("Act now to ensure seamless service to your growing audience."), "checkHowToManageSubscribers" => $this->extensions['MailPoet\Twig\I18n']->translate("Alternatively, [link]check how to manage your subscribers[/link] to keep your numbers below your plan’s limit."), "upgradeNow" => $this->extensions['MailPoet\Twig\I18n']->translate("Upgrade Now"), "refreshMySubscribers" => $this->extensions['MailPoet\Twig\I18n']->translate("Refresh subscriber limit"), "emailVolumeLimitNoticeTitle" => $this->extensions['MailPoet\Twig\I18n']->translate("Congratulations, you sent more than [emailVolumeLimit] emails this month!"), "emailVolumeLimitNoticeTitleUnknownLimit" => $this->extensions['MailPoet\Twig\I18n']->translate("Congratulations, you sent a lot of emails this month!"), "youReachedEmailVolumeLimit" => $this->extensions['MailPoet\Twig\I18n']->translate("You have sent more emails this month than your MailPoet plan includes ([emailVolumeLimit]), and sending has been temporarily paused."), "youReachedEmailVolumeLimitUnknownLimit" => $this->extensions['MailPoet\Twig\I18n']->translate("You have sent more emails this month than your MailPoet plan includes, and sending has been temporarily paused."), "toContinueUpgradeYourPlanOrWaitUntil" => $this->extensions['MailPoet\Twig\I18n']->translate("To continue sending with MailPoet Sending Service please [link]upgrade your plan[/link], or wait until sending is automatically resumed on <b>[date]</b>."), "refreshMyEmailVolumeLimit" => $this->extensions['MailPoet\Twig\I18n']->translate("Refresh monthly email limit"), "manageSenderDomainHeaderSubtitle" => $this->extensions['MailPoet\Twig\I18n']->translate("To help your audience and MailPoet authenticate you as the domain owner, please add the following DNS records to your domain’s DNS and click “Verify the DNS records”. Please note that it may take up to 24 hours for DNS changes to propagate after you make the change. [link]Read the guide[/link].", "mailpoet"), "sent" => $this->extensions['MailPoet\Twig\I18n']->translate("Sent"), "notSentYet" => $this->extensions['MailPoet\Twig\I18n']->translate("Not sent yet!"), "renderingProblem" => $this->extensions['MailPoet\Twig\I18n']->translate("There was a problem with rendering!", "mailpoet"), "allSendingPausedHeader" => $this->extensions['MailPoet\Twig\I18n']->translate("All sending is currently paused!"), "allSendingPausedBody" => $this->extensions['MailPoet\Twig\I18n']->translate("Your [link]API key[/link] to send with MailPoet is invalid."), "allSendingPausedPremiumValidBody" => $this->extensions['MailPoet\Twig\I18n']->translate("You are not allowed to use the MailPoet sending service with your current API key. Kindly upgrate to a [link]MailPoet sending plan[/link] or switch your [link]sending method[/link]."), "allSendingPausedLink" => $this->extensions['MailPoet\Twig\I18n']->translate("Purchase a key"), "allSendingPausedPremiumValidLink" => $this->extensions['MailPoet\Twig\I18n']->translate("Upgrade the plan"), "cronPingErrorHeader" => $this->extensions['MailPoet\Twig\I18n']->translate("There is an issue with the MailPoet task scheduler"), "systemStatusConnectionSuccessful" => $this->extensions['MailPoet\Twig\I18n']->translate("Connection successful."), "systemStatusConnectionUnsuccessful" => $this->extensions['MailPoet\Twig\I18n']->translate("Connection unsuccessful."), "systemStatusCronConnectionUnsuccessfulInfo" => $this->extensions['MailPoet\Twig\I18n']->translate("Please consult our [link]knowledge base article[/link] for troubleshooting tips."), "systemStatusIntroCron" => $this->extensions['MailPoet\Twig\I18n']->translate("For the plugin to work, it must be able to establish connection with the task scheduler."), "bridgePingErrorHeader" => $this->extensions['MailPoet\Twig\I18n']->translate("There is an issue with the connection to the MailPoet Sending Service"), "systemStatusMSSConnectionCanNotConnect" => $this->extensions['MailPoet\Twig\I18n']->translate("Currently, your installation can not reach the sending service. If you want to use our service please consult our [link]knowledge base article[/link] for troubleshooting tips."), "close" => $this->extensions['MailPoet\Twig\I18n']->translate("Close"), "today" => $this->extensions['MailPoet\Twig\I18n']->translate("Today")]);
-        // line 163
+        // line 164
         yield "
 
 ";
-        // line 165
-        yield from $this->unwrap()->yieldBlock('after_translations', $context, $blocks);
         // line 166
-        yield "
-";
+        yield from $this->unwrap()->yieldBlock('after_translations', $context, $blocks);
         // line 167
-        if ($this->extensions['MailPoet\Twig\Analytics']->isEnabled()) {
-            // line 168
-            yield "  ";
-            yield from             $this->loadTemplate("analytics.html", "layout.html", 168)->unwrap()->yield($context);
-        }
-        // line 170
         yield "
 ";
+        // line 168
+        if ($this->extensions['MailPoet\Twig\Analytics']->isEnabled()) {
+            // line 169
+            yield "  ";
+            yield from             $this->loadTemplate("analytics.html", "layout.html", 169)->unwrap()->yield($context);
+        }
         // line 171
+        yield "
+";
+        // line 172
         if ((($context["display_chatbot_widget"] ?? null) &&  !$this->extensions['MailPoet\Twig\Functions']->isDotcomEcommercePlan())) {
-            // line 172
+            // line 173
             yield "  <script type=\"text/javascript\" src=\"";
             yield $this->extensions['MailPoet\Twig\Assets']->getJavascriptScriptUrl("haw.js");
             yield "\"></script>
@@ -372,29 +376,29 @@ class __TwigTemplate_8581a8ede6c645c86df82d14a0f9727da4ff92aa0bb85d1970f9d521978
     id=\"chat\"
     bot=\"mailpoet-chat-support\"
     avatar=\"";
-            // line 176
+            // line 177
             yield $this->extensions['MailPoet\Twig\Assets']->generateCdnUrl("chat-avatar.png");
             yield "\"
     title=\"";
-            // line 177
+            // line 178
             yield $this->extensions['MailPoet\Twig\I18n']->translate("MailPoet support", "mailpoet");
             yield "\"
     subtitle=\"";
-            // line 178
+            // line 179
             yield $this->extensions['MailPoet\Twig\I18n']->translate("Chat with our AI assistant", "mailpoet");
             yield "\"
     first-message=\"";
-            // line 179
+            // line 180
             yield $this->extensions['MailPoet\Twig\I18n']->translate("How can I help you today?", "mailpoet");
             yield "\"
   >
     ";
-            // line 181
-            $context["support_form_url"] = ((($context["has_premium_support"] ?? null)) ? ("https://www.mailpoet.com/support/support-form/") : ("https://wordpress.org/support/plugin/mailpoet/"));
             // line 182
+            $context["support_form_url"] = ((($context["has_premium_support"] ?? null)) ? ("https://www.mailpoet.com/support/support-form/") : ("https://wordpress.org/support/plugin/mailpoet/"));
+            // line 183
             yield "    <a slot=\"support-link\"
         href=\"";
-            // line 183
+            // line 184
             yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["support_form_url"] ?? null), "html", null, true);
             yield "\"
         id=\"mailpoet-support-link\"
@@ -402,7 +406,7 @@ class __TwigTemplate_8581a8ede6c645c86df82d14a0f9727da4ff92aa0bb85d1970f9d521978
         target=\"_blank\"
     >
       ";
-            // line 188
+            // line 189
             yield $this->extensions['MailPoet\Twig\I18n']->translate("Contact support", "mailpoet");
             yield "
     </a>
@@ -414,22 +418,22 @@ class __TwigTemplate_8581a8ede6c645c86df82d14a0f9727da4ff92aa0bb85d1970f9d521978
       const supportLink = document.getElementById('mailpoet-support-link');
       if (supportLink) {
         ";
-            // line 197
+            // line 198
             if (($context["has_premium_support"] ?? null)) {
-                // line 198
+                // line 199
                 yield "          supportLink.addEventListener('click', function(e) {
             const chatId = getChatId();
             if (chatId) {
               e.preventDefault();
               window.open(`";
-                // line 202
+                // line 203
                 yield $this->env->getRuntime('MailPoetVendor\Twig\Runtime\EscaperRuntime')->escape(($context["support_form_url"] ?? null), "html", null, true);
                 yield "?chatId=\${chatId}`, '_blank');
             }
           });
         ";
             }
-            // line 206
+            // line 207
             yield "
         // Only show the support link once the chat has begun
         const checkChatId = setInterval(function() {
@@ -449,7 +453,7 @@ class __TwigTemplate_8581a8ede6c645c86df82d14a0f9727da4ff92aa0bb85d1970f9d521978
   </script>
 ";
         }
-        // line 224
+        // line 225
         yield "
 <div id=\"mailpoet-modal\"></div>
 ";
@@ -511,7 +515,7 @@ class __TwigTemplate_8581a8ede6c645c86df82d14a0f9727da4ff92aa0bb85d1970f9d521978
         return; yield '';
     }
 
-    // line 165
+    // line 166
     public function block_after_translations($context, array $blocks = [])
     {
         $macros = $this->macros;
@@ -539,7 +543,7 @@ class __TwigTemplate_8581a8ede6c645c86df82d14a0f9727da4ff92aa0bb85d1970f9d521978
      */
     public function getDebugInfo()
     {
-        return array (  512 => 165,  505 => 30,  498 => 28,  492 => 31,  490 => 30,  487 => 29,  485 => 28,  468 => 13,  464 => 12,  457 => 9,  450 => 224,  430 => 206,  423 => 202,  417 => 198,  415 => 197,  403 => 188,  395 => 183,  392 => 182,  390 => 181,  385 => 179,  381 => 178,  377 => 177,  373 => 176,  365 => 172,  363 => 171,  360 => 170,  356 => 168,  354 => 167,  351 => 166,  349 => 165,  345 => 163,  343 => 111,  339 => 109,  333 => 107,  331 => 106,  326 => 104,  322 => 103,  318 => 102,  314 => 101,  310 => 100,  306 => 99,  302 => 98,  298 => 97,  294 => 96,  290 => 95,  286 => 94,  282 => 93,  278 => 92,  274 => 91,  270 => 90,  266 => 89,  262 => 88,  258 => 87,  254 => 86,  250 => 85,  246 => 84,  242 => 83,  238 => 82,  234 => 81,  230 => 80,  224 => 77,  220 => 76,  216 => 75,  211 => 73,  207 => 72,  203 => 71,  199 => 70,  195 => 69,  191 => 68,  187 => 67,  183 => 66,  179 => 65,  175 => 64,  171 => 63,  167 => 62,  163 => 61,  159 => 60,  155 => 59,  151 => 58,  147 => 57,  141 => 54,  137 => 53,  133 => 52,  129 => 51,  125 => 50,  121 => 49,  117 => 48,  113 => 47,  109 => 46,  105 => 45,  101 => 44,  97 => 43,  93 => 42,  89 => 41,  85 => 40,  81 => 39,  77 => 38,  73 => 37,  69 => 36,  65 => 35,  61 => 33,  59 => 12,  55 => 10,  53 => 9,  43 => 1,);
+        return array (  516 => 166,  509 => 30,  502 => 28,  496 => 31,  494 => 30,  491 => 29,  489 => 28,  472 => 13,  468 => 12,  461 => 9,  454 => 225,  434 => 207,  427 => 203,  421 => 199,  419 => 198,  407 => 189,  399 => 184,  396 => 183,  394 => 182,  389 => 180,  385 => 179,  381 => 178,  377 => 177,  369 => 173,  367 => 172,  364 => 171,  360 => 169,  358 => 168,  355 => 167,  353 => 166,  349 => 164,  347 => 112,  343 => 110,  337 => 108,  335 => 107,  330 => 105,  326 => 104,  322 => 103,  318 => 102,  314 => 101,  310 => 100,  306 => 99,  302 => 98,  298 => 97,  294 => 96,  290 => 95,  286 => 94,  282 => 93,  278 => 92,  274 => 91,  270 => 90,  266 => 89,  262 => 88,  258 => 87,  254 => 86,  250 => 85,  246 => 84,  242 => 83,  238 => 82,  234 => 81,  228 => 78,  224 => 77,  220 => 76,  215 => 74,  211 => 73,  207 => 72,  203 => 71,  199 => 70,  195 => 69,  191 => 68,  187 => 67,  183 => 66,  179 => 65,  175 => 64,  171 => 63,  167 => 62,  163 => 61,  159 => 60,  155 => 59,  151 => 58,  147 => 57,  141 => 54,  137 => 53,  133 => 52,  129 => 51,  125 => 50,  121 => 49,  117 => 48,  113 => 47,  109 => 46,  105 => 45,  101 => 44,  97 => 43,  93 => 42,  89 => 41,  85 => 40,  81 => 39,  77 => 38,  73 => 37,  69 => 36,  65 => 35,  61 => 33,  59 => 12,  55 => 10,  53 => 9,  43 => 1,);
     }
 
     public function getSourceContext()

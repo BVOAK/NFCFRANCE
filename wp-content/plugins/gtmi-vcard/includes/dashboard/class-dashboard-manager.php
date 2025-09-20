@@ -210,28 +210,16 @@ class NFC_Dashboard_Manager
                 <nav class="nfc-sidebar" id="nfcSidebar">
                     <div class="nfc-sidebar-header">
                         <a href="?page=cards-list" class="nfc-sidebar-logo">
-                            Votre dashboard
+                            <img src="<?php echo $this->plugin_url; ?>assets/img/nfcstudio-logo.png" />
+                        </a>
                     </div>
 
                     <div class="nfc-sidebar-nav">
-
-                        <!-- <div class="nfc-nav-section">
-                            <div class="nfc-nav-section-title">Dashboard</div>
-                            <div class="nfc-nav-item">
-                                <a href="?page=overview" class="nfc-nav-link <?php echo $current_page === 'overview' ? 'active' : ''; ?>">
-                                    <i class="fas fa-home"></i>
-                                    Vue d'ensemble
-                                </a>
-                            </div>
-                        </div> -->
 
                         <?php if ($vcard_count > 0): ?>
                             <div class="nfc-nav-section">
                                 <div class="nfc-nav-section-title">
                                     Mes cartes vCard
-                                    <?php if ($vcard_count > 1): ?>
-                                        <span class="nfc-nav-count"><?php echo $vcard_count; ?></span>
-                                    <?php endif; ?>
                                 </div>
 
                                 <?php if ($vcard_count === 1): ?>
@@ -291,19 +279,31 @@ class NFC_Dashboard_Manager
                                 </a>
                             </div>
                         </div>
+
+                        <div class="nfc-nav-section">
+                            <div class="nfc-nav-section-title">Aide</div>
+                            <div class="nfc-nav-item">
+                                <a href="<?php echo wc_get_account_endpoint_url('dashboard'); ?>" class="nfc-nav-link">
+                                    <i class="fa-solid fa-headset"></i>
+                                    Support
+                                </a>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="nfc-sidebar-user">
                         <div class="nfc-sidebar-user-info">
-                            <div class="nfc-sidebar-user-avatar">
-                                <?php echo esc_html(strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1))); ?>
-                            </div>
+                            <!-- <div class="nfc-sidebar-user-avatar">
+                                <?php //echo esc_html(strtoupper(substr($first_name, 0, 1) . substr($last_name, 0, 1))); ?>
+                            </div> -->
                             <div class="nfc-sidebar-user-details">
                                 <h6><?php echo esc_html($first_name . ' ' . $last_name); ?></h6>
                                 <small><?php echo esc_html($current_user->user_email); ?></small>
+                                <a href="$logout_url = wp_logout_url(home_url());" class="logout"><small>Déconnexion</small></a>
                             </div>
                         </div>
                     </div>
+                     
                 </nav>
 
                 <!-- CONTENU PRINCIPAL -->
@@ -413,10 +413,7 @@ class NFC_Dashboard_Manager
         echo '<div class="container-fluid">';
 
         switch ($current_page) {
-            case 'overview':
-                $this->render_overview_page($vcard);
-                break;
-
+            
             case 'cards-list':
                 $this->render_cards_list_page($vcard);  // NOUVEAU - Liste des vCards
                 break;
@@ -441,9 +438,6 @@ class NFC_Dashboard_Manager
             case 'preview':
                 $this->render_preview_page($vcard);
                 break;
-
-            default:
-                $this->render_overview_page($vcard);
         }
 
         echo '</div>';

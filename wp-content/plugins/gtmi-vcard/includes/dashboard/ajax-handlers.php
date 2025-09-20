@@ -1530,24 +1530,40 @@ class NFC_Dashboard_Ajax
      * Obtenir le nombre réel de contacts générés
      */
     private function get_real_contacts_count($vcard_ids, $start_date)
-    {
-        global $wpdb;
-
-        $placeholders = implode(',', array_fill(0, count($vcard_ids), '%d'));
-
-        // Compter les leads créés pour ces vCards depuis la date
-        $count = $wpdb->get_var($wpdb->prepare("
-            SELECT COUNT(DISTINCT p.ID)
-            FROM {$wpdb->posts} p
-            LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = 'vcard_id'
-            WHERE p.post_type = 'lead'
-              AND p.post_status = 'publish'
-              AND p.post_date >= %s
-              AND (pm.meta_value IN ({$placeholders}) OR p.post_parent IN ({$placeholders}))
-        ", array_merge([$start_date], $vcard_ids, $vcard_ids)));
-
-        return intval($count ?: 0);
+{
+    global $wpdb;
+    
+    if (empty($vcard_ids)) {
+        return 0;
     }
+    
+    $total_count = 0;
+    
+    // Utiliser la même logique que nfc_get_vcard_contacts_count
+    foreach ($vcard_ids as $vcard_id) {
+        // Format sérialisé exact comme dans nfc-shared-functions.php
+        $exact_pattern = 'a:1:{i:0;s:' . strlen($vcard_id) . ':"' . $vcard_id . '";}';
+        
+        $count = $wpdb->get_var($wpdb->prepare("
+            SELECT COUNT(*)
+            FROM {$wpdb->posts} p
+            INNER JOIN {$wpdb->postmeta} pm 
+                ON p.ID = pm.post_id 
+                AND pm.meta_key = 'linked_virtual_card'
+                AND pm.meta_value = %s
+            WHERE p.post_type = 'lead'
+            AND p.post_status = 'publish'
+            AND p.post_date >= %s
+        ", $exact_pattern, $start_date));
+        
+        $total_count += intval($count ?: 0);
+        
+        error_log("📊 vCard {$vcard_id}: " . intval($count ?: 0) . " contacts depuis {$start_date}");
+    }
+    
+    error_log("📊 Total contacts: {$total_count}");
+    return $total_count;
+}
 
     /**
      * Calculer les statistiques RÉELLES depuis wp_nfc_analytics

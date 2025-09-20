@@ -63,7 +63,7 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
 
     <!-- Wrapper principal Bootstrap -->
     <div class="nfc-configurator-wrapper" id="nfcConfiguratorWrapper">
-        <div class="container-fluid">
+        <div class="container-fluid p-0">
 
             <div class="nfc-configurator vh-hero" id="nfcConfigurator">
 
@@ -167,7 +167,7 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
                                 <?php echo esc_html__('Personnaliser votre carte :', 'nfc-configurator'); ?>
                             </h1>
 
-                            <div class="config-form col-md-6">
+                            <div class="config-form col-md-7">
 
                                 <!-- Sélection support -->
                                 <div class="config-section mb-4 pb-4 border-bottom">

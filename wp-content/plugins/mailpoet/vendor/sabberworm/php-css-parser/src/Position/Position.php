@@ -6,28 +6,18 @@ trait Position
 {
  protected $lineNumber;
  protected $columnNumber;
- public function getLineNumber()
+ public function getLineNumber(): ?int
  {
  return $this->lineNumber;
  }
- public function getLineNo()
- {
- $lineNumber = $this->getLineNumber();
- return $lineNumber !== null ? $lineNumber : 0;
- }
- public function getColumnNumber()
+ public function getColumnNumber(): ?int
  {
  return $this->columnNumber;
  }
- public function getColNo()
+ public function setPosition(?int $lineNumber, ?int $columnNumber = null): Positionable
  {
- $columnNumber = $this->getColumnNumber();
- return $columnNumber !== null ? $columnNumber : 0;
- }
- public function setPosition($lineNumber, $columnNumber = null)
- {
- // The conditional is for backwards compatibility (backcompat); `0` will not be allowed in future.
- $this->lineNumber = $lineNumber !== 0 ? $lineNumber : null;
+ $this->lineNumber = $lineNumber;
  $this->columnNumber = $columnNumber;
+ return $this;
  }
 }

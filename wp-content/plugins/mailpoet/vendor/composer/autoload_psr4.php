@@ -7,6 +7,7 @@ return array(
  'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
  'Symfony\\Polyfill\\Php80\\' => array($vendorDir . '/symfony/polyfill-php80'),
  'Symfony\\Component\\CssSelector\\' => array($vendorDir . '/symfony/css-selector'),
+ 'Safe\\' => array($vendorDir . '/thecodingmachine/safe/lib', $vendorDir . '/thecodingmachine/safe/deprecated', $vendorDir . '/thecodingmachine/safe/generated'),
  'Sabberworm\\CSS\\' => array($vendorDir . '/sabberworm/php-css-parser/src'),
  'Pelago\\Emogrifier\\' => array($vendorDir . '/pelago/emogrifier/src'),
  'MailPoet\\' => array($baseDir . '/lib'),

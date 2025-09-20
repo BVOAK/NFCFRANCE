@@ -45,6 +45,7 @@ $vcard_data = [
     'twitter' => get_post_meta($vcard_id, 'twitter', true) ?: '',
     'instagram' => get_post_meta($vcard_id, 'instagram', true) ?: '',
     'facebook' => get_post_meta($vcard_id, 'facebook', true) ?: '',
+    'youtube' => get_post_meta($vcard_id, 'youtube', true) ?: '',
     'description' => get_post_meta($vcard_id, 'description', true) ?: '',
     'address' => get_post_meta($vcard_id, 'address', true) ?: '',
     'additional' => get_post_meta($vcard_id, 'additional', true) ?: '',
@@ -134,6 +135,7 @@ wp_localize_script('vcard-public', 'vCardConfig', [
     'instagram' => $vcard_data['instagram'],
     'twitter' => $vcard_data['twitter'],
     'facebook' => $vcard_data['facebook'],
+    'youtube' => $vcard_data['youtube'],
     'ajaxUrl' => admin_url('admin-ajax.php'),
     'nonce' => wp_create_nonce('nfc_dashboard_nonce'),
 ]);
@@ -305,10 +307,11 @@ wp_localize_script('nfc-trackers', 'NFCTrackingConfig', $tracking_config);
             <!-- Réseaux sociaux selon mockup -->
             <?php
             $social_networks = [
-                'linkedin' => ['icon' => 'fab fa-linkedin', 'color' => '#0077b5'],
-                'instagram' => ['icon' => 'fab fa-instagram', 'color' => '#e4405f'],
-                'twitter' => ['icon' => 'fab fa-x-twitter', 'color' => '#000000'],
-                'facebook' => ['icon' => 'fab fa-facebook', 'color' => '#1877f2']
+                'linkedin' => ['icon' => 'fab fa-linkedin', 'color' => '#131329'],
+                'instagram' => ['icon' => 'fab fa-instagram', 'color' => '#131329'],
+                'twitter' => ['icon' => 'fab fa-x-twitter', 'color' => '#131329'],
+                'facebook' => ['icon' => 'fab fa-facebook', 'color' => '#131329'],
+                'youtube' => ['icon' => 'fab fa-youtube', 'color' => '#131329']
             ];
 
             $has_social = false;
@@ -361,7 +364,7 @@ wp_localize_script('nfc-trackers', 'NFCTrackingConfig', $tracking_config);
                             <i class="fas fa-phone"></i>
                         </div>
                         <a href="tel:<?php echo esc_attr($phone_display); ?>" class="contact-link">
-                            <?php echo chunk_split(esc_html($phone_display), 2, " "); ?>
+                            <?php echo esc_html($phone_display) ?>
                         </a>
                     </div>
                 <?php endif; ?>

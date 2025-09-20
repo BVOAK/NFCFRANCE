@@ -44,7 +44,7 @@ body.vcard-public {
 .vcard-header-section {
     position: relative;
     height: 220px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1c3e8f 0%, #e62e26 100%);
     background-size: cover;
     background-position: center;
     display: flex;
@@ -242,8 +242,7 @@ body.vcard-public {
     color: var(--vcard-secondary);
     line-height: 1.6;
     text-align: left;
-    padding: 20px 0;
-    background: #f8f9fa;
+    padding: 20px 0 0;
     border-radius: 12px;
 }
 
@@ -254,6 +253,7 @@ body.vcard-public {
 
 .useful-link-item {
     margin-bottom: 16px;
+    margin-top: 20px
 }
 
 .link-button {

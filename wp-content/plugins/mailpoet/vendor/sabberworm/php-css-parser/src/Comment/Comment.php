@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Sabberworm\CSS\Comment;
 if (!defined('ABSPATH')) exit;
 use Sabberworm\CSS\OutputFormat;
@@ -8,26 +9,22 @@ use Sabberworm\CSS\Position\Positionable;
 class Comment implements Positionable, Renderable
 {
  use Position;
- protected $sComment;
- public function __construct($sComment = '', $iLineNo = 0)
+ protected $commentText;
+ public function __construct(string $commentText = '', ?int $lineNumber = null)
  {
- $this->sComment = $sComment;
- $this->setPosition($iLineNo);
+ $this->commentText = $commentText;
+ $this->setPosition($lineNumber);
  }
- public function getComment()
+ public function getComment(): string
  {
- return $this->sComment;
+ return $this->commentText;
  }
- public function setComment($sComment)
+ public function setComment(string $commentText): void
  {
- $this->sComment = $sComment;
+ $this->commentText = $commentText;
  }
- public function __toString()
+ public function render(OutputFormat $outputFormat): string
  {
- return $this->render(new OutputFormat());
- }
- public function render($oOutputFormat)
- {
- return '/*' . $this->sComment . '*/';
+ return '/*' . $this->commentText . '*/';
  }
 }

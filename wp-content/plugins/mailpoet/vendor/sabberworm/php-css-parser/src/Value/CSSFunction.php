@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Sabberworm\CSS\Value;
 if (!defined('ABSPATH')) exit;
 use Sabberworm\CSS\OutputFormat;
@@ -8,45 +9,49 @@ use Sabberworm\CSS\Parsing\UnexpectedEOFException;
 use Sabberworm\CSS\Parsing\UnexpectedTokenException;
 class CSSFunction extends ValueList
 {
- protected $sName;
- public function __construct($sName, $aArguments, $sSeparator = ',', $iLineNo = 0)
+ protected $name;
+ public function __construct(string $name, $arguments, string $separator = ',', ?int $lineNumber = null)
  {
- if ($aArguments instanceof RuleValueList) {
- $sSeparator = $aArguments->getListSeparator();
- $aArguments = $aArguments->getListComponents();
+ if ($arguments instanceof RuleValueList) {
+ $separator = $arguments->getListSeparator();
+ $arguments = $arguments->getListComponents();
  }
- $this->sName = $sName;
- $this->setPosition($iLineNo); // TODO: redundant?
- parent::__construct($aArguments, $sSeparator, $iLineNo);
+ $this->name = $name;
+ $this->setPosition($lineNumber); // TODO: redundant?
+ parent::__construct($arguments, $separator, $lineNumber);
  }
- public static function parse(ParserState $oParserState, $bIgnoreCase = false)
+ public static function parse(ParserState $parserState, bool $ignoreCase = false): CSSFunction
  {
- $mResult = $oParserState->parseIdentifier($bIgnoreCase);
- $oParserState->consume('(');
- $aArguments = Value::parseValue($oParserState, ['=', ' ', ',']);
- $mResult = new CSSFunction($mResult, $aArguments, ',', $oParserState->currentLine());
- $oParserState->consume(')');
- return $mResult;
+ $name = self::parseName($parserState, $ignoreCase);
+ $parserState->consume('(');
+ $arguments = self::parseArguments($parserState);
+ $result = new CSSFunction($name, $arguments, ',', $parserState->currentLine());
+ $parserState->consume(')');
+ return $result;
  }
- public function getName()
+ private static function parseName(ParserState $parserState, bool $ignoreCase = false): string
  {
- return $this->sName;
+ return $parserState->parseIdentifier($ignoreCase);
  }
- public function setName($sName)
+ private static function parseArguments(ParserState $parserState)
  {
- $this->sName = $sName;
+ return Value::parseValue($parserState, ['=', ' ', ',']);
  }
- public function getArguments()
+ public function getName(): string
  {
- return $this->aComponents;
+ return $this->name;
  }
- public function __toString()
+ public function setName(string $name): void
  {
- return $this->render(new OutputFormat());
+ $this->name = $name;
  }
- public function render($oOutputFormat)
+ public function getArguments(): array
  {
- $aArguments = parent::render($oOutputFormat);
- return "{$this->sName}({$aArguments})";
+ return $this->components;
+ }
+ public function render(OutputFormat $outputFormat): string
+ {
+ $arguments = parent::render($outputFormat);
+ return "{$this->name}({$arguments})";
  }
 }

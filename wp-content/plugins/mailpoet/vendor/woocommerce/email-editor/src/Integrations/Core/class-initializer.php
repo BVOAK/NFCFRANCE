@@ -14,9 +14,11 @@ use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Group;
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Image;
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\List_Block;
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\List_Item;
+use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Media_Text;
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Quote;
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Social_Link;
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Social_Links;
+use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Table;
 use Automattic\WooCommerce\EmailEditor\Integrations\Core\Renderer\Blocks\Text;
 class Initializer {
  const ALLOWED_BLOCK_TYPES = array(
@@ -36,6 +38,10 @@ class Initializer {
  'core/social-links',
  'core/site-logo',
  'core/site-title',
+ 'core/table',
+ );
+ const RENDER_ONLY_BLOCK_TYPES = array(
+ 'core/media-text',
  );
  private array $renderers = array();
  public function initialize(): void {
@@ -60,8 +66,13 @@ class Initializer {
  return $allowed_styles;
  }
  public function update_block_settings( array $settings ): array {
+ // Enable blocks in email editor and set rendering callback.
  if ( in_array( $settings['name'], self::ALLOWED_BLOCK_TYPES, true ) ) {
  $settings['supports']['email'] = true;
+ $settings['render_email_callback'] = array( $this, 'render_block' );
+ }
+ // Set rendering callback for render-only blocks (without enabling in editor).
+ if ( in_array( $settings['name'], self::RENDER_ONLY_BLOCK_TYPES, true ) ) {
  $settings['render_email_callback'] = array( $this, 'render_block' );
  }
  return $settings;
@@ -115,6 +126,12 @@ class Initializer {
  break;
  case 'core/social-links':
  $renderer = new Social_Links();
+ break;
+ case 'core/table':
+ $renderer = new Table();
+ break;
+ case 'core/media-text':
+ $renderer = new Media_Text();
  break;
  default:
  $renderer = new Fallback();

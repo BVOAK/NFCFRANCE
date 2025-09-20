@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita0044f7d43e40c5c39292eabfff73ded
+class ComposerStaticInit34bf83c9b42bffe4e88d69b8031e6cfc
 {
     public static $files = array (
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
@@ -1626,6 +1626,7 @@ class ComposerStaticInita0044f7d43e40c5c39292eabfff73ded
         'GPBMetadata\\Google\\Ads\\GoogleAds\\V20\\Enums\\ConversionActionCategory' => __DIR__ . '/..' . '/googleads/google-ads-php/metadata/Google/Ads/GoogleAds/V20/Enums/ConversionActionCategory.php',
         'GPBMetadata\\Google\\Ads\\GoogleAds\\V20\\Enums\\ConversionActionStatus' => __DIR__ . '/..' . '/googleads/google-ads-php/metadata/Google/Ads/GoogleAds/V20/Enums/ConversionActionStatus.php',
         'GPBMetadata\\Google\\Ads\\GoogleAds\\V20\\Enums\\ConversionActionType' => __DIR__ . '/..' . '/googleads/google-ads-php/metadata/Google/Ads/GoogleAds/V20/Enums/ConversionActionType.php',
+        'GPBMetadata\\Google\\Ads\\GoogleAds\\V20\\Enums\\EuPoliticalAdvertisingStatus' => __DIR__ . '/..' . '/googleads/google-ads-php/metadata/Google/Ads/GoogleAds/V20/Enums/EuPoliticalAdvertisingStatus.php',
         'GPBMetadata\\Google\\Ads\\GoogleAds\\V20\\Enums\\ListingGroupFilterListingSource' => __DIR__ . '/..' . '/googleads/google-ads-php/metadata/Google/Ads/GoogleAds/V20/Enums/ListingGroupFilterListingSource.php',
         'GPBMetadata\\Google\\Ads\\GoogleAds\\V20\\Enums\\ProductLinkInvitationStatus' => __DIR__ . '/..' . '/googleads/google-ads-php/metadata/Google/Ads/GoogleAds/V20/Enums/ProductLinkInvitationStatus.php',
         'GPBMetadata\\Google\\Ads\\GoogleAds\\V20\\Enums\\RecommendationType' => __DIR__ . '/..' . '/googleads/google-ads-php/metadata/Google/Ads/GoogleAds/V20/Enums/RecommendationType.php',
@@ -2305,6 +2306,8 @@ class ComposerStaticInita0044f7d43e40c5c39292eabfff73ded
         'Google\\Ads\\GoogleAds\\V20\\Enums\\ConversionEnvironmentEnum\\ConversionEnvironment' => __DIR__ . '/..' . '/googleads/google-ads-php/src/Google/Ads/GoogleAds/V20/Enums/ConversionEnvironmentEnum/ConversionEnvironment.php',
         'Google\\Ads\\GoogleAds\\V20\\Enums\\ConversionTrackingStatusEnum' => __DIR__ . '/..' . '/googleads/google-ads-php/src/Google/Ads/GoogleAds/V20/Enums/ConversionTrackingStatusEnum.php',
         'Google\\Ads\\GoogleAds\\V20\\Enums\\ConversionTrackingStatusEnum\\ConversionTrackingStatus' => __DIR__ . '/..' . '/googleads/google-ads-php/src/Google/Ads/GoogleAds/V20/Enums/ConversionTrackingStatusEnum/ConversionTrackingStatus.php',
+        'Google\\Ads\\GoogleAds\\V20\\Enums\\EuPoliticalAdvertisingStatusEnum' => __DIR__ . '/..' . '/googleads/google-ads-php/src/Google/Ads/GoogleAds/V20/Enums/EuPoliticalAdvertisingStatusEnum.php',
+        'Google\\Ads\\GoogleAds\\V20\\Enums\\EuPoliticalAdvertisingStatusEnum\\EuPoliticalAdvertisingStatus' => __DIR__ . '/..' . '/googleads/google-ads-php/src/Google/Ads/GoogleAds/V20/Enums/EuPoliticalAdvertisingStatusEnum/EuPoliticalAdvertisingStatus.php',
         'Google\\Ads\\GoogleAds\\V20\\Enums\\ListingGroupFilterListingSourceEnum' => __DIR__ . '/..' . '/googleads/google-ads-php/src/Google/Ads/GoogleAds/V20/Enums/ListingGroupFilterListingSourceEnum.php',
         'Google\\Ads\\GoogleAds\\V20\\Enums\\ListingGroupFilterListingSourceEnum\\ListingGroupFilterListingSource' => __DIR__ . '/..' . '/googleads/google-ads-php/src/Google/Ads/GoogleAds/V20/Enums/ListingGroupFilterListingSourceEnum/ListingGroupFilterListingSource.php',
         'Google\\Ads\\GoogleAds\\V20\\Enums\\ListingGroupFilterTypeEnum' => __DIR__ . '/..' . '/googleads/google-ads-php/src/Google/Ads/GoogleAds/V20/Enums/ListingGroupFilterTypeEnum.php',
@@ -4497,9 +4500,9 @@ class ComposerStaticInita0044f7d43e40c5c39292eabfff73ded
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInita0044f7d43e40c5c39292eabfff73ded::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInita0044f7d43e40c5c39292eabfff73ded::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInita0044f7d43e40c5c39292eabfff73ded::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit34bf83c9b42bffe4e88d69b8031e6cfc::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit34bf83c9b42bffe4e88d69b8031e6cfc::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit34bf83c9b42bffe4e88d69b8031e6cfc::$classMap;
 
         }, null, ClassLoader::class);
     }

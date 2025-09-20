@@ -4,9 +4,7 @@ namespace Sabberworm\CSS\Position;
 if (!defined('ABSPATH')) exit;
 interface Positionable
 {
- public function getLineNumber();
- public function getLineNo();
- public function getColumnNumber();
- public function getColNo();
- public function setPosition($lineNumber, $columnNumber = null);
+ public function getLineNumber(): ?int;
+ public function getColumnNumber(): ?int;
+ public function setPosition(?int $lineNumber, ?int $columnNumber = null): Positionable;
 }

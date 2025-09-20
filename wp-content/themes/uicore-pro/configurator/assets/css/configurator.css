@@ -60,7 +60,8 @@
    ========================================================================== */
 
 .vh-hero {
-  height: calc(100vh - 170px) !important;
+  min-height: calc(100vh - 170px) !important;
+  background: var(--nfc-background);
 }
 
 #accordionRV .accordion-button:not(.collapsed) {
@@ -85,6 +86,7 @@
   padding: var(--spacing-2xl);
   height: calc(100vh - 150px) !important;
   background: var(--nfc-background);
+  top: 0;
 }
 
 .preview-header {
@@ -111,7 +113,7 @@
 .config-column {
   background: white;
   border: none;
-  max-height: fit-content;
+  min-height: calc(100vh - 150px) !important;
   padding-bottom: 3rem
 }
 

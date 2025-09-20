@@ -5,7 +5,7 @@ Tags: Email marketing, newsletter, email automation, woocommerce emails, marketi
 Requires at least: 6.3
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -178,6 +178,9 @@ This plugin connects to an external API to facilitate marketing campaign managem
 
 
 == Changelog ==
+
+= 1.6.1 - 2025-09-16 
+* Fix: Design of deactivation feedback form
 
 = 1.6.0 - 2025-09-07 
 * New: Deactivation Feedback Popup

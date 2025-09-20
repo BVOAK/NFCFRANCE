@@ -1,9 +1,8 @@
 <?php
+declare(strict_types=1);
 namespace Sabberworm\CSS;
 if (!defined('ABSPATH')) exit;
 interface Renderable
 {
- public function __toString();
- public function render($oOutputFormat);
- public function getLineNo();
+ public function render(OutputFormat $outputFormat): string;
 }

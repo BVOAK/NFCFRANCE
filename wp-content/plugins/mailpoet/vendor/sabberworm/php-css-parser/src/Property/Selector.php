@@ -1,79 +1,64 @@
 <?php
+declare(strict_types=1);
 namespace Sabberworm\CSS\Property;
 if (!defined('ABSPATH')) exit;
-class Selector
+use Sabberworm\CSS\OutputFormat;
+use Sabberworm\CSS\Property\Selector\SpecificityCalculator;
+use Sabberworm\CSS\Renderable;
+use function Safe\preg_match;
+class Selector implements Renderable
 {
- const NON_ID_ATTRIBUTES_AND_PSEUDO_CLASSES_RX = '/
- (\.[\w]+) # classes
- |
- \[(\w+) # attributes
- |
- (\:( # pseudo classes
- link|visited|active
- |hover|focus
- |lang
- |target
- |enabled|disabled|checked|indeterminate
- |root
- |nth-child|nth-last-child|nth-of-type|nth-last-of-type
- |first-child|last-child|first-of-type|last-of-type
- |only-child|only-of-type
- |empty|contains
- ))
- /ix';
- const ELEMENTS_AND_PSEUDO_ELEMENTS_RX = '/
- ((^|[\s\+\>\~]+)[\w]+ # elements
- |
- \:{1,2}( # pseudo-elements
- after|before|first-letter|first-line|selection
- ))
- /ix';
- const SELECTOR_VALIDATION_RX = '/
+ public const SELECTOR_VALIDATION_RX = '/
  ^(
  (?:
- [a-zA-Z0-9\x{00A0}-\x{FFFF}_^$|*="\'~\[\]()\-\s\.:#+>]* # any sequence of valid unescaped characters
- (?:\\\\.)? # a single escaped character
- (?:([\'"]).*?(?<!\\\\)\2)? # a quoted text like [id="example"]
- )*
+ # any sequence of valid unescaped characters, except quotes
+ [a-zA-Z0-9\\x{00A0}-\\x{FFFF}_^$|*=~\\[\\]()\\-\\s\\.:#+>,]++
+ |
+ # one or more escaped characters
+ (?:\\\\.)++
+ |
+ # quoted text, like in `[id="example"]`
+ (?:
+ # opening quote
+ ([\'"])
+ (?:
+ # sequence of characters except closing quote or backslash
+ (?:(?!\\g{-1}|\\\\).)++
+ |
+ # one or more escaped characters
+ (?:\\\\.)++
+ )*+ # zero or more times
+ # closing quote or end (unmatched quote is currently allowed)
+ (?:\\g{-1}|$)
+ )
+ )*+ # zero or more times
  )$
  /ux';
- private $sSelector;
- private $iSpecificity;
- public static function isValid($sSelector)
+ private $selector;
+ public static function isValid(string $selector): bool
  {
- return preg_match(static::SELECTOR_VALIDATION_RX, $sSelector);
+ // Note: We need to use `static::` here as the constant is overridden in the `KeyframeSelector` class.
+ $numberOfMatches = preg_match(static::SELECTOR_VALIDATION_RX, $selector);
+ return $numberOfMatches === 1;
  }
- public function __construct($sSelector, $bCalculateSpecificity = false)
+ public function __construct(string $selector)
  {
- $this->setSelector($sSelector);
- if ($bCalculateSpecificity) {
- $this->getSpecificity();
+ $this->setSelector($selector);
  }
- }
- public function getSelector()
+ public function getSelector(): string
  {
- return $this->sSelector;
+ return $this->selector;
  }
- public function setSelector($sSelector)
+ public function setSelector(string $selector): void
  {
- $this->sSelector = trim($sSelector);
- $this->iSpecificity = null;
+ $this->selector = \trim($selector);
  }
- public function __toString()
+ public function getSpecificity(): int
+ {
+ return SpecificityCalculator::calculate($this->selector);
+ }
+ public function render(OutputFormat $outputFormat): string
  {
  return $this->getSelector();
- }
- public function getSpecificity()
- {
- if ($this->iSpecificity === null) {
- $a = 0;
- /// @todo should exclude \# as well as "#"
- $aMatches = null;
- $b = substr_count($this->sSelector, '#');
- $c = preg_match_all(self::NON_ID_ATTRIBUTES_AND_PSEUDO_CLASSES_RX, $this->sSelector, $aMatches);
- $d = preg_match_all(self::ELEMENTS_AND_PSEUDO_ELEMENTS_RX, $this->sSelector, $aMatches);
- $this->iSpecificity = ($a * 1000) + ($b * 100) + ($c * 10) + $d;
- }
- return $this->iSpecificity;
  }
 }

@@ -1,45 +1,43 @@
 <?php
+declare(strict_types=1);
 namespace Sabberworm\CSS\CSSList;
 if (!defined('ABSPATH')) exit;
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Property\AtRule;
 class AtRuleBlockList extends CSSBlockList implements AtRule
 {
- private $sType;
- private $sArgs;
- public function __construct($sType, $sArgs = '', $iLineNo = 0)
+ private $type;
+ private $arguments;
+ public function __construct(string $type, string $arguments = '', ?int $lineNumber = null)
  {
- parent::__construct($iLineNo);
- $this->sType = $sType;
- $this->sArgs = $sArgs;
+ parent::__construct($lineNumber);
+ $this->type = $type;
+ $this->arguments = $arguments;
  }
- public function atRuleName()
+ public function atRuleName(): string
  {
- return $this->sType;
+ return $this->type;
  }
- public function atRuleArgs()
+ public function atRuleArgs(): string
  {
- return $this->sArgs;
+ return $this->arguments;
  }
- public function __toString()
+ public function render(OutputFormat $outputFormat): string
  {
- return $this->render(new OutputFormat());
+ $formatter = $outputFormat->getFormatter();
+ $result = $formatter->comments($this);
+ $result .= $outputFormat->getContentBeforeAtRuleBlock();
+ $arguments = $this->arguments;
+ if ($arguments !== '') {
+ $arguments = ' ' . $arguments;
  }
- public function render($oOutputFormat)
- {
- $sResult = $oOutputFormat->comments($this);
- $sResult .= $oOutputFormat->sBeforeAtRuleBlock;
- $sArgs = $this->sArgs;
- if ($sArgs) {
- $sArgs = ' ' . $sArgs;
+ $result .= "@{$this->type}$arguments{$formatter->spaceBeforeOpeningBrace()}{";
+ $result .= $this->renderListContents($outputFormat);
+ $result .= '}';
+ $result .= $outputFormat->getContentAfterAtRuleBlock();
+ return $result;
  }
- $sResult .= "@{$this->sType}$sArgs{$oOutputFormat->spaceBeforeOpeningBrace()}{";
- $sResult .= $this->renderListContents($oOutputFormat);
- $sResult .= '}';
- $sResult .= $oOutputFormat->sAfterAtRuleBlock;
- return $sResult;
- }
- public function isRootList()
+ public function isRootList(): bool
  {
  return false;
  }

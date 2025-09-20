@@ -1,8 +1,10 @@
 <?php
+declare(strict_types=1);
 namespace Sabberworm\CSS\Rule;
 if (!defined('ABSPATH')) exit;
 use Sabberworm\CSS\Comment\Comment;
 use Sabberworm\CSS\Comment\Commentable;
+use Sabberworm\CSS\Comment\CommentContainer;
 use Sabberworm\CSS\CSSElement;
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Parsing\ParserState;
@@ -14,204 +16,107 @@ use Sabberworm\CSS\Value\RuleValueList;
 use Sabberworm\CSS\Value\Value;
 class Rule implements Commentable, CSSElement, Positionable
 {
+ use CommentContainer;
  use Position;
- private $sRule;
- private $mValue;
- private $bIsImportant;
- private $aIeHack;
- protected $aComments;
- public function __construct($sRule, $iLineNo = 0, $iColNo = 0)
+ private $rule;
+ private $value;
+ private $isImportant = false;
+ public function __construct(string $rule, ?int $lineNumber = null, ?int $columnNumber = null)
  {
- $this->sRule = $sRule;
- $this->mValue = null;
- $this->bIsImportant = false;
- $this->aIeHack = [];
- $this->setPosition($iLineNo, $iColNo);
- $this->aComments = [];
+ $this->rule = $rule;
+ $this->setPosition($lineNumber, $columnNumber);
  }
- public static function parse(ParserState $oParserState, $commentsBeforeRule = [])
+ public static function parse(ParserState $parserState, array $commentsBeforeRule = []): Rule
  {
- $aComments = \array_merge($commentsBeforeRule, $oParserState->consumeWhiteSpace());
- $oRule = new Rule(
- $oParserState->parseIdentifier(!$oParserState->comes("--")),
- $oParserState->currentLine(),
- $oParserState->currentColumn()
+ $comments = \array_merge($commentsBeforeRule, $parserState->consumeWhiteSpace());
+ $rule = new Rule(
+ $parserState->parseIdentifier(!$parserState->comes('--')),
+ $parserState->currentLine(),
+ $parserState->currentColumn()
  );
- $oRule->setComments($aComments);
- $oRule->addComments($oParserState->consumeWhiteSpace());
- $oParserState->consume(':');
- $oValue = Value::parseValue($oParserState, self::listDelimiterForRule($oRule->getRule()));
- $oRule->setValue($oValue);
- if ($oParserState->getSettings()->bLenientParsing) {
- while ($oParserState->comes('\\')) {
- $oParserState->consume('\\');
- $oRule->addIeHack($oParserState->consume());
- $oParserState->consumeWhiteSpace();
+ $rule->setComments($comments);
+ $rule->addComments($parserState->consumeWhiteSpace());
+ $parserState->consume(':');
+ $value = Value::parseValue($parserState, self::listDelimiterForRule($rule->getRule()));
+ $rule->setValue($value);
+ $parserState->consumeWhiteSpace();
+ if ($parserState->comes('!')) {
+ $parserState->consume('!');
+ $parserState->consumeWhiteSpace();
+ $parserState->consume('important');
+ $rule->setIsImportant(true);
  }
+ $parserState->consumeWhiteSpace();
+ while ($parserState->comes(';')) {
+ $parserState->consume(';');
  }
- $oParserState->consumeWhiteSpace();
- if ($oParserState->comes('!')) {
- $oParserState->consume('!');
- $oParserState->consumeWhiteSpace();
- $oParserState->consume('important');
- $oRule->setIsImportant(true);
+ return $rule;
  }
- $oParserState->consumeWhiteSpace();
- while ($oParserState->comes(';')) {
- $oParserState->consume(';');
- }
- return $oRule;
- }
- private static function listDelimiterForRule($sRule)
+ private static function listDelimiterForRule(string $rule): array
  {
- if (preg_match('/^font($|-)/', $sRule)) {
+ if (\preg_match('/^font($|-)/', $rule)) {
  return [',', '/', ' '];
  }
- switch ($sRule) {
+ switch ($rule) {
  case 'src':
  return [' ', ','];
  default:
  return [',', ' ', '/'];
  }
  }
- public function setRule($sRule)
+ public function setRule(string $rule): void
  {
- $this->sRule = $sRule;
+ $this->rule = $rule;
  }
- public function getRule()
+ public function getRule(): string
  {
- return $this->sRule;
+ return $this->rule;
  }
  public function getValue()
  {
- return $this->mValue;
+ return $this->value;
  }
- public function setValue($mValue)
+ public function setValue($value): void
  {
- $this->mValue = $mValue;
+ $this->value = $value;
  }
- public function setValues(array $aSpaceSeparatedValues)
+ public function addValue($value, string $type = ' '): void
  {
- $oSpaceSeparatedList = null;
- if (count($aSpaceSeparatedValues) > 1) {
- $oSpaceSeparatedList = new RuleValueList(' ', $this->iLineNo);
+ if (!\is_array($value)) {
+ $value = [$value];
  }
- foreach ($aSpaceSeparatedValues as $aCommaSeparatedValues) {
- $oCommaSeparatedList = null;
- if (count($aCommaSeparatedValues) > 1) {
- $oCommaSeparatedList = new RuleValueList(',', $this->iLineNo);
+ if (!($this->value instanceof RuleValueList) || $this->value->getListSeparator() !== $type) {
+ $currentValue = $this->value;
+ $this->value = new RuleValueList($type, $this->getLineNumber());
+ if ($currentValue !== null && $currentValue !== '') {
+ $this->value->addListComponent($currentValue);
  }
- foreach ($aCommaSeparatedValues as $mValue) {
- if (!$oSpaceSeparatedList && !$oCommaSeparatedList) {
- $this->mValue = $mValue;
- return $mValue;
  }
- if ($oCommaSeparatedList) {
- $oCommaSeparatedList->addListComponent($mValue);
+ foreach ($value as $valueItem) {
+ $this->value->addListComponent($valueItem);
+ }
+ }
+ public function setIsImportant(bool $isImportant): void
+ {
+ $this->isImportant = $isImportant;
+ }
+ public function getIsImportant(): bool
+ {
+ return $this->isImportant;
+ }
+ public function render(OutputFormat $outputFormat): string
+ {
+ $formatter = $outputFormat->getFormatter();
+ $result = "{$formatter->comments($this)}{$this->rule}:{$formatter->spaceAfterRuleName()}";
+ if ($this->value instanceof Value) { // Can also be a ValueList
+ $result .= $this->value->render($outputFormat);
  } else {
- $oSpaceSeparatedList->addListComponent($mValue);
+ $result .= $this->value;
  }
+ if ($this->isImportant) {
+ $result .= ' !important';
  }
- if (!$oSpaceSeparatedList) {
- $this->mValue = $oCommaSeparatedList;
- return $oCommaSeparatedList;
- } else {
- $oSpaceSeparatedList->addListComponent($oCommaSeparatedList);
- }
- }
- $this->mValue = $oSpaceSeparatedList;
- return $oSpaceSeparatedList;
- }
- public function getValues()
- {
- if (!$this->mValue instanceof RuleValueList) {
- return [[$this->mValue]];
- }
- if ($this->mValue->getListSeparator() === ',') {
- return [$this->mValue->getListComponents()];
- }
- $aResult = [];
- foreach ($this->mValue->getListComponents() as $mValue) {
- if (!$mValue instanceof RuleValueList || $mValue->getListSeparator() !== ',') {
- $aResult[] = [$mValue];
- continue;
- }
- if ($this->mValue->getListSeparator() === ' ' || count($aResult) === 0) {
- $aResult[] = [];
- }
- foreach ($mValue->getListComponents() as $mValue) {
- $aResult[count($aResult) - 1][] = $mValue;
- }
- }
- return $aResult;
- }
- public function addValue($mValue, $sType = ' ')
- {
- if (!is_array($mValue)) {
- $mValue = [$mValue];
- }
- if (!$this->mValue instanceof RuleValueList || $this->mValue->getListSeparator() !== $sType) {
- $mCurrentValue = $this->mValue;
- $this->mValue = new RuleValueList($sType, $this->getLineNumber());
- if ($mCurrentValue) {
- $this->mValue->addListComponent($mCurrentValue);
- }
- }
- foreach ($mValue as $mValueItem) {
- $this->mValue->addListComponent($mValueItem);
- }
- }
- public function addIeHack($iModifier)
- {
- $this->aIeHack[] = $iModifier;
- }
- public function setIeHack(array $aModifiers)
- {
- $this->aIeHack = $aModifiers;
- }
- public function getIeHack()
- {
- return $this->aIeHack;
- }
- public function setIsImportant($bIsImportant)
- {
- $this->bIsImportant = $bIsImportant;
- }
- public function getIsImportant()
- {
- return $this->bIsImportant;
- }
- public function __toString()
- {
- return $this->render(new OutputFormat());
- }
- public function render($oOutputFormat)
- {
- $sResult = "{$oOutputFormat->comments($this)}{$this->sRule}:{$oOutputFormat->spaceAfterRuleName()}";
- if ($this->mValue instanceof Value) { // Can also be a ValueList
- $sResult .= $this->mValue->render($oOutputFormat);
- } else {
- $sResult .= $this->mValue;
- }
- if (!empty($this->aIeHack)) {
- $sResult .= ' \\' . implode('\\', $this->aIeHack);
- }
- if ($this->bIsImportant) {
- $sResult .= ' !important';
- }
- $sResult .= ';';
- return $sResult;
- }
- public function addComments(array $aComments)
- {
- $this->aComments = array_merge($this->aComments, $aComments);
- }
- public function getComments()
- {
- return $this->aComments;
- }
- public function setComments(array $aComments)
- {
- $this->aComments = $aComments;
+ $result .= ';';
+ return $result;
  }
 }

@@ -5,7 +5,7 @@
  * Plugin URI: https://send2.co/?utm_source=wp-plugins&utm_campaign=plugin-uri&utm_medium=wp-dash
  * Author: Elementor.com
  * Author URI: https://elementor.com/?utm_source=wp-plugins&utm_campaign=author-uri&utm_medium=wp-dash
- * Version: 1.6.0
+ * Version: 1.6.1
  * License: GPL-3
  * License URI: https://www.gnu.org/licenses/gpl-3.0.en.html
  *
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'SEND_VERSION', '1.6.0' );
+define( 'SEND_VERSION', '1.6.1' );
 
 define( 'SEND__FILE__', __FILE__ );
 define( 'SEND_PLUGIN_BASE', plugin_basename( SEND__FILE__ ) );

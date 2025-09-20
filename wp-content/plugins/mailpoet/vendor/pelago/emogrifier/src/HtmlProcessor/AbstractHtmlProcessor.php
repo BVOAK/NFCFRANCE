@@ -18,6 +18,7 @@ abstract class AbstractHtmlProcessor
  private function __construct() {}
  public static function fromHtml(string $unprocessedHtml): self
  {
+ // @phpstan-ignore-next-line argument.type We're checking for a contract violation here.
  if ($unprocessedHtml === '') {
  throw new \InvalidArgumentException('The provided HTML must not be empty.', 1515763647);
  }
@@ -120,12 +121,14 @@ abstract class AbstractHtmlProcessor
  private function normalizeDocumentType(string $html): string
  {
  // Limit to replacing the first occurrence: as an optimization; and in case an example exists as unescaped text.
- return (new Preg())->replace(
+ $result = (new Preg())->replace(
  '/<!DOCTYPE\\s++html(?=[\\s>])/i',
  '<!DOCTYPE html',
  $html,
  1
  );
+ \assert($result !== '');
+ return $result;
  }
  private function addContentTypeMetaTag(string $html): string
  {
@@ -151,6 +154,7 @@ abstract class AbstractHtmlProcessor
  } else {
  $reworkedHtml = self::CONTENT_TYPE_META_TAG . $html;
  }
+ \assert($reworkedHtml !== '');
  return $reworkedHtml;
  }
  private function hasContentTypeMetaTagInHead(string $html): bool

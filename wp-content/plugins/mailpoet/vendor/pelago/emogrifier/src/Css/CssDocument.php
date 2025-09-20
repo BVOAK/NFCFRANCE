@@ -63,8 +63,9 @@ final class CssDocument
  }
  private function getFilteredAtIdentifierAndRule(CssAtRuleBlockList $rule, array $allowedMediaTypes): ?string
  {
- $result = null;
- if ($rule->atRuleName() === 'media') {
+ if ($rule->atRuleName() !== 'media') {
+ return null;
+ }
  $mediaQueryList = $rule->atRuleArgs();
  [$mediaType] = \explode('(', $mediaQueryList, 2);
  if (\trim($mediaType) !== '') {
@@ -80,11 +81,7 @@ final class CssDocument
  } else {
  $isAllowed = true;
  }
- if ($isAllowed) {
- $result = '@media ' . $mediaQueryList;
- }
- }
- return $result;
+ return $isAllowed ? '@media ' . $mediaQueryList : null;
  }
  private function isValidAtRuleToRender(CssRenderable $rule): bool
  {

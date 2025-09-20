@@ -1,67 +1,51 @@
 <?php
+declare(strict_types=1);
 namespace Sabberworm\CSS\Property;
 if (!defined('ABSPATH')) exit;
-use Sabberworm\CSS\Comment\Comment;
+use Sabberworm\CSS\Comment\CommentContainer;
 use Sabberworm\CSS\OutputFormat;
 use Sabberworm\CSS\Position\Position;
 use Sabberworm\CSS\Position\Positionable;
 use Sabberworm\CSS\Value\URL;
 class Import implements AtRule, Positionable
 {
+ use CommentContainer;
  use Position;
- private $oLocation;
- private $sMediaQuery;
- protected $aComments;
- public function __construct(URL $oLocation, $sMediaQuery, $iLineNo = 0)
+ private $location;
+ private $mediaQuery;
+ public function __construct(URL $location, ?string $mediaQuery, ?int $lineNumber = null)
  {
- $this->oLocation = $oLocation;
- $this->sMediaQuery = $sMediaQuery;
- $this->setPosition($iLineNo);
- $this->aComments = [];
+ $this->location = $location;
+ $this->mediaQuery = $mediaQuery;
+ $this->setPosition($lineNumber);
  }
- public function setLocation($oLocation)
+ public function setLocation(URL $location): void
  {
- $this->oLocation = $oLocation;
+ $this->location = $location;
  }
- public function getLocation()
+ public function getLocation(): URL
  {
- return $this->oLocation;
+ return $this->location;
  }
- public function __toString()
+ public function render(OutputFormat $outputFormat): string
  {
- return $this->render(new OutputFormat());
+ return $outputFormat->getFormatter()->comments($this) . '@import ' . $this->location->render($outputFormat)
+ . ($this->mediaQuery === null ? '' : ' ' . $this->mediaQuery) . ';';
  }
- public function render($oOutputFormat)
- {
- return $oOutputFormat->comments($this) . "@import " . $this->oLocation->render($oOutputFormat)
- . ($this->sMediaQuery === null ? '' : ' ' . $this->sMediaQuery) . ';';
- }
- public function atRuleName()
+ public function atRuleName(): string
  {
  return 'import';
  }
- public function atRuleArgs()
+ public function atRuleArgs(): array
  {
- $aResult = [$this->oLocation];
- if ($this->sMediaQuery) {
- array_push($aResult, $this->sMediaQuery);
+ $result = [$this->location];
+ if (\is_string($this->mediaQuery) && $this->mediaQuery !== '') {
+ $result[] = $this->mediaQuery;
  }
- return $aResult;
+ return $result;
  }
- public function addComments(array $aComments)
+ public function getMediaQuery(): ?string
  {
- $this->aComments = array_merge($this->aComments, $aComments);
- }
- public function getComments()
- {
- return $this->aComments;
- }
- public function setComments(array $aComments)
- {
- $this->aComments = $aComments;
- }
- public function getMediaQuery()
- {
- return $this->sMediaQuery;
+ return $this->mediaQuery;
  }
 }
