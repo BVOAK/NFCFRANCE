@@ -6,9 +6,23 @@
 }
 
 
-/*** Produt ***/
+/*** Product ***/
 .single_variation_wrap { margin-top: 1em!important; }
 .woocommerce-price-suffix { color: #1c3e8f; }
+
+.woocommerce-variation-add-to-cart .quantity { 
+    flex-basis: auto!important;
+    display: grid !important;
+    height: 50px;
+
+} 
+.bdt-add-to-cart-qty-minus, .bdt-add-to-cart-qty-plus { 
+    display:none;
+}
+
+.variations .uicore-swatches-wrp {
+ margin: 0px;
+}
 
 /*** Panier ***/
 /* Masquer la 2ème occurrence de "Couleur" dans le même item */
