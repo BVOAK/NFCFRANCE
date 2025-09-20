@@ -6,20 +6,46 @@
 if (typeof window.NFCConfigurator === 'undefined') {
     window.NFCConfigurator = class NFCConfigurator {
         constructor() {
+            console.log('🚀 NFCConfigurator constructor appelé');
+
             // Vérifier que la config existe
-            if (!window.nfcConfig) {
-                console.error('Configuration NFC manquante');
+            if (!window.nfcConfiguratorData) {
+                console.error('❌ Configuration NFC manquante dans constructor');
                 return;
             }
 
-            this.config = window.nfcConfig;
+            console.log('✅ window.nfcConfig trouvé:', window.nfcConfiguratorData);
+
+            this.config = window.nfcConfiguratorData;
             this.productId = this.config.productId;
             this.variations = this.config.variations;
 
-            // État de l'application
+
+            // NOUVEAU : Récupérer la présélection depuis URL
+            const initialSelection = this.config.initialSelection || {};
+            const initialColor = initialSelection.color || 'blanc';
+            const initialQuantity = initialSelection.quantity || 1;
+
+            // Vérification finale
+            if (!this.variations) {
+                console.error('❌ this.variations est undefined après affectation');
+                console.error('❌ this.config.variations:', this.config.variations);
+                return;
+            }
+
+            if (!this.variations['blanc']) {
+                console.error('❌ Variation blanc manquante');
+                console.error('❌ Variations disponibles:', Object.keys(this.variations));
+                return;
+            }
+
+            console.log('✅ Variations OK, blanc trouvé:', this.variations['blanc']);
+
+            // État de l'application - AVEC VÉRIFICATION
             this.state = {
-                selectedColor: 'blanc',
-                selectedVariation: this.variations['blanc'],
+                selectedColor: initialColor,
+                selectedVariation: this.variations[initialColor],
+                quantity: initialQuantity,
                 userInfo: {
                     firstName: '',
                     lastName: ''
@@ -29,6 +55,8 @@ if (typeof window.NFCConfigurator === 'undefined') {
                 showUserInfo: true,
                 isValid: false
             };
+
+            console.log('✅ État initial créé:', this.state);
 
             // Éléments DOM
             this.elements = {};
@@ -133,7 +161,11 @@ if (typeof window.NFCConfigurator === 'undefined') {
 
                 // Bouton ajout panier
                 addToCartBtn: document.getElementById('addToCartBtn'),
-                loadingOverlay: document.getElementById('loadingOverlay')
+                loadingOverlay: document.getElementById('loadingOverlay'),
+
+                quantityInput: document.getElementById('quantityInput'),
+                quantityMinus: document.getElementById('quantityMinus'),
+                quantityPlus: document.getElementById('quantityPlus'),
             };
 
             // Debug éléments manquants
@@ -398,6 +430,35 @@ if (typeof window.NFCConfigurator === 'undefined') {
                     this.addToCart();
                 });
             }
+
+            if (this.elements.quantityMinus) {
+                this.elements.quantityMinus.addEventListener('click', () => this.changeQuantity(-1));
+            }
+
+            if (this.elements.quantityPlus) {
+                this.elements.quantityPlus.addEventListener('click', () => this.changeQuantity(1));
+            }
+
+            if (this.elements.quantityInput) {
+                this.elements.quantityInput.addEventListener('change', (e) => {
+                    this.state.quantity = parseInt(e.target.value) || 1;
+                    this.validateConfiguration();
+                });
+            }
+        }
+
+        changeQuantity(delta) {
+            const currentQuantity = this.state.quantity || 1;
+            const newQuantity = Math.max(1, Math.min(99, currentQuantity + delta));
+
+            this.state.quantity = newQuantity;
+
+            if (this.elements.quantityInput) {
+                this.elements.quantityInput.value = newQuantity;
+            }
+
+            console.log(`📊 Quantité changée: ${newQuantity}`);
+            this.validateConfiguration();
         }
 
         /**
@@ -405,12 +466,20 @@ if (typeof window.NFCConfigurator === 'undefined') {
          */
         setInitialState() {
             // Sélectionner blanc par défaut
-            const blancInput = document.querySelector('input[value="blanc"]');
-            if (blancInput) {
-                blancInput.checked = true;
-            }
+            console.log('⚙️ Configuration état initial');
 
-            this.changeColor('blanc');
+            // NOUVEAU : Appliquer la présélection depuis URL
+            const initialSelection = this.config.initialSelection || {};
+
+            // Couleur depuis URL ou défaut
+            const initialColor = initialSelection.color || 'blanc';
+            this.changeColor(initialColor);
+
+            // Quantité depuis URL ou défaut
+            if (initialSelection.quantity && this.elements.quantityInput) {
+                this.state.quantity = initialSelection.quantity;
+                this.elements.quantityInput.value = initialSelection.quantity;
+            }
 
             // Focus sur le premier champ
             if (this.elements.firstNameInput) {
@@ -426,6 +495,8 @@ if (typeof window.NFCConfigurator === 'undefined') {
             }
 
             this.updateUserDisplays();
+
+            console.log('✅ État initial configuré avec présélection:', this.state);
         }
 
         /**
@@ -970,102 +1041,91 @@ if (typeof window.NFCConfigurator === 'undefined') {
          * NOUVEAU : Ajoute au panier avec screenshot
          */
         async addToCart() {
-            if (!this.state.isValid) {
-                // Forcer une validation avant d'échouer
-                const validation = this.validateConfiguration();
-                if (!validation.isValid) {
-                    this.showError('Veuillez corriger: ' + validation.errors.join(', '));
-                    return;
-                }
-                // Si validation OK maintenant, continuer
-                this.state.isValid = true;
-            }
-
-            console.log('🛒 Ajout au panier avec screenshot...');
-            this.showLoading(true);
-
             try {
-                // GÉNÉRER LE SCREENSHOT
-                let screenshotData = null;
+                this.setLoadingState(true);
 
-                if (this.screenshotCapture) {
-                    try {
-                        console.log('📸 Génération screenshot HTML2Canvas...');
-                        screenshotData = await this.screenshotCapture.generateBothFormats(300);
-                        console.log('✅ Screenshot HTML2Canvas généré');
-                    } catch (screenshotError) {
-                        console.error('⚠️ Erreur screenshot HTML2Canvas:', screenshotError);
-                        // Continuer sans screenshot plutôt que planter
-                    }
-                } else {
-                    console.warn('⚠️ Module screenshot non disponible');
-                }
+                // Générer screenshot
+                const screenshot = await this.generateScreenshot();
 
-                // Préparer les données (avec ou sans screenshot)
-                const configData = {
-                    variation_id: this.state.selectedVariation.id,
+                // Configuration complète avec quantité
+                const config = {
                     color: this.state.selectedColor,
-                    user: this.state.userInfo,
-                    image: this.state.image && this.state.image.data ? this.state.image : null,
+                    variation_id: this.state.selectedVariation.id,
+                    quantity: this.state.quantity || 1, // AJOUTER LA QUANTITÉ
+                    user: {
+                        firstName: this.state.userInfo.firstName,
+                        lastName: this.state.userInfo.lastName,
+                        showInfo: this.state.showUserInfo
+                    },
+                    image: this.state.image,
                     logoVerso: this.state.logoVerso,
-                    showUserInfo: this.state.showUserInfo,
-                    timestamp: Date.now()
+                    screenshot: screenshot
                 };
 
-                // 🔍 DEBUG : Vérifier les données avant envoi
-                console.log('🛒 ConfigData debug:', {
-                    hasImageRecto: !!configData.image?.data,
-                    hasLogoVerso: !!configData.logoVerso?.data,
-                    hasScreenshot: !!screenshotData,
-                    imageRectoDetails: configData.image ? {
-                        name: configData.image.name,
-                        dataLength: configData.image.data?.length || 0
-                    } : 'null',
-                    logoVersoDetails: configData.logoVerso ? {
-                        name: configData.logoVerso.name,
-                        hasData: !!configData.logoVerso.data,
-                        dataLength: configData.logoVerso.data?.length || 0
-                    } : 'null',
-                    screenshotDetails: screenshotData ? {
-                        hasFull: !!screenshotData.full,
-                        hasThumbnail: !!screenshotData.thumbnail,
-                        fullLength: screenshotData.full?.length || 0,
-                        thumbnailLength: screenshotData.thumbnail?.length || 0
-                    } : 'null'
-                });
-
-                // Ajouter screenshot seulement s'il existe
-                if (screenshotData) {
-                    configData.screenshot = {
-                        full: screenshotData.full,
-                        thumbnail: screenshotData.thumbnail,
-                        generated_at: screenshotData.generated_at
-                    };
-                }
-
-                console.log('📦 Données config préparées (avec screenshot:', !!screenshotData, ')');
-
+                console.log('🛒 Ajout panier avec config:', config);
 
                 // Appel Ajax
-                const response = await this.ajaxCall('nfc_add_to_cart', {
-                    product_id: this.productId,
-                    variation_id: this.state.selectedVariation.id,
-                    nfc_config: JSON.stringify(configData),
-                    nonce: this.config.nonce
+                const formData = new FormData();
+                formData.append('action', 'nfc_add_to_cart');
+                formData.append('product_id', this.productId);
+                formData.append('variation_id', this.state.selectedVariation.id);
+                formData.append('quantity', this.state.quantity || 1); // AJOUTER QUANTITÉ
+                formData.append('nonce', this.config.nonce);
+                formData.append('nfc_config', JSON.stringify(config));
+
+                const response = await fetch(this.config.ajaxUrl, {
+                    method: 'POST',
+                    body: formData
                 });
 
-                if (response.success) {
-                    console.log('✅ Ajouté au panier avec succès (avec screenshot)');
-                    window.location.href = this.config.cartUrl;
+                const result = await response.json();
+
+                if (result.success) {
+                    console.log('✅ Produit ajouté au panier:', result);
+
+                    // Afficher succès
+                    this.showSuccess(result.data.message);
+
+                    // Redirection vers panier après délai
+                    setTimeout(() => {
+                        window.location.href = result.data.cart_url;
+                    }, 1500);
+
                 } else {
-                    throw new Error(response.data || 'Erreur ajout panier');
+                    throw new Error(result.data || 'Erreur lors de l\'ajout au panier');
                 }
 
             } catch (error) {
                 console.error('❌ Erreur ajout panier:', error);
-                this.showError('Erreur: ' + error.message);
-                this.showLoading(false);
+                this.showError(error.message);
+            } finally {
+                this.setLoadingState(false);
             }
+        }
+
+        detectColorFromUrl() {
+            const initialSelection = this.config.initialSelection || {};
+
+            if (initialSelection.variation_id) {
+                // Chercher quelle couleur correspond à cette variation_id
+                for (const [color, variation] of Object.entries(this.variations)) {
+                    if (variation.id == initialSelection.variation_id) {
+                        console.log(`🎯 Couleur détectée depuis URL: ${color} (variation ${variation.id})`);
+                        return color;
+                    }
+                }
+            }
+
+            // Fallback sur attribut couleur dans URL
+            if (initialSelection.attributes && initialSelection.attributes['attribute_pa_couleur']) {
+                const urlColor = initialSelection.attributes['attribute_pa_couleur'];
+                if (this.variations[urlColor]) {
+                    console.log(`🎯 Couleur détectée depuis attribut URL: ${urlColor}`);
+                    return urlColor;
+                }
+            }
+
+            return 'blanc'; // Défaut
         }
 
 

@@ -28,6 +28,30 @@ if (is_wp_error($product_data)) {
     wp_die(__('Erreur produit : ', 'nfc-configurator') . $product_data->get_error_message());
 }
 
+// Récupérer les paramètres URL pour présélection
+$url_variation_id = isset($_GET['variation_id']) ? intval($_GET['variation_id']) : null;
+$url_quantity = isset($_GET['quantity']) ? intval($_GET['quantity']) : 1;
+$url_attributes = [];
+
+// Récupérer les attributs depuis l'URL (ex: attribute_pa_couleur=blanc)
+foreach ($_GET as $key => $value) {
+    if (strpos($key, 'attribute_') === 0) {
+        $url_attributes[$key] = sanitize_text_field($value);
+    }
+}
+
+// Déterminer la couleur initiale
+$initial_color = 'blanc'; // Par défaut
+if ($url_variation_id && isset($product_data['variations'])) {
+    foreach ($product_data['variations'] as $color => $variation_data) {
+        if ($variation_data['id'] == $url_variation_id) {
+            $initial_color = $color;
+            break;
+        }
+    }
+}
+
+
 // Configuration JavaScript avec traductions
 $nfc_config = [
     'productId' => $product_id,
@@ -37,6 +61,13 @@ $nfc_config = [
     'homeUrl' => home_url(),
     'cartUrl' => wc_get_cart_url(),
     'themeUrl' => get_template_directory_uri(),
+    // NOUVEAU : Paramètres de présélection depuis URL
+    'initialSelection' => [
+        'color' => $initial_color,
+        'variation_id' => $url_variation_id,
+        'quantity' => $url_quantity,
+        'attributes' => $url_attributes
+    ],
     'i18n' => [
         'loading' => __('Chargement...', 'nfc-configurator'),
         'error' => __('Erreur', 'nfc-configurator'),
@@ -52,6 +83,22 @@ $nfc_config = [
         'qrLoading' => __('Chargement QR...', 'nfc-configurator')
     ]
 ];
+
+// DEBUG : Ajouter des logs pour vérifier les données
+if (defined('WP_DEBUG') && WP_DEBUG) {
+    error_log('🔍 Configurateur - Product ID: ' . $product_id);
+    error_log('🔍 Configurateur - Variations: ' . print_r($product_data['variations'], true));
+}
+
+// Ajouter un script de debug temporaire
+?>
+<script type="text/javascript">
+    console.log('🔍 DEBUG Configurateur:');
+    console.log('Product ID:', <?php echo $product_id; ?>);
+    console.log('Product Data:', <?php echo json_encode($product_data, JSON_PRETTY_PRINT); ?>);
+</script>
+
+<?php
 
 get_header();
 
@@ -424,6 +471,15 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
 
                                 </div>
 
+                                <div class="config-section quantity-section d-none">
+                                    <h3>Quantité :</h3>
+                                    <div class="quantity-controls">
+                                        <button type="button" class="quantity-btn minus" id="quantityMinus">-</button>
+                                        <input type="number" id="quantityInput" value="1" min="1" max="99" class="quantity-input">
+                                        <button type="button" class="quantity-btn plus" id="quantityPlus">+</button>
+                                    </div>
+                                </div>
+
                                 <!-- Bouton Ajout Panier UICore/Elementor -->
                                 <div class="config-section mt-4">
                                     <button type="button"
@@ -471,7 +527,7 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
 
 <!-- Configuration JavaScript avec traductions -->
 <script type="text/javascript">
-    window.nfcConfig = <?php echo json_encode($nfc_config, JSON_UNESCAPED_UNICODE); ?>;
+    window.nfcConfiguratorData = <?php echo json_encode($nfc_config, JSON_UNESCAPED_UNICODE); ?>;
     console.log('🎛️ Configuration chargée:', window.nfcConfig);
 </script>
 

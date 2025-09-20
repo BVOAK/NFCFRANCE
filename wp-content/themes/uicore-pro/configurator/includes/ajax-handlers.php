@@ -35,32 +35,26 @@ add_action('init', 'nfc_register_ajax_handlers');
  */
 function nfc_add_to_cart_handler()
 {
-    error_log('NFC: === DÉBUT AJOUT PANIER AVEC SCREENSHOT ===');
-    error_log('NFC: POST data: ' . print_r($_POST, true));
 
     // Vérification du nonce
     if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'nfc_configurator')) {
-        error_log('NFC: Nonce invalide');
         wp_send_json_error('Nonce invalide');
         return;
     }
 
     $product_id = intval($_POST['product_id'] ?? 0);
     $variation_id = intval($_POST['variation_id'] ?? 0);
+    $quantity = intval($_POST['quantity'] ?? 1);
     $nfc_config = $_POST['nfc_config'] ?? '';
-
-    error_log("NFC: Données reçues - Product: {$product_id}, Variation: {$variation_id}");
 
     // Vérifications de base
     if (!$product_id || !$variation_id) {
-        error_log('NFC: Données produit manquantes');
         wp_send_json_error('Données produit manquantes');
         return;
     }
 
     // Vérifier que WooCommerce est actif
     if (!class_exists('WooCommerce')) {
-        error_log('NFC: WooCommerce non actif');
         wp_send_json_error('WooCommerce non actif');
         return;
     }
@@ -78,7 +72,6 @@ function nfc_add_to_cart_handler()
     // Vérifier que le produit existe
     $product = wc_get_product($product_id);
     if (!$product) {
-        error_log('NFC: Produit introuvable');
         wp_send_json_error('Produit introuvable');
         return;
     }
@@ -86,14 +79,12 @@ function nfc_add_to_cart_handler()
     // Vérifier que la variation existe
     $variation = wc_get_product($variation_id);
     if (!$variation || !$variation->exists()) {
-        error_log('NFC: Variation introuvable');
         wp_send_json_error('Variation introuvable');
         return;
     }
 
     // Vérifier le stock
     if (!$variation->is_in_stock()) {
-        error_log('NFC: Produit en rupture de stock');
         wp_send_json_error('Produit en rupture de stock');
         return;
     }
@@ -102,17 +93,13 @@ function nfc_add_to_cart_handler()
         // Décoder la configuration NFC
         $config = json_decode(stripslashes($nfc_config), true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log('NFC: Configuration JSON invalide: ' . json_last_error_msg());
             wp_send_json_error('Configuration invalide');
             return;
         }
 
-        error_log('NFC: Configuration décodée avec screenshot: ' . print_r(array_keys($config), true));
-
         // NOUVEAU : Valider la configuration avec screenshot
         $validation = nfc_validate_configuration($config);
         if (!$validation['valid']) {
-            error_log('NFC: Configuration invalide: ' . $validation['message']);
             wp_send_json_error($validation['message']);
             return;
         }
@@ -138,7 +125,7 @@ function nfc_add_to_cart_handler()
         // Ajouter au panier WooCommerce
         $cart_item_key = WC()->cart->add_to_cart(
             $product_id,
-            1, // Quantité
+            $quantity, // Quantité
             $variation_id,
             [], // Variation attributes (automatique)
             ['nfc_config' => $config] // Données personnalisées
