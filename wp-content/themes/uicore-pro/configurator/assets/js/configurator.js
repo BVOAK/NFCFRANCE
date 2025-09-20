@@ -1036,70 +1036,150 @@ if (typeof window.NFCConfigurator === 'undefined') {
             }
         }
 
+        setLoadingState(isLoading) {
+            if (!this.elements.addToCartBtn) {
+                console.warn('❌ Bouton panier non trouvé pour setLoadingState');
+                return;
+            }
 
-        /**
-         * NOUVEAU : Ajoute au panier avec screenshot
-         */
+            const button = this.elements.addToCartBtn;
+
+            if (isLoading) {
+                // État loading
+                button.disabled = true;
+                button.classList.add('loading');
+
+                // Changer le texte temporairement
+                const originalText = button.textContent;
+                button.setAttribute('data-original-text', originalText);
+                button.textContent = this.config.i18n?.addingToCart || 'Ajout en cours...';
+
+                // Afficher overlay loading si disponible
+                if (this.elements.loadingOverlay) {
+                    this.elements.loadingOverlay.style.display = 'flex';
+                }
+
+                console.log('🔄 État loading activé');
+
+            } else {
+                // Retour à l'état normal
+                button.disabled = false;
+                button.classList.remove('loading');
+
+                // Restaurer le texte original
+                const originalText = button.getAttribute('data-original-text');
+                if (originalText) {
+                    button.textContent = originalText;
+                    button.removeAttribute('data-original-text');
+                }
+
+                // Masquer overlay loading
+                if (this.elements.loadingOverlay) {
+                    this.elements.loadingOverlay.style.display = 'none';
+                }
+
+                console.log('✅ État loading désactivé');
+            }
+        }
+
         async addToCart() {
+            if (!this.state.isValid) {
+                // Forcer une validation avant d'échouer
+                const validation = this.validateConfiguration();
+                if (!validation.isValid) {
+                    this.showError('Veuillez corriger: ' + validation.errors.join(', '));
+                    return;
+                }
+                // Si validation OK maintenant, continuer
+                this.state.isValid = true;
+            }
+
+            console.log('🛒 Ajout au panier avec screenshot...');
+            this.showLoading(true);
+
             try {
-                this.setLoadingState(true);
+                // GÉNÉRER LE SCREENSHOT
+                let screenshotData = null;
 
-                // Générer screenshot
-                const screenshot = await this.generateScreenshot();
+                if (this.screenshotCapture) {
+                    try {
+                        console.log('📸 Génération screenshot HTML2Canvas...');
+                        screenshotData = await this.screenshotCapture.generateBothFormats(300);
+                        console.log('✅ Screenshot HTML2Canvas généré');
+                    } catch (screenshotError) {
+                        console.error('⚠️ Erreur screenshot HTML2Canvas:', screenshotError);
+                        // Continuer sans screenshot plutôt que planter
+                    }
+                } else {
+                    console.warn('⚠️ Module screenshot non disponible');
+                }
 
-                // Configuration complète avec quantité
-                const config = {
-                    color: this.state.selectedColor,
+                // Préparer les données (avec ou sans screenshot)
+                const configData = {
                     variation_id: this.state.selectedVariation.id,
-                    quantity: this.state.quantity || 1, // AJOUTER LA QUANTITÉ
-                    user: {
-                        firstName: this.state.userInfo.firstName,
-                        lastName: this.state.userInfo.lastName,
-                        showInfo: this.state.showUserInfo
-                    },
-                    image: this.state.image,
+                    quantity: this.state.quantity || 1,
+                    color: this.state.selectedColor,
+                    user: this.state.userInfo,
+                    image: this.state.image && this.state.image.data ? this.state.image : null,
                     logoVerso: this.state.logoVerso,
-                    screenshot: screenshot
+                    showUserInfo: this.state.showUserInfo,
+                    timestamp: Date.now()
                 };
 
-                console.log('🛒 Ajout panier avec config:', config);
-
-                // Appel Ajax
-                const formData = new FormData();
-                formData.append('action', 'nfc_add_to_cart');
-                formData.append('product_id', this.productId);
-                formData.append('variation_id', this.state.selectedVariation.id);
-                formData.append('quantity', this.state.quantity || 1); // AJOUTER QUANTITÉ
-                formData.append('nonce', this.config.nonce);
-                formData.append('nfc_config', JSON.stringify(config));
-
-                const response = await fetch(this.config.ajaxUrl, {
-                    method: 'POST',
-                    body: formData
+                // 🔍 DEBUG : Vérifier les données avant envoi
+                console.log('🛒 ConfigData debug:', {
+                    hasImageRecto: !!configData.image?.data,
+                    hasLogoVerso: !!configData.logoVerso?.data,
+                    hasScreenshot: !!screenshotData,
+                    imageRectoDetails: configData.image ? {
+                        name: configData.image.name,
+                        dataLength: configData.image.data?.length || 0
+                    } : 'null',
+                    logoVersoDetails: configData.logoVerso ? {
+                        name: configData.logoVerso.name,
+                        hasData: !!configData.logoVerso.data,
+                        dataLength: configData.logoVerso.data?.length || 0
+                    } : 'null',
+                    screenshotDetails: screenshotData ? {
+                        hasFull: !!screenshotData.full,
+                        hasThumbnail: !!screenshotData.thumbnail,
+                        fullLength: screenshotData.full?.length || 0,
+                        thumbnailLength: screenshotData.thumbnail?.length || 0
+                    } : 'null'
                 });
 
-                const result = await response.json();
+                // Ajouter screenshot seulement s'il existe
+                if (screenshotData) {
+                    configData.screenshot = {
+                        full: screenshotData.full,
+                        thumbnail: screenshotData.thumbnail,
+                        generated_at: screenshotData.generated_at
+                    };
+                }
 
-                if (result.success) {
-                    console.log('✅ Produit ajouté au panier:', result);
+                console.log('📦 Données config préparées (avec screenshot:', !!screenshotData, ')');
 
-                    // Afficher succès
-                    this.showSuccess(result.data.message);
 
-                    // Redirection vers panier après délai
-                    setTimeout(() => {
-                        window.location.href = result.data.cart_url;
-                    }, 1500);
+                // Appel Ajax
+                const response = await this.ajaxCall('nfc_add_to_cart', {
+                    product_id: this.productId,
+                    variation_id: this.state.selectedVariation.id,
+                    quantity: this.state.quantity,
+                    nfc_config: JSON.stringify(configData),
+                    nonce: this.config.nonce
+                });
 
+                if (response.success) {
+                    console.log('✅ Ajouté au panier avec succès (avec screenshot)');
+                    window.location.href = this.config.cartUrl;
                 } else {
-                    throw new Error(result.data || 'Erreur lors de l\'ajout au panier');
+                    throw new Error(response.data || 'Erreur ajout panier');
                 }
 
             } catch (error) {
                 console.error('❌ Erreur ajout panier:', error);
-                this.showError(error.message);
-            } finally {
-                this.setLoadingState(false);
+                this.showError('Erreur: ' + error.message);
+                this.showLoading(false);
             }
         }
 
@@ -1197,17 +1277,51 @@ if (typeof window.NFCConfigurator === 'undefined') {
             }
         }
 
+
         /**
-         * Messages utilisateur
-         */
-        showError(message) {
-            console.error('❌', message);
-            alert('Erreur: ' + message);
+     * Affiche un message de succès
+     */
+        showSuccess(message) {
+            console.log('✅ Succès:', message);
+
+            // Méthode 1: Alert simple (temporaire)
+            alert(message || this.config.i18n?.success || 'Succès !');
+
+            // Méthode 2: Notification dans le bouton (optionnel)
+            if (this.elements.addToCartBtn) {
+                const button = this.elements.addToCartBtn;
+                const originalText = button.textContent;
+
+                // Changer temporairement le texte et la couleur
+                button.textContent = '✅ Ajouté au panier !';
+                button.style.backgroundColor = '#28a745';
+
+                // Restaurer après 2 secondes
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.backgroundColor = '';
+                }, 2000);
+            }
         }
 
-        showSuccess(message) {
-            console.log('✅', message);
-            alert('Succès: ' + message);
+        /**
+         * Affiche un message d'erreur
+         */
+        showError(message) {
+            console.error('❌ Erreur:', message);
+
+            // Alert simple pour l'instant
+            alert(`Erreur: ${message}`);
+
+            // Optionnel: Styling d'erreur sur le bouton
+            if (this.elements.addToCartBtn) {
+                const button = this.elements.addToCartBtn;
+                button.style.backgroundColor = '#dc3545';
+
+                setTimeout(() => {
+                    button.style.backgroundColor = '';
+                }, 2000);
+            }
         }
     };
 }
