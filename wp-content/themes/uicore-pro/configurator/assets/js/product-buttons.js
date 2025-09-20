@@ -62,107 +62,33 @@
         /**
          * Gestionnaire principal des clics sur boutons
          */
-        async handleButtonClick(event) {
-        event.preventDefault();
-        
-        const button = event.currentTarget;
-        const action = button.dataset.action;
-        const productId = button.dataset.productId;
-        
-        this.log('🖱️ Clic bouton:', { action, productId });
-        
-        if (!productId) {
-            this.showNotification('ID produit manquant', 'error');
-            return;
-        }
-        
-        // Ajouter état loading
-        this.addButtonState(button, 'loading');
-        
-        try {
-            let result;
+        handleButtonClick(e) {
+            const button = e.target.closest('[data-nfc-button]');
+            if (!button) return;
             
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const action = button.dataset.action;
+            const productId = button.dataset.productId;
+            
+            this.log(`🔘 Bouton cliqué: ${action} pour produit ${productId}`, button);
+            
+            // Router vers la bonne action
             switch (action) {
-                case 'add-with-files':
-                    this.log('📎 Action: Ajout avec fichiers');
-                    result = await this.addToCartWithFiles(productId);
+                case 'configurator':
+                    this.handleConfiguratorButton(button);
                     break;
                     
-                case 'configurator':
-                    this.log('🎨 Action: Redirection configurateur');
-                    this.redirectToConfigurator(productId);
-                    return; // Pas de traitement après redirection
+                case 'add-with-files':
+                    this.handleAddWithFilesButton(button, productId);
+                    break;
                     
                 default:
-                    throw new Error('Action non reconnue: ' + action);
-            }
-            
-            // Traitement du succès
-            if (result && result.success) {
-                this.removeButtonState(button);
-                this.addButtonState(button, 'success');
-                
-                // Message de succès avec quantité
-                const message = result.data.message || `Produit ajouté (×${this.getSelectedQuantity()})`;
-                this.showNotification(message, 'success');
-                
-                // Auto-redirection vers panier après 2 secondes
-                setTimeout(() => {
-                    if (result.data.cart_url) {
-                        this.log('🛒 Redirection vers panier:', result.data.cart_url);
-                        window.location.href = result.data.cart_url;
-                    }
-                }, 2000);
-                
-            } else {
-                // Erreur métier
-                this.removeButtonState(button);
-                const errorMsg = result?.data?.message || result?.message || 'Erreur lors de l\'ajout';
-                this.showNotification(errorMsg, 'error');
-                this.log('❌ Erreur métier:', result);
-            }
-            
-        } catch (error) {
-            // Erreur technique
-            this.removeButtonState(button);
-            this.showNotification('Erreur de connexion', 'error');
-            this.log('❌ Erreur technique:', error);
-        }
-    }
-
-    redirectToConfigurator(productId) {
-        const quantity = this.getSelectedQuantity();
-        const baseUrl = `/configurateur?product_id=${productId}`;
-        const finalUrl = `${baseUrl}&quantity=${quantity}`;
-        
-        this.log('🎨 Redirection configurateur:', finalUrl);
-        window.location.href = finalUrl;
-    }
-        
-
-        getSelectedQuantity() {
-        // Chercher le champ quantity WooCommerce (plusieurs sélecteurs possibles)
-        const selectors = [
-            '.qty',                          // Standard WooCommerce
-            'input[name="quantity"]',        // Nom direct
-            '.quantity input',               // Dans conteneur quantity
-            '.input-text.qty',              // Classe complète WooCommerce
-            '#quantity_671b80b8c7b36'       // ID spécifique si existant
-        ];
-        
-        for (const selector of selectors) {
-            const qtyInput = document.querySelector(selector);
-            if (qtyInput && qtyInput.value) {
-                const qty = parseInt(qtyInput.value) || 1;
-                this.log('📦 Quantité détectée via', selector + ':', qty);
-                return Math.max(1, Math.min(100, qty)); // Entre 1 et 100
+                    this.log(`⚠️ Action inconnue: ${action}`);
             }
         }
         
-        this.log('📦 Aucun champ quantité trouvé, utilisation quantité par défaut: 1');
-        return 1;
-    }
-
         /**
          * Gestion du bouton configurateur (redirection)
          */
@@ -235,51 +161,34 @@
          * Appel AJAX pour ajouter au panier avec métadonnées fichiers
          */
         async addToCartWithFiles(productId) {
-        const ajaxUrl = this.config.ajaxUrl || '/wp-admin/admin-ajax.php';
-        const nonce = this.config.nonce;
-        const quantity = this.getSelectedQuantity(); // ✅ Récupérer la vraie quantité
-        
-        this.log('🚀 Début ajout panier - Produit:', productId, 'Quantité:', quantity);
-        
-        const formData = new FormData();
-        formData.append('action', 'nfc_add_to_cart_with_files'); // ✅ Action correcte
-        formData.append('product_id', productId);
-        formData.append('quantity', quantity); // ✅ Vraie quantité
-        formData.append('requires_files', 'true');
-        
-        if (nonce) {
-            formData.append('nonce', nonce);
-            this.log('🔐 Nonce envoyé:', nonce);
-        } else {
-            this.log('⚠️ Aucun nonce disponible');
+            const ajaxUrl = this.config.ajaxUrl || '/wp-admin/admin-ajax.php';
+            const nonce = this.config.nonce;
+            
+            const formData = new FormData();
+            formData.append('action', 'nfc_add_to_cart_with_files');
+            formData.append('product_id', productId);
+            formData.append('quantity', '1');
+            formData.append('requires_files', 'true');
+            
+            if (nonce) {
+                formData.append('nonce', nonce);
+            }
+            
+            const response = await fetch(ajaxUrl, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            this.log('📨 Réponse AJAX:', data);
+            
+            return data;
         }
-        
-        // Log des données envoyées
-        this.log('📤 Données envoyées:', {
-            action: 'nfc_add_to_cart_with_files',
-            product_id: productId,
-            quantity: quantity,
-            requires_files: 'true',
-            nonce: nonce ? 'présent' : 'absent'
-        });
-        
-        const response = await fetch(ajaxUrl, {
-            method: 'POST',
-            body: formData,
-            credentials: 'same-origin'
-        });
-        
-        this.log('📡 Statut réponse:', response.status, response.statusText);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        this.log('📨 Réponse AJAX complète:', data);
-        
-        return data;
-    }
         
         /**
          * Gestion des états visuels des boutons
@@ -386,55 +295,79 @@
         /**
          * Affichage d'une notification toast
          */
-        showNotification(message, type = 'info') {
-        this.log(`🔔 Notification ${type}:`, message);
-        
-        // Créer notification visuelle si pas existante
-        let notification = document.getElementById('nfc-notification');
-        if (!notification) {
-            notification = document.createElement('div');
-            notification.id = 'nfc-notification';
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                z-index: 9999;
-                padding: 15px 20px;
+        showNotification(message, type = 'info', duration = 4000) {
+            const container = document.querySelector('.nfc-notifications');
+            if (!container) return;
+            
+            const notification = document.createElement('div');
+            notification.className = `nfc-notification nfc-notification-${type}`;
+            
+            // Styles inline pour éviter les dépendances CSS
+            const baseStyles = `
+                background: white;
                 border-radius: 8px;
-                color: white;
-                font-weight: bold;
-                max-width: 350px;
-                opacity: 0;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                padding: 16px 20px;
+                margin-bottom: 12px;
+                max-width: 320px;
+                pointer-events: auto;
                 transform: translateX(100%);
                 transition: all 0.3s ease;
+                border-left: 4px solid;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 14px;
+                line-height: 1.4;
             `;
-            document.body.appendChild(notification);
+            
+            // Couleurs selon le type
+            const typeStyles = {
+                'success': 'border-left-color: #22c55e; color: #065f46;',
+                'error': 'border-left-color: #ef4444; color: #991b1b;',
+                'warning': 'border-left-color: #f59e0b; color: #92400e;',
+                'info': 'border-left-color: #3b82f6; color: #1e40af;'
+            };
+            
+            // Icônes selon le type
+            const typeIcons = {
+                'success': 'fas fa-check-circle',
+                'error': 'fas fa-exclamation-circle',
+                'warning': 'fas fa-exclamation-triangle',
+                'info': 'fas fa-info-circle'
+            };
+            
+            notification.style.cssText = baseStyles + (typeStyles[type] || typeStyles.info);
+            notification.innerHTML = `
+                <i class="${typeIcons[type] || typeIcons.info}"></i>
+                <span>${this.escapeHtml(message)}</span>
+                <button onclick="this.parentElement.remove()" style="
+                    background: none;
+                    border: none;
+                    font-size: 16px;
+                    cursor: pointer;
+                    opacity: 0.7;
+                    margin-left: auto;
+                ">&times;</button>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Animation d'entrée
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Auto-dismiss
+            const timeoutId = setTimeout(() => {
+                this.hideNotification(notification);
+            }, duration);
+            
+            // Stocker le timeout pour pouvoir l'annuler
+            this.timeouts.set(notification, timeoutId);
+            
+            this.log(`📢 Notification ${type}: ${message}`);
         }
-        
-        // Couleurs selon le type
-        const colors = {
-            success: '#28a745',
-            error: '#dc3545',
-            info: '#17a2b8',
-            warning: '#ffc107'
-        };
-        
-        notification.style.backgroundColor = colors[type] || colors.info;
-        notification.textContent = message;
-        
-        // Animation d'entrée
-        setTimeout(() => {
-            notification.style.opacity = '1';
-            notification.style.transform = 'translateX(0)';
-        }, 10);
-        
-        // Auto-masquage
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateX(100%)';
-        }, type === 'success' ? 4000 : 6000);
-    }
-
         
         /**
          * Masquage d'une notification
