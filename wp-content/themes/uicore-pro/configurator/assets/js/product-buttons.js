@@ -434,7 +434,7 @@
             notification.style.transform = 'translateX(100%)';
         }, type === 'success' ? 4000 : 6000);
     }
-}
+
         
         /**
          * Masquage d'une notification
