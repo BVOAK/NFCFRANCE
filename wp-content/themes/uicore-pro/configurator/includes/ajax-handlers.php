@@ -712,3 +712,137 @@ function nfc_save_order_item_meta($item, $cart_item_key, $values, $order)
         error_log('NFC: Métadonnées configuration (recto + verso) sauvegardées dans la commande');
     }
 }
+
+/**
+ * ✅ NOUVEAU HANDLER : Bouton "Ajouter au panier avec fichiers"
+ * Action: nfc_add_to_cart_with_files (appelée par product-buttons.js)
+ */
+add_action('wp_ajax_nfc_add_to_cart_with_files', 'nfc_add_to_cart_with_files_handler');
+add_action('wp_ajax_nopriv_nfc_add_to_cart_with_files', 'nfc_add_to_cart_with_files_handler');
+
+function nfc_add_to_cart_with_files_handler() {
+    error_log('🛒 NFC: Handler nfc_add_to_cart_with_files appelé');
+    error_log('🛒 NFC: POST data: ' . print_r($_POST, true));
+    
+    // ✅ CORRECTION : Vérification du BON nonce
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'nfc_buttons')) {
+        error_log('❌ NFC: Nonce invalide - reçu: ' . ($_POST['nonce'] ?? 'aucun'));
+        error_log('❌ NFC: Nonce attendu: nfc_buttons');
+        wp_send_json_error('Nonce invalide');
+        return;
+    }
+    
+    // Récupération des données
+    $product_id = intval($_POST['product_id'] ?? 0);
+    $quantity = intval($_POST['quantity'] ?? 1);
+    $requires_files = ($_POST['requires_files'] ?? '') === 'true';
+    
+    error_log("📦 NFC: Ajout produit {$product_id}, qty: {$quantity}, files: " . ($requires_files ? 'oui' : 'non'));
+    
+    // Validations de base
+    if (!$product_id) {
+        error_log('❌ NFC: ID produit manquant');
+        wp_send_json_error('ID produit manquant');
+        return;
+    }
+    
+    if ($quantity < 1 || $quantity > 100) {
+        error_log('❌ NFC: Quantité invalide: ' . $quantity);
+        wp_send_json_error('Quantité invalide (1-100)');
+        return;
+    }
+    
+    // Vérifier le produit
+    $product = wc_get_product($product_id);
+    if (!$product || !$product->exists()) {
+        error_log('❌ NFC: Produit introuvable: ' . $product_id);
+        wp_send_json_error('Produit introuvable');
+        return;
+    }
+    
+    // Vérifier le stock
+    if (!$product->is_in_stock()) {
+        error_log('❌ NFC: Produit en rupture: ' . $product_id);
+        wp_send_json_error('Produit en rupture de stock');
+        return;
+    }
+    
+    // Vérifier quantité disponible
+    if ($product->managing_stock() && $quantity > $product->get_stock_quantity()) {
+        error_log('❌ NFC: Stock insuffisant: demandé=' . $quantity . ', disponible=' . $product->get_stock_quantity());
+        wp_send_json_error('Stock insuffisant');
+        return;
+    }
+    
+    // Initialiser WooCommerce si nécessaire
+    if (!class_exists('WooCommerce') || !WC()->cart) {
+        error_log('❌ NFC: WooCommerce non initialisé');
+        wp_send_json_error('Panier non disponible');
+        return;
+    }
+    
+    try {
+        // ✅ Métadonnées pour le panier
+        $cart_item_data = [
+            'nfc_requires_files' => $requires_files,
+            'nfc_added_via' => 'files_button',
+            'nfc_unique_key' => uniqid('files_', true) // Éviter fusion articles
+        ];
+        
+        // ✅ Gestion des variations (cartes couleurs)
+        $variation_id = 0;
+        $variation_attributes = [];
+        
+        if ($product->is_type('variable')) {
+            error_log('🎨 NFC: Produit variable détecté');
+            $available_variations = $product->get_available_variations();
+            
+            if (!empty($available_variations)) {
+                // Prendre la première variation disponible
+                $first_variation = $available_variations[0];
+                $variation_id = $first_variation['variation_id'];
+                $variation_attributes = $first_variation['attributes'];
+                
+                error_log('🎨 NFC: Variation sélectionnée: ' . $variation_id);
+                error_log('🎨 NFC: Attributs: ' . print_r($variation_attributes, true));
+            } else {
+                error_log('❌ NFC: Aucune variation disponible');
+                wp_send_json_error('Aucune variation disponible');
+                return;
+            }
+        }
+        
+        // ✅ Ajouter au panier WooCommerce
+        $cart_item_key = WC()->cart->add_to_cart(
+            $product_id,
+            $quantity,
+            $variation_id,
+            $variation_attributes,
+            $cart_item_data
+        );
+        
+        if (!$cart_item_key) {
+            error_log('❌ NFC: Échec ajout au panier WooCommerce');
+            wp_send_json_error('Échec ajout au panier');
+            return;
+        }
+        
+        error_log('✅ NFC: Succès ajout panier - Key: ' . $cart_item_key);
+        
+        // ✅ Réponse de succès
+        wp_send_json_success([
+            'message' => "Produit ajouté avec succès ! (Quantité: {$quantity})",
+            'cart_item_key' => $cart_item_key,
+            'cart_url' => wc_get_cart_url(),
+            'cart_count' => WC()->cart->get_cart_contents_count(),
+            'product_id' => $product_id,
+            'quantity' => $quantity,
+            'variation_id' => $variation_id
+        ]);
+        
+    } catch (Exception $e) {
+        error_log('❌ NFC: Exception ajout panier: ' . $e->getMessage());
+        error_log('❌ NFC: Stack trace: ' . $e->getTraceAsString());
+        wp_send_json_error('Erreur serveur: ' . $e->getMessage());
+    }
+}
