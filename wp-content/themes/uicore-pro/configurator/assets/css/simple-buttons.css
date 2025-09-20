@@ -1,0 +1,290 @@
+/**
+ * NOUVEAU FICHIER : /configurator/assets/css/simple-buttons.css
+ * CSS simple et responsive pour les boutons NFC
+ * Compatible avec UICore et Elementor
+ */
+
+/* ========================================
+   VARIABLES & BASE
+======================================== */
+
+:root {
+    --nfc-primary: #E62E26;
+    --nfc-primary-hover: #d12a22;
+    --nfc-secondary: #1c3e8f;
+    --nfc-success: #28a745;
+    --nfc-transition: all 0.3s ease;
+}
+
+/* Container principal */
+.nfc-simple-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1rem 0;
+    width: 100%;
+}
+
+/* Layout horizontal (optionnel) */
+.nfc-simple-buttons[data-layout="horizontal"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+/* ========================================
+   STYLES DES BOUTONS
+======================================== */
+
+/* Base pour les boutons NFC (hérite d'Elementor) */
+.nfc-simple-buttons .elementor-button {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    min-height: 70px;
+    width: 100%;
+    padding: 0 2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--nfc-transition);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* Bouton Configurateur */
+.nfc-configurator-btn {
+    background-color: var(--nfc-primary) !important;
+    color: white !important;
+    border-color: var(--nfc-primary) !important;
+}
+
+.nfc-configurator-btn:hover {
+    background-color: var(--nfc-primary-hover) !important;
+    border-color: var(--nfc-primary-hover) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230, 46, 38, 0.3);
+}
+
+/* Bouton Ajouter au panier */
+.nfc-addcart-btn {
+    background-color: var(--nfc-secondary) !important;
+    color: white !important;
+    border-color: var(--nfc-secondary) !important;
+}
+
+.nfc-addcart-btn:hover {
+    background-color: #173580 !important;
+    border-color: #173580 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(28, 62, 143, 0.3);
+}
+
+/* ========================================
+   ÉTATS DES BOUTONS
+======================================== */
+
+/* État désactivé */
+.nfc-simple-buttons .elementor-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* État de chargement */
+.nfc-simple-buttons .elementor-button .nfc-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: inherit;
+    color: inherit;
+    font-size: 14px;
+    gap: 0.5rem;
+}
+
+.nfc-simple-buttons .elementor-button .nfc-loading i {
+    animation: nfc-spin 1s linear infinite;
+}
+
+@keyframes nfc-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ========================================
+   ICÔNES ET CONTENU
+======================================== */
+
+/* Icônes à gauche */
+.nfc-simple-buttons .elementor-button img {
+    width: 30px;
+    height: 30px;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+/* Wrapper de contenu Elementor */
+.nfc-simple-buttons .elementor-button-content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.nfc-simple-buttons .ui-btn-anim-wrapp {
+    display: flex !important;
+    align-items: center;
+}
+
+.nfc-simple-buttons .elementor-button-text {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+======================================== */
+
+/* Mobile first (par défaut) */
+.nfc-simple-buttons {
+    padding: 0;
+    margin: 1rem 0;
+}
+
+/* Tablet (768px+) */
+@media (min-width: 768px) {
+    .nfc-simple-buttons[data-layout="horizontal"] .elementor-button {
+        width: auto;
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .nfc-simple-buttons {
+        gap: 1.5rem;
+    }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+    .nfc-simple-buttons .elementor-button {
+        min-height: 60px;
+    }
+    
+    .nfc-simple-buttons .elementor-button-text {
+        font-size: 18px;
+    }
+}
+
+/* ========================================
+   INTÉGRATION AVEC LE THÈME
+======================================== */
+
+/* Masquer le bouton WooCommerce natif quand nos boutons sont présents */
+.nfc-simple-buttons ~ .single_add_to_cart_button,
+.nfc-simple-buttons + .single_add_to_cart_button {
+    display: none !important;
+}
+
+/* Ajustements pour UICore */
+#blocCardCustom .nfc-simple-buttons .elementor-button-link {
+    height: 70px !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+#blocCardCustom .nfc-simple-buttons {
+    margin-top: 1rem;
+}
+
+/* Compatibilité avec le container Elementor existant */
+#blocCardCustom .quantity {
+    display: grid !important;
+    height: 70px;
+    margin-bottom: 1rem;
+}
+
+#blocCardCustom .bdt-add-to-cart-qty-minus,
+#blocCardCustom .bdt-add-to-cart-qty-plus {
+    display: none;
+}
+
+/* ========================================
+   ANIMATIONS ET EFFETS
+======================================== */
+
+/* Animation au hover */
+.nfc-simple-buttons .elementor-button {
+    transition: all 0.3s ease;
+}
+
+.nfc-simple-buttons .elementor-button:hover {
+    transform: translateY(-2px);
+}
+
+.nfc-simple-buttons .elementor-button:active {
+    transform: translateY(0);
+}
+
+/* Animation de succès */
+.nfc-simple-buttons .elementor-button.success {
+    background-color: var(--nfc-success) !important;
+    border-color: var(--nfc-success) !important;
+}
+
+/* Focus accessibility */
+.nfc-simple-buttons .elementor-button:focus {
+    outline: 2px solid var(--nfc-primary);
+    outline-offset: 2px;
+}
+
+/* ========================================
+   MODES D'AFFICHAGE SPÉCIAUX
+======================================== */
+
+/* Mode compact (pour sidebar ou zones étroites) */
+.nfc-simple-buttons.compact .elementor-button {
+    min-height: 50px;
+    padding: 0 1rem;
+}
+
+.nfc-simple-buttons.compact .elementor-button img {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+.nfc-simple-buttons.compact .elementor-button-text {
+    font-size: 14px;
+}
+
+/* Mode pleine largeur */
+.nfc-simple-buttons.full-width {
+    width: 100%;
+}
+
+.nfc-simple-buttons.full-width .elementor-button {
+    width: 100%;
+}
+
+/* ========================================
+   DEBUG ET DÉVELOPPEMENT
+======================================== */
+
+/* Styles de debug (seulement si WP_DEBUG activé) */
+body.wp-debug .nfc-simple-buttons::before {
+    content: "🔧 NFC Simple Buttons v2.0";
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 0.5rem;
+    opacity: 0.7;
+}

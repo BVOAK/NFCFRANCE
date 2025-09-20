@@ -119,8 +119,10 @@ function nfc_configurator_init()
         'ajax-handlers.php',
         'nfc-file-handler.php',
         'nfc-customer-integration.php',
-        'class-nfc-product-button-manager.php',
-        'class-nfc-button-renderer.php'
+        //'class-nfc-product-button-manager.php',
+        //'class-nfc-button-renderer.php',
+        'class-nfc-simple-buttons.php',
+        'simple-ajax-handler.php'
     ];
 
     foreach ($files_to_load as $file) {
