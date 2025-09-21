@@ -100,6 +100,7 @@ class NFC_Simple_Buttons
      */
     private function is_configurable_product($product_id)
     {
+        
         // Récupérer la classe existante
         if (class_exists('NFC_Product_Manager')) {
             $nfc_product = new NFC_Product_Manager();
@@ -251,6 +252,7 @@ class NFC_Simple_Buttons
             'nonce' => wp_create_nonce('nfc_simple_buttons'),
             'cartUrl' => wc_get_cart_url(),
             'homeUrl' => home_url(),
+            'debug' => true,
             'i18n' => [
                 'adding' => 'Ajout en cours...',
                 'added' => 'Ajouté au panier !',

@@ -10,6 +10,14 @@ class NFCSimpleButtons {
         this.config = window.nfcConfig || {};
         this.products = new Map(); // Cache des données produits
 
+        // FORCER LE DEBUG
+    this.debug = true; // ← Forcer au lieu de window.nfcConfig?.debug || false
+    this.config = window.nfcConfig || {};
+    this.products = new Map();
+    
+    console.log('🔍 DEBUG FORCÉ - NFCSimpleButtons');
+    console.log('🔍 Config reçue:', this.config);
+
         this.init();
     }
 

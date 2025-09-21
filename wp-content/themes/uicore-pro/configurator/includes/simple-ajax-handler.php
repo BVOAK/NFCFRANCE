@@ -35,6 +35,10 @@ class NFC_Simple_Ajax_Handler
     {
         // Log de début
         error_log('🚀 NFC Simple: Début ajout panier');
+        error_log('🚀 === NFC Simple AJAX Handler Called ===');
+        error_log('📨 POST data: ' . print_r($_POST, true));
+        error_log('🔐 Nonce reçu: ' . ($_POST['nonce'] ?? 'MANQUANT'));
+        error_log('🔐 Nonce attendu: nfc_simple_buttons');
 
         try {
             // 1. SÉCURITÉ ET VALIDATION

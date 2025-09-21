@@ -260,3 +260,36 @@ add_action('init', function() {
 });
 
 require_once get_template_directory() . '/inc/nfc-bulk-pricing.php';
+
+add_action('wp_footer', function() {
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        echo "<!-- NFC Debug: Handler Ajax simple-ajax-handler chargé: " . 
+             (class_exists('NFC_Simple_Ajax_Handler') ? 'OUI' : 'NON') . " -->";
+    }
+});
+
+// Dans functions.php :
+add_action('init', function() {
+    if (isset($_GET['test_nfc_ajax']) && current_user_can('administrator')) {
+        error_log('🧪 Test direct Ajax NFC...');
+        
+        // Simuler un appel Ajax
+        $_POST = [
+            'action' => 'nfc_add_to_cart_simple',
+            'product_id' => $_GET['product_id'] ?? 571,
+            'quantity' => 1,
+            'nonce' => wp_create_nonce('nfc_simple_buttons')
+        ];
+        
+        // Vérifier si le handler existe
+        if (class_exists('NFC_Simple_Ajax_Handler')) {
+            error_log('✅ NFC_Simple_Ajax_Handler existe');
+            $handler = new NFC_Simple_Ajax_Handler();
+            $handler->add_to_cart_simple();
+        } else {
+            error_log('❌ NFC_Simple_Ajax_Handler MANQUANT');
+        }
+        
+        wp_die('Test Ajax terminé - voir les logs');
+    }
+});
