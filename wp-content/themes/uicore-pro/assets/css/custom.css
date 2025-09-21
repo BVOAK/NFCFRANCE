@@ -393,3 +393,15 @@
     background: white!important;
     color: #131329!important;
 }
+
+.elementor-menu-cart__main .variation {
+    font-size: 0.7rem!important;
+    line-height: 1rem!important;
+}
+
+.elementor-menu-cart__product .variation dd { 
+    margin: 0!important;
+    margin-left: 5px!important; 
+}
+
+.elementor-menu-cart__product { padding-bottom: 10px!important; }

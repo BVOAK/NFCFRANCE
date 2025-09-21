@@ -10,13 +10,7 @@ class NFCSimpleButtons {
         this.config = window.nfcConfig || {};
         this.products = new Map(); // Cache des données produits
 
-        // FORCER LE DEBUG
-    this.debug = true; // ← Forcer au lieu de window.nfcConfig?.debug || false
-    this.config = window.nfcConfig || {};
-    this.products = new Map();
-    
-    console.log('🔍 DEBUG FORCÉ - NFCSimpleButtons');
-    console.log('🔍 Config reçue:', this.config);
+        this.preventFormPostRedirect();
 
         this.init();
     }
@@ -31,6 +25,196 @@ class NFCSimpleButtons {
             this.bindEvents();
         }
     }
+
+    preventFormPostRedirect() {
+        this.log('🛡️ Initialisation du nettoyage global POST-redirect');
+        
+        // 1. NETTOYER L'HISTORIQUE AU CHARGEMENT
+        this.cleanHistoryOnLoad();
+        
+        // 2. INTERCEPTER LES SOUMISSIONS DE FORMULAIRES
+        this.interceptFormSubmissions();
+        
+        // 3. GÉRER LES ÉVÉNEMENTS DE NAVIGATION
+        this.handleNavigationEvents();
+        
+        // 4. NETTOYER AVANT DÉCHARGEMENT DE PAGE
+        this.cleanBeforeUnload();
+    }
+
+    /**
+     * Nettoie l'historique POST au chargement de la page
+     */
+    cleanHistoryOnLoad() {
+        // Attendre que la page soit complètement chargée
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.performHistoryClean());
+        } else {
+            this.performHistoryClean();
+        }
+    }
+
+    /**
+     * Effectue le nettoyage de l'historique
+     */
+    performHistoryClean() {
+        try {
+            // Vérifier si on peut modifier l'historique
+            if (!window.history || !window.history.replaceState) {
+                this.log('⚠️ History API non supportée');
+                return;
+            }
+            
+            // Détecter si on vient d'une requête POST (indicateurs)
+            const hasPostIndicators = 
+                document.referrer.includes(window.location.hostname) ||
+                window.performance?.navigation?.type === 1 || // TYPE_RELOAD
+                window.location.search.includes('added-to-cart') ||
+                sessionStorage.getItem('nfc_recent_post_action');
+            
+            if (hasPostIndicators) {
+                // Construire une URL propre sans paramètres POST
+                const cleanUrl = this.buildCleanUrl();
+                
+                // Remplacer l'entrée d'historique actuelle
+                window.history.replaceState(
+                    { nfc_cleaned: true, timestamp: Date.now() },
+                    document.title,
+                    cleanUrl
+                );
+                
+                this.log('🧹 Historique POST nettoyé - URL propre:', cleanUrl);
+                
+                // Marquer que le nettoyage a été fait
+                sessionStorage.setItem('nfc_history_cleaned', Date.now().toString());
+            }
+            
+        } catch (error) {
+            this.log('❌ Erreur nettoyage historique:', error);
+        }
+    }
+
+    /**
+     * Construit une URL propre sans paramètres de POST
+     */
+    buildCleanUrl() {
+        const url = new URL(window.location);
+        
+        // Supprimer les paramètres typiques de POST WooCommerce
+        const postParams = [
+            'add-to-cart',
+            'added-to-cart',
+            'quantity',
+            'variation_id',
+            'wc-ajax',
+            'nonce'
+        ];
+        
+        postParams.forEach(param => {
+            url.searchParams.delete(param);
+        });
+        
+        // Supprimer aussi les attributs de variation
+        for (const [key] of url.searchParams) {
+            if (key.startsWith('attribute_')) {
+                url.searchParams.delete(key);
+            }
+        }
+        
+        return url.pathname + (url.search || '');
+    }
+
+    /**
+     * Intercepte les soumissions de formulaires pour marquer les actions POST
+     */
+    interceptFormSubmissions() {
+        document.addEventListener('submit', (e) => {
+            const form = e.target;
+            
+            // Détecter les formulaires WooCommerce
+            if (this.isWooCommerceForm(form)) {
+                this.log('📝 Soumission formulaire WooCommerce détectée');
+                
+                // Marquer qu'une action POST va avoir lieu
+                sessionStorage.setItem('nfc_recent_post_action', Date.now().toString());
+                
+                // Si c'est un formulaire avec nos boutons NFC, on pourrait le bloquer
+                // pour forcer l'utilisation de l'Ajax
+                if (form.querySelector('.nfc-simple-buttons')) {
+                    this.log('🛡️ Formulaire avec boutons NFC - Ajax préféré');
+                    // Optionnel : bloquer la soumission classique
+                    // e.preventDefault();
+                    // this.handleNFCFormSubmission(form);
+                }
+            }
+        });
+    }
+
+    
+    /**
+     * Vérifie si un formulaire est un formulaire WooCommerce
+     */
+    isWooCommerceForm(form) {
+        return form.classList.contains('cart') ||
+            form.classList.contains('variations_form') ||
+            form.querySelector('input[name="add-to-cart"]') ||
+            form.action.includes('wc-ajax') ||
+            form.method.toLowerCase() === 'post' && form.querySelector('.single_add_to_cart_button');
+    }
+
+    /**
+     * Gère les événements de navigation du navigateur
+     */
+    handleNavigationEvents() {
+        // Écouter les changements d'historique (back/forward)
+        window.addEventListener('popstate', (e) => {
+            this.log('🔄 Navigation historique détectée');
+            
+            // Si l'état contient des données de nettoyage, tout va bien
+            if (e.state && e.state.nfc_cleaned) {
+                this.log('✅ Page déjà nettoyée');
+            } else {
+                // Nettoyer si nécessaire
+                setTimeout(() => this.performHistoryClean(), 100);
+            }
+        });
+        
+        // Écouter les changements de page (pour SPAs)
+        let lastUrl = window.location.href;
+        new MutationObserver(() => {
+            const currentUrl = window.location.href;
+            if (currentUrl !== lastUrl) {
+                lastUrl = currentUrl;
+                this.log('🔄 Changement de page détecté');
+                setTimeout(() => this.performHistoryClean(), 100);
+            }
+        }).observe(document, { subtree: true, childList: true });
+    }
+
+    /**
+     * Nettoie avant le déchargement de la page
+     */
+    cleanBeforeUnload() {
+        window.addEventListener('beforeunload', () => {
+            // Nettoyer le sessionStorage des marqueurs temporaires
+            const cleanupKeys = [
+                'nfc_recent_post_action',
+                'nfc_history_cleaned'
+            ];
+            
+            cleanupKeys.forEach(key => {
+                const timestamp = sessionStorage.getItem(key);
+                if (timestamp) {
+                    const age = Date.now() - parseInt(timestamp);
+                    // Supprimer si plus vieux que 5 minutes
+                    if (age > 5 * 60 * 1000) {
+                        sessionStorage.removeItem(key);
+                    }
+                }
+            });
+        });
+    }
+
 
     bindEvents() {
         // Boutons configurateur
@@ -138,6 +322,9 @@ class NFCSimpleButtons {
         }
 
         try {
+            // Marquer le début d'une action Ajax
+            sessionStorage.setItem('nfc_recent_post_action', Date.now().toString());
+            
             // Afficher l'état loading
             this.setButtonLoading(button, true);
 
@@ -148,10 +335,8 @@ class NFCSimpleButtons {
                 this.log('✅ Ajout panier réussi:', result);
                 this.showSuccess(button, result.data.message);
 
-                // Optionnel : rediriger vers le panier
-                setTimeout(() => {
-                    window.location.href = result.data.cart_url;
-                }, 1000);
+                // NOUVEAU : Nettoyage automatique + redirection propre
+                this.handleSuccessfulCartAdd(result.data.cart_url);
 
             } else {
                 throw new Error(result.data || 'Erreur inconnue');
@@ -160,10 +345,47 @@ class NFCSimpleButtons {
         } catch (error) {
             this.log('❌ Erreur ajout panier:', error);
             this.showError(button, error.message);
+            
+            // Nettoyer même en cas d'erreur
+            this.cleanAfterError();
+            
         } finally {
             this.setButtonLoading(button, false);
         }
     }
+
+    /**
+     * NOUVELLE MÉTHODE : Gère le succès d'ajout au panier avec nettoyage
+     */
+    handleSuccessfulCartAdd(cartUrl) {
+        // Option 1 : Redirection immédiate avec nettoyage
+        setTimeout(() => {
+            // Nettoyer avant de partir
+            const cleanCartUrl = cartUrl + (cartUrl.includes('?') ? '&' : '?') + 'nfc_clean=1';
+            window.location.replace(cleanCartUrl);
+        }, 1000);
+        
+        // Option 2 : Rester sur la page mais nettoyer
+        /*
+        setTimeout(() => {
+            this.performHistoryClean();
+            // Optionnel : recharger la page proprement
+            // window.location.replace(window.location.pathname + window.location.search);
+        }, 2000);
+        */
+    }
+
+    /**
+     * NOUVELLE MÉTHODE : Nettoie après une erreur
+     */
+    cleanAfterError() {
+        setTimeout(() => {
+            this.performHistoryClean();
+            // Supprimer le marqueur d'action POST
+            sessionStorage.removeItem('nfc_recent_post_action');
+        }, 2000);
+    }
+
 
     /**
      * Récupère les données du formulaire WooCommerce

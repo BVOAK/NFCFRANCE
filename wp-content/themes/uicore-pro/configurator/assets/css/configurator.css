@@ -949,10 +949,7 @@ body:has(#checkboxInformations:not(:checked)) .card-preview.verso .qr-section,
 
 /* ✨ OPTIMISATION : Carte verso pour screenshot */
 .card-preview.verso {
-    /* Assurer des dimensions stables */
-    min-height: var(--card-height);
-    min-width: var(--card-width);
-    
+        
     /* Éviter les transformations qui cassent la capture */
     transform-style: flat;
     

@@ -207,7 +207,7 @@ wp_enqueue_style('nfc-configurator', get_template_directory_uri() . '/configurat
 
                     <!-- Colonne Configuration (droite) -->
                     <div class="col-lg-7 config-column vh-hero overflow-y-auto">
-                        <div class="p-5 w-100">
+                        <div class="p-2 p-md-5 w-100">
 
                             <!-- Header Bootstrap -->
                             <h1 class="display-5 fw-bold text-dark mb-5 mt-0">
