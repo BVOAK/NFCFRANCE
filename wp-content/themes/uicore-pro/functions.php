@@ -258,3 +258,5 @@ add_action('init', function() {
         wp_die();
     }
 });
+
+require_once get_template_directory() . '/inc/nfc-bulk-pricing.php';
