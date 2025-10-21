@@ -250,7 +250,7 @@ body.nfc-dashboard-body {
 
 /* Header principal */
 .nfc-main-header {
-    background: white;
+    background: var(--nfc-sidebar);
     border-bottom: 1px solid #e2e8f0;
     padding: 1.5rem 2rem;
     display: flex;
@@ -340,7 +340,7 @@ body.nfc-dashboard-body {
     background: none;
     border: none;
     font-size: 1.5rem;
-    color: var(--nfc-text);
+    color: white;
     cursor: pointer;
     padding: 0.5rem;
 }
@@ -377,7 +377,7 @@ body.nfc-dashboard-body {
 
 @media (max-width: 768px) {
     .nfc-content-area {
-        padding: 1rem;
+        padding: 2rem 1rem 50px;
     }
     
     .nfc-main-header {

@@ -84,10 +84,10 @@ console.log('📊 Configuration Statistics chargée:', window.STATISTICS_CONFIG)
 
 <div class="dashboard-statistics">
     <!-- Header avec titre et contrôles -->
-    <div class="statistics-header">
-        <div class="row align-items-center mb-4">
+    <div class="statistics-header mb-4">
+        <div class="row align-items-center">
             <div class="col">
-                <h2><i class="fas fa-chart-line me-2"></i><?= esc_html($page_title) ?></h2>
+                <h2 class="h3 mb-1"><i class="fas fa-chart-line me-2 text-primary"></i><?= esc_html($page_title) ?></h2>
                 <p class="text-muted mb-0">Analyse de performance de vos cartes NFC</p>
             </div>
             <div class="col-auto">
@@ -107,7 +107,7 @@ console.log('📊 Configuration Statistics chargée:', window.STATISTICS_CONFIG)
 
         <!-- Filtre profil (si plusieurs vCards) -->
         <?php if ($show_profile_filter): ?>
-        <div class="row mb-4">
+        <div class="row mt-3 mb-4">
             <div class="col-md-6">
                 <select class="form-select" id="profileFilter">
                     <option value="">Tous les profils</option>

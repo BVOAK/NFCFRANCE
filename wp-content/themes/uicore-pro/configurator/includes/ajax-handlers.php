@@ -108,17 +108,17 @@ function nfc_add_to_cart_handler()
         $screenshot_info = null;
         if (isset($config['screenshot'])) {
             error_log('NFC: Conservation des données screenshot base64...');
-            
+
             // ✅ GARDER les données base64 complètes pour sauvegarde ultérieure
             $screenshot_base64 = [
                 'full' => $config['screenshot']['full'] ?? null,
                 'thumbnail' => $config['screenshot']['thumbnail'] ?? null,
                 'generated_at' => $config['screenshot']['generated_at'] ?? date('c')
             ];
-            
+
             // Conserver dans la config du panier
             $config['screenshot_base64_data'] = $screenshot_base64;
-            
+
             error_log('NFC: ✅ Données base64 conservées - Full: ' . strlen($screenshot_base64['full']) . ' chars, Thumb: ' . strlen($screenshot_base64['thumbnail']) . ' chars');
         }
 
@@ -533,77 +533,79 @@ function nfc_add_cart_item_data($cart_item_data, $product_id, $variation_id)
 add_filter('woocommerce_get_item_data', 'nfc_display_cart_item_data', 10, 2);
 function nfc_display_cart_item_data($item_data, $cart_item)
 {
-    if (isset($cart_item['nfc_config'])) {
-        $config = $cart_item['nfc_config'];
+    if (!isset($cart_item['nfc_config'])) {
+        return $item_data;
+    }
 
-        // Afficher les informations de configuration RECTO
+    $config = $cart_item['nfc_config'];
+
+    // Couleur (existant)
+    $item_data[] = [
+        'key' => 'Couleur',
+        'value' => ucfirst($config['color'])
+    ];
+
+    // Nom (existant)
+    if (isset($config['user'])) {
+        $full_name = trim(($config['user']['firstName'] ?? '') . ' ' . ($config['user']['lastName'] ?? ''));
+        if (!empty($full_name)) {
+            $item_data[] = [
+                'key' => 'Nom sur la carte',
+                'value' => $full_name
+            ];
+        }
+    }
+
+    // Logo recto (existant)
+    if (isset($config['image']['name']) && !empty($config['image']['name'])) {
         $item_data[] = [
-            'key' => 'Couleur',
-            'value' => ucfirst($config['color'])
+            'key' => 'Logo recto',
+            'value' => $config['image']['name']
         ];
+    }
 
-        if (isset($config['user'])) {
-            $firstName = trim($config['user']['firstName'] ?? '');
-            $lastName = trim($config['user']['lastName'] ?? '');
-            
-            if (!empty($firstName) || !empty($lastName)) {
-                $fullName = trim($firstName . ' ' . $lastName);
+    // ✨ NOUVEAU : Logo verso
+    if (isset($config['logoVerso']['name']) && !empty($config['logoVerso']['name'])) {
+        $item_data[] = [
+            'key' => 'Logo verso',
+            'value' => $config['logoVerso']['name']
+        ];
+    }
+
+    // ✨ NOUVEAU : Infos verso
+    if (isset($config['showUserInfo'])) {
+        $firstName = trim($config['user']['firstName'] ?? '');
+        $lastName = trim($config['user']['lastName'] ?? '');
+        
+        if ($config['showUserInfo']) {
+            if (empty($firstName) && empty($lastName)) {
                 $item_data[] = [
-                    'key' => 'Nom sur la carte',
-                    'value' => $fullName
+                    'key' => 'Infos verso',
+                    'value' => 'Aucune donnée'
                 ];
-            }
-        }
-
-        if (isset($config['image']) && !empty($config['image']['name'])) {
-            $item_data[] = [
-                'key' => 'Image recto',
-                'value' => $config['image']['name']
-            ];
-        }
-
-        // ✨ NOUVEAU : Afficher les informations VERSO
-        if (isset($config['logoVerso']) && !empty($config['logoVerso']['name'])) {
-            $item_data[] = [
-                'key' => 'Image verso',
-                'value' => $config['logoVerso']['name']
-            ];
-        }
-
-        if (isset($config['showUserInfo'])) {
-            $firstName = trim($config['user']['firstName'] ?? '');
-            $lastName = trim($config['user']['lastName'] ?? '');
-            
-            if ($config['showUserInfo']) {
-                if (empty($firstName) && empty($lastName)) {
-                    $item_data[] = [
-                        'key' => 'Infos verso',
-                        'value' => 'Aucune donnée'
-                    ];
-                } else {
-                    $item_data[] = [
-                        'key' => 'Infos verso',
-                        'value' => 'Affichées'
-                    ];
-                }
             } else {
                 $item_data[] = [
                     'key' => 'Infos verso',
-                    'value' => 'Masquées'
+                    'value' => 'Affichées'
                 ];
             }
-        }
-
-        // Screenshot thumbnail (existant)
-        if (isset($config['screenshot']) && !empty($config['screenshot']['thumbnail'])) {
+        } else {
             $item_data[] = [
-                'key' => 'Aperçu',
-                'value' => '<img src="' . esc_attr($config['screenshot']['thumbnail']) . '" style="max-width: 150px; height: auto; border: 1px solid #ddd; border-radius: 4px;" alt="Aperçu configuration">'
+                'key' => 'Infos verso',
+                'value' => 'Masquées'
             ];
         }
-
-        error_log('NFC: Données configuration (recto + verso) affichées dans le panier');
     }
+
+    // Screenshot thumbnail (existant)
+    if (isset($config['screenshot']) && !empty($config['screenshot']['thumbnail'])) {
+        $item_data[] = [
+            'key' => 'Aperçu',
+            'value' => '<img src="' . esc_attr($config['screenshot']['thumbnail']) . '" style="max-width: 150px; height: auto; border: 1px solid #ddd; border-radius: 4px;" alt="Aperçu configuration">'
+        ];
+    }
+
+    error_log('NFC: Données configuration (recto + verso) affichées dans le panier');
 
     return $item_data;
 }
@@ -612,11 +614,11 @@ function nfc_display_cart_item_data($item_data, $cart_item)
  * ✅ MASQUER les attributs de variation WooCommerce SEULEMENT si config NFC
  */
 add_filter('woocommerce_display_item_meta', 'nfc_hide_variation_attributes', 10, 3);
-function nfc_hide_variation_attributes($html, $item, $args) 
+function nfc_hide_variation_attributes($html, $item, $args)
 {
     // Detecter si l'item a une config NFC
     $has_nfc_config = false;
-    
+
     if (is_array($item) && isset($item['nfc_config'])) {
         // Item du panier
         $has_nfc_config = true;
@@ -624,22 +626,22 @@ function nfc_hide_variation_attributes($html, $item, $args)
         // Item de commande
         $has_nfc_config = true;
     }
-    
+
     // ✅ SEULEMENT pour les items avec config NFC
     if ($has_nfc_config) {
         // Masquer les attributs de variation automatiques
         // Notre fonction nfc_display_cart_item_data s'occupera de l'affichage
-        return ''; 
+        return '';
     }
-    
+
     return $html; // Comportement normal pour les items sans config
 }
 
 /**
  * Hook pour sauvegarder les métadonnées dans la commande
  */
-add_action('woocommerce_checkout_create_order_line_item', 'nfc_save_order_item_meta', 10, 4);
-function nfc_save_order_item_meta($item, $cart_item_key, $values, $order)
+//add_action('woocommerce_checkout_create_order_line_item', 'nfc_save_order_item_meta', 10, 4);
+/* function nfc_save_order_item_meta($item, $cart_item_key, $values, $order)
 {
     if (isset($values['nfc_config'])) {
         $config = $values['nfc_config'];
@@ -698,4 +700,4 @@ function nfc_save_order_item_meta($item, $cart_item_key, $values, $order)
 
         error_log('NFC: Métadonnées configuration (recto + verso) sauvegardées dans la commande');
     }
-}
+} */

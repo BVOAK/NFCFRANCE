@@ -405,3 +405,37 @@
 }
 
 .elementor-menu-cart__product { padding-bottom: 10px!important; }
+
+
+
+/***** CHECKOUT *****/
+.woocommerce-checkout { 
+    display: block!important;
+}
+
+.woocommerce-checkout #place_order { 
+    padding: 10px 40px!important;
+    width: 100%!important;
+    height: auto!important;
+}
+
+.woocommerce-checkout #order_review table {
+    background: #FFF!important;
+    padding: 0;
+    color: #131329!important;
+}
+
+.woocommerce-checkout #order_review td, .woocommerce-checkout #order_review th {
+    color: #131329!important;
+}
+
+.woocommerce-checkout #order_review tr:not(.order-total) td, .woocommerce-checkout #order_review tr:not(.order-total) th {
+    border-bottom: 1px solid #d5d8dc!important;
+}
+
+.woocommerce-checkout #order_review .tax-rate td { text-align: right!important; }
+
+.woocommerce-checkout .e-login-wrap-end .form-row, .woocommerce-checkout .e-coupon-anchor .form-row { width: 100%!important; }
+.woocommerce-checkout .woocommerce-form-login__submit { padding: 7px 15px!important; }
+
+.woocommerce-checkout #billing_company_field { width: 100%; clear: both; }

@@ -260,3 +260,23 @@ add_action('init', function() {
 });
 
 require_once get_template_directory() . '/inc/nfc-bulk-pricing.php';
+
+function add_company_fields_checkout($fields) {
+    $fields['billing']['billing_company']['required'] = false;
+    $fields['billing']['billing_company']['priority'] = 25;
+    $fields['billing']['billing_company']['label'] = 'Nom de l\'entreprise *';
+    $fields['billing']['billing_company']['placeholder'] = 'Ex: ACME Corp';
+    
+    return $fields;
+}
+add_filter('woocommerce_checkout_fields', 'add_company_fields_checkout');
+
+// Créer un role "entreprise"
+function add_enterprise_role() {
+    add_role('enterprise_customer', 'Client Entreprise', array(
+        'read' => true,
+        'edit_posts' => false,
+        'delete_posts' => false,
+    ));
+}
+add_action('init', 'add_enterprise_role');

@@ -30,12 +30,12 @@ if (empty($user_vcards)) {
 }
 
 $is_multi_profile = count($user_vcards) > 1;
-$page_title = $is_multi_profile ? "Tous mes contacts (" . count($user_vcards) . " profils)" : "Mes contacts";
+$page_title = $is_multi_profile ? "Tous mes contacts" : "Mes contacts";
 $primary_vcard_id = $user_vcards[0]['vcard_id'];
 
 // Variables globales pour compatibilité avec contacts-manager.js
 global $nfc_vcard, $nfc_current_page;
-$nfc_vcard = (object)['ID' => $primary_vcard_id];
+$nfc_vcard = (object) ['ID' => $primary_vcard_id];
 $nfc_current_page = 'contacts';
 ?>
 
@@ -49,10 +49,10 @@ $nfc_current_page = 'contacts';
                 <i class="fas fa-users me-2 text-primary"></i>
                 <?php echo esc_html($page_title); ?>
             </h2>
-            <p class="text-muted mb-0">Gestion de vos contacts professionnels</p>
+            <p class="text-muted mb-0 d-md-block d-none">Gestion de vos contacts professionnels</p>
         </div>
         <div class="col-auto">
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 btn-header">
                 <button class="btn btn-outline-success" onclick="NFCContacts.showImportModal()">
                     <i class="fas fa-upload me-1"></i>Importer
                 </button>
@@ -68,7 +68,7 @@ $nfc_current_page = 'contacts';
 </div>
 
 <!-- STATS CARDS -->
-<div class="row mb-4">
+<div class="row mb-4 d-md-flex d-none">
     <div class="col-md-3">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body text-center">
@@ -125,10 +125,11 @@ $nfc_current_page = 'contacts';
                     <label class="form-label">Rechercher</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        <input type="text" class="form-control" id="contactsSearch" placeholder="Nom, email, téléphone...">
+                        <input type="text" class="form-control" id="contactsSearch"
+                            placeholder="Nom, email, téléphone...">
                     </div>
                 </div>
-                
+
                 <!-- Filtre Source -->
                 <div class="col-md-2">
                     <label class="form-label">Source</label>
@@ -140,22 +141,22 @@ $nfc_current_page = 'contacts';
                         <option value="manual">Manuel</option>
                     </select>
                 </div>
-                
+
                 <!-- Filtre Profil (si multi-profil) -->
                 <?php if ($is_multi_profile): ?>
-                <div class="col-md-2">
-                    <label class="form-label">Profil source</label>
-                    <select class="form-select" id="profileFilter">
-                        <option value="">Tous profils</option>
-                        <?php foreach ($user_vcards as $vcard): ?>
-                            <option value="<?php echo $vcard['vcard_id']; ?>">
-                                <?php echo esc_html(nfc_format_vcard_full_name($vcard['vcard_data'] ?? [])); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Profil source</label>
+                        <select class="form-select" id="profileFilter">
+                            <option value="">Tous profils</option>
+                            <?php foreach ($user_vcards as $vcard): ?>
+                                <option value="<?php echo $vcard['vcard_id']; ?>">
+                                    <?php echo esc_html(nfc_format_vcard_full_name($vcard['vcard_data'] ?? [])); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                 <?php endif; ?>
-                
+
                 <!-- Tri -->
                 <div class="col-md-2">
                     <label class="form-label">Trier par</label>
@@ -166,15 +167,15 @@ $nfc_current_page = 'contacts';
                         <option value="name_desc">Nom Z-A</option>
                     </select>
                 </div>
-                
+
                 <!-- Vue -->
-                <div class="col-md-2 text-end">
+                <div class="col-md-2 text-end d-none">
                     <div class="btn-group" role="group">
                         <input type="radio" class="btn-check" name="viewMode" id="tableViewBtn" checked>
                         <label class="btn btn-outline-secondary" for="tableViewBtn">
                             <i class="fas fa-list"></i>
                         </label>
-                        
+
                         <input type="radio" class="btn-check" name="viewMode" id="gridViewBtn">
                         <label class="btn btn-outline-secondary" for="gridViewBtn">
                             <i class="fas fa-th"></i>
@@ -209,7 +210,7 @@ $nfc_current_page = 'contacts';
 
 <!-- CONTENU PRINCIPAL -->
 <div id="contactsContent" class="d-none">
-    
+
     <!-- Actions en lot -->
     <div id="bulkActions" class="card mb-3 d-none">
         <div class="card-body">
@@ -230,58 +231,63 @@ $nfc_current_page = 'contacts';
             </div>
         </div>
     </div>
-    
+
     <!-- Vue Tableau -->
-    <div id="contactsTableView" class="card">
+    <div id="contactsTableView">
         <div class="table-responsive">
-            <table class="table table-hover mb-0" id="contactsTable">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 40px;">
-                            <input type="checkbox" class="form-check-input" id="selectAll">
-                        </th>
-                        <th class="sortable" onclick="NFCContacts.sortBy('name')" style="cursor: pointer;">
-                            Contact 
-                            <i class="fas fa-sort ms-1 text-muted" id="sort-name"></i>
-                        </th>
-                        <th class="sortable" onclick="NFCContacts.sortBy('email')" style="cursor: pointer;">
-                            Email 
-                            <i class="fas fa-sort ms-1 text-muted" id="sort-email"></i>
-                        </th>
-                        <th class="sortable" onclick="NFCContacts.sortBy('mobile')" style="cursor: pointer;">
-                            Téléphone 
-                            <i class="fas fa-sort ms-1 text-muted" id="sort-mobile"></i>
-                        </th>
-                        <th class="sortable" onclick="NFCContacts.sortBy('society')" style="cursor: pointer;">
-                            Entreprise 
-                            <i class="fas fa-sort ms-1 text-muted" id="sort-society"></i>
-                        </th>
-                        <th>Source</th>
+            <div class="d-none d-lg-block">
+                <div class="bg-light border rounded-top">
+                    <div class="row py-3 mx-0 fw-bold text-muted text-uppercase align-items-center"
+                        style="font-size: 0.75rem;">
+                        <div class="col-lg-2">
+                            <span class="sortable d-flex align-items-center" onclick="NFCContacts.sortBy('name')">
+                                Contact <i class="fas fa-sort ms-1 text-muted" id="sort-name"></i>
+                            </span>
+                        </div>
+                        <div class="col-lg-2">
+                            <span class="sortable d-flex align-items-center" onclick="NFCContacts.sortBy('email')">
+                                Email <i class="fas fa-sort ms-1 text-muted" id="sort-email"></i>
+                            </span>
+                        </div>
+                        <div class="col-lg-2">
+                            <span class="sortable d-flex align-items-center" onclick="NFCContacts.sortBy('mobile')">
+                                Téléphone <i class="fas fa-sort ms-1 text-muted" id="sort-mobile"></i>
+                            </span>
+                        </div>
+                        <div class="col-lg-2">
+                            <span class="sortable d-flex align-items-center" onclick="NFCContacts.sortBy('society')">
+                                Entreprise <i class="fas fa-sort ms-1 text-muted" id="sort-society"></i>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 text-center">Source</div>
                         <?php if ($is_multi_profile): ?>
-                        <th>Profil</th>
+                            <div class="col-lg-1 text-center">Profil</div>
                         <?php endif; ?>
-                        <th class="sortable" onclick="NFCContacts.sortBy('date')" style="cursor: pointer;">
-                            Date 
-                            <i class="fas fa-sort ms-1 text-muted" id="sort-date"></i>
-                        </th>
-                        <th style="width: 120px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="contactsTableBody">
-                    <!-- Rempli par contacts-manager.js -->
-                </tbody>
-            </table>
+                        <div class="col-lg-1">
+                            <span class="sortable d-flex align-items-center" onclick="NFCContacts.sortBy('date')">
+                                Date <i class="fas fa-sort ms-1 text-muted" id="sort-date"></i>
+                            </span>
+                        </div>
+                        <div class="col-lg-1 text-center">Actions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Container pour les contacts (remplace <tbody>) -->
+            <div id="contactsTableBody">
+                <!-- Rempli par contacts-manager.js -->
+            </div>
         </div>
-        
+
         <!-- Pagination -->
-        <div class="card-footer bg-white d-none" id="contactsPaginationWrapper">
+        <div class="card-footer d-none" id="contactsPaginationWrapper">
             <div class="row align-items-center">
-                <div class="col">
+                <!-- <div class="col">
                     <small class="text-muted">
-                        Affichage de <span id="contactsStart">0</span> à <span id="contactsEnd">0</span> 
+                        Affichage de <span id="contactsStart">0</span> à <span id="contactsEnd">0</span>
                         sur <span id="contactsTotal">0</span> contacts
                     </small>
-                </div>
+                </div> -->
                 <div class="col-auto">
                     <nav>
                         <ul class="pagination pagination-sm mb-0" id="contactsPagination">
@@ -292,7 +298,7 @@ $nfc_current_page = 'contacts';
             </div>
         </div>
     </div>
-    
+
     <!-- Vue Grille -->
     <div id="contactsGridView" class="d-none">
         <div id="contactsGrid" class="row">
@@ -314,7 +320,7 @@ $nfc_current_page = 'contacts';
             <div class="modal-body">
                 <form id="contactForm">
                     <input type="hidden" id="contactId" name="id">
-                    
+
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="firstname" class="form-label">Prénom <span class="text-danger">*</span></label>
@@ -351,7 +357,8 @@ $nfc_current_page = 'contacts';
                         </div>
                         <?php if ($is_multi_profile): ?>
                             <div class="col-md-6">
-                                <label for="profile_vcard" class="form-label">Profil vCard <span class="text-danger">*</span></label>
+                                <label for="profile_vcard" class="form-label">Profil vCard <span
+                                        class="text-danger">*</span></label>
                                 <select class="form-select" id="profile_vcard" name="profile_vcard" required>
                                     <option value="">-- Choisir un profil --</option>
                                     <?php foreach ($user_vcards as $vcard): ?>
@@ -365,7 +372,7 @@ $nfc_current_page = 'contacts';
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer d-flex">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <button type="button" class="btn btn-primary" id="saveContactBtn" onclick="NFCContacts.saveContact()">
                     <i class="fas fa-save me-2"></i>Enregistrer
@@ -386,7 +393,8 @@ $nfc_current_page = 'contacts';
             <div class="modal-body">
                 <div class="mb-3">
                     <label for="csvFile" class="form-label">Fichier CSV</label>
-                    <input type="file" class="form-control" id="csvFile" accept=".csv" onchange="NFCContacts.validateCsvFile(this)">
+                    <input type="file" class="form-control" id="csvFile" accept=".csv"
+                        onchange="NFCContacts.validateCsvFile(this)">
                 </div>
                 <?php if ($is_multi_profile): ?>
                     <div class="mb-3">
@@ -401,7 +409,7 @@ $nfc_current_page = 'contacts';
                     </div>
                 <?php endif; ?>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer d-flex">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <button type="button" class="btn btn-primary" id="importBtn" onclick="NFCContacts.importCsv()" disabled>
                     <i class="fas fa-upload me-2"></i>Importer
@@ -422,12 +430,11 @@ $nfc_current_page = 'contacts';
             <div class="modal-body" id="contactDetailsContent">
                 <!-- Rempli dynamiquement -->
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="button" class="btn btn-primary" onclick="NFCContacts.editContactFromDetails()">
+            <div class="modal-footer d-flex">
+                <button type="button" class="btn btn-primary col-md-3 col-12" onclick="NFCContacts.editContactFromDetails()">
                     <i class="fas fa-edit me-2"></i>Modifier
                 </button>
-                <button type="button" class="btn btn-danger" onclick="NFCContacts.deleteContactFromDetails()">
+                <button type="button" class="btn btn-danger col-md-3 col-12" onclick="NFCContacts.deleteContactFromDetails()">
                     <i class="fas fa-trash me-2"></i>Supprimer
                 </button>
             </div>
@@ -441,19 +448,19 @@ $nfc_current_page = 'contacts';
 
 <!-- CONFIGURATION POUR contacts-manager.js -->
 <script>
-// Configuration globale pour contacts-manager.js
-window.nfcContactsConfig = {
-    vcard_id: <?php echo json_encode($primary_vcard_id); ?>,
-    user_id: <?php echo json_encode($user_id); ?>,
-    api_url: <?php echo json_encode(home_url('/wp-json/gtmi_vcard/v1/')); ?>,
-    ajax_url: <?php echo json_encode(admin_url('admin-ajax.php')); ?>,
-    nonce: <?php echo json_encode(wp_create_nonce('nfc_dashboard_nonce')); ?>,
-    is_multi_profile: <?php echo json_encode($is_multi_profile); ?>,
-    use_ajax: <?php echo json_encode($is_multi_profile); ?>, // Utiliser AJAX si multi-profil
-    user_vcards: <?php echo json_encode($user_vcards); ?>
-};
+    // Configuration globale pour contacts-manager.js
+    window.nfcContactsConfig = {
+        vcard_id: <?php echo json_encode($primary_vcard_id); ?>,
+        user_id: <?php echo json_encode($user_id); ?>,
+        api_url: <?php echo json_encode(home_url('/wp-json/gtmi_vcard/v1/')); ?>,
+        ajax_url: <?php echo json_encode(admin_url('admin-ajax.php')); ?>,
+        nonce: <?php echo json_encode(wp_create_nonce('nfc_dashboard_nonce')); ?>,
+        is_multi_profile: <?php echo json_encode($is_multi_profile); ?>,
+        use_ajax: <?php echo json_encode($is_multi_profile); ?>, // Utiliser AJAX si multi-profil
+        user_vcards: <?php echo json_encode($user_vcards); ?>
+    };
 
-console.log('🔧 Configuration nfcContactsConfig injectée:', window.nfcContactsConfig);
+    console.log('🔧 Configuration nfcContactsConfig injectée:', window.nfcContactsConfig);
 </script>
 
 <script src="<?= plugin_dir_url(__FILE__) ?>../../assets/js/dashboard/contacts-manager.js?v=<?= time() ?>"></script>

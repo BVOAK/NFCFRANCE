@@ -216,14 +216,13 @@ class NFC_Dashboard_Manager
 
                     <div class="nfc-sidebar-nav">
 
-                        <?php if ($vcard_count > 0): ?>
+                        <!-- <?php if ($vcard_count > 0): ?>
                             <div class="nfc-nav-section">
                                 <div class="nfc-nav-section-title">
                                     Mes cartes vCard
                                 </div>
 
                                 <?php if ($vcard_count === 1): ?>
-                                    <!-- Interface simple : 1 seule vCard -->
                                     <div class="nfc-nav-item">
                                         <a href="?page=qr-codes"
                                             class="nfc-nav-link <?php echo $current_page === 'qr-codes' ? 'active' : ''; ?>">
@@ -232,7 +231,6 @@ class NFC_Dashboard_Manager
                                         </a>
                                     </div>
                                 <?php else: ?>
-                                    <!-- Interface multi-cartes : plusieurs vCards -->
                                     <div class="nfc-nav-item">
                                         <a href="?page=cards-list"
                                             class="nfc-nav-link <?php echo $current_page === 'cards-list' ? 'active' : ''; ?>">
@@ -243,7 +241,16 @@ class NFC_Dashboard_Manager
                                     </div>
                                 <?php endif; ?>
                             </div>
-                        <?php endif; ?>
+                        <?php endif; ?> -->
+
+                        <div class="nfc-nav-item">
+                                        <a href="?page=cards-list"
+                                            class="nfc-nav-link <?php echo $current_page === 'cards-list' ? 'active' : ''; ?>">
+                                            <i class="fas fa-id-card-alt"></i>
+                                            Mes cartes
+                                            <span class="nfc-nav-badge"><?php echo $vcard_count; ?></span>
+                                        </a>
+                                    </div>
 
                         <div class="nfc-nav-section">
                             <div class="nfc-nav-section-title">Contacts & Stats</div>
@@ -280,7 +287,7 @@ class NFC_Dashboard_Manager
                             </div>
                         </div>
 
-                        <div class="nfc-nav-section">
+                        <!-- <div class="nfc-nav-section">
                             <div class="nfc-nav-section-title">Aide</div>
                             <div class="nfc-nav-item">
                                 <a href="<?php echo wc_get_account_endpoint_url('dashboard'); ?>" class="nfc-nav-link">
@@ -288,7 +295,7 @@ class NFC_Dashboard_Manager
                                     Support
                                 </a>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="nfc-sidebar-user">
@@ -309,13 +316,13 @@ class NFC_Dashboard_Manager
                 <!-- CONTENU PRINCIPAL -->
                 <main class="nfc-main-content">
                     <header class="nfc-main-header d-md-none d-sm-block">
-                        <div class="nfc-page-title">
+                        <div class="nfc-page-title d-flex">
                             <button class="nfc-mobile-menu-btn me-3" onclick="toggleSidebar()">
                                 <i class="fas fa-bars"></i>
                             </button>
-                            <!-- <h1>
-                                <?php echo esc_html($current_page_data['title']); ?>
-                            </h1> -->
+                            <a href="?page=cards-list" class="nfc-sidebar-logo d-md-none d-sm-block">
+                                <img src="<?php echo $this->plugin_url; ?>assets/img/nfcstudio-logo.png" style="height: 40px" />
+                            </a>
                         </div>
 
                         <!-- <div class="d-flex align-items-center gap-3">

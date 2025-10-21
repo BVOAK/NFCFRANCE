@@ -43,6 +43,7 @@
         initializeCharts();
         setupEventListeners();
         
+        loadRealRecentActivity();
         // Chargement automatique des données
         setTimeout(() => {
             loadStatistics();
@@ -139,6 +140,82 @@
             displayNoDataMessage();
             hideLoadingStates();
         });
+    }
+
+    /**
+     * Charger la vraie activité récente
+     */
+    function loadRealRecentActivity() {
+        console.log('🕒 Chargement de la VRAIE activité récente...');
+        
+        // Combiner les données des leads et stats pour créer l'activité
+        const combinedActivities = [];
+        
+        // Récupérer les leads récents
+        const leadsUrl = `${overviewConfig.api_url}leads/${overviewConfig.vcard_id}`;
+        
+        fetch(leadsUrl)
+            .then(response => response.json())
+            .then(leadsData => {
+                if (leadsData.success && leadsData.data) {
+                    // Ajouter les 3 derniers contacts
+                    const recentContacts = leadsData.data.slice(0, 3);
+                    recentContacts.forEach(contact => {
+                        const timeAgo = getTimeAgo(new Date(contact.created_at || contact.contact_datetime));
+                        combinedActivities.push({
+                            type: 'contact',
+                            user: `${contact.firstname} ${contact.lastname}`,
+                            details: contact.society || 'Nouveau contact',
+                            time: timeAgo,
+                            icon: 'user-plus',
+                            color: 'success'
+                        });
+                    });
+                }
+                
+                // Récupérer les stats récentes
+                return fetch(`${overviewConfig.api_url}statistics/${overviewConfig.vcard_id}`);
+            })
+            .then(response => response.json())
+            .then(statsData => {
+                if (statsData.success && statsData.data) {
+                    // Ajouter les 2 dernières stats
+                    const recentStats = statsData.data.slice(0, 2);
+                    recentStats.forEach(stat => {
+                        const timeAgo = getTimeAgo(new Date(stat.created_at));
+                        const eventLabels = {
+                            'page_view': { text: 'Visite de votre profil', icon: 'eye', color: 'primary' },
+                            'qr_scan': { text: 'Scan QR Code', icon: 'qrcode', color: 'warning' },
+                            'nfc_tap': { text: 'Tap NFC', icon: 'wifi', color: 'info' },
+                            'email_click': { text: 'Clic sur email', icon: 'envelope', color: 'secondary' },
+                            'phone_click': { text: 'Clic sur téléphone', icon: 'phone', color: 'success' },
+                            'linkedin_click': { text: 'Clic LinkedIn', icon: 'linkedin', color: 'primary' }
+                        };
+                        
+                        const eventInfo = eventLabels[stat.event] || { text: 'Activité', icon: 'activity', color: 'secondary' };
+                        
+                        combinedActivities.push({
+                            type: 'stat',
+                            user: eventInfo.text,
+                            details: stat.location || 'Localisation inconnue',
+                            time: timeAgo,
+                            icon: eventInfo.icon,
+                            color: eventInfo.color
+                        });
+                    });
+                }
+                
+                // Trier par temps et afficher
+                combinedActivities.sort((a, b) => {
+                    return a.time.localeCompare(b.time);
+                });
+                
+                displayRealActivity(combinedActivities);
+            })
+            .catch(error => {
+                console.error('❌ Erreur chargement activité:', error);
+                displayRealActivity([]);
+            });
     }
     
     function displayNoDataMessage() {

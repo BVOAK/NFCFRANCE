@@ -451,57 +451,125 @@
             const pageContacts = this.filteredContacts.slice(start, end);
 
             let html = '';
-            pageContacts.forEach(contact => {
+            pageContacts.forEach((contact, index) => {
                 const fullName = `${contact.firstname || ''} ${contact.lastname || ''}`.trim();
                 const contactDate = contact.contact_datetime || contact.created_at;
                 const formattedDate = contactDate ? this.formatDate(contactDate) : 'N/A';
+                const initials = this.getContactInitials(fullName);
 
                 html += `
-                    <tr>
-                        <td>
-                            <input type="checkbox" class="form-check-input contact-checkbox" 
-                                   value="${contact.id}" onchange="NFCContacts.toggleContactSelection(${contact.id})">
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="contact-avatar me-2">
-                                    ${this.getContactInitials(fullName)}
-                                </div>
-                                <div>
-                                    <div class="fw-medium">${this.escapeHtml(fullName)}</div>
-                                    ${contact.post ? `<small class="text-muted">${this.escapeHtml(contact.post)}</small>` : ''}
-                                </div>
+                    <div class="d-none d-lg-block bg-white">
+                <div class="row py-3 mx-0 border-bottom align-items-center">
+                    <div class="col-lg-2">
+                        <div class="d-flex align-items-center">
+                            <div class="contact-avatar me-2">${initials}</div>
+                            <div>
+                                <div class="fw-medium"><strong>${this.escapeHtml(fullName)}</strong></div>
+                                ${contact.post ? `<small class="text-muted">${this.escapeHtml(contact.post)}</small>` : ''}
                             </div>
-                        </td>
-                        <td>${contact.email ? this.escapeHtml(contact.email) : '-'}</td>
-                        <td>${contact.mobile ? this.escapeHtml(contact.mobile) : '-'}</td>
-                        <td>${contact.society ? this.escapeHtml(contact.society) : '-'}</td>
-                        <td>
-                            <span class="badge bg-secondary">${this.getSourceLabel(contact.source || 'web')}</span>
-                        </td>
-                        ${this.config.is_multi_profile ? `
-                        <td>
-                            <small class="text-muted">${this.escapeHtml(contact.vcard_source_name || 'N/A')}</small>
-                        </td>
-                        ` : ''}
-                        <td>
-                            <small class="text-muted">${formattedDate}</small>
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-outline-primary" onclick="NFCContacts.viewContact(${contact.id})" title="Voir">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn btn-outline-secondary" onclick="NFCContacts.editContact(${contact.id})" title="Modifier">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-outline-danger" onclick="NFCContacts.deleteContact(${contact.id})" title="Supprimer">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <small class="text-break">${contact.email ? this.escapeHtml(contact.email) : '-'}</small>
+                    </div>
+                    <div class="col-lg-2">
+                        ${contact.mobile ? `<a href="tel:${contact.mobile}" class="text-decoration-none">${this.escapeHtml(contact.mobile)}</a>` : '-'}
+                    </div>
+                    <div class="col-lg-2">
+                        <small class="fw-medium">${contact.society ? this.escapeHtml(contact.society) : '-'}</small>
+                    </div>
+                    <div class="col-lg-1 text-center">
+                        <span class="badge bg-primary bg-opacity-10 text-primary">
+                            <i class="fas fa-qrcode me-1"></i>NFC
+                        </span>
+                    </div>
+                    ${this.config.is_multi_profile ? `
+                        <div class="col-lg-1 text-center">
+                            <small class="badge bg-info bg-opacity-10 text-info">${contact.vcard_source_name || 'N/A'}</small>
+                        </div>
+                    ` : ''}
+                    <div class="col-lg-1">
+                        <small class="text-muted">${formattedDate}</small>
+                    </div>
+                    <div class="col-lg-1 text-center">
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary btn-sm" onclick="NFCContacts.viewContact(${contact.id})" title="Voir">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="NFCContacts.editContact(${contact.id})" title="Modifier">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="NFCContacts.deleteContact(${contact.id})" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
                 `;
+
+                // VERSION MOBILE - Card
+        html += `
+            <div class="d-lg-none">
+                <div class="contacts-mobile-card">
+                    <div class="bg-light px-3 py-2 border-bottom d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-primary bg-opacity-10 text-primary">
+                                <i class="fas fa-qrcode me-1"></i>NFC
+                            </span>
+                            ${this.config.is_multi_profile ? `<span class="badge bg-info bg-opacity-10 text-info ms-2">${contact.vcard_source_name || 'N/A'}</span>` : ''}
+                        </div>
+                        <small class="text-muted" style="font-size: 12px">${formattedDate}</small>
+                    </div>
+                    <div class="p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="contact-avatar me-3">${initials}</div>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1"><strong>${this.escapeHtml(fullName)}</strong></h6>
+                                <small class="text-muted">${contact.post ? this.escapeHtml(contact.post) : ''}${contact.post && contact.society ? ' • ' : ''}${contact.society ? this.escapeHtml(contact.society) : ''}</small>
+                            </div>
+                        </div>
+                        ${contact.email || contact.mobile ? `
+                            <div class="row g-2 mb-3">
+                                ${contact.email ? `
+                                    <div class="col-12 border p-2 rounded">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-envelope text-muted me-2" style="width: 16px;"></i>
+                                            <small class="text-break">${this.escapeHtml(contact.email)}</small>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                ${contact.mobile ? `
+                                    <div class="col-12 border p-2 rounded">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-phone text-muted me-2" style="width: 16px;"></i>
+                                            <a href="tel:${contact.mobile}" class="text-decoration-none"><small>${this.escapeHtml(contact.mobile)}</small></a>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : ''}
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <button class="btn btn-outline-primary btn-sm w-100" onclick="NFCContacts.viewContact(${contact.id})">
+                                    <i class="fas fa-eye me-1"></i>Voir
+                                </button>
+                            </div>
+                            <div class="col-4">
+                                <button class="btn btn-outline-secondary btn-sm w-100" onclick="NFCContacts.editContact(${contact.id})">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </button>
+                            </div>
+                            <div class="col-4">
+                                <button class="btn btn-outline-danger btn-sm w-100" onclick="NFCContacts.deleteContact(${contact.id})">
+                                    <i class="fas fa-trash me-1"></i>Suppr
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
             });
 
             this.elements.tableBody.innerHTML = html;
@@ -746,7 +814,7 @@
             <div class="col-md-8">
                 <div class="row g-3">
                     ${contact.email ? `
-                    <div class="col-12">
+                    <div class="col-12 border rounded p-2">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-envelope text-primary me-3" style="width: 20px;"></i>
                             <div>
@@ -760,7 +828,7 @@
                     ` : ''}
                     
                     ${contact.mobile ? `
-                    <div class="col-12">
+                    <div class="col-12 border rounded p-2">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-phone text-success me-3" style="width: 20px;"></i>
                             <div>
@@ -774,7 +842,7 @@
                     ` : ''}
                     
                     ${this.config.is_multi_profile && contact.vcard_source_name ? `
-                    <div class="col-12">
+                    <div class="col-12 border rounded p-2">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-id-card text-info me-3" style="width: 20px;"></i>
                             <div>
@@ -785,7 +853,7 @@
                     </div>
                     ` : ''}
                     
-                    <div class="col-12">
+                    <div class="col-12 border rounded p-2">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-calendar text-warning me-3" style="width: 20px;"></i>
                             <div>
